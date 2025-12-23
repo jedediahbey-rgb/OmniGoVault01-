@@ -44,6 +44,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator
 } from '../components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { humanizeSlug } from '../lib/utils';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -159,7 +160,7 @@ const DocumentView = ({ document, content }) => {
             <h1 className="text-white font-serif text-lg sm:text-xl md:text-2xl font-bold break-words">
               {document.title}
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm mt-1">{document.document_type?.replace(/_/g, ' ').toUpperCase()}</p>
+            <p className="text-slate-300 text-xs sm:text-sm mt-1">{humanizeSlug(document.document_type)}</p>
           </div>
           {document.sub_record_id && (
             <div className="text-left sm:text-right shrink-0">
