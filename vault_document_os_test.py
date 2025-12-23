@@ -317,7 +317,8 @@ class VaultDocumentOSTester:
             if response.status_code == 200:
                 templates = response.json()
                 if templates and len(templates) > 0:
-                    self.test_template_id = templates[0].get('template_id')
+                    # Templates use "id" field, not "template_id"
+                    self.test_template_id = templates[0].get('id')
                     self.log_test("Get Test Template ID", True, f"Template ID: {self.test_template_id}")
                     return True
                 else:
