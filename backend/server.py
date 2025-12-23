@@ -509,6 +509,17 @@ class SearchRequest(BaseModel):
     pdf_filter: Optional[str] = None  # "roark", "pure_trust", or None for all
 
 
+# ============ HELPER FUNCTIONS ============
+
+def normalize_rm_id(rm_id_raw: str) -> str:
+    """Normalize RM-ID: uppercase, remove extra spaces"""
+    if not rm_id_raw:
+        return ""
+    # Remove extra spaces and uppercase
+    normalized = re.sub(r'\s+', '', rm_id_raw.strip().upper())
+    return normalized
+
+
 # ============ AUTH HELPERS ============
 
 async def get_current_user(request: Request) -> User:
