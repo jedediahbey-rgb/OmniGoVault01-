@@ -860,12 +860,71 @@ async def update_document(document_id: str, data: DocumentUpdate, user: User = D
 
 
 @api_router.delete("/documents/{document_id}")
-async def delete_document(document_id: str, user: User = Depends(get_current_user)):
-    result = await db.documents.delete_one({"document_id": document_id, "user_id": user.user_id})
-    if result.deleted_count == 0:
+async def delete_document(document_id: str, permanent: bool = False, user: User = Depends(get_current_user)):
+    """Soft delete (move to trash) or permanently delete a document"""
+    doc = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id})
+    if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
-    await db.document_versions.delete_many({"document_id": document_id})
-    return {"message": "Document deleted"}
+    
+    if permanent:
+        # Permanently delete
+        await db.documents.delete_one({"document_id": document_id})
+        await db.document_versions.delete_many({"document_id": document_id})
+        return {"message": "Document permanently deleted"}
+    else:
+        # Soft delete - move to trash
+        await db.documents.update_one(
+            {"document_id": document_id},
+            {"$set": {
+                "is_deleted": True,
+                "deleted_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        return {"message": "Document moved to trash"}
+
+
+@api_router.post("/documents/{document_id}/restore")
+async def restore_document_from_trash(document_id: str, user: User = Depends(get_current_user)):
+    """Restore a document from trash"""
+    doc = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id, "is_deleted": True})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found in trash")
+    
+    await db.documents.update_one(
+        {"document_id": document_id},
+        {"$set": {
+            "is_deleted": False,
+            "deleted_at": None,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"message": "Document restored"}
+
+
+@api_router.post("/documents/{document_id}/duplicate")
+async def duplicate_document(document_id: str, user: User = Depends(get_current_user)):
+    """Duplicate a document"""
+    original = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id}, {"_id": 0})
+    if not original:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    new_doc = Document(
+        portfolio_id=original.get("portfolio_id"),
+        trust_profile_id=original.get("trust_profile_id"),
+        user_id=user.user_id,
+        template_id=original.get("template_id"),
+        title=f"{original['title']} (Copy)",
+        document_type=original.get("document_type", "custom"),
+        content=original.get("content", ""),
+        tags=original.get("tags", []),
+        folder=original.get("folder", "/")
+    )
+    doc_dict = new_doc.model_dump()
+    doc_dict['created_at'] = doc_dict['created_at'].isoformat()
+    doc_dict['updated_at'] = doc_dict['updated_at'].isoformat()
+    await db.documents.insert_one(doc_dict)
+    return {k: v for k, v in doc_dict.items() if k != '_id'}
 
 
 @api_router.get("/documents/{document_id}/versions")
