@@ -583,8 +583,13 @@ export default function VaultPage({ user }) {
                             </DropdownMenu>
                           )}
                         </div>
-                        <h3 className="text-white font-medium mb-1 truncate">{doc.title}</h3>
+                        <h3 className="text-white font-medium mb-1 line-clamp-2 min-w-0">{doc.title}</h3>
                         <p className="text-white/40 text-xs mb-3">{doc.document_type}</p>
+                        {doc.rm_id && (
+                          <p className="text-vault-gold/60 text-xs font-mono break-words mb-2 sm:hidden">
+                            {doc.sub_record_id || doc.rm_id}
+                          </p>
+                        )}
                         <div className="flex items-center justify-between text-xs text-white/30">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
@@ -602,22 +607,34 @@ export default function VaultPage({ user }) {
                     ) : (
                       <div
                         onClick={() => setSelectedDocument(doc)}
-                        className={`flex items-center gap-4 p-3 rounded-lg border transition-all cursor-pointer ${
+                        className={`flex items-start gap-3 p-3 rounded-lg border transition-all cursor-pointer ${
                           selectedDocument?.document_id === doc.document_id
                             ? 'border-vault-gold/50 bg-vault-gold/5'
                             : 'border-white/5 hover:border-white/20 bg-white/5'
                         }`}
                       >
-                        {isPinned && <Star className="w-4 h-4 text-vault-gold fill-vault-gold" />}
-                        <FileText className="w-5 h-5 text-white/40" />
+                        {isPinned && <Star className="w-4 h-4 text-vault-gold fill-vault-gold shrink-0 mt-0.5" />}
+                        <FileText className="w-5 h-5 text-white/40 shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-white truncate">{doc.title}</p>
-                          <p className="text-white/40 text-xs">{doc.document_type}</p>
+                          <p className="text-white line-clamp-2 text-sm">{doc.title}</p>
+                          <p className="text-white/40 text-xs mt-0.5">{doc.document_type}</p>
+                          {doc.rm_id && (
+                            <p className="text-vault-gold/60 text-xs font-mono break-words mt-0.5 sm:hidden">
+                              {doc.sub_record_id || doc.rm_id}
+                            </p>
+                          )}
                         </div>
-                        <span className="text-white/30 text-xs">
-                          {new Date(doc.updated_at).toLocaleDateString()}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-white/20" />
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          <span className="text-white/30 text-xs">
+                            {new Date(doc.updated_at).toLocaleDateString()}
+                          </span>
+                          {doc.rm_id && (
+                            <span className="hidden sm:block text-vault-gold/60 text-xs font-mono">
+                              {doc.sub_record_id || doc.rm_id}
+                            </span>
+                          )}
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-white/20 shrink-0 mt-0.5" />
                       </div>
                     )}
                   </motion.div>
