@@ -1,20 +1,20 @@
-import { useEffect, useRef, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { Toaster } from "./components/ui/sonner";
-import axios from "axios";
+import { useEffect, useRef, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Toaster } from './components/ui/sonner';
+import axios from 'axios';
+import MainLayout from './components/layout/MainLayout';
 
 // Pages
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import KnowledgePage from "./pages/KnowledgePage";
-import MaximsPage from "./pages/MaximsPage";
-import RelationshipsPage from "./pages/RelationshipsPage";
-import TemplatesPage from "./pages/TemplatesPage";
-import SourceLibraryPage from "./pages/SourceLibraryPage";
-import AssistantPage from "./pages/AssistantPage";
-import DashboardPage from "./pages/DashboardPage";
-import PortfolioPage from "./pages/PortfolioPage";
-import DocumentEditorPage from "./pages/DocumentEditorPage";
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import LearnPage from './pages/LearnPage';
+import MaximsPage from './pages/MaximsPage';
+import GlossaryPage from './pages/GlossaryPage';
+import VaultPage from './pages/VaultPage';
+import TemplatesPage from './pages/TemplatesPage';
+import AssistantPage from './pages/AssistantPage';
+import DocumentEditorPage from './pages/DocumentEditorPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -43,7 +43,7 @@ export const useAuth = () => {
     try {
       await axios.post(`${API}/auth/logout`);
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('Logout error:', error);
     }
     setUser(null);
   };
@@ -66,7 +66,7 @@ const AuthCallback = ({ setUser, setLoading }) => {
       const sessionIdMatch = hash.match(/session_id=([^&]+)/);
       
       if (!sessionIdMatch) {
-        navigate("/login");
+        navigate('/login');
         return;
       }
 
@@ -77,13 +77,13 @@ const AuthCallback = ({ setUser, setLoading }) => {
         if (response.data.user) {
           setUser(response.data.user);
           setLoading(false);
-          navigate("/vault", { state: { user: response.data.user } });
+          navigate('/vault', { state: { user: response.data.user } });
         } else {
-          navigate("/login");
+          navigate('/login');
         }
       } catch (error) {
-        console.error("Auth error:", error);
-        navigate("/login");
+        console.error('Auth error:', error);
+        navigate('/login');
       }
     };
 
@@ -91,10 +91,10 @@ const AuthCallback = ({ setUser, setLoading }) => {
   }, [location, navigate, setUser, setLoading]);
 
   return (
-    <div className="min-h-screen bg-[#0B1221] flex items-center justify-center">
+    <div className="min-h-screen bg-vault-navy flex items-center justify-center">
       <div className="text-center">
-        <div className="w-12 h-12 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-[#C6A87C] font-serif text-lg">Authenticating...</p>
+        <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-vault-gold font-heading text-lg">Authenticating...</p>
       </div>
     </div>
   );
@@ -118,7 +118,7 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
-        navigate("/login");
+        navigate('/login');
       }
     };
 
@@ -127,8 +127,8 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
 
   if (isAuthenticated === null || loading) {
     return (
-      <div className="min-h-screen bg-[#0B1221] flex items-center justify-center">
-        <div className="w-12 h-12 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-vault-navy flex items-center justify-center">
+        <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -140,41 +140,71 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
   return children;
 };
 
+// Layout wrapper for authenticated routes
+const AuthLayout = ({ children, auth }) => {
+  return (
+    <MainLayout user={auth.user} onLogout={auth.logout}>
+      {children}
+    </MainLayout>
+  );
+};
+
 // App Router Component
 const AppRouter = ({ auth }) => {
   const location = useLocation();
   const { user, setUser, loading, setLoading, checkAuth, logout } = auth;
 
-  if (location.hash?.includes("session_id=")) {
+  // Handle OAuth callback
+  if (location.hash?.includes('session_id=')) {
     return <AuthCallback setUser={setUser} setLoading={setLoading} />;
   }
 
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<HomePage />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/knowledge" element={<KnowledgePage />} />
-      <Route path="/maxims" element={<MaximsPage />} />
-      <Route path="/relationships" element={<RelationshipsPage />} />
-      <Route path="/templates" element={<TemplatesPage user={user} />} />
-      <Route path="/sources" element={<SourceLibraryPage />} />
-      <Route path="/assistant" element={<AssistantPage user={user} />} />
       
-      {/* Protected Routes */}
+      {/* Public Educational Routes - No auth required for learning */}
+      <Route path="/learn" element={
+        <AuthLayout auth={auth}>
+          <LearnPage user={user} />
+        </AuthLayout>
+      } />
+      <Route path="/maxims" element={
+        <AuthLayout auth={auth}>
+          <MaximsPage user={user} />
+        </AuthLayout>
+      } />
+      <Route path="/glossary" element={
+        <AuthLayout auth={auth}>
+          <GlossaryPage user={user} />
+        </AuthLayout>
+      } />
+      <Route path="/assistant" element={
+        <AuthLayout auth={auth}>
+          <AssistantPage user={user} />
+        </AuthLayout>
+      } />
+      
+      {/* Protected Vault Routes */}
       <Route
         path="/vault"
         element={
           <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
-            <DashboardPage user={user} logout={logout} />
+            <AuthLayout auth={auth}>
+              <DashboardPage user={user} />
+            </AuthLayout>
           </ProtectedRoute>
         }
       />
       <Route
-        path="/vault/portfolio/:portfolioId"
+        path="/vault/documents"
         element={
           <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
-            <PortfolioPage user={user} logout={logout} />
+            <AuthLayout auth={auth}>
+              <VaultPage user={user} />
+            </AuthLayout>
           </ProtectedRoute>
         }
       />
@@ -182,7 +212,19 @@ const AppRouter = ({ auth }) => {
         path="/vault/document/:documentId"
         element={
           <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
-            <DocumentEditorPage user={user} logout={logout} />
+            <AuthLayout auth={auth}>
+              <DocumentEditorPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/templates"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <TemplatesPage user={user} />
+            </AuthLayout>
           </ProtectedRoute>
         }
       />

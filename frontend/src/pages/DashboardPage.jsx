@@ -1,322 +1,274 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import axios from 'axios';
 import { 
-  Scale, Plus, FileText, FolderOpen, Bell, Briefcase, LogOut, User,
-  ChevronRight, Search, Calendar, Clock, MoreVertical, Trash2
-} from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
-import { toast } from "sonner";
-import axios from "axios";
+  FolderArchive, 
+  FileText, 
+  Briefcase, 
+  Bell,
+  Plus,
+  ArrowRight,
+  BookOpen,
+  Sparkles,
+  Clock
+} from 'lucide-react';
+import PageHeader from '../components/shared/PageHeader';
+import StatCard from '../components/shared/StatCard';
+import GlassCard from '../components/shared/GlassCard';
+import { Button } from '../components/ui/button';
+import { staggerContainer, fadeInUp } from '../lib/motion';
+import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-const DashboardPage = ({ user, logout }) => {
+export default function DashboardPage({ user }) {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [portfolios, setPortfolios] = useState([]);
-  const [stats, setStats] = useState({ portfolios: 0, documents: 0, assets: 0, pending_notices: 0 });
-  const [recentDocs, setRecentDocs] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [newPortfolioName, setNewPortfolioName] = useState("");
-  const [newPortfolioDesc, setNewPortfolioDesc] = useState("");
-  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    fetchData();
-    // Check if redirected with create flag
-    if (searchParams.get("create") === "true") {
-      setShowCreateDialog(true);
-    }
-  }, [searchParams]);
+    fetchDashboardData();
+  }, []);
 
-  const fetchData = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const [portfoliosRes, statsRes] = await Promise.all([
-        axios.get(`${API}/portfolios`),
-        axios.get(`${API}/dashboard/stats`)
-      ]);
-      setPortfolios(portfoliosRes.data);
-      setStats(statsRes.data);
-      setRecentDocs(statsRes.data.recent_documents || []);
+      const response = await axios.get(`${API}/dashboard/stats`);
+      setStats(response.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Failed to fetch dashboard stats:', error);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreatePortfolio = async () => {
-    if (!newPortfolioName.trim()) {
-      toast.error("Please enter a portfolio name");
-      return;
-    }
+  const quickActions = [
+    { icon: Plus, label: 'New Portfolio', action: () => navigate('/vault/documents'), color: 'gold' },
+    { icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'blue' },
+    { icon: BookOpen, label: 'Start Learning', action: () => navigate('/learn'), color: 'default' },
+    { icon: Sparkles, label: 'Study Maxims', action: () => navigate('/maxims'), color: 'gold' },
+  ];
 
-    setCreating(true);
-    try {
-      const response = await axios.post(`${API}/portfolios`, {
-        name: newPortfolioName.trim(),
-        description: newPortfolioDesc.trim()
-      });
-      setPortfolios([response.data, ...portfolios]);
-      setStats(prev => ({ ...prev, portfolios: prev.portfolios + 1 }));
-      setShowCreateDialog(false);
-      setNewPortfolioName("");
-      setNewPortfolioDesc("");
-      toast.success("Portfolio created successfully");
-      navigate(`/vault/portfolio/${response.data.portfolio_id}`);
-    } catch (error) {
-      console.error("Error creating portfolio:", error);
-      toast.error("Failed to create portfolio");
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const handleDeletePortfolio = async (portfolioId, e) => {
-    e.stopPropagation();
-    if (!window.confirm("Delete this portfolio and all its contents?")) return;
-
-    try {
-      await axios.delete(`${API}/portfolios/${portfolioId}`);
-      setPortfolios(portfolios.filter(p => p.portfolio_id !== portfolioId));
-      setStats(prev => ({ ...prev, portfolios: prev.portfolios - 1 }));
-      toast.success("Portfolio deleted");
-    } catch (error) {
-      console.error("Error deleting portfolio:", error);
-      toast.error("Failed to delete portfolio");
-    }
-  };
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/");
-  };
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#0B1221]">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0F172A] border-r border-white/5 p-6 flex flex-col z-40">
-        <Link to="/" className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-            <Scale className="w-5 h-5 text-[#C6A87C]" />
-          </div>
-          <span className="font-serif text-xl font-semibold text-[#F8FAFC] tracking-tight">
-            Portfolio Vault
-          </span>
-        </Link>
+    <div className="p-8">
+      <PageHeader
+        title={`Welcome back, ${user?.name?.split(' ')[0] || 'User'}`}
+        subtitle="Your trust portfolio overview and quick actions"
+      />
 
-        <nav className="flex-1 space-y-2">
-          <Link 
-            to="/vault"
-            className="flex items-center gap-3 px-4 py-3 bg-[#C6A87C]/10 text-[#C6A87C] rounded-sm"
-            data-testid="nav-dashboard"
-          >
-            <Briefcase className="w-5 h-5" />
-            <span className="font-sans text-sm font-medium">Dashboard</span>
-          </Link>
-          <Link 
-            to="/knowledge"
-            className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-[#F8FAFC] hover:bg-white/5 rounded-sm transition-colors"
-          >
-            <FileText className="w-5 h-5" />
-            <span className="font-sans text-sm font-medium">Knowledge Base</span>
-          </Link>
-          <Link 
-            to="/assistant"
-            className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-[#F8FAFC] hover:bg-white/5 rounded-sm transition-colors"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="font-sans text-sm font-medium">AI Assistant</span>
-          </Link>
-        </nav>
+      {/* Stats Grid */}
+      <motion.div 
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+      >
+        <motion.div variants={fadeInUp}>
+          <StatCard
+            label="Portfolios"
+            value={stats?.portfolios || 0}
+            icon={FolderArchive}
+            variant="gold"
+          />
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <StatCard
+            label="Documents"
+            value={stats?.documents || 0}
+            icon={FileText}
+            variant="default"
+          />
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <StatCard
+            label="Assets"
+            value={stats?.assets || 0}
+            icon={Briefcase}
+            variant="blue"
+          />
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <StatCard
+            label="Pending Notices"
+            value={stats?.pending_notices || 0}
+            icon={Bell}
+            variant="default"
+          />
+        </motion.div>
+      </motion.div>
 
-        <div className="border-t border-white/5 pt-6">
-          <div className="flex items-center gap-3 mb-4">
-            {user?.picture ? (
-              <img src={user.picture} alt="" className="w-10 h-10 rounded-full" />
-            ) : (
-              <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-[#C6A87C]" />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="font-sans text-sm font-medium text-[#F8FAFC] truncate">{user?.name || "User"}</p>
-              <p className="font-sans text-xs text-slate-500 truncate">{user?.email}</p>
-            </div>
-          </div>
-          <Button 
-            onClick={handleLogout}
-            variant="ghost" 
-            className="w-full justify-start text-slate-400 hover:text-[#F8FAFC] hover:bg-white/5"
-            data-testid="logout-btn"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="ml-64 p-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="font-serif text-3xl text-[#F8FAFC] mb-2" data-testid="dashboard-title">
-              Welcome back, {user?.name?.split(' ')[0] || 'User'}
-            </h1>
-            <p className="font-sans text-slate-400">Manage your trust portfolios and documents</p>
-          </div>
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <Button className="bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs" data-testid="create-portfolio-btn">
-                <Plus className="w-4 h-4 mr-2" />
-                New Portfolio
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-[#111827] border-white/10 text-[#F8FAFC]">
-              <DialogHeader>
-                <DialogTitle className="font-serif text-xl text-[#C6A87C]">Create New Portfolio</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <div>
-                  <label className="font-sans text-sm text-slate-400 mb-2 block">Portfolio Name</label>
-                  <Input
-                    value={newPortfolioName}
-                    onChange={(e) => setNewPortfolioName(e.target.value)}
-                    placeholder="e.g., Smith Family Trust"
-                    className="bg-[#0B1221] border-white/10 text-[#F8FAFC] placeholder:text-slate-600"
-                    data-testid="portfolio-name-input"
-                  />
-                </div>
-                <div>
-                  <label className="font-sans text-sm text-slate-400 mb-2 block">Description (Optional)</label>
-                  <Input
-                    value={newPortfolioDesc}
-                    onChange={(e) => setNewPortfolioDesc(e.target.value)}
-                    placeholder="Brief description..."
-                    className="bg-[#0B1221] border-white/10 text-[#F8FAFC] placeholder:text-slate-600"
-                  />
-                </div>
-                <Button 
-                  onClick={handleCreatePortfolio}
-                  disabled={creating}
-                  className="w-full bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5]"
-                  data-testid="create-portfolio-submit"
-                >
-                  {creating ? "Creating..." : "Create Portfolio"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-6 mb-8">
-          <div className="bg-[#111827] border border-white/5 rounded-sm p-6" data-testid="stat-portfolios">
-            <p className="font-sans text-xs text-slate-500 uppercase tracking-wider mb-2">Portfolios</p>
-            <p className="font-serif text-4xl text-[#F8FAFC]">{stats.portfolios}</p>
-          </div>
-          <div className="bg-[#111827] border border-white/5 rounded-sm p-6" data-testid="stat-documents">
-            <p className="font-sans text-xs text-slate-500 uppercase tracking-wider mb-2">Documents</p>
-            <p className="font-serif text-4xl text-[#C6A87C]">{stats.documents}</p>
-          </div>
-          <div className="bg-[#111827] border border-white/5 rounded-sm p-6" data-testid="stat-assets">
-            <p className="font-sans text-xs text-slate-500 uppercase tracking-wider mb-2">Assets</p>
-            <p className="font-serif text-4xl text-[#F8FAFC]">{stats.assets}</p>
-          </div>
-          <div className="bg-[#111827] border border-white/5 rounded-sm p-6" data-testid="stat-notices">
-            <p className="font-sans text-xs text-slate-500 uppercase tracking-wider mb-2">Pending Notices</p>
-            <p className="font-serif text-4xl text-yellow-500">{stats.pending_notices}</p>
-          </div>
-        </div>
-
-        {/* Portfolios */}
-        <div className="mb-8">
-          <h2 className="font-serif text-xl text-[#F8FAFC] mb-4">Your Portfolios</h2>
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="w-10 h-10 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          ) : portfolios.length === 0 ? (
-            <div className="bg-[#111827] border border-white/5 rounded-sm p-12 text-center" data-testid="empty-portfolios">
-              <FolderOpen className="w-16 h-16 text-slate-700 mx-auto mb-4" />
-              <h3 className="font-serif text-xl text-[#F8FAFC] mb-2">No portfolios yet</h3>
-              <p className="font-sans text-slate-400 mb-6">Create your first trust portfolio to get started</p>
-              <Button 
-                onClick={() => setShowCreateDialog(true)}
-                className="bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5]"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create Portfolio
-              </Button>
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="portfolios-grid">
-              {portfolios.map((portfolio) => (
-                <div
-                  key={portfolio.portfolio_id}
-                  onClick={() => navigate(`/vault/portfolio/${portfolio.portfolio_id}`)}
-                  className="group bg-[#111827] border border-white/5 rounded-sm p-6 cursor-pointer hover:border-[#C6A87C]/30 transition-all"
-                  data-testid={`portfolio-${portfolio.portfolio_id}`}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-[#C6A87C]/10 rounded-sm flex items-center justify-center">
-                      <Briefcase className="w-6 h-6 text-[#C6A87C]" />
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => handleDeletePortfolio(portfolio.portfolio_id, e)}
-                      className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-500"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <h3 className="font-serif text-lg text-[#F8FAFC] mb-2">{portfolio.name}</h3>
-                  <p className="font-sans text-sm text-slate-400 mb-4">{portfolio.description || "No description"}</p>
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
-                    <Calendar className="w-3 h-3" />
-                    <span>Created {new Date(portfolio.created_at).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Recent Documents */}
-        {recentDocs.length > 0 && (
-          <div>
-            <h2 className="font-serif text-xl text-[#F8FAFC] mb-4">Recent Documents</h2>
-            <div className="bg-[#111827] border border-white/5 rounded-sm overflow-hidden">
-              {recentDocs.map((doc, index) => (
-                <div
-                  key={doc.document_id}
-                  onClick={() => navigate(`/vault/document/${doc.document_id}`)}
-                  className={`flex items-center justify-between p-4 cursor-pointer hover:bg-white/5 transition-colors ${
-                    index !== recentDocs.length - 1 ? 'border-b border-white/5' : ''
+      {/* Main Content Grid - Bento Style */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Quick Actions - 4 cols */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="lg:col-span-4"
+        >
+          <GlassCard className="h-full">
+            <h3 className="font-heading text-lg text-white mb-4">Quick Actions</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {quickActions.map((action, idx) => (
+                <button
+                  key={idx}
+                  onClick={action.action}
+                  className={`p-4 rounded-lg border transition-all duration-200 flex flex-col items-center gap-2 group ${
+                    action.color === 'gold' 
+                      ? 'border-vault-gold/20 hover:bg-vault-gold/10 hover:border-vault-gold/40' 
+                      : action.color === 'blue'
+                      ? 'border-vault-blue/20 hover:bg-vault-blue/10 hover:border-vault-blue/40'
+                      : 'border-white/10 hover:bg-white/5 hover:border-white/20'
                   }`}
                 >
-                  <div className="flex items-center gap-4">
-                    <FileText className="w-5 h-5 text-[#C6A87C]" />
-                    <span className="font-sans text-[#F8FAFC]">{doc.title}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
-                    <Clock className="w-3 h-3" />
-                    <span>{new Date(doc.updated_at).toLocaleDateString()}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </div>
-                </div>
+                  <action.icon className={`w-5 h-5 ${
+                    action.color === 'gold' ? 'text-vault-gold' :
+                    action.color === 'blue' ? 'text-vault-blue' : 'text-white/60'
+                  }`} />
+                  <span className="text-xs text-white/70 group-hover:text-white">
+                    {action.label}
+                  </span>
+                </button>
               ))}
             </div>
-          </div>
-        )}
-      </main>
+          </GlassCard>
+        </motion.div>
+
+        {/* Recent Documents - 8 cols */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="lg:col-span-8"
+        >
+          <GlassCard>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-heading text-lg text-white">Recent Documents</h3>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/vault/documents')}
+                className="text-vault-gold hover:text-vault-gold"
+              >
+                View All <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+            
+            {stats?.recent_documents?.length > 0 ? (
+              <div className="space-y-3">
+                {stats.recent_documents.map((doc, idx) => (
+                  <div 
+                    key={doc.document_id}
+                    onClick={() => navigate(`/vault/document/${doc.document_id}`)}
+                    className="flex items-center gap-4 p-3 rounded-lg border border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5 cursor-pointer transition-all"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-white/40" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white truncate">{doc.title}</p>
+                      <p className="text-xs text-white/40 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {new Date(doc.updated_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-white/20" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <FileText className="w-12 h-12 text-white/10 mx-auto mb-3" />
+                <p className="text-white/40">No documents yet</p>
+                <Button 
+                  onClick={() => navigate('/templates')}
+                  className="mt-4 btn-secondary text-sm"
+                >
+                  Create Your First Document
+                </Button>
+              </div>
+            )}
+          </GlassCard>
+        </motion.div>
+
+        {/* Learning Progress - 6 cols */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="lg:col-span-6"
+        >
+          <GlassCard className="h-full">
+            <h3 className="font-heading text-lg text-white mb-4">Continue Learning</h3>
+            <div className="space-y-4">
+              <div 
+                onClick={() => navigate('/learn')}
+                className="p-4 rounded-lg bg-vault-gold/5 border border-vault-gold/20 hover:border-vault-gold/40 cursor-pointer transition-all"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <BookOpen className="w-5 h-5 text-vault-gold" />
+                  <span className="text-white">Foundations of Equity</span>
+                </div>
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="w-1/4 h-full bg-vault-gold rounded-full" />
+                </div>
+                <p className="text-xs text-white/40 mt-2">Module 1 of 5</p>
+              </div>
+              
+              <div 
+                onClick={() => navigate('/maxims')}
+                className="p-4 rounded-lg bg-vault-blue/5 border border-vault-blue/20 hover:border-vault-blue/40 cursor-pointer transition-all"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <Sparkles className="w-5 h-5 text-vault-blue" />
+                  <span className="text-white">Maxims of Equity</span>
+                </div>
+                <p className="text-white/40 text-sm">20+ principles to master</p>
+              </div>
+            </div>
+          </GlassCard>
+        </motion.div>
+
+        {/* AI Assistant Promo - 6 cols */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="lg:col-span-6"
+        >
+          <GlassCard 
+            className="h-full bg-gradient-to-br from-vault-gold/10 to-transparent border-vault-gold/20"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-vault-gold/20 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-6 h-6 text-vault-gold" />
+              </div>
+              <div>
+                <h3 className="font-heading text-lg text-white mb-2">AI Assistant</h3>
+                <p className="text-white/60 text-sm mb-4">
+                  Get help drafting documents, understanding equity principles, 
+                  or navigating trust relationships.
+                </p>
+                <Button 
+                  onClick={() => navigate('/assistant')}
+                  className="btn-primary text-sm"
+                >
+                  Ask a Question <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          </GlassCard>
+        </motion.div>
+      </div>
     </div>
   );
-};
-
-export default DashboardPage;
+}
