@@ -163,7 +163,10 @@ class AssetItem(BaseModel):
     asset_id: str = Field(default_factory=lambda: f"asset_{uuid.uuid4().hex[:12]}")
     portfolio_id: str
     user_id: str
-    rm_id: str = ""  # RM-ID for the asset (e.g., RF123456789US-01.001)
+    rm_id: str = ""  # Full RM-ID for the asset (e.g., RF123456789US-01.001)
+    subject_category: int = 1  # Subject category number (01, 02, 03...)
+    subject_name: str = ""  # Name of the subject category (e.g., "Real Estate", "Vehicle", "Court Case")
+    sequence_number: int = 1  # Sequence within category (.001, .002, .003...)
     asset_type: str  # real_property, personal_property, financial_account, intellectual_property, other
     description: str
     value: Optional[float] = None
@@ -180,7 +183,10 @@ class TrustLedgerEntry(BaseModel):
     entry_id: str = Field(default_factory=lambda: f"ledger_{uuid.uuid4().hex[:12]}")
     portfolio_id: str
     user_id: str
-    rm_id: str  # RM-ID for this entry
+    rm_id: str = ""  # Full RM-ID for this entry (e.g., RF123456789US-01.001)
+    subject_category: int = 1  # Subject category number (01, 02, 03...)
+    subject_name: str = ""  # Name of the subject category
+    sequence_number: int = 1  # Sequence within category (.001, .002, .003...)
     entry_type: str  # deposit, withdrawal, transfer_in, transfer_out
     description: str
     asset_id: Optional[str] = None  # Link to asset if applicable
@@ -189,6 +195,18 @@ class TrustLedgerEntry(BaseModel):
     balance_effect: str = "credit"  # credit (adds to trust), debit (removes from trust)
     notes: str = ""
     recorded_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class SubjectCategory(BaseModel):
+    """Track subject categories for RM-ID numbering"""
+    category_id: str = Field(default_factory=lambda: f"cat_{uuid.uuid4().hex[:12]}")
+    portfolio_id: str
+    user_id: str
+    category_number: int  # 01, 02, 03...
+    name: str  # e.g., "Real Estate", "Vehicle Loan", "Court Case"
+    description: str = ""
+    next_sequence: int = 1  # Next sequence number for this category (.001, .002...)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
