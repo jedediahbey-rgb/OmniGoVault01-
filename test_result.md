@@ -25,3 +25,21 @@
 
 ## User Testing Pending
 - Needs user verification after testing agent completes
+
+## New Features Added (Session 2)
+
+### Vault Document OS Enhancements
+1. Recent documents tracking (last accessed, access count)
+2. Pinned documents (user can pin/unpin)
+3. Quick Access section in Vault (pinned + recent)
+4. API endpoints: /documents/recent/list, /documents/pinned/list, /documents/{id}/pin, /documents/{id}/unpin
+
+### AI Assistant Tools
+1. Generate Document from Template: POST /api/assistant/generate-document
+2. Update Document via AI: POST /api/assistant/update-document  
+3. Summarize Document: POST /api/assistant/summarize-document
+
+## Testing Scope
+- Backend API tests for new document features
+- Frontend Vault page with Quick Access section
+- AI document tools
