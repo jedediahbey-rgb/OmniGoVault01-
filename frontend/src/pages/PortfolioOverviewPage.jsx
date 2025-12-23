@@ -804,22 +804,22 @@ export default function PortfolioOverviewPage({ user }) {
             </div>
 
             {/* Balance Summary */}
-            <div className="grid grid-cols-4 gap-4 mb-6 p-4 bg-white/5 rounded-lg">
-              <div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 p-3 sm:p-4 bg-white/5 rounded-lg overflow-hidden">
+              <div className="min-w-0">
                 <p className="text-white/40 text-xs uppercase">Entries</p>
-                <p className="text-white text-xl font-heading">{ledger.summary?.entry_count || 0}</p>
+                <p className="text-white text-lg sm:text-xl font-heading tabular-nums">{ledger.summary?.entry_count || 0}</p>
               </div>
-              <div>
+              <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Total Credits</p>
-                <p className="text-green-400 text-xl font-heading">{formatCurrency(ledger.summary?.total_deposits)}</p>
+                <p className="text-green-400 text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">{formatCurrency(ledger.summary?.total_deposits)}</p>
               </div>
-              <div>
+              <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Total Debits</p>
-                <p className="text-red-400 text-xl font-heading">{formatCurrency(ledger.summary?.total_withdrawals)}</p>
+                <p className="text-red-400 text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">{formatCurrency(ledger.summary?.total_withdrawals)}</p>
               </div>
-              <div>
+              <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Balance</p>
-                <p className="text-vault-gold text-xl font-heading">{formatCurrency(ledger.summary?.balance)}</p>
+                <p className="text-vault-gold text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">{formatCurrency(ledger.summary?.balance)}</p>
               </div>
             </div>
 
