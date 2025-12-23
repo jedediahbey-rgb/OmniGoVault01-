@@ -446,10 +446,9 @@ class VaultDocumentOSTester:
                 "Content-Type": "application/json"
             }
             
-            # Try as form data parameter
-            response = requests.post(f"{API_BASE}/assistant/summarize-document", 
+            # Try as query parameter
+            response = requests.post(f"{API_BASE}/assistant/summarize-document?document_id={self.test_document_id}", 
                                    headers=headers, 
-                                   data={"document_id": self.test_document_id}, 
                                    timeout=30)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
