@@ -128,51 +128,306 @@ export default function TemplatesPage({ user }) {
 
   const generateTemplateContent = (template) => {
     const templates = {
-      declaration_of_trust: `<h1>DECLARATION OF TRUST</h1>
+      declaration_of_trust: `<h1 style="text-align: center;">DECLARATION OF TRUST</h1>
+<p style="text-align: center;"><em>A Private Trust expressed under the Laws of Equity</em></p>
 
-<p>This Declaration of Trust is made and executed on <strong>[DATE]</strong>, establishing the <strong>[TRUST NAME]</strong>.</p>
+<p>This Declaration of Trust ("Trust") is a formal written and expressed trust indenture establishing the special trust relationship between the parties for all transaction(s)/account(s) as the corpus "res" of this Trust belonging to the Estate of <strong>[GRANTOR NAME]</strong> of <strong>[COUNTY]</strong> County and any derivations by this Grantor/Settlor successors and assigns, jointly and severally, and this Trust's Trustee and Co-Trustee ("Trustees") and anyone appointed under the authority of this Trust.</p>
 
-<h2>ARTICLE I - PARTIES</h2>
+<h2>FIRST</h2>
+<p>It is the will and intent of the Grantor that the beneficiary be united with, for his use, enjoyment, life maintenance, pursuit of happiness, all the property, rights, titles and interest and their transmutations and derivations therefrom of said res/corpus of said Estate. Grantor declares this Trust is hereinafter titled <strong>[RM-ID] Trust</strong>, an equitable asset title, and all its chattels therewith and therefrom. Grantor hereby transfers Certificate of Legal Title of [RM-ID] Trust to Trustees for special purpose; see trustee's acceptance and deed of transfer.</p>
 
-<p><strong>GRANTOR/SETTLOR:</strong> [GRANTOR NAME], a private civilian, hereinafter referred to as "Grantor"</p>
+<p><strong>OTHER SPECIAL PURPOSE</strong><br/>
+a. The purpose of the trust is to re-unite, delivery, transfer, merge titles for all the corpus of this Trust.</p>
 
-<p><strong>TRUSTEE:</strong> [TRUSTEE NAME], hereinafter referred to as "Trustee"</p>
+<h2>SECOND</h2>
+<p>The Trustee shall receive and hold said property, together with any additions hereto in Trust for the use and benefit of the sole bona fide Trust beneficial interest holder in due course. The beneficiary of this Trust shall hold Trust Certificate <strong>[RM-ID]-00.001</strong> through <strong>[RM-ID]-99.999</strong> by both the settlor and trustee. Beneficiary is competent with age of majority sufficient to terminate any presumed or express trust relation and possesses all right, title and interest in the trust without granting a waiver of any right, remedy, or defense shall have whole, complete, enforceable and superior claim to equitable title of [RM-ID].</p>
 
-<p><strong>BENEFICIARY:</strong> [BENEFICIARY NAME], hereinafter referred to as "Beneficiary" or "Cestui Que Trust"</p>
+<h2>THIRD</h2>
+<p>Trust is revocable and modifiable by the Grantor/Settlor with all rights reserved and continue for a term of five years from the date of trust res transfer to Trustees. Trust shall also be renewable, if renewed prior to its termination. This can be extinguished upon a conveyance of legal title to the beneficiary signed by both trustee and co-trustee.</p>
 
-<h2>ARTICLE II - TRUST PROPERTY</h2>
+<h2>FOURTH</h2>
+<p>This Trust shall be administered, managed, governed and regulated in all respects according to the laws of equity, under judicial power and inherited civilian due process protections.</p>
 
-<p>The Grantor hereby transfers, assigns, and conveys to the Trustee the property described in Schedule A attached hereto, to be held in trust according to the terms of this Declaration.</p>
+<h2>FIFTH - TRUSTEE POWERS</h2>
+<p>The Trustees, in addition to all other power granted by this expression and by law, shall have the following additional powers with respect to the Trust:</p>
 
-<h2>ARTICLE III - GOVERNING PRINCIPLES</h2>
+<p><strong>MORTGAGES, PLEDGES AND DEEDS OF TRUST</strong><br/>
+To enforce any and all mortgages, pledges and deeds of Trust held by the Trust and to purchase at any sale thereunder any such real or personal property subject to any mortgage, pledge or deed of Trust.</p>
 
-<p>This trust shall be governed by the maxims of equity, including but not limited to:</p>
+<p><strong>LITIGATION</strong><br/>
+To initiate or defend, at the discretion of the Trustees, any litigation affecting the Trust.</p>
+
+<p><strong>ADJUSTMENT OF CLAIMS</strong><br/>
+To submit to a court of Equity, or in private, to compromise or to release or otherwise adjust without compensation, any and all claims affecting the Trust estate.</p>
+
+<h2>SIXTH</h2>
+<p>Trustees full commercial and personal liability for the faithful performance of duties shall be required of any Trustees under this expression.</p>
+
+<h2>SEVENTH</h2>
+<p>The Trustees shall receive reasonable emolument for the services performed by the Trustees, but such emolument shall not exceed the amount customarily received by corporate fiduciaries in the area for like services.</p>
+
+<h2>EIGHTH</h2>
+<p>No Trustees or Trust Manager, created by this Notice shall at any time be held liable for any action or default of any Trustees, or any other person in connection with the administration and management of this Trust unless caused by the individual(s) own gross negligence or by commission of a willful act of breach of Trust. Trustee <strong>[TRUSTEE NAME]</strong> is hereby appointed the Registered Agent for service of process.</p>
+
+<h2>NINTH</h2>
+<p>In the event that any portion of this Trust shall be held unlawful, invalid or otherwise inoperative, it is the intention of the Grantor that all of the other provisions hereof shall continue to be fully effective and operative insofar as is possible and reasonable.</p>
+
+<h2>TENTH</h2>
+<p>If any person claims to have a superior claim to the rights, title, deeds and interest of the Trust or by Grantor/Settlor/Beneficiary they are ordered to present their prima facie claim under their full personal commercial liability under sworn affidavit under the laws of perjury stating they have a superior claim to asset, title, or deed to Grantor/Settlor/Beneficiary.</p>
+
+<h2>ELEVENTH - EXECUTION</h2>
+<p>IN WITNESS WHEREOF, I hereunto set my hand and seal on this <strong>[DATE]</strong> and hereby declare under oath the execution, creation and establishment of this Trust:</p>
+
+<p style="margin-top: 40px;">_________________________<br/><strong>[GRANTOR NAME]</strong>, Grantor/Settlor</p>
+
+<p style="margin-top: 40px;"><strong>STATE OF [STATE]</strong><br/><strong>COUNTY OF [COUNTY]</strong></p>
+
+<p><strong>CERTIFICATE OF JURAT</strong><br/>
+On this [DATE], before me, the undersigned notary public, duly authorized, empowered and admitted to take jurats appeared [GRANTOR NAME], personally known to me to be the person whose name is subscribed to the foregoing instrument, and acknowledged to me that they executed the same for the purposes therein expressed.</p>
+
+<p style="margin-top: 40px;">_________________________<br/>NOTARY PUBLIC<br/>My commission expires: _____________</p>`,
+
+      trust_transfer_grant_deed: `<h1 style="text-align: center;">SPECIAL NOTICE OF DEED OF CONVEYANCE</h1>
+<p style="text-align: center;"><em>Notice of Issuance of Certificate of Legal Title</em></p>
+
+<p>This is Actual and Constructive Special Notice by the grantee—a private Citizen for sufficient private lawful and valuable consideration of the non-negotiable asset title number <strong>"[RM-ID]-01.001"</strong> thru <strong>"[RM-ID]-99.999"</strong> along with their unique special deposit assigned special deposit title(s) sub-record(s), if any, for each said title and their attachments proceeds therefrom, now coming as the grantor/settlor "Grantor," hereby notice that said same legal title of said number is hereby fully granted, conveyed, and delivered to trustee(s) or grantee(s). The record(s) are being held in the private.</p>
+
+<p>It is Grantor's intent, purpose, freewill act and deed to execute this special notice of lawful actual and/or constructive grant and conveyance of the special deposit(s) and/or special interests per Grantor's special indentured instructions.</p>
+
+<h2>CONTACT INFORMATION</h2>
+<p>If there is any information regarding this that needs to be gleaned, please contact the grantor at the address:</p>
+
+<p><strong>[GRANTOR NAME]</strong><br/>
+Private Citizen<br/>
+C/o: <strong>[ADDRESS]</strong><br/>
+<strong>[CITY, STATE, COUNTY]</strong></p>
+
+<p>Grantor/Settlor expressly reserves all rights and liberties.</p>
+
+<h2>EXECUTION</h2>
+<p>Signed, sealed, acknowledged and specially deposited:</p>
+
+<p style="margin-top: 40px;">_________________________<br/><strong>[GRANTOR NAME]</strong>, Grantee Grantor/Settlor</p>
+
+<p style="margin-top: 20px;"><strong>Bill in Equity #:</strong> _____________</p>
+<p><strong>Assigned to:</strong> _____________</p>
+<p><strong>Optional Notes:</strong></p>`,
+
+      acknowledgement_receipt_acceptance: `<h1 style="text-align: center;">NOTICE OF ACKNOWLEDGEMENT, RECEIPT, AND ACCEPTANCE</h1>
+
+<p><strong>To:</strong> [RECIPIENT]<br/>
+<strong>From:</strong> <strong>[GRANTOR NAME]</strong>, grantee, private Citizen</p>
+
+<p><strong>Re:</strong> <strong>[DATE]</strong> USPS Registered Mail Account Number <strong>[RM-ID]</strong>, hereinafter "ACCOUNT," signed by grantee.</p>
+
+<h2>DECLARATION</h2>
+<p>LET IT BE KNOWN BY ALL MEN AND PERSONS WORLDWIDE BY THESE WORDS, I, the undersigned, <strong>[GRANTOR NAME]</strong> grantee herein, private Citizen, by my freewill act and Deed, execute this Deed of my acknowledgement, receipt, and acceptance ab initio for private lawful consideration of one stamp of lawful currency canceled/signed by grantee, and other sufficient valuable lawful consideration tendered by grantee, on <strong>[DATE]</strong> for absolute estate in/for above referenced ACCOUNT and all attachments and transmutations therefrom pursuant to Maxims of Equity:</p>
+
 <ul>
-<li>Equity regards as done that which ought to be done</li>
-<li>Equity looks to the intent rather than to the form</li>
-<li>Equity will not suffer a wrong to be without a remedy</li>
-<li>He who seeks equity must do equity</li>
+<li>Equity will not aid a volunteer</li>
+<li>Equity will not perfect an imperfect gift</li>
+<li>Where there are equal equities priority prevails</li>
+<li>Where there are equal equities the law shall prevail</li>
 </ul>
 
-<h2>ARTICLE IV - TRUSTEE DUTIES</h2>
+<h2>EXECUTION</h2>
+<p>Performed under my hand and seal freewill act, volition and Deed:</p>
 
-<p>The Trustee shall hold, manage, and administer the trust property for the sole benefit of the Beneficiary, exercising the care, skill, and diligence of a prudent person.</p>
+<p style="margin-top: 40px;">_________________________<br/><strong>[GRANTOR NAME]</strong>, grantee<br/>
+Without prejudice, without recourse<br/>
+Private Citizen</p>
 
-<h2>ARTICLE V - TERM AND DURATION</h2>
+<p>Mail In Care of: <strong>[ADDRESS]</strong><br/>
+<strong>[CITY, STATE, COUNTY]</strong></p>
 
-<p>[TRUST TERM AND DURATION]</p>
+<p style="margin-top: 30px;"><strong>Signed in the presence of:</strong></p>
+<p>_________________________<br/>Private Witness 1, Without Prejudice</p>
+<p>_________________________<br/>Private Witness 2, Without Prejudice</p>`,
 
-<h2>ARTICLE VI - SIGNATURES</h2>
+      notice_of_interest: `<h1 style="text-align: center;">NOTICE OF INTEREST</h1>
+<p style="text-align: center;"><em>An Established Right of a Purely Equitable Nature</em></p>
 
-<p>IN WITNESS WHEREOF, the parties have executed this Declaration of Trust on the date first written above.</p>
+<p>This is Actual and Constructive Special Notice by the heir grantee—a private Citizen for sufficient private lawful and valuable consideration of the non-negotiable asset title number(s) <strong>"[RM-ID]-01.001"</strong> thru <strong>"[RM-ID]-99.999"</strong> along with all their unique assigned sub-record special deposit title(s), now coming as the grantor/settlor "Grantor," assigning each said title to, but not limited to, the sum of all their attachments, issues, interest, assets, rents, derivatives and proceeds therefrom are fully claimed, titled, assigned, withdrawn from general deposit/general public relations, and the records are being held in the private.</p>
 
-<p>_________________________<br/>GRANTOR</p>
+<p>It is Grantor's manifest intent, special purpose, freewill act and deed to execute this special notice of interest and deed of withdrawal from general deposit Grantor's special interests per Grantor's private indentured instructions, if any.</p>
 
-<p>_________________________<br/>TRUSTEE</p>`,
+<h2>CONTACT INFORMATION</h2>
+<p>If there is any information regarding this that needs to be gleaned, please contact the Grantor at the address:</p>
 
-      trust_transfer_grant_deed: `<h1>TRUST TRANSFER GRANT DEED</h1>
+<p><strong>[GRANTOR NAME]</strong><br/>
+Private Citizen<br/>
+C/o: <strong>[ADDRESS]</strong><br/>
+<strong>[CITY, STATE, COUNTY]</strong></p>
 
-<p>This Trust Transfer Grant Deed is executed on <strong>[DATE]</strong>.</p>
+<p>Grantor expressly reserves all rights and liberties.</p>
+
+<h2>EXECUTION</h2>
+<p>Signed, sealed, acknowledged and specially deposited:</p>
+
+<p style="margin-top: 40px;">_________________________<br/><strong>[GRANTOR NAME]</strong>, Grantee Grantor/Settlor</p>
+
+<p style="margin-top: 20px;"><strong>Bill in Equity #:</strong> _____________</p>
+<p><strong>Assigned to:</strong> _____________</p>
+<p><strong>Optional Notes:</strong></p>`,
+
+      notice_of_delivery: `<h1 style="text-align: center;">NOTICE OF DELIVERY</h1>
+<p style="text-align: center;"><em>Statement of Interest</em></p>
+
+<p>This is Actual and Constructive Special Notice by the grantee—private Citizen for sufficient private lawful and valuable consideration of the non-negotiable asset title number(s) <strong>"[RM-ID]-01.001"</strong> thru <strong>"[RM-ID]-99.999"</strong> that are assigned, along with, if any, their unique special deposit title(s), and the sum of all their attachments, interest, issues, rents, assets, derivative's and proceeds therefrom, now coming as the grantor/settlor "Grantor," hereby give notice of actual and/or constructive delivery of same title(s) and intends it to be treated as on special deposit(s) in trust for special purpose.</p>
+
+<p>The delivery records are being held in the private. It is Grantor's manifest intent, special purpose, freewill act and deed to execute this special notice of lawful actual and/or constructive delivery of the special deposit(s) per Grantor's special indentured instructions, if any.</p>
+
+<h2>CONTACT INFORMATION</h2>
+<p>If there is any information regarding this that needs to be gleaned, please contact the Grantor/Settlor at the address:</p>
+
+<p><strong>[GRANTOR NAME]</strong><br/>
+Private Citizen<br/>
+C/o: <strong>[ADDRESS]</strong><br/>
+<strong>[CITY, STATE, COUNTY]</strong></p>
+
+<p>Grantor expressly reserves all rights and liberties.</p>
+
+<h2>EXECUTION</h2>
+<p>Signed, sealed, acknowledged and specially deposited:</p>
+
+<p style="margin-top: 40px;">_________________________<br/><strong>[GRANTOR NAME]</strong>, Grantee Grantor/Settlor</p>
+
+<p style="margin-top: 20px;"><strong>Bill in Equity #:</strong> _____________</p>
+<p><strong>Assigned to:</strong> _____________</p>
+<p><strong>Optional Notes:</strong></p>`,
+
+      trustee_acceptance: `<h1 style="text-align: center;">NOTICE OF ACCEPTANCE BY TRUSTEE</h1>
+<p style="text-align: center;"><em>Notice of Receipt of Certificate of Legal Title</em></p>
+
+<p>This is Actual and Constructive Special Notice by the trustee — I, <strong>[TRUSTEE NAME]</strong>, named to be the sole exclusive Trustee by nature under exclusive jurisdiction in the foregoing instrument, for myself; I hereby acknowledge the receipt of the foregoing original executed legal title <strong>"[RM-ID]"</strong> along with all their unique assigned sub-record special deposit title(s) of said estate from creating said Trust;</p>
+
+<p>I agree to accept the said Trust, and enter upon its performance; I additionally do accept for/with consideration stated the office of the Registered Agent in the name of the Trust at the mailing location listed below, and that I will faithfully perform the duties and obligations imposed upon me herein, to the best of my ability; I will faithfully account to the said <strong>"[RM-ID]" Trust</strong> along with all their unique assigned sub-record special deposit title(s) for all res/funds/monies received by me for the purpose of said trust.</p>
+
+<h2>CONTACT INFORMATION</h2>
+<p>If there is any information regarding this that needs to be gleaned, please contact the Trustee at:</p>
+
+<p><strong>[TRUSTEE NAME]</strong><br/>
+Private Citizen<br/>
+C/o: <strong>[ADDRESS]</strong><br/>
+<strong>[CITY, STATE, COUNTY]</strong></p>
+
+<h2>EXECUTION</h2>
+<p>IN WITNESS WHEREOF, the undersigned Trustee executes this instrument by their own free will act, volition, and deed on this <strong>[DATE]</strong>.</p>
+
+<p style="text-align: center; margin-top: 30px;"><strong>[RM-ID] Trust</strong></p>
+
+<p style="margin-top: 40px;">_________________________<br/><strong>[TRUSTEE NAME]</strong>, Trustee</p>
+
+<p style="margin-top: 30px;"><strong>Signed in the presence of:</strong></p>
+<p>_________________________<br/>Private Witness 1, Without Prejudice</p>
+<p>_________________________<br/>Private Witness 2, Without Prejudice</p>
+
+<h2>CERTIFICATE OF ACKNOWLEDGEMENT</h2>
+<p><strong>STATE OF [STATE]</strong><br/><strong>COUNTY OF [COUNTY]</strong></p>
+
+<p>On this [DATE], before me, the undersigned notary public duly authorized, appeared <strong>[TRUSTEE NAME]</strong>, Trustee, personally known to me to be the person whose name is scribed within the instrument, and acknowledges, freely marks, and impresses assent to this declaration and vows it to be their own free will self-determined act and volition.</p>
+
+<p style="margin-top: 40px;">_________________________<br/>NOTARY PUBLIC<br/>My commission expires: _____________</p>`,
+
+      certificate_of_trust: `<h1 style="text-align: center;">CERTIFICATE OF FOREIGN GRANTOR TRUST</h1>
+
+<p>By Individual Private Citizen, under "Full Faith and Credit" <strong>[GRANTOR NAME]</strong> being duly sworn, on oath says as follows:</p>
+
+<ol>
+<li>The name of the Foreign Grantor Trust is: <strong>[TRUST NAME]</strong> or alternatively, <strong>[RM-ID]-00.001</strong> thru <strong>[RM-ID]-99.999</strong>;</li>
+<li>The creation date of the Trust Instrument is: <strong>[CREATION DATE]</strong>;</li>
+<li>The execution date of the Trust Instrument is: <strong>[EXECUTION DATE]</strong>;</li>
+<li>Grantor does deliver special deposit consisting of <strong>[CONSIDERATION]</strong> creating the trust;</li>
+<li>The name of each Grantor of the Trust is: <strong>[GRANTOR NAME]</strong>;</li>
+<li>The name of the sole Trustee is: <strong>[TRUSTEE NAME]</strong>;</li>
+<li>The name and address of the Trustee empowered to act under the Trust Instrument at the time of execution of this Certificate is:<br/>
+<strong>[TRUSTEE NAME]</strong>, Ttee<br/>
+<strong>[TRUST NAME]</strong><br/>
+C/o: <strong>[ADDRESS]</strong><br/>
+<strong>[CITY, STATE, COUNTY]</strong></li>
+<li>The Trustee has full dispositive and discretionary powers and is authorized by the Instrument to sell, convey, pledge, mortgage, lease, or transfer title to any interest in real or personal property, EXCEPT as limited by the following: <strong>[LIMITATIONS OR "None"]</strong>;</li>
+<li>Any other Trust provisions the undersigned wishes to include: <strong>[ADDITIONAL PROVISIONS OR "None"]</strong>;</li>
+<li>The Foreign Grantor Trust is irrevocable and has not terminated nor been revoked; and</li>
+<li>The statements contained in the Certificate of Trust are true and correct and there are no other provisions in the Trust Instrument or amendments to it that limit the powers of the Trustee to sell, convey, pledge, mortgage, lease, or transfer title to rights or interests in real or personal property either legal or equitable.</li>
+<li>No person or entity paying money to or delivering property to any Trustee shall be required to see to its applicability. All persons relying on this Certificate of Trust regarding the Trustees and their powers over Trust property shall be held harmless from any resulting loss or liability from such reliance. A copy of this Certificate of Trust shall be just as valid as the original.</li>
+</ol>
+
+<h2>EXECUTION</h2>
+<p>Scribed on this <strong>[DATE]</strong> under my hand and seal affirmed under oath with intent, special purpose, freewill act and Deed under the Law of God and the Maxims of Equity.</p>
+
+<p style="text-align: center; margin-top: 30px;"><strong>[TRUST NAME]</strong></p>
+
+<p style="margin-top: 40px;">_________________________<br/>By: <strong>[TRUSTEE NAME]</strong>, Trustee</p>
+
+<p style="margin-top: 30px;"><strong>Signed in the presence of:</strong></p>
+<p>_________________________<br/>Private Witness 1, Without Prejudice</p>
+<p>_________________________<br/>Private Witness 2, Without Prejudice</p>
+
+<h2>CERTIFICATE OF JURAT</h2>
+<p><strong>STATE OF [STATE]</strong><br/><strong>COUNTY OF [COUNTY]</strong></p>
+
+<p>On this [DATE], before me, the undersigned notary public, duly authorized, empowered and admitted to take jurats appeared <strong>[TRUSTEE NAME]</strong>, Trustee, personally known to me to be the person who subscribed before me the "Certificate of Foreign Grantor Trust" document and who affirmed before me under oath that the contents of the document are truthful and accurate to the best of their knowledge and belief.</p>
+
+<p style="margin-top: 40px;">_________________________<br/>NOTARY PUBLIC<br/>My commission expires: _____________</p>`,
+
+      affidavit_of_fact: `<h1 style="text-align: center;">AFFIDAVIT OF FACT</h1>
+
+<p><strong>STATE OF [STATE]</strong><br/><strong>COUNTY OF [COUNTY]</strong></p>
+
+<h2>AFFIDAVIT</h2>
+<p>I, <strong>[AFFIANT NAME]</strong>, being first duly sworn, depose and state as follows:</p>
+
+<h2>FACTS</h2>
+<ol>
+<li>I am over the age of eighteen (18) years and competent to make this affidavit.</li>
+<li>I am the <strong>[CAPACITY - e.g., Grantor/Settlor/Trustee/Beneficiary]</strong> of the trust known as <strong>[TRUST NAME]</strong> or <strong>[RM-ID] Trust</strong>.</li>
+<li><strong>[FACT 1]</strong></li>
+<li><strong>[FACT 2]</strong></li>
+<li><strong>[ADDITIONAL FACTS AS NEEDED]</strong></li>
+</ol>
+
+<h2>ATTESTATION</h2>
+<p>I declare under penalty of perjury that the foregoing is true and correct to the best of my knowledge and belief.</p>
+
+<p style="margin-top: 40px;">_________________________<br/><strong>[AFFIANT NAME]</strong>, Affiant</p>
+
+<p style="margin-top: 30px;"><strong>Signed in the presence of:</strong></p>
+<p>_________________________<br/>Private Witness 1, Without Prejudice</p>
+<p>_________________________<br/>Private Witness 2, Without Prejudice</p>
+
+<h2>CERTIFICATE OF JURAT</h2>
+<p><strong>STATE OF [STATE]</strong><br/><strong>COUNTY OF [COUNTY]</strong></p>
+
+<p>On this [DATE], before me, the undersigned notary public, duly authorized, empowered and admitted to take jurats appeared <strong>[AFFIANT NAME]</strong>, personally known to me to be the person who subscribed before me this Affidavit and who affirmed before me under oath that the contents are truthful and accurate to the best of their knowledge and belief.</p>
+
+<p style="margin-top: 40px;">_________________________<br/>NOTARY PUBLIC<br/>My commission expires: _____________</p>`,
+
+      special_notice_deed_conveyance: `<h1 style="text-align: center;">SPECIAL NOTICE OF DEED OF CONVEYANCE</h1>
+<p style="text-align: center;"><em>Notice of Issuance of Certificate of Legal Title</em></p>
+
+<p>This is Actual and Constructive Special Notice by the grantee—a private Citizen for sufficient private lawful and valuable consideration of the non-negotiable asset title number <strong>"[RM-ID]-01.001"</strong> thru <strong>"[RM-ID]-99.999"</strong> along with their unique special deposit assigned special deposit title(s) sub-record(s), if any, for each said title and their attachments proceeds therefrom, now coming as the grantor/settlor "Grantor," hereby notice that said same legal title of said number is hereby fully granted, conveyed, and delivered to trustee(s) or grantee(s).</p>
+
+<p>The record(s) are being held in the private. It is Grantor's intent, purpose, freewill act and deed to execute this special notice of lawful actual and/or constructive grant and conveyance of the special deposit(s) and/or special interests per Grantor's special indentured instructions.</p>
+
+<h2>CONTACT INFORMATION</h2>
+<p>If there is any information regarding this that needs to be gleaned, please contact the grantor at the address:</p>
+
+<p><strong>[GRANTOR NAME]</strong><br/>
+Private Citizen<br/>
+C/o: <strong>[ADDRESS]</strong><br/>
+<strong>[CITY, STATE, COUNTY]</strong></p>
+
+<p>Grantor/Settlor expressly reserves all rights and liberties.</p>
+
+<h2>EXECUTION</h2>
+<p>Signed, sealed, acknowledged and specially deposited:</p>
+
+<p style="margin-top: 40px;">_________________________<br/><strong>[GRANTOR NAME]</strong>, Grantee Grantor/Settlor</p>
+
+<p style="margin-top: 20px;"><strong>Bill in Equity #:</strong> _____________</p>
+<p><strong>Assigned to:</strong> _____________</p>
+<p><strong>Optional Notes:</strong></p>`
+    };
 
 <h2>GRANTING CLAUSE</h2>
 
