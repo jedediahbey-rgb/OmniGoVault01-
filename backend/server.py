@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup
 import re
 from PyPDF2 import PdfReader
 from reportlab.lib.pagesizes import letter
+import zipfile
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
