@@ -163,14 +163,33 @@ class AssetItem(BaseModel):
     asset_id: str = Field(default_factory=lambda: f"asset_{uuid.uuid4().hex[:12]}")
     portfolio_id: str
     user_id: str
+    rm_id: str = ""  # RM-ID for the asset (e.g., RF123456789US-01.001)
     asset_type: str  # real_property, personal_property, financial_account, intellectual_property, other
     description: str
-    value: Optional[str] = ""
-    status: str = "active"  # active, transferred, released
+    value: Optional[float] = None
+    status: str = "active"  # active, transferred_in, transferred_out, released
+    transaction_type: str = "deposit"  # deposit (into trust), withdrawal (from trust)
     notes: str = ""
     attachments: List[str] = []  # list of attachment IDs
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class TrustLedgerEntry(BaseModel):
+    """Track res (property) movements in and out of trust"""
+    entry_id: str = Field(default_factory=lambda: f"ledger_{uuid.uuid4().hex[:12]}")
+    portfolio_id: str
+    user_id: str
+    rm_id: str  # RM-ID for this entry
+    entry_type: str  # deposit, withdrawal, transfer_in, transfer_out
+    description: str
+    asset_id: Optional[str] = None  # Link to asset if applicable
+    document_id: Optional[str] = None  # Link to document if applicable
+    value: Optional[float] = None
+    balance_effect: str = "credit"  # credit (adds to trust), debit (removes from trust)
+    notes: str = ""
+    recorded_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class NoticeEvent(BaseModel):
