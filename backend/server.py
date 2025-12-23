@@ -472,7 +472,8 @@ async def create_asset(data: AssetCreate, user: User = Depends(get_current_user)
     doc['created_at'] = doc['created_at'].isoformat()
     doc['updated_at'] = doc['updated_at'].isoformat()
     await db.assets.insert_one(doc)
-    return doc
+    # Return document without MongoDB _id field
+    return {k: v for k, v in doc.items() if k != '_id'}
 
 
 @api_router.delete("/assets/{asset_id}")
