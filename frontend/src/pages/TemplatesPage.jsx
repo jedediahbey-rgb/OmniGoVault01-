@@ -103,11 +103,15 @@ export default function TemplatesPage({ user }) {
       // Generate initial content based on template
       const initialContent = generateTemplateContent(selectedTemplate);
       
+      // Use the template's reserved subject code (01-09)
+      const subjectCode = selectedTemplate.subject_code || '00';
+      
       const response = await axios.post(`${API}/documents`, {
         title: documentTitle,
         document_type: selectedTemplate.id,
         portfolio_id: (selectedPortfolio && selectedPortfolio !== 'none') ? selectedPortfolio : null,
         template_id: selectedTemplate.id,
+        subject_code: subjectCode,
         content: initialContent,
         tags: [],
         folder: '/'
@@ -119,9 +123,9 @@ export default function TemplatesPage({ user }) {
       }
       
       const documentId = response.data.document_id;
-      console.log('Document created with ID:', documentId);
+      console.log('Document created with ID:', documentId, 'RM-ID:', response.data.rm_id);
       
-      toast.success('Document created');
+      toast.success(`Document created with RM-ID: ${response.data.rm_id || 'pending'}`);
       setShowCreateDialog(false);
       
       // Navigate to the document editor
