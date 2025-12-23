@@ -457,9 +457,10 @@ export default function PortfolioOverviewPage({ user }) {
               <p className="hidden sm:block text-white/40 text-xs uppercase tracking-wider mb-1">
                 Main RM-ID {trustProfile?.rm_id_is_placeholder && <span className="text-yellow-400">(Placeholder)</span>}
               </p>
-              <p className="text-vault-gold font-mono text-base sm:text-lg break-all">
-                {trustProfile.rm_id_raw || trustProfile.rm_record_id || 'Not set'}
-              </p>
+              <RmIdDisplay 
+                rmId={trustProfile.rm_id_raw || trustProfile.rm_record_id || 'Not set'} 
+                className="text-base sm:text-lg"
+              />
             </div>
             <Link 
               to={`/vault/portfolio/${portfolioId}/trust-profile`}
