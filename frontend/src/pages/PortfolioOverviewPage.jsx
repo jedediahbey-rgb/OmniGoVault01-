@@ -1141,7 +1141,7 @@ export default function PortfolioOverviewPage({ user }) {
                     <SelectTrigger className="bg-white/5 border-white/10">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
-                    <SelectContent className="bg-vault-navy border-white/10">
+                    <SelectContent className="bg-vault-navy border-white/10 z-[100]" position="popper" sideOffset={4}>
                       {subjectCategories.map(cat => (
                         <SelectItem key={cat.code} value={cat.code}>
                           {cat.code} - {cat.name}
@@ -1159,7 +1159,7 @@ export default function PortfolioOverviewPage({ user }) {
                     <SelectTrigger className="bg-white/5 border-white/10">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-vault-navy border-white/10">
+                    <SelectContent className="bg-vault-navy border-white/10 z-[100]" position="popper" sideOffset={4}>
                       <SelectItem value="deposit">Deposit (Credit)</SelectItem>
                       <SelectItem value="withdrawal">Withdrawal (Debit)</SelectItem>
                       <SelectItem value="transfer_in">Transfer In (Credit)</SelectItem>
