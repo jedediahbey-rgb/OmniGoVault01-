@@ -1438,7 +1438,65 @@ async def get_document(document_id: str, user: User = Depends(get_current_user))
     doc = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id}, {"_id": 0})
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Update access tracking
+    await db.documents.update_one(
+        {"document_id": document_id},
+        {
+            "$set": {"last_accessed": datetime.now(timezone.utc).isoformat()},
+            "$inc": {"access_count": 1}
+        }
+    )
+    
     return doc
+
+
+@api_router.get("/documents/recent/list")
+async def get_recent_documents(limit: int = 10, user: User = Depends(get_current_user)):
+    """Get recently accessed documents"""
+    docs = await db.documents.find(
+        {"user_id": user.user_id, "is_deleted": {"$ne": True}},
+        {"_id": 0}
+    ).sort("last_accessed", -1).limit(limit).to_list(limit)
+    return docs
+
+
+@api_router.get("/documents/pinned/list")
+async def get_pinned_documents(user: User = Depends(get_current_user)):
+    """Get pinned/favorite documents"""
+    docs = await db.documents.find(
+        {"user_id": user.user_id, "is_pinned": True, "is_deleted": {"$ne": True}},
+        {"_id": 0}
+    ).sort("pinned_at", -1).to_list(50)
+    return docs
+
+
+@api_router.post("/documents/{document_id}/pin")
+async def pin_document(document_id: str, user: User = Depends(get_current_user)):
+    """Pin a document for quick access"""
+    doc = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    await db.documents.update_one(
+        {"document_id": document_id},
+        {"$set": {"is_pinned": True, "pinned_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"message": "Document pinned", "document_id": document_id}
+
+
+@api_router.post("/documents/{document_id}/unpin")
+async def unpin_document(document_id: str, user: User = Depends(get_current_user)):
+    """Unpin a document"""
+    doc = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    await db.documents.update_one(
+        {"document_id": document_id},
+        {"$set": {"is_pinned": False, "pinned_at": None}}
+    )
+    return {"message": "Document unpinned", "document_id": document_id}
 
 
 @api_router.put("/documents/{document_id}")
