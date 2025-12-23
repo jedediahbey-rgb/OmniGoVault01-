@@ -2188,8 +2188,10 @@ class UpdateDocumentRequest(BaseModel):
 @api_router.post("/assistant/generate-document")
 async def ai_generate_document(data: GenerateDocumentRequest, user: User = Depends(get_current_user)):
     """Generate a document from template using AI"""
-    # Get the template
-    template = await db.templates.find_one({"template_id": data.template_id}, {"_id": 0})
+    # Get the template from the hardcoded list
+    templates = await get_templates()
+    template = next((t for t in templates if t.get('id') == data.template_id), None)
+    
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
     
