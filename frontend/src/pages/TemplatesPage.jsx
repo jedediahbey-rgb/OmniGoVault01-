@@ -98,7 +98,7 @@ export default function TemplatesPage({ user }) {
       const response = await axios.post(`${API}/documents`, {
         title: documentTitle,
         document_type: selectedTemplate.id,
-        portfolio_id: selectedPortfolio || null,
+        portfolio_id: (selectedPortfolio && selectedPortfolio !== 'none') ? selectedPortfolio : null,
         template_id: selectedTemplate.id,
         content: initialContent,
         tags: [],
