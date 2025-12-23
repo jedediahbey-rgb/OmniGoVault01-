@@ -1597,6 +1597,36 @@ async def delete_document(document_id: str, permanent: bool = False, user: User 
         return {"message": "Document moved to trash"}
 
 
+@api_router.post("/documents/{document_id}/trash")
+async def trash_document(document_id: str, user: User = Depends(get_current_user)):
+    """Move a document to trash (soft delete)"""
+    doc = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    await db.documents.update_one(
+        {"document_id": document_id},
+        {"$set": {
+            "is_deleted": True,
+            "deleted_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"message": "Document moved to trash"}
+
+
+@api_router.delete("/documents/{document_id}/permanent")
+async def permanently_delete_document(document_id: str, user: User = Depends(get_current_user)):
+    """Permanently delete a document from trash"""
+    doc = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    await db.documents.delete_one({"document_id": document_id})
+    await db.document_versions.delete_many({"document_id": document_id})
+    return {"message": "Document permanently deleted"}
+
+
 @api_router.post("/documents/{document_id}/restore")
 async def restore_document_from_trash(document_id: str, user: User = Depends(get_current_user)):
     """Restore a document from trash"""
