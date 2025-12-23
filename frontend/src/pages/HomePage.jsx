@@ -38,17 +38,17 @@ const HomePage = () => {
     <div className="min-h-screen bg-[#0B1221]">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0B1221]/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-3" data-testid="logo-link">
-              <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-                <Scale className="w-5 h-5 text-[#C6A87C]" />
+            <Link to="/" className="flex items-center gap-2 sm:gap-3" data-testid="logo-link">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center flex-shrink-0">
+                <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-[#C6A87C]" />
               </div>
-              <span className="font-serif text-2xl font-semibold text-[#F8FAFC] tracking-tight">
-                Equity Trust Portfolio
+              <span className="font-serif text-lg sm:text-2xl font-semibold text-[#F8FAFC] tracking-tight truncate">
+                Equity Trust
               </span>
             </Link>
-            <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-6">
               <Link to="/knowledge" className="font-sans text-sm text-slate-400 hover:text-[#C6A87C] transition-colors" data-testid="nav-knowledge">
                 Knowledge
               </Link>
@@ -67,6 +67,12 @@ const HomePage = () => {
                 </Button>
               </Link>
             </div>
+            {/* Mobile: Just show Access Vault button */}
+            <Link to="/login" data-testid="nav-login-mobile" className="md:hidden">
+              <Button className="bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-4 py-2 rounded-sm">
+                Vault
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>
