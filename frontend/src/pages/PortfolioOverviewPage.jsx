@@ -459,7 +459,7 @@ export default function PortfolioOverviewPage({ user }) {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-heading text-lg text-white">Trust Profile</h3>
                 {trustProfile && (
-                  <Link to={`/vault/trust-profile/${trustProfile.profile_id}`} className="text-vault-gold text-sm hover:underline">
+                  <Link to={`/vault/portfolio/${portfolioId}/trust-profile`} className="text-vault-gold text-sm hover:underline">
                     Manage
                   </Link>
                 )}
