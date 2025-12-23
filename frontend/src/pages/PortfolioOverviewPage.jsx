@@ -1207,6 +1207,117 @@ export default function PortfolioOverviewPage({ user }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Add/Edit Party Dialog */}
+      <Dialog open={showPartyDialog} onOpenChange={(open) => { if (!open) resetPartyForm(); setShowPartyDialog(open); }}>
+        <DialogContent className="bg-vault-navy border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-white font-heading">
+              {editingParty ? 'Edit Party' : 'Add Trust Party'}
+            </DialogTitle>
+            <DialogDescription className="text-white/50">
+              {editingParty ? 'Update party details' : 'Add a grantor, trustee, beneficiary, or other party'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-white/60 text-sm mb-2 block">Name *</label>
+                <Input
+                  value={partyName}
+                  onChange={e => setPartyName(e.target.value)}
+                  placeholder="Full legal name"
+                  className="bg-white/5 border-white/10"
+                />
+              </div>
+              <div>
+                <label className="text-white/60 text-sm mb-2 block">Role *</label>
+                <Select value={partyRole} onValueChange={setPartyRole}>
+                  <SelectTrigger className="bg-white/5 border-white/10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-vault-navy border-white/10">
+                    <SelectItem value="grantor">Grantor / Settlor</SelectItem>
+                    <SelectItem value="trustee">Trustee</SelectItem>
+                    <SelectItem value="co_trustee">Co-Trustee</SelectItem>
+                    <SelectItem value="beneficiary">Beneficiary</SelectItem>
+                    <SelectItem value="registered_agent">Registered Agent</SelectItem>
+                    <SelectItem value="witness">Witness</SelectItem>
+                    <SelectItem value="notary">Notary</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Address</label>
+              <Textarea
+                value={partyAddress}
+                onChange={e => setPartyAddress(e.target.value)}
+                placeholder="Street address, city, state, zip"
+                className="bg-white/5 border-white/10"
+                rows={2}
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-white/60 text-sm mb-2 block">Email</label>
+                <Input
+                  type="email"
+                  value={partyEmail}
+                  onChange={e => setPartyEmail(e.target.value)}
+                  placeholder="email@example.com"
+                  className="bg-white/5 border-white/10"
+                />
+              </div>
+              <div>
+                <label className="text-white/60 text-sm mb-2 block">Phone</label>
+                <Input
+                  type="tel"
+                  value={partyPhone}
+                  onChange={e => setPartyPhone(e.target.value)}
+                  placeholder="(555) 555-5555"
+                  className="bg-white/5 border-white/10"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Notes</label>
+              <Textarea
+                value={partyNotes}
+                onChange={e => setPartyNotes(e.target.value)}
+                placeholder="Additional notes..."
+                className="bg-white/5 border-white/10"
+                rows={2}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setShowPartyDialog(false); resetPartyForm(); }}>Cancel</Button>
+            <Button onClick={editingParty ? updateParty : addParty} className="btn-primary">
+              {editingParty ? 'Save Changes' : 'Add Party'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Party Confirmation */}
+      <AlertDialog open={!!deletePartyId} onOpenChange={(open) => !open && setDeletePartyId(null)}>
+        <AlertDialogContent className="bg-vault-navy border-white/10">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Party?</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/60">
+              This will permanently remove this party from the trust. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteParty} className="bg-red-600 hover:bg-red-700">
+              Delete Party
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
