@@ -380,19 +380,27 @@ export default function VaultPage({ user }) {
       </motion.div>
 
       {/* Main Content - Documents List */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0 w-full max-w-full">
         {/* Header */}
-        <div className="p-4 border-b border-white/10 flex items-center gap-4">
-          <div className="relative flex-1">
+        <div className="p-4 border-b border-white/10 flex items-center gap-2 sm:gap-4">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg shrink-0"
+            aria-label="Open portfolios"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <div className="relative flex-1 min-w-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
             <Input
               placeholder="Search documents..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white/5 border-white/10 focus:border-vault-gold"
+              className="pl-10 bg-white/5 border-white/10 focus:border-vault-gold text-base"
             />
           </div>
-          <div className="flex gap-1 border border-white/10 rounded-lg p-1">
+          <div className="hidden sm:flex gap-1 border border-white/10 rounded-lg p-1 shrink-0">
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2 rounded ${viewMode === 'grid' ? 'bg-vault-gold/20 text-vault-gold' : 'text-white/40'}`}
@@ -411,17 +419,17 @@ export default function VaultPage({ user }) {
               <Button 
                 onClick={() => setShowPacketBuilder(true)}
                 variant="outline"
-                className="btn-secondary text-sm"
+                className="hidden sm:flex btn-secondary text-sm shrink-0"
               >
-                <Package className="w-4 h-4 mr-2" />
-                Build Packet
+                <Package className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Build Packet</span>
               </Button>
               <Button 
                 onClick={() => navigate('/templates')}
-                className="btn-primary text-sm"
+                className="btn-primary text-sm shrink-0"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                New Document
+                <Plus className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">New Document</span>
               </Button>
             </>
           )}
