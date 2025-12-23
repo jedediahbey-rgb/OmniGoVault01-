@@ -70,24 +70,29 @@ export default function VaultPage({ user }) {
   const [packetName, setPacketName] = useState('');
   const [buildingPacket, setBuildingPacket] = useState(false);
 
-  // Pinned documents
+  // Recent/Pinned documents
+  const [recentDocs, setRecentDocs] = useState([]);
   const [pinnedDocs, setPinnedDocs] = useState([]);
+  const [showQuickAccess, setShowQuickAccess] = useState(true);
 
   useEffect(() => {
     fetchData();
-    loadPinnedDocs();
   }, []);
 
   const fetchData = async () => {
     try {
-      const [docsRes, portfoliosRes, trashRes] = await Promise.all([
+      const [docsRes, portfoliosRes, trashRes, recentRes, pinnedRes] = await Promise.all([
         axios.get(`${API}/documents`),
         axios.get(`${API}/portfolios`),
-        axios.get(`${API}/documents/trash`).catch(() => ({ data: [] }))
+        axios.get(`${API}/documents/trash`).catch(() => ({ data: [] })),
+        axios.get(`${API}/documents/recent/list?limit=5`).catch(() => ({ data: [] })),
+        axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
       ]);
       setDocuments(docsRes.data || []);
       setPortfolios(portfoliosRes.data || []);
       setTrashedDocuments(trashRes.data || []);
+      setRecentDocs(recentRes.data || []);
+      setPinnedDocs(pinnedRes.data || []);
     } catch (error) {
       console.error('Failed to fetch vault data:', error);
       toast.error('Failed to load vault data');
@@ -96,18 +101,22 @@ export default function VaultPage({ user }) {
     }
   };
 
-  const loadPinnedDocs = () => {
-    const saved = localStorage.getItem('pinnedDocs');
-    if (saved) setPinnedDocs(JSON.parse(saved));
-  };
-
-  const togglePinDocument = (docId) => {
-    const newPinned = pinnedDocs.includes(docId)
-      ? pinnedDocs.filter(id => id !== docId)
-      : [...pinnedDocs, docId];
-    setPinnedDocs(newPinned);
-    localStorage.setItem('pinnedDocs', JSON.stringify(newPinned));
-    toast.success(newPinned.includes(docId) ? 'Document pinned' : 'Document unpinned');
+  const togglePinDocument = async (docId) => {
+    const isPinned = pinnedDocs.some(d => d.document_id === docId);
+    try {
+      if (isPinned) {
+        await axios.post(`${API}/documents/${docId}/unpin`);
+        setPinnedDocs(pinnedDocs.filter(d => d.document_id !== docId));
+        toast.success('Document unpinned');
+      } else {
+        await axios.post(`${API}/documents/${docId}/pin`);
+        const doc = documents.find(d => d.document_id === docId);
+        if (doc) setPinnedDocs([doc, ...pinnedDocs]);
+        toast.success('Document pinned');
+      }
+    } catch (error) {
+      toast.error('Failed to update pin status');
+    }
   };
 
   const createPortfolio = async () => {
