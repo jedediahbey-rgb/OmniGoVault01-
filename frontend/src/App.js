@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Toaster } from './components/ui/sonner';
 import axios from 'axios';
 import MainLayout from './components/layout/MainLayout';
+import Disclaimer from './components/shared/Disclaimer';
+import CommandPalette from './components/shared/CommandPalette';
+import AssistantDrawer from './components/shared/AssistantDrawer';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -15,6 +18,8 @@ import VaultPage from './pages/VaultPage';
 import TemplatesPage from './pages/TemplatesPage';
 import AssistantPage from './pages/AssistantPage';
 import DocumentEditorPage from './pages/DocumentEditorPage';
+import TrustProfilePage from './pages/TrustProfilePage';
+import PortfolioOverviewPage from './pages/PortfolioOverviewPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
