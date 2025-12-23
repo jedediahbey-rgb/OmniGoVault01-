@@ -1,32 +1,43 @@
-# Test Results - Equity Trust Portfolio Platform
+# Test Results - Equity Trust Portfolio Platform Phase 1A
 
-## Phase 1 Complete Rebuild Status
-- **Frontend**: React with Framer Motion, TipTap Editor, Glassmorphism UI
-- **Backend**: FastAPI with MongoDB, GPT-4o AI Assistant
-- **Authentication**: Google OAuth (Emergent-managed)
+## Features Implemented in Phase 1A
+1. ✅ Disclaimer banner on all pages ("Educational only. Not legal advice.")
+2. ✅ Command Palette (Ctrl+K)
+3. ✅ AI Assistant Drawer (Ctrl+J)
+4. ✅ Portfolio CRUD (create/edit/delete) on Dashboard
+5. ✅ Trust Profile with RM-ID System and Tax IDs
+6. ✅ Portfolio Overview page with tabs (Overview, Trust Profile, Parties, Assets, Documents)
+7. ✅ Mail Event Log endpoints
+8. ✅ Parties directory endpoints
+9. ✅ Document soft delete (trash/restore)
+10. ✅ Document duplicate feature
+11. ✅ Enhanced template → document creation with reliable linking
 
-## Features Implemented
-1. ✅ Landing Page with futuristic design
-2. ✅ Learn Page with 5 modules and synthesized content from PDFs
-3. ✅ Maxims Page with 20 maxims, filters, and study mode
-4. ✅ Glossary Page with 25+ terms
-5. ✅ Vault Page (three-pane document OS)
-6. ✅ Templates Studio with 7 trust document templates
-7. ✅ AI Assistant with RAG-grounded responses
-8. ✅ Document Editor with TipTap rich text
-9. ✅ PDF Export functionality
+## Backend APIs Added
+- PUT /api/portfolios/{id} - Update portfolio
+- GET /api/trust-profiles - Get all trust profiles
+- GET /api/portfolios/{id}/trust-profiles - Get profiles for portfolio
+- GET /api/trust-profiles/{id} - Get profile by ID
+- GET /api/portfolios/{id}/parties - Get parties
+- POST /api/parties - Create party
+- PUT /api/parties/{id} - Update party
+- DELETE /api/parties/{id} - Delete party
+- GET /api/trust-profiles/{id}/mail-events - Get mail events
+- POST /api/mail-events - Create mail event
+- DELETE /api/mail-events/{id} - Delete mail event
+- GET /api/search/mail-events - Search mail events
+- GET /api/documents/trash - Get deleted documents
+- POST /api/documents/{id}/restore - Restore from trash
+- POST /api/documents/{id}/duplicate - Duplicate document
 
-## APIs to Test
-- GET /api/health
-- GET /api/templates
-- POST /api/assistant/chat
-- GET /api/documents (authenticated)
-- POST /api/documents (authenticated)
-- GET /api/portfolios (authenticated)
+## Models Updated
+- TrustProfile: Added rm_record_id, rm_series_*, rm_evidence_files, trust_ein, estate_ein, tax_classification, tax_notes
+- Document: Added trust_profile_id, editor_content, sub_record_id, is_deleted, deleted_at
+- MailEvent: New model for mail tracking
+- Party: New model for party directory
 
 ## Testing Protocol
-- Test frontend pages load correctly
-- Test backend API endpoints respond
-- Test Google OAuth flow works
-- Test document creation and editing
-- Test PDF export
+- Test Portfolio CRUD on Dashboard
+- Test Trust Profile creation with RM-ID
+- Test Document creation from template
+- Test AI Assistant drawer
