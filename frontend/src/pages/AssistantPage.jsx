@@ -9,7 +9,6 @@ import {
   Sparkles,
   BookOpen,
   FileText,
-  AlertTriangle,
   Copy,
   RefreshCw
 } from 'lucide-react';
@@ -306,14 +305,9 @@ export default function AssistantPage({ user }) {
               </div>
             </div>
             
-            <div className="mt-6 p-3 rounded-lg bg-vault-gold/5 border border-vault-gold/20">
-              <div className="flex items-center gap-2 text-vault-gold text-sm mb-2">
-                <AlertTriangle className="w-4 h-4" />
-                <span>Disclaimer</span>
-              </div>
+            <div className="mt-6 p-3 rounded-lg bg-white/5 border border-white/10">
               <p className="text-white/40 text-xs">
-                This assistant provides educational information only and does not constitute legal advice. 
-                Always consult a qualified attorney for legal matters.
+                Consult qualified counsel for legal matters.
               </p>
             </div>
           </GlassCard>
