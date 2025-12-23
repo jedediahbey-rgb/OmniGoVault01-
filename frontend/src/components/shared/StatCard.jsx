@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
+import IconChip from '../ui/icon-chip';
 
 export default function StatCard({ 
   label, 
@@ -15,28 +16,7 @@ export default function StatCard({
     blue: 'border-vault-blue/20 bg-vault-blue/5'
   };
 
-  const iconVariants = {
-    default: {
-      bg: 'bg-white/10 border-white/20',
-      icon: 'text-white/70',
-      shadow: 'shadow-lg shadow-white/5',
-      glow: 'drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]'
-    },
-    gold: {
-      bg: 'bg-vault-gold/20 border-vault-gold/30',
-      icon: 'text-vault-gold',
-      shadow: 'shadow-lg shadow-vault-gold/10',
-      glow: 'drop-shadow-[0_0_4px_rgba(198,168,124,0.5)]'
-    },
-    blue: {
-      bg: 'bg-vault-blue/20 border-vault-blue/30',
-      icon: 'text-vault-blue',
-      shadow: 'shadow-lg shadow-vault-blue/10',
-      glow: 'drop-shadow-[0_0_4px_rgba(96,165,250,0.5)]'
-    }
-  };
-
-  const iconStyle = iconVariants[variant] || iconVariants.default;
+  const iconVariant = variant === 'gold' ? 'gold' : variant === 'blue' ? 'blue' : 'default';
 
   return (
     <motion.div
@@ -64,17 +44,9 @@ export default function StatCard({
           )}
         </div>
         {Icon && (
-          <div className={cn(
-            'w-10 h-10 sm:w-[42px] sm:h-[42px] rounded-xl flex items-center justify-center shrink-0 border',
-            iconStyle.bg,
-            iconStyle.shadow
-          )}>
-            <Icon className={cn(
-              'w-5 h-5 sm:w-6 sm:h-6',
-              iconStyle.icon,
-              iconStyle.glow
-            )} />
-          </div>
+          <IconChip variant={iconVariant} size="md">
+            <Icon />
+          </IconChip>
         )}
       </div>
     </motion.div>
