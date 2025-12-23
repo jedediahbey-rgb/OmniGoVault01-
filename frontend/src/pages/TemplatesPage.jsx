@@ -583,8 +583,12 @@ C/o: <strong>[ADDRESS]</strong><br/>
                   <SelectTrigger className="bg-white/5 border-white/10">
                     <SelectValue placeholder="Select a portfolio" />
                   </SelectTrigger>
-                  <SelectContent className="bg-vault-navy border-white/10">
-                    <SelectItem value="none" className="text-white/70">No Portfolio</SelectItem>
+                  <SelectContent 
+                    className="bg-vault-navy border-white/10 z-[100]"
+                    position="popper"
+                    sideOffset={4}
+                  >
+                    <SelectItem value="__none__" className="text-white/70">No Portfolio</SelectItem>
                     {portfolios.map(p => (
                       <SelectItem key={p.portfolio_id} value={p.portfolio_id} className="text-white/70">
                         {p.name}
