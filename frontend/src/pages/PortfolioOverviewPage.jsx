@@ -522,9 +522,9 @@ export default function PortfolioOverviewPage({ user }) {
                 <Link 
                   key={doc.document_id} 
                   to={`/vault/document/${doc.document_id}`}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors"
+                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors"
                 >
-                  <div className={`w-8 h-8 rounded flex items-center justify-center ${
+                  <div className={`w-8 h-8 rounded flex items-center justify-center shrink-0 mt-0.5 ${
                     doc.is_locked ? 'bg-green-500/20' : 'bg-vault-gold/10'
                   }`}>
                     {doc.is_locked ? (
@@ -534,21 +534,28 @@ export default function PortfolioOverviewPage({ user }) {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white truncate">{doc.title}</p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-white/40 text-xs">{doc.document_type}</p>
-                      {doc.rm_id && (
-                        <span className="text-vault-gold/60 text-xs font-mono">{doc.sub_record_id || doc.rm_id}</span>
-                      )}
-                    </div>
+                    <p className="text-white line-clamp-2 text-sm">{doc.title}</p>
+                    <p className="text-white/40 text-xs mt-0.5">{doc.document_type}</p>
+                    {doc.rm_id && (
+                      <p className="text-vault-gold/60 text-xs font-mono break-words mt-0.5 sm:hidden">
+                        {doc.sub_record_id || doc.rm_id}
+                      </p>
+                    )}
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-xs ${
-                    doc.status === 'final' ? 'bg-green-500/20 text-green-400' :
-                    doc.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
-                    'bg-white/10 text-white/50'
-                  }`}>
-                    {doc.status}
-                  </span>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <span className={`px-2 py-0.5 rounded text-xs ${
+                      doc.status === 'final' ? 'bg-green-500/20 text-green-400' :
+                      doc.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
+                      'bg-white/10 text-white/50'
+                    }`}>
+                      {doc.status}
+                    </span>
+                    {doc.rm_id && (
+                      <span className="hidden sm:block text-vault-gold/60 text-xs font-mono">
+                        {doc.sub_record_id || doc.rm_id}
+                      </span>
+                    )}
+                  </div>
                 </Link>
               ))}
               {documents.length === 0 && (
