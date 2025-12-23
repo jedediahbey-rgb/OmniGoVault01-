@@ -657,32 +657,180 @@ async def update_trust_profile(profile_id: str, data: TrustProfileUpdate, user: 
 
 # ============ ASSET ENDPOINTS ============
 
+async def generate_asset_rm_id(portfolio_id: str, user_id: str) -> str:
+    """Generate unique RM-ID for an asset based on trust profile"""
+    # Get trust profile for this portfolio
+    trust_profile = await db.trust_profiles.find_one(
+        {"portfolio_id": portfolio_id, "user_id": user_id},
+        {"rm_id_details": 1}
+    )
+    
+    if trust_profile and trust_profile.get("rm_id_details", {}).get("full_rm_id"):
+        base_rm_id = trust_profile["rm_id_details"]["full_rm_id"]
+    else:
+        # Generate a random base RM-ID if no trust profile
+        base_rm_id = f"RF{uuid.uuid4().hex[:9].upper()}US"
+    
+    # Count existing assets to generate next sub-record number
+    asset_count = await db.assets.count_documents({"portfolio_id": portfolio_id, "user_id": user_id})
+    sub_record = f"{(asset_count + 1):02d}.001"
+    
+    return f"{base_rm_id}-{sub_record}"
+
+
 @api_router.get("/portfolios/{portfolio_id}/assets")
 async def get_assets(portfolio_id: str, user: User = Depends(get_current_user)):
     docs = await db.assets.find({"portfolio_id": portfolio_id, "user_id": user.user_id}, {"_id": 0}).to_list(100)
     return docs
 
 
-@api_router.post("/assets")
-async def create_asset(data: AssetCreate, user: User = Depends(get_current_user)):
+@api_router.post("/portfolios/{portfolio_id}/assets")
+async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User = Depends(get_current_user)):
+    """Create asset with auto-generated RM-ID"""
+    rm_id = await generate_asset_rm_id(portfolio_id, user.user_id)
+    
     asset = AssetItem(
-        portfolio_id=data.portfolio_id, user_id=user.user_id, asset_type=data.asset_type,
-        description=data.description, value=data.value, notes=data.notes or ""
+        portfolio_id=portfolio_id,
+        user_id=user.user_id,
+        rm_id=rm_id,
+        asset_type=data.get("asset_type", "General"),
+        description=data.get("description", ""),
+        value=data.get("value"),
+        transaction_type=data.get("transaction_type", "deposit"),
+        notes=data.get("notes", "")
     )
     doc = asset.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     doc['updated_at'] = doc['updated_at'].isoformat()
     await db.assets.insert_one(doc)
-    # Return document without MongoDB _id field
+    
+    # Also create a ledger entry for this asset deposit
+    ledger_entry = TrustLedgerEntry(
+        portfolio_id=portfolio_id,
+        user_id=user.user_id,
+        rm_id=rm_id,
+        entry_type="deposit",
+        description=f"Asset deposited: {data.get('description', '')}",
+        asset_id=asset.asset_id,
+        value=data.get("value"),
+        balance_effect="credit"
+    )
+    ledger_doc = ledger_entry.model_dump()
+    ledger_doc['recorded_date'] = ledger_doc['recorded_date'].isoformat()
+    ledger_doc['created_at'] = ledger_doc['created_at'].isoformat()
+    await db.trust_ledger.insert_one(ledger_doc)
+    
+    return {k: v for k, v in doc.items() if k != '_id'}
+
+
+@api_router.post("/assets")
+async def create_asset(data: AssetCreate, user: User = Depends(get_current_user)):
+    rm_id = await generate_asset_rm_id(data.portfolio_id, user.user_id)
+    
+    asset = AssetItem(
+        portfolio_id=data.portfolio_id,
+        user_id=user.user_id,
+        rm_id=rm_id,
+        asset_type=data.asset_type,
+        description=data.description,
+        value=float(data.value) if data.value else None,
+        notes=data.notes or ""
+    )
+    doc = asset.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    await db.assets.insert_one(doc)
     return {k: v for k, v in doc.items() if k != '_id'}
 
 
 @api_router.delete("/assets/{asset_id}")
 async def delete_asset(asset_id: str, user: User = Depends(get_current_user)):
-    result = await db.assets.delete_one({"asset_id": asset_id, "user_id": user.user_id})
-    if result.deleted_count == 0:
+    # Get asset first to record in ledger
+    asset = await db.assets.find_one({"asset_id": asset_id, "user_id": user.user_id}, {"_id": 0})
+    if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
-    return {"message": "Asset deleted"}
+    
+    # Create ledger entry for removal
+    ledger_entry = TrustLedgerEntry(
+        portfolio_id=asset.get("portfolio_id", ""),
+        user_id=user.user_id,
+        rm_id=asset.get("rm_id", ""),
+        entry_type="withdrawal",
+        description=f"Asset removed: {asset.get('description', '')}",
+        asset_id=asset_id,
+        value=asset.get("value"),
+        balance_effect="debit"
+    )
+    ledger_doc = ledger_entry.model_dump()
+    ledger_doc['recorded_date'] = ledger_doc['recorded_date'].isoformat()
+    ledger_doc['created_at'] = ledger_doc['created_at'].isoformat()
+    await db.trust_ledger.insert_one(ledger_doc)
+    
+    result = await db.assets.delete_one({"asset_id": asset_id, "user_id": user.user_id})
+    return {"message": "Asset deleted", "rm_id": asset.get("rm_id", "")}
+
+
+# ============ TRUST LEDGER ENDPOINTS ============
+
+@api_router.get("/portfolios/{portfolio_id}/ledger")
+async def get_trust_ledger(portfolio_id: str, user: User = Depends(get_current_user)):
+    """Get trust ledger entries for a portfolio"""
+    entries = await db.trust_ledger.find(
+        {"portfolio_id": portfolio_id, "user_id": user.user_id},
+        {"_id": 0}
+    ).sort("recorded_date", -1).to_list(200)
+    
+    # Calculate balance
+    total_credit = sum(e.get("value", 0) or 0 for e in entries if e.get("balance_effect") == "credit")
+    total_debit = sum(e.get("value", 0) or 0 for e in entries if e.get("balance_effect") == "debit")
+    
+    return {
+        "entries": entries,
+        "summary": {
+            "total_deposits": total_credit,
+            "total_withdrawals": total_debit,
+            "balance": total_credit - total_debit,
+            "entry_count": len(entries)
+        }
+    }
+
+
+@api_router.post("/portfolios/{portfolio_id}/ledger")
+async def create_ledger_entry(portfolio_id: str, data: dict, user: User = Depends(get_current_user)):
+    """Create a manual ledger entry"""
+    # Get trust profile for RM-ID generation
+    trust_profile = await db.trust_profiles.find_one(
+        {"portfolio_id": portfolio_id, "user_id": user.user_id},
+        {"rm_id_details": 1}
+    )
+    
+    if trust_profile and trust_profile.get("rm_id_details", {}).get("full_rm_id"):
+        base_rm_id = trust_profile["rm_id_details"]["full_rm_id"]
+    else:
+        base_rm_id = f"RF{uuid.uuid4().hex[:9].upper()}US"
+    
+    # Count existing ledger entries
+    entry_count = await db.trust_ledger.count_documents({"portfolio_id": portfolio_id, "user_id": user.user_id})
+    rm_id = f"{base_rm_id}-L{(entry_count + 1):03d}"
+    
+    entry = TrustLedgerEntry(
+        portfolio_id=portfolio_id,
+        user_id=user.user_id,
+        rm_id=rm_id,
+        entry_type=data.get("entry_type", "deposit"),
+        description=data.get("description", ""),
+        asset_id=data.get("asset_id"),
+        document_id=data.get("document_id"),
+        value=data.get("value"),
+        balance_effect=data.get("balance_effect", "credit"),
+        notes=data.get("notes", "")
+    )
+    doc = entry.model_dump()
+    doc['recorded_date'] = doc['recorded_date'].isoformat()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.trust_ledger.insert_one(doc)
+    
+    return {k: v for k, v in doc.items() if k != '_id'}
 
 
 # ============ NOTICE ENDPOINTS ============
