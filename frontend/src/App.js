@@ -204,6 +204,26 @@ const AppRouter = ({ auth }) => {
         }
       />
       <Route
+        path="/vault/portfolio/:portfolioId"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <PortfolioOverviewPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/vault/portfolio/:portfolioId/trust-profile"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <TrustProfilePage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/vault/documents"
         element={
           <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
