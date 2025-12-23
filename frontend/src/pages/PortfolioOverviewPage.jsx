@@ -831,21 +831,15 @@ export default function PortfolioOverviewPage({ user }) {
               </div>
               <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Total Credits</p>
-                <span className="block text-green-400 text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">
-                  {formatCurrency(ledger.summary?.total_deposits)}
-                </span>
+                <CurrencyDisplay value={ledger.summary?.total_deposits} variant="green" size="sm" />
               </div>
               <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Total Debits</p>
-                <span className="block text-red-400 text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">
-                  {formatCurrency(ledger.summary?.total_withdrawals)}
-                </span>
+                <CurrencyDisplay value={ledger.summary?.total_withdrawals} variant="red" size="sm" />
               </div>
               <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Balance</p>
-                <span className="block text-vault-gold text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">
-                  {formatCurrency(ledger.summary?.balance)}
-                </span>
+                <CurrencyDisplay value={ledger.summary?.balance} variant="gold" size="sm" />
               </div>
             </div>
 
