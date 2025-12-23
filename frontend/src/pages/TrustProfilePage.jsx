@@ -44,8 +44,11 @@ export default function TrustProfilePage({ user }) {
     governing_statements: '',
     trust_term: '',
     additional_notes: '',
-    // RM-ID System
-    rm_record_id: '',
+    // RM-ID System (Enhanced)
+    rm_id_raw: '',
+    rm_id_normalized: '',
+    rm_id_is_placeholder: false,
+    rm_record_id: '', // Legacy
     rm_series_start: '01.001',
     rm_series_end: '99.999',
     // Tax IDs
@@ -54,6 +57,7 @@ export default function TrustProfilePage({ user }) {
     tax_classification: '',
     tax_notes: ''
   });
+  const [generatingPlaceholder, setGeneratingPlaceholder] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -82,6 +86,30 @@ export default function TrustProfilePage({ user }) {
 
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const generatePlaceholderRmId = async () => {
+    if (!profile) {
+      toast.error('Please save the trust profile first');
+      return;
+    }
+    setGeneratingPlaceholder(true);
+    try {
+      const response = await axios.post(`${API}/trust-profiles/${profile.profile_id}/generate-placeholder-rm-id`);
+      setForm(prev => ({
+        ...prev,
+        rm_id_raw: response.data.rm_id_raw,
+        rm_id_normalized: response.data.rm_id_normalized,
+        rm_id_is_placeholder: true,
+        rm_record_id: response.data.rm_id_raw
+      }));
+      setProfile(response.data.profile);
+      toast.success('Placeholder RM-ID generated. Replace with your actual sticker number when available.');
+    } catch (error) {
+      toast.error('Failed to generate placeholder RM-ID');
+    } finally {
+      setGeneratingPlaceholder(false);
+    }
   };
 
   const saveProfile = async () => {
