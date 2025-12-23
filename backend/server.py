@@ -89,6 +89,7 @@ class TrustProfile(BaseModel):
     trust_name: str
     trust_identifier: Optional[str] = ""
     creation_date: Optional[str] = ""
+    # Parties
     grantor_name: str = ""
     grantor_address: str = ""
     trustee_name: str = ""
@@ -97,6 +98,7 @@ class TrustProfile(BaseModel):
     co_trustee_address: str = ""
     beneficiary_name: str = ""
     beneficiary_address: str = ""
+    # Trust terms
     governing_statements: str = ""
     trust_term: str = ""
     renewal_terms: str = ""
@@ -105,6 +107,53 @@ class TrustProfile(BaseModel):
     extinguishment_conditions: str = ""
     conveyance_conditions: str = ""
     additional_notes: str = ""
+    # Registered Mail ID System (Internal Recordkeeping)
+    rm_record_id: str = ""  # e.g., "RF 123 456 789 US"
+    rm_series_start: str = ""  # e.g., "01.001"
+    rm_series_end: str = ""  # e.g., "99.999"
+    rm_next_series: int = 1  # Next available series number
+    rm_evidence_files: List[str] = []  # Evidence uploads (sticker photos, receipts)
+    # Tax IDs (Educational storage only)
+    trust_ein: str = ""
+    estate_ein: str = ""
+    tax_classification: str = ""  # domestic/foreign - educational label only
+    tax_notes: str = ""  # User-entered educational notes
+    # Status
+    status: str = "active"  # active, inactive, archived
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class MailEvent(BaseModel):
+    """Mail Event Log - Separate collection for registered mail tracking"""
+    event_id: str = Field(default_factory=lambda: f"mail_{uuid.uuid4().hex[:12]}")
+    trust_profile_id: str
+    portfolio_id: str
+    user_id: str
+    rm_id: str  # Copy of RM-ID for fast search
+    event_type: str  # created, sent, received, returned, other
+    date: str
+    from_party: str = ""
+    to_party: str = ""
+    purpose: str = ""
+    evidence_files: List[str] = []
+    notes: str = ""
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class Party(BaseModel):
+    """Party directory for portfolios"""
+    party_id: str = Field(default_factory=lambda: f"party_{uuid.uuid4().hex[:12]}")
+    portfolio_id: str
+    user_id: str
+    name: str
+    party_type: str  # individual, organization, trust, estate
+    role: str = ""  # grantor, trustee, beneficiary, agent, other
+    address: str = ""
+    email: str = ""
+    phone: str = ""
+    notes: str = ""
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
