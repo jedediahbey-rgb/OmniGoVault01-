@@ -604,28 +604,28 @@ export default function PortfolioOverviewPage({ user }) {
           </div>
 
           {/* Ledger Summary */}
-          <GlassCard>
+          <GlassCard className="overflow-hidden">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Trust Ledger Summary</h3>
               <Button onClick={() => setActiveTab('ledger')} variant="ghost" size="sm" className="text-vault-gold">
                 View Full Ledger
               </Button>
             </div>
-            <div className="grid grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-green-500/10 rounded-lg border border-green-500/20">
-                <ArrowDownRight className="w-6 h-6 text-green-400 mx-auto mb-2" />
-                <p className="text-green-400 text-xl font-heading">{formatCurrency(ledger.summary?.total_deposits)}</p>
-                <p className="text-white/40 text-sm">Total Deposits</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+              <div className="text-center p-3 sm:p-4 bg-green-500/10 rounded-lg border border-green-500/20 overflow-hidden">
+                <ArrowDownRight className="w-5 h-5 sm:w-6 sm:h-6 text-green-400 mx-auto mb-2" />
+                <p className="text-green-400 font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis text-base sm:text-xl min-w-0">{formatCurrency(ledger.summary?.total_deposits)}</p>
+                <p className="text-white/40 text-xs sm:text-sm">Total Deposits</p>
               </div>
-              <div className="text-center p-4 bg-red-500/10 rounded-lg border border-red-500/20">
-                <ArrowUpRight className="w-6 h-6 text-red-400 mx-auto mb-2" />
-                <p className="text-red-400 text-xl font-heading">{formatCurrency(ledger.summary?.total_withdrawals)}</p>
-                <p className="text-white/40 text-sm">Total Withdrawals</p>
+              <div className="text-center p-3 sm:p-4 bg-red-500/10 rounded-lg border border-red-500/20 overflow-hidden">
+                <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 mx-auto mb-2" />
+                <p className="text-red-400 font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis text-base sm:text-xl min-w-0">{formatCurrency(ledger.summary?.total_withdrawals)}</p>
+                <p className="text-white/40 text-xs sm:text-sm">Total Withdrawals</p>
               </div>
-              <div className="text-center p-4 bg-vault-gold/10 rounded-lg border border-vault-gold/20">
-                <DollarSign className="w-6 h-6 text-vault-gold mx-auto mb-2" />
-                <p className="text-vault-gold text-xl font-heading">{formatCurrency(ledger.summary?.balance)}</p>
-                <p className="text-white/40 text-sm">Current Balance</p>
+              <div className="text-center p-3 sm:p-4 bg-vault-gold/10 rounded-lg border border-vault-gold/20 overflow-hidden">
+                <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-vault-gold mx-auto mb-2" />
+                <p className="text-vault-gold font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis text-base sm:text-xl min-w-0">{formatCurrency(ledger.summary?.balance)}</p>
+                <p className="text-white/40 text-xs sm:text-sm">Current Balance</p>
               </div>
             </div>
           </GlassCard>
