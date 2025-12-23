@@ -33,6 +33,12 @@ export default function PortfolioOverviewPage({ user }) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  
+  // Asset dialog state
+  const [showAssetDialog, setShowAssetDialog] = useState(false);
+  const [newAssetDescription, setNewAssetDescription] = useState('');
+  const [newAssetType, setNewAssetType] = useState('');
+  const [newAssetValue, setNewAssetValue] = useState('');
 
   useEffect(() => {
     fetchPortfolioData();
