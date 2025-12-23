@@ -362,7 +362,7 @@ export default function PortfolioOverviewPage({ user }) {
             </p>
           </div>
           <Link 
-            to={`/vault/trust-profile/${portfolioId}`}
+            to={`/vault/portfolio/${portfolioId}/trust-profile`}
             className="text-white/40 hover:text-white text-sm"
           >
             Edit RM-ID →
