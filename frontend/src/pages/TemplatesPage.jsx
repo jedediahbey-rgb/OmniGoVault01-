@@ -592,12 +592,77 @@ C/o: <strong>[ADDRESS]</strong><br/>
             )}
           </div>
           
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button variant="ghost" onClick={() => setShowCreateDialog(false)}>
               Cancel
             </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleAiGenerate}
+              disabled={!selectedPortfolio || selectedPortfolio === 'none'}
+              className="btn-secondary"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Generate with AI
+            </Button>
             <Button onClick={createDocument} disabled={creating} className="btn-primary">
-              {creating ? 'Creating...' : 'Create Document'}
+              {creating ? 'Creating...' : 'Create Blank Document'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Generate Dialog */}
+      <Dialog open={showAiGenerateDialog} onOpenChange={setShowAiGenerateDialog}>
+        <DialogContent className="bg-vault-navy border-white/10 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-white font-heading flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-vault-gold" />
+              Generate Document with AI
+            </DialogTitle>
+            <DialogDescription className="text-white/60">
+              Tell the AI what information to include in your {selectedTemplate?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Document Title</label>
+              <Input
+                value={documentTitle}
+                onChange={(e) => setDocumentTitle(e.target.value)}
+                placeholder={`AI Generated: ${selectedTemplate?.name || 'Document'}`}
+                className="bg-white/5 border-white/10"
+              />
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Instructions for AI *</label>
+              <Textarea
+                value={aiInstructions}
+                onChange={(e) => setAiInstructions(e.target.value)}
+                placeholder={`Describe what should be in this document. For example:\n- Grantor: John Smith\n- Trustee: Jane Doe\n- Property: 123 Main Street\n- Include standard trust terms...`}
+                className="bg-white/5 border-white/10 min-h-[150px]"
+              />
+              <p className="text-white/30 text-xs mt-2">
+                The AI will use your trust profile information along with these instructions.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setShowAiGenerateDialog(false); setAiInstructions(''); }}>
+              Cancel
+            </Button>
+            <Button onClick={aiGenerateDocument} disabled={aiGenerating || !aiInstructions.trim()} className="btn-primary">
+              {aiGenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate Document
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
