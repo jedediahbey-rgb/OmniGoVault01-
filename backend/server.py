@@ -1017,7 +1017,8 @@ async def delete_subject_category(category_id: str, user: User = Depends(get_cur
 
 @api_router.get("/portfolios/{portfolio_id}/assets")
 async def get_assets(portfolio_id: str, user: User = Depends(get_current_user)):
-    docs = await db.assets.find({"portfolio_id": portfolio_id, "user_id": user.user_id}, {"_id": 0}).to_list(100)
+    # Sort ascending by created_at (oldest first)
+    docs = await db.assets.find({"portfolio_id": portfolio_id, "user_id": user.user_id}, {"_id": 0}).sort("created_at", 1).to_list(100)
     return docs
 
 
