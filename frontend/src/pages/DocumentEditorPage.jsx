@@ -27,14 +27,22 @@ import {
   CheckCircle,
   AlertCircle,
   Hash,
-  Printer
+  Printer,
+  Sparkles,
+  Wand2,
+  FileSearch,
+  Loader2
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
 import GlassCard from '../components/shared/GlassCard';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription
 } from '../components/ui/dialog';
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator
+} from '../components/ui/dropdown-menu';
 import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
