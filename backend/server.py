@@ -1427,7 +1427,7 @@ When users ask about constructive trusts or other equity concepts, provide helpf
                 context_parts.append(f"- {m['maxim']} [Source: {m['source']}]")
         
         # Add relationship context if question relates to relationships
-        if any(word in data.message.lower() for word in ['trustee', 'beneficiary', 'agent', 'principal', 'duty', 'right', 'relationship']):
+        if any(word in data.message.lower() for word in ['trustee', 'beneficiary', 'agent', 'principal', 'duty', 'right', 'relationship', 'constructive', 'resulting', 'express trust', 'implied']):
             rels_data = await get_relationships()
             context_parts.append("\nRELATIONSHIPS FROM SOURCES:")
             for r in rels_data[:3]:
