@@ -13,6 +13,7 @@ import StatCard from '../components/shared/StatCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
+import { RmIdDisplay } from '../components/ui/expandable-text';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription
 } from '../components/ui/dialog';
