@@ -254,6 +254,8 @@ export default function VaultPage({ user }) {
     return new Date(b.updated_at) - new Date(a.updated_at);
   });
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
@@ -262,76 +264,119 @@ export default function VaultPage({ user }) {
     );
   }
 
-  return (
-    <div className="h-[calc(100vh-2rem)] flex">
-      {/* Left Sidebar - Portfolios */}
-      <motion.div 
-        initial={{ x: -50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className="w-64 border-r border-white/10 flex flex-col"
-      >
-        <div className="p-4 border-b border-white/10">
-          <Button 
-            onClick={() => setShowNewPortfolio(true)}
-            className="w-full btn-secondary text-sm"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Portfolio
-          </Button>
-        </div>
+  const SidebarContent = () => (
+    <>
+      <div className="p-4 border-b border-white/10">
+        <Button 
+          onClick={() => { setShowNewPortfolio(true); setSidebarOpen(false); }}
+          className="w-full btn-secondary text-sm"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Portfolio
+        </Button>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+        <button
+          onClick={() => { setSelectedPortfolio(null); setShowTrash(false); setSidebarOpen(false); }}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+            !selectedPortfolio && !showTrash
+              ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
+              : 'text-white/60 hover:bg-white/5'
+          }`}
+        >
+          <FolderArchive className="w-4 h-4" />
+          <span className="text-sm">All Documents</span>
+          <span className="ml-auto text-xs opacity-60">{documents.length}</span>
+        </button>
         
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+        <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-4 mb-2">Portfolios</p>
+        
+        {portfolios.map(portfolio => (
           <button
-            onClick={() => { setSelectedPortfolio(null); setShowTrash(false); }}
+            key={portfolio.portfolio_id}
+            onClick={() => { setSelectedPortfolio(portfolio); setShowTrash(false); setSidebarOpen(false); }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-              !selectedPortfolio && !showTrash
+              selectedPortfolio?.portfolio_id === portfolio.portfolio_id
                 ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
                 : 'text-white/60 hover:bg-white/5'
             }`}
           >
-            <FolderArchive className="w-4 h-4" />
-            <span className="text-sm">All Documents</span>
-            <span className="ml-auto text-xs opacity-60">{documents.length}</span>
+            <Folder className="w-4 h-4" />
+            <span className="text-sm truncate">{portfolio.name}</span>
           </button>
-          
-          <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-4 mb-2">Portfolios</p>
-          
-          {portfolios.map(portfolio => (
-            <button
-              key={portfolio.portfolio_id}
-              onClick={() => { setSelectedPortfolio(portfolio); setShowTrash(false); }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-                selectedPortfolio?.portfolio_id === portfolio.portfolio_id
-                  ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
-                  : 'text-white/60 hover:bg-white/5'
-              }`}
-            >
-              <Folder className="w-4 h-4" />
-              <span className="text-sm truncate">{portfolio.name}</span>
-            </button>
-          ))}
-          
-          {portfolios.length === 0 && (
-            <p className="text-white/30 text-xs text-center py-4">No portfolios yet</p>
-          )}
+        ))}
+        
+        {portfolios.length === 0 && (
+          <p className="text-white/30 text-xs text-center py-4">No portfolios yet</p>
+        )}
 
-          {/* Trash Section */}
-          <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-6 mb-2">System</p>
-          <button
-            onClick={() => { setSelectedPortfolio(null); setShowTrash(true); }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-              showTrash
-                ? 'bg-red-500/10 text-red-400 border border-red-500/20' 
-                : 'text-white/40 hover:bg-white/5'
-            }`}
+        {/* Trash Section */}
+        <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-6 mb-2">System</p>
+        <button
+          onClick={() => { setSelectedPortfolio(null); setShowTrash(true); setSidebarOpen(false); }}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+            showTrash
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20' 
+              : 'text-white/40 hover:bg-white/5'
+          }`}
+        >
+          <Trash2 className="w-4 h-4" />
+          <span className="text-sm">Trash</span>
+          {trashedDocuments.length > 0 && (
+            <span className="ml-auto text-xs opacity-60">{trashedDocuments.length}</span>
+          )}
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen lg:h-[calc(100vh-2rem)] flex flex-col lg:flex-row w-full max-w-full">
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden fixed inset-0 bg-black/60 z-40"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Sidebar Drawer */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ x: -280 }}
+            animate={{ x: 0 }}
+            exit={{ x: -280 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="lg:hidden fixed left-0 top-0 h-screen w-[280px] bg-vault-void/95 backdrop-blur-xl border-r border-white/10 flex flex-col z-50"
           >
-            <Trash2 className="w-4 h-4" />
-            <span className="text-sm">Trash</span>
-            {trashedDocuments.length > 0 && (
-              <span className="ml-auto text-xs opacity-60">{trashedDocuments.length}</span>
-            )}
-          </button>
-        </div>
+            <div className="flex items-center justify-between p-4 border-b border-white/10">
+              <span className="font-heading text-lg text-white">Portfolios</span>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <SidebarContent />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop Sidebar - hidden on mobile */}
+      <motion.div 
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        className="hidden lg:flex w-64 border-r border-white/10 flex-col shrink-0"
+      >
+        <SidebarContent />
       </motion.div>
 
       {/* Main Content - Documents List */}
