@@ -245,7 +245,7 @@ export default function DocumentEditorPage({ user }) {
     editable: true,
     editorProps: {
       attributes: {
-        class: 'prose prose-invert prose-lg max-w-none focus:outline-none min-h-[500px] px-8 py-6',
+        class: 'prose prose-invert prose-sm sm:prose-base md:prose-lg max-w-none focus:outline-none min-h-[300px] sm:min-h-[400px] md:min-h-[500px] px-3 sm:px-6 md:px-8 py-4 sm:py-6 text-base leading-relaxed',
       },
     },
     onUpdate: () => {
