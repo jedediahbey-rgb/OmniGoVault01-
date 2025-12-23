@@ -715,6 +715,17 @@ export default function LearnPage({ user }) {
   const [progress, setProgress] = useState({});
   const [loading, setLoading] = useState(false);
 
+  // Scroll to top when lesson/module is selected
+  useEffect(() => {
+    if (selectedLesson || selectedModule) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      const scrollContainer = document.querySelector('.overflow-y-auto');
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    }
+  }, [selectedLesson, selectedModule]);
+
   useEffect(() => {
     if (user) {
       fetchProgress();
