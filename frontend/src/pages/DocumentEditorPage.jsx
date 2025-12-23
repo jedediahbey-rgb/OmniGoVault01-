@@ -518,28 +518,28 @@ export default function DocumentEditorPage({ user }) {
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {document?.is_locked ? (
             <>
-              <Button onClick={() => setShowUnlockDialog(true)} variant="outline" className="btn-secondary">
-                <Unlock className="w-4 h-4 mr-2" />
-                Unlock to Edit
+              <Button onClick={() => setShowUnlockDialog(true)} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
+                <Unlock className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Unlock</span>
               </Button>
-              <Button onClick={exportToPDF} variant="outline" className="btn-secondary">
-                <Download className="w-4 h-4 mr-2" />
-                Export PDF
+              <Button onClick={exportToPDF} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
+                <Download className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Export</span>
               </Button>
-              <Button onClick={printDocument} className="btn-primary">
-                <Printer className="w-4 h-4 mr-2" />
-                Print
+              <Button onClick={printDocument} className="btn-primary text-xs sm:text-sm px-2 sm:px-4">
+                <Printer className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Print</span>
               </Button>
             </>
           ) : (
             <>
-              {/* AI Tools Dropdown */}
+              {/* AI Tools Dropdown - hidden on small mobile */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="btn-secondary">
+                  <Button variant="outline" className="hidden sm:flex btn-secondary">
                     <Sparkles className="w-4 h-4 mr-2" />
                     AI Tools
                   </Button>
