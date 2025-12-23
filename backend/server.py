@@ -1116,26 +1116,22 @@ async def get_trust_ledger(portfolio_id: str, user: User = Depends(get_current_u
 
 @api_router.post("/portfolios/{portfolio_id}/ledger")
 async def create_ledger_entry(portfolio_id: str, data: dict, user: User = Depends(get_current_user)):
-    """Create a manual ledger entry"""
-    # Get trust profile for RM-ID generation
-    trust_profile = await db.trust_profiles.find_one(
-        {"portfolio_id": portfolio_id, "user_id": user.user_id},
-        {"rm_id_details": 1}
+    """Create a manual ledger entry with subject-based RM-ID"""
+    subject_code = data.get("subject_code", "00")
+    subject_name = data.get("subject_name", "General")
+    
+    # Generate RM-ID using the subject-based system
+    rm_id, cat_code, sequence_num, cat_name = await generate_subject_rm_id(
+        portfolio_id, user.user_id, subject_code, subject_name
     )
-    
-    if trust_profile and trust_profile.get("rm_id_details", {}).get("full_rm_id"):
-        base_rm_id = trust_profile["rm_id_details"]["full_rm_id"]
-    else:
-        base_rm_id = f"RF{uuid.uuid4().hex[:9].upper()}US"
-    
-    # Count existing ledger entries
-    entry_count = await db.trust_ledger.count_documents({"portfolio_id": portfolio_id, "user_id": user.user_id})
-    rm_id = f"{base_rm_id}-L{(entry_count + 1):03d}"
     
     entry = TrustLedgerEntry(
         portfolio_id=portfolio_id,
         user_id=user.user_id,
         rm_id=rm_id,
+        subject_code=cat_code,
+        subject_name=cat_name,
+        sequence_number=sequence_num,
         entry_type=data.get("entry_type", "deposit"),
         description=data.get("description", ""),
         asset_id=data.get("asset_id"),
