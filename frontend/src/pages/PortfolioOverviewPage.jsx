@@ -688,8 +688,8 @@ export default function PortfolioOverviewPage({ user }) {
               </Button>
             </div>
 
-            {/* Assets Table */}
-            <div className="overflow-x-auto">
+            {/* Assets Table - Desktop */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
@@ -706,20 +706,16 @@ export default function PortfolioOverviewPage({ user }) {
                   {assets.map(asset => (
                     <tr key={asset.asset_id} className="border-b border-white/5 hover:bg-white/5">
                       <td className="py-3 px-2">
-                        <span className="text-vault-gold font-mono text-sm block whitespace-nowrap">{asset.rm_id || '-'}</span>
+                        <span className="text-vault-gold font-mono text-xs block">{asset.rm_id || '-'}</span>
                       </td>
                       <td className="py-3 px-2">
                         <span className="text-white/60 text-sm">{asset.subject_name || 'General'}</span>
-                        <span className="text-white/30 text-xs ml-1">({asset.subject_code || '00'})</span>
                       </td>
                       <td className="py-3 px-2">
                         <span className="text-white">{asset.description}</span>
-                        {asset.notes && (
-                          <p className="text-white/40 text-xs mt-1">{asset.notes}</p>
-                        )}
                       </td>
                       <td className="py-3 px-2">
-                        <span className="text-white/60 capitalize">{asset.asset_type?.replace('_', ' ')}</span>
+                        <span className="text-white/60 capitalize text-sm">{asset.asset_type?.replace('_', ' ')}</span>
                       </td>
                       <td className="py-3 px-2 text-right">
                         <span className="text-white">{asset.value ? formatCurrency(asset.value) : '-'}</span>
@@ -735,18 +731,10 @@ export default function PortfolioOverviewPage({ user }) {
                       </td>
                       <td className="py-3 px-2 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => openEditAsset(asset)}
-                            className="text-white/40 hover:text-white p-1"
-                            title="Edit asset"
-                          >
+                          <button onClick={() => openEditAsset(asset)} className="text-white/40 hover:text-white p-1">
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => setDeleteAssetId(asset.asset_id)}
-                            className="text-red-400 hover:text-red-300 p-1"
-                            title="Delete asset"
-                          >
+                          <button onClick={() => setDeleteAssetId(asset.asset_id)} className="text-red-400 hover:text-red-300 p-1">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
@@ -755,9 +743,38 @@ export default function PortfolioOverviewPage({ user }) {
                   ))}
                 </tbody>
               </table>
-              {assets.length === 0 && (
-                <p className="text-white/30 text-center py-8">No assets recorded</p>
-              )}
+            </div>
+
+            {/* Assets Cards - Mobile */}
+            <div className="md:hidden space-y-3">
+              {assets.map(asset => (
+                <div key={asset.asset_id} className="p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-medium">{asset.description}</p>
+                      <p className="text-white/40 text-sm capitalize">{asset.asset_type?.replace('_', ' ')}</p>
+                    </div>
+                    <div className="flex items-center gap-1 ml-2">
+                      <button onClick={() => openEditAsset(asset)} className="text-white/40 hover:text-white p-1">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => setDeleteAssetId(asset.asset_id)} className="text-red-400 hover:text-red-300 p-1">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="text-vault-gold font-mono bg-vault-gold/10 px-2 py-1 rounded">{asset.rm_id || '-'}</span>
+                    <span className="text-white/50">{asset.subject_name}</span>
+                    {asset.value && <span className="text-white ml-auto">{formatCurrency(asset.value)}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {assets.length === 0 && (
+              <p className="text-white/30 text-center py-8">No assets recorded</p>
+            )}
             </div>
           </GlassCard>
         </TabsContent>
