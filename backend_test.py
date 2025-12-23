@@ -11,10 +11,14 @@ import os
 BACKEND_URL = "https://trustvault-1.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
-class TrustVaultAPITester:
+class EquityTrustAPITester:
     def __init__(self):
         self.session_token = None
         self.user_id = None
+        self.test_portfolio_id = None
+        self.test_trust_profile_id = None
+        self.test_asset_id = None
+        self.test_notice_id = None
         self.test_document_id = None
         self.tests_run = 0
         self.tests_passed = 0
@@ -60,6 +64,69 @@ class TrustVaultAPITester:
             self.log_test("Root Endpoint", False, f"Exception: {str(e)}")
             return False
     
+    def test_knowledge_topics(self):
+        """Test knowledge topics endpoint (public)"""
+        try:
+            response = requests.get(f"{API_BASE}/knowledge/topics", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            if success:
+                data = response.json()
+                topic_count = len(data) if isinstance(data, list) else 0
+                details += f", Topics count: {topic_count}"
+                # Should have 10 topics as per review request
+                if topic_count >= 10:
+                    details += " (Expected 10+ topics present)"
+                else:
+                    details += f" (Expected 10+ topics, got {topic_count})"
+            self.log_test("Knowledge Topics Endpoint", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Knowledge Topics Endpoint", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_knowledge_maxims(self):
+        """Test knowledge maxims endpoint (public)"""
+        try:
+            response = requests.get(f"{API_BASE}/knowledge/maxims", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            if success:
+                data = response.json()
+                maxim_count = len(data) if isinstance(data, list) else 0
+                details += f", Maxims count: {maxim_count}"
+                # Should have 12 maxims as per review request
+                if maxim_count >= 12:
+                    details += " (Expected 12 maxims present)"
+                else:
+                    details += f" (Expected 12 maxims, got {maxim_count})"
+            self.log_test("Knowledge Maxims Endpoint", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Knowledge Maxims Endpoint", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_knowledge_relationships(self):
+        """Test knowledge relationships endpoint (public)"""
+        try:
+            response = requests.get(f"{API_BASE}/knowledge/relationships", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            if success:
+                data = response.json()
+                rel_count = len(data) if isinstance(data, list) else 0
+                details += f", Relationships count: {rel_count}"
+                # Should have duty-right pairs
+                if rel_count >= 4:
+                    details += " (Expected duty-right pairs present)"
+                else:
+                    details += f" (Expected 4+ relationships, got {rel_count})"
+            self.log_test("Knowledge Relationships Endpoint", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Knowledge Relationships Endpoint", False, f"Exception: {str(e)}")
+            return False
+    
     def test_templates_endpoint(self):
         """Test templates endpoint (public)"""
         try:
@@ -70,25 +137,69 @@ class TrustVaultAPITester:
                 data = response.json()
                 template_count = len(data) if isinstance(data, list) else 0
                 details += f", Templates count: {template_count}"
-                # Check if we have the expected 4 templates
-                expected_templates = ['declaration_of_trust', 'trust_transfer_grant_deed', 'notice_of_intent', 'affidavit_of_fact']
-                if template_count == 4:
-                    template_ids = [t.get('id') for t in data]
-                    if all(tid in template_ids for tid in expected_templates):
-                        details += " (All expected templates present)"
-                    else:
-                        details += f" (Missing templates: {set(expected_templates) - set(template_ids)})"
+                # Should have 7 document templates as per review request
+                if template_count >= 7:
+                    details += " (Expected 7 document templates present)"
+                else:
+                    details += f" (Expected 7 templates, got {template_count})"
             self.log_test("Templates Endpoint", success, details)
             return success
         except Exception as e:
             self.log_test("Templates Endpoint", False, f"Exception: {str(e)}")
             return False
     
+    def test_sources_endpoint(self):
+        """Test sources endpoint (public)"""
+        try:
+            response = requests.get(f"{API_BASE}/sources", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            if success:
+                data = response.json()
+                source_count = len(data) if isinstance(data, list) else 0
+                details += f", Sources count: {source_count}"
+                # Should have PDF sources
+                if source_count >= 2:
+                    details += " (Expected PDF sources present)"
+                else:
+                    details += f" (Expected 2+ sources, got {source_count})"
+            self.log_test("Sources Endpoint", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Sources Endpoint", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_ai_assistant_chat(self):
+        """Test AI Assistant chat endpoint (public)"""
+        try:
+            payload = {
+                "message": "What are the maxims of equity?",
+                "session_id": f"test_session_{int(datetime.now().timestamp())}"
+            }
+            response = requests.post(f"{API_BASE}/assistant/chat", json=payload, timeout=30)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            if success:
+                data = response.json()
+                response_text = data.get('response', '')
+                details += f", Response length: {len(response_text)} chars"
+                # Check if response contains grounded information
+                if len(response_text) > 50 and ('maxim' in response_text.lower() or 'equity' in response_text.lower()):
+                    details += " (Grounded response received)"
+                else:
+                    details += " (Response may not be grounded)"
+            self.log_test("AI Assistant Chat", success, details)
+            return success
+        except Exception as e:
+            self.log_test("AI Assistant Chat", False, f"Exception: {str(e)}")
+            return False
+    
     def test_protected_endpoints_without_auth(self):
         """Test that protected endpoints return 401 without authentication"""
         endpoints = [
             "/auth/me",
-            "/trusts",
+            "/portfolios",
+            "/dashboard/stats"
         ]
         
         all_success = True
@@ -182,35 +293,35 @@ class TrustVaultAPITester:
             self.log_test("Auth Me Endpoint", False, f"Exception: {str(e)}")
             return False
     
-    def test_get_trusts_empty(self):
-        """Test GET /trusts returns empty array for new user"""
+    def test_dashboard_stats(self):
+        """Test dashboard stats endpoint"""
         if not self.session_token:
-            self.log_test("Get Trusts (Empty)", False, "No session token available")
+            self.log_test("Dashboard Stats", False, "No session token available")
             return False
         
         try:
             headers = {"Authorization": f"Bearer {self.session_token}"}
-            response = requests.get(f"{API_BASE}/trusts", headers=headers, timeout=10)
+            response = requests.get(f"{API_BASE}/dashboard/stats", headers=headers, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                if isinstance(data, list) and len(data) == 0:
-                    details += ", Empty array returned (correct)"
-                else:
-                    details += f", Unexpected data: {data}"
+                details += f", Portfolios: {data.get('portfolios', 0)}"
+                details += f", Documents: {data.get('documents', 0)}"
+                details += f", Assets: {data.get('assets', 0)}"
+                details += f", Pending Notices: {data.get('pending_notices', 0)}"
             
-            self.log_test("Get Trusts (Empty)", success, details)
+            self.log_test("Dashboard Stats", success, details)
             return success
         except Exception as e:
-            self.log_test("Get Trusts (Empty)", False, f"Exception: {str(e)}")
+            self.log_test("Dashboard Stats", False, f"Exception: {str(e)}")
             return False
     
-    def test_create_trust_document(self):
-        """Test POST /trusts creates a new trust document"""
+    def test_create_portfolio(self):
+        """Test POST /portfolios creates a new portfolio"""
         if not self.session_token:
-            self.log_test("Create Trust Document", False, "No session token available")
+            self.log_test("Create Portfolio", False, "No session token available")
             return False
         
         try:
@@ -219,11 +330,143 @@ class TrustVaultAPITester:
                 "Content-Type": "application/json"
             }
             payload = {
-                "document_type": "declaration_of_trust",
-                "title": "Test Trust Document"
+                "name": "Test Family Trust Portfolio",
+                "description": "Test portfolio for automated testing"
             }
             
-            response = requests.post(f"{API_BASE}/trusts", headers=headers, json=payload, timeout=10)
+            response = requests.post(f"{API_BASE}/portfolios", headers=headers, json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                self.test_portfolio_id = data.get('portfolio_id')
+                details += f", Portfolio ID: {self.test_portfolio_id}"
+            
+            self.log_test("Create Portfolio", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Create Portfolio", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_create_trust_profile(self):
+        """Test POST /trust-profiles creates a trust profile"""
+        if not self.session_token or not self.test_portfolio_id:
+            self.log_test("Create Trust Profile", False, "No session token or portfolio ID available")
+            return False
+        
+        try:
+            headers = {
+                "Authorization": f"Bearer {self.session_token}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "portfolio_id": self.test_portfolio_id,
+                "trust_name": "Test Family Trust"
+            }
+            
+            response = requests.post(f"{API_BASE}/trust-profiles", headers=headers, json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                self.test_trust_profile_id = data.get('profile_id')
+                details += f", Profile ID: {self.test_trust_profile_id}"
+            
+            self.log_test("Create Trust Profile", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Create Trust Profile", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_create_asset(self):
+        """Test POST /assets creates an asset"""
+        if not self.session_token or not self.test_portfolio_id:
+            self.log_test("Create Asset", False, "No session token or portfolio ID available")
+            return False
+        
+        try:
+            headers = {
+                "Authorization": f"Bearer {self.session_token}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "portfolio_id": self.test_portfolio_id,
+                "asset_type": "real_property",
+                "description": "Test Property - 123 Main Street",
+                "value": "$500,000",
+                "notes": "Primary residence for testing"
+            }
+            
+            response = requests.post(f"{API_BASE}/assets", headers=headers, json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                self.test_asset_id = data.get('asset_id')
+                details += f", Asset ID: {self.test_asset_id}"
+            
+            self.log_test("Create Asset", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Create Asset", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_create_notice(self):
+        """Test POST /notices creates a notice"""
+        if not self.session_token or not self.test_portfolio_id:
+            self.log_test("Create Notice", False, "No session token or portfolio ID available")
+            return False
+        
+        try:
+            headers = {
+                "Authorization": f"Bearer {self.session_token}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "portfolio_id": self.test_portfolio_id,
+                "event_type": "notice_of_intent",
+                "title": "Test Notice of Intent",
+                "date": "2024-01-15",
+                "description": "Test notice for automated testing"
+            }
+            
+            response = requests.post(f"{API_BASE}/notices", headers=headers, json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                self.test_notice_id = data.get('notice_id')
+                details += f", Notice ID: {self.test_notice_id}"
+            
+            self.log_test("Create Notice", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Create Notice", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_create_document(self):
+        """Test POST /documents creates a document"""
+        if not self.session_token or not self.test_portfolio_id:
+            self.log_test("Create Document", False, "No session token or portfolio ID available")
+            return False
+        
+        try:
+            headers = {
+                "Authorization": f"Bearer {self.session_token}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "portfolio_id": self.test_portfolio_id,
+                "title": "Test Declaration of Trust",
+                "document_type": "declaration_of_trust",
+                "content": "This is a test declaration of trust document for automated testing."
+            }
+            
+            response = requests.post(f"{API_BASE}/documents", headers=headers, json=payload, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
@@ -232,39 +475,16 @@ class TrustVaultAPITester:
                 self.test_document_id = data.get('document_id')
                 details += f", Document ID: {self.test_document_id}"
             
-            self.log_test("Create Trust Document", success, details)
+            self.log_test("Create Document", success, details)
             return success
         except Exception as e:
-            self.log_test("Create Trust Document", False, f"Exception: {str(e)}")
+            self.log_test("Create Document", False, f"Exception: {str(e)}")
             return False
     
-    def test_get_specific_trust(self):
-        """Test GET /trusts/:id returns specific trust document"""
+    def test_update_document(self):
+        """Test PUT /documents/:id updates a document"""
         if not self.session_token or not self.test_document_id:
-            self.log_test("Get Specific Trust", False, "No session token or document ID available")
-            return False
-        
-        try:
-            headers = {"Authorization": f"Bearer {self.session_token}"}
-            response = requests.get(f"{API_BASE}/trusts/{self.test_document_id}", headers=headers, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                details += f", Title: {data.get('title', 'N/A')}"
-                details += f", Type: {data.get('document_type', 'N/A')}"
-            
-            self.log_test("Get Specific Trust", success, details)
-            return success
-        except Exception as e:
-            self.log_test("Get Specific Trust", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_update_trust_document(self):
-        """Test PUT /trusts/:id updates a trust document"""
-        if not self.session_token or not self.test_document_id:
-            self.log_test("Update Trust Document", False, "No session token or document ID available")
+            self.log_test("Update Document", False, "No session token or document ID available")
             return False
         
         try:
@@ -273,36 +493,58 @@ class TrustVaultAPITester:
                 "Content-Type": "application/json"
             }
             payload = {
-                "title": "Updated Test Trust Document",
-                "status": "completed",
-                "grantor_name": "John Doe",
-                "trust_name": "Test Family Trust"
+                "title": "Updated Test Declaration of Trust",
+                "content": "This is an updated test declaration of trust document with versioning.",
+                "status": "completed"
             }
             
-            response = requests.put(f"{API_BASE}/trusts/{self.test_document_id}", headers=headers, json=payload, timeout=10)
+            response = requests.put(f"{API_BASE}/documents/{self.test_document_id}", headers=headers, json=payload, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                details += f", Updated Title: {data.get('title', 'N/A')}"
+                details += f", Version: {data.get('version', 'N/A')}"
                 details += f", Status: {data.get('status', 'N/A')}"
             
-            self.log_test("Update Trust Document", success, details)
+            self.log_test("Update Document", success, details)
             return success
         except Exception as e:
-            self.log_test("Update Trust Document", False, f"Exception: {str(e)}")
+            self.log_test("Update Document", False, f"Exception: {str(e)}")
             return False
     
-    def test_download_pdf(self):
-        """Test GET /trusts/:id/pdf generates and downloads PDF"""
+    def test_document_versions(self):
+        """Test GET /documents/:id/versions returns version history"""
         if not self.session_token or not self.test_document_id:
-            self.log_test("Download PDF", False, "No session token or document ID available")
+            self.log_test("Document Versions", False, "No session token or document ID available")
             return False
         
         try:
             headers = {"Authorization": f"Bearer {self.session_token}"}
-            response = requests.get(f"{API_BASE}/trusts/{self.test_document_id}/pdf", headers=headers, timeout=15)
+            response = requests.get(f"{API_BASE}/documents/{self.test_document_id}/versions", headers=headers, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                version_count = len(data) if isinstance(data, list) else 0
+                details += f", Versions: {version_count}"
+            
+            self.log_test("Document Versions", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Document Versions", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_document_pdf_export(self):
+        """Test GET /documents/:id/export/pdf generates PDF"""
+        if not self.session_token or not self.test_document_id:
+            self.log_test("Document PDF Export", False, "No session token or document ID available")
+            return False
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.session_token}"}
+            response = requests.get(f"{API_BASE}/documents/{self.test_document_id}/export/pdf", headers=headers, timeout=15)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
@@ -318,32 +560,10 @@ class TrustVaultAPITester:
                     success = False
                     details += " (Invalid PDF)"
             
-            self.log_test("Download PDF", success, details)
+            self.log_test("Document PDF Export", success, details)
             return success
         except Exception as e:
-            self.log_test("Download PDF", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_delete_trust_document(self):
-        """Test DELETE /trusts/:id deletes a document"""
-        if not self.session_token or not self.test_document_id:
-            self.log_test("Delete Trust Document", False, "No session token or document ID available")
-            return False
-        
-        try:
-            headers = {"Authorization": f"Bearer {self.session_token}"}
-            response = requests.delete(f"{API_BASE}/trusts/{self.test_document_id}", headers=headers, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                details += f", Message: {data.get('message', 'N/A')}"
-            
-            self.log_test("Delete Trust Document", success, details)
-            return success
-        except Exception as e:
-            self.log_test("Delete Trust Document", False, f"Exception: {str(e)}")
+            self.log_test("Document PDF Export", False, f"Exception: {str(e)}")
             return False
     
     def cleanup_test_data(self):
@@ -356,7 +576,12 @@ class TrustVaultAPITester:
             use('test_database');
             db.users.deleteMany({{user_id: '{self.user_id}'}});
             db.user_sessions.deleteMany({{user_id: '{self.user_id}'}});
-            db.trust_documents.deleteMany({{user_id: '{self.user_id}'}});
+            db.portfolios.deleteMany({{user_id: '{self.user_id}'}});
+            db.trust_profiles.deleteMany({{user_id: '{self.user_id}'}});
+            db.assets.deleteMany({{user_id: '{self.user_id}'}});
+            db.notices.deleteMany({{user_id: '{self.user_id}'}});
+            db.documents.deleteMany({{user_id: '{self.user_id}'}});
+            db.document_versions.deleteMany({{document_id: '{self.test_document_id}'}});
             """
             
             import subprocess
@@ -377,28 +602,44 @@ class TrustVaultAPITester:
     
     def run_all_tests(self):
         """Run all backend API tests"""
-        print(f"🚀 Starting Trust Vault API Tests")
+        print(f"🚀 Starting Equity Trust Portfolio API Tests")
         print(f"Backend URL: {BACKEND_URL}")
         print("=" * 60)
         
         # Basic connectivity tests
         self.test_health_check()
         self.test_root_endpoint()
+        
+        # Public knowledge base endpoints
+        self.test_knowledge_topics()
+        self.test_knowledge_maxims()
+        self.test_knowledge_relationships()
         self.test_templates_endpoint()
+        self.test_sources_endpoint()
+        
+        # AI Assistant test
+        self.test_ai_assistant_chat()
+        
+        # Protected endpoints without auth
         self.test_protected_endpoints_without_auth()
         
         # Authentication setup
         if self.create_test_user_and_session():
             # Authenticated tests
             self.test_auth_me_endpoint()
-            self.test_get_trusts_empty()
+            self.test_dashboard_stats()
             
-            # CRUD operations
-            if self.test_create_trust_document():
-                self.test_get_specific_trust()
-                self.test_update_trust_document()
-                self.test_download_pdf()
-                self.test_delete_trust_document()
+            # Portfolio CRUD operations
+            if self.test_create_portfolio():
+                self.test_create_trust_profile()
+                self.test_create_asset()
+                self.test_create_notice()
+                
+                # Document operations with versioning
+                if self.test_create_document():
+                    self.test_update_document()
+                    self.test_document_versions()
+                    self.test_document_pdf_export()
             
             # Cleanup
             self.cleanup_test_data()
@@ -415,7 +656,7 @@ class TrustVaultAPITester:
         return self.tests_passed == self.tests_run
 
 def main():
-    tester = TrustVaultAPITester()
+    tester = EquityTrustAPITester()
     success = tester.run_all_tests()
     return 0 if success else 1
 
