@@ -391,7 +391,8 @@ async def create_portfolio(data: PortfolioCreate, user: User = Depends(get_curre
     doc['created_at'] = doc['created_at'].isoformat()
     doc['updated_at'] = doc['updated_at'].isoformat()
     await db.portfolios.insert_one(doc)
-    return doc
+    # Return document without MongoDB _id field
+    return {k: v for k, v in doc.items() if k != '_id'}
 
 
 @api_router.get("/portfolios/{portfolio_id}")
