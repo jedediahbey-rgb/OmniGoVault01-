@@ -984,7 +984,11 @@ export default function LearnPage({ user }) {
                     )}
                   </div>
                   <h3 className="text-xl font-heading text-white mb-2">{module.title}</h3>
-                  <p className="text-white/50 text-sm mb-4">{module.description}</p>
+                  <ExpandableText 
+                    text={module.description}
+                    previewLines={2}
+                    className="mb-4"
+                  />
                   
                   {moduleProgress > 0 && (
                     <div className="mb-4">
