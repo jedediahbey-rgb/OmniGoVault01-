@@ -432,24 +432,6 @@ C/o: <strong>[ADDRESS]</strong><br/>
     return templates[template.id] || `<h1>${template.name}</h1><p>Edit this document with your specific details.</p>`;
   };
 
-<h2>ATTESTATION</h2>
-
-<p>I declare under penalty of perjury that the foregoing is true and correct to the best of my knowledge and belief.</p>
-
-<p>_________________________<br/>AFFIANT</p>
-
-<h2>JURAT</h2>
-
-<p>SUBSCRIBED AND SWORN to before me this ___ day of ____________, 20___.</p>
-
-<p>_________________________<br/>NOTARY PUBLIC</p>
-
-<p>My commission expires: ____________</p>`
-    };
-
-    return templates[template.id] || `<h1>${template.name}</h1><p>Begin editing your document...</p>`;
-  };
-
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
