@@ -584,7 +584,7 @@ export default function PortfolioOverviewPage({ user }) {
           <GlassCard>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Assets Ledger</h3>
-              <Button onClick={() => setShowAssetDialog(true)} className="btn-primary">
+              <Button onClick={() => { resetAssetForm(); setShowAssetDialog(true); }} className="btn-primary">
                 <Plus className="w-4 h-4 mr-2" /> Add Asset
               </Button>
             </div>
@@ -595,6 +595,7 @@ export default function PortfolioOverviewPage({ user }) {
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">RM-ID</th>
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Subject</th>
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Description</th>
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Type</th>
                     <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Value</th>
@@ -606,7 +607,11 @@ export default function PortfolioOverviewPage({ user }) {
                   {assets.map(asset => (
                     <tr key={asset.asset_id} className="border-b border-white/5 hover:bg-white/5">
                       <td className="py-3 px-2">
-                        <span className="text-vault-gold font-mono text-sm">{asset.rm_id || '-'}</span>
+                        <span className="text-vault-gold font-mono text-sm block whitespace-nowrap">{asset.rm_id || '-'}</span>
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className="text-white/60 text-sm">{asset.subject_name || 'General'}</span>
+                        <span className="text-white/30 text-xs ml-1">({asset.subject_code || '00'})</span>
                       </td>
                       <td className="py-3 px-2">
                         <span className="text-white">{asset.description}</span>
@@ -630,12 +635,22 @@ export default function PortfolioOverviewPage({ user }) {
                         </span>
                       </td>
                       <td className="py-3 px-2 text-right">
-                        <button
-                          onClick={() => deleteAsset(asset.asset_id)}
-                          className="text-red-400 hover:text-red-300 p-1"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => openEditAsset(asset)}
+                            className="text-white/40 hover:text-white p-1"
+                            title="Edit asset"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteAssetId(asset.asset_id)}
+                            className="text-red-400 hover:text-red-300 p-1"
+                            title="Delete asset"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
