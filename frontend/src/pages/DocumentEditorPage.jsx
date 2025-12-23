@@ -381,6 +381,46 @@ export default function DocumentEditorPage({ user }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [saveDocument, document?.is_locked]);
 
+  // AI Tools Functions
+  const aiUpdateDocument = async () => {
+    if (!aiInstructions.trim()) {
+      toast.error('Please provide instructions for the AI');
+      return;
+    }
+    setAiProcessing(true);
+    try {
+      const response = await axios.post(`${API}/assistant/update-document`, {
+        document_id: documentId,
+        instructions: aiInstructions
+      });
+      toast.success('Document updated by AI');
+      // Refresh the document
+      await fetchDocument();
+      setShowAiUpdateDialog(false);
+      setAiInstructions('');
+    } catch (error) {
+      console.error('AI update error:', error);
+      toast.error(error.response?.data?.detail || 'AI update failed');
+    } finally {
+      setAiProcessing(false);
+    }
+  };
+
+  const aiSummarizeDocument = async () => {
+    setAiProcessing(true);
+    setAiSummary('');
+    try {
+      const response = await axios.post(`${API}/assistant/summarize-document?document_id=${documentId}`);
+      setAiSummary(response.data.summary);
+      setShowAiSummaryDialog(true);
+    } catch (error) {
+      console.error('AI summarize error:', error);
+      toast.error(error.response?.data?.detail || 'AI summarization failed');
+    } finally {
+      setAiProcessing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
