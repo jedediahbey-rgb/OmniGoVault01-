@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { 
   BookOpen, 
@@ -10,15 +10,220 @@ import {
   FileText,
   Users,
   Scale,
-  Scroll
+  Scroll,
+  Trophy,
+  Brain,
+  Bookmark,
+  BookmarkCheck,
+  ArrowRight,
+  ArrowLeft,
+  Check,
+  X,
+  RotateCcw
 } from 'lucide-react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
+import { Button } from '../components/ui/button';
+import { Progress } from '../components/ui/progress';
 import { staggerContainer, fadeInUp } from '../lib/motion';
+import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Synthesized educational content from PDFs
+// Quiz questions for each lesson
+const lessonQuizzes = {
+  'what-is-equity': [
+    {
+      question: "What is the fundamental distinction between equity and common law?",
+      options: [
+        "Equity focuses on strict rules while law focuses on fairness",
+        "Equity looks to substance and fairness while law focuses on strict rules and precedent",
+        "They are essentially the same legal system",
+        "Equity only applies to property matters"
+      ],
+      correct: 1,
+      explanation: "Equity developed to provide remedies where common law was inadequate, focusing on fairness and conscience rather than rigid rules."
+    },
+    {
+      question: "From which court did equity jurisdiction originally emerge?",
+      options: [
+        "Court of Common Pleas",
+        "Court of King's Bench",
+        "Court of Chancery",
+        "Court of Exchequer"
+      ],
+      correct: 2,
+      explanation: "The Court of Chancery, headed by the Lord Chancellor, was where equity jurisdiction developed in England."
+    }
+  ],
+  'equity-vs-law': [
+    {
+      question: "What does the maxim 'Equity follows the law' mean?",
+      options: [
+        "Equity always overrides legal rules",
+        "Equity ignores common law entirely",
+        "Equity generally respects legal rights and operates within the legal framework",
+        "Legal courts have priority over equitable courts"
+      ],
+      correct: 2,
+      explanation: "This maxim means equity complements rather than opposes common law, intervening only when strict application would produce unconscionable results."
+    },
+    {
+      question: "Which remedy is unique to equity and NOT available at common law?",
+      options: [
+        "Monetary damages",
+        "Specific performance",
+        "Compensatory damages",
+        "Punitive damages"
+      ],
+      correct: 1,
+      explanation: "Specific performance, ordering a party to fulfill their contractual obligations, is an equitable remedy not available at common law."
+    }
+  ],
+  'primary-maxims': [
+    {
+      question: "What does 'Equity regards as done that which ought to be done' mean?",
+      options: [
+        "Equity forces parties to complete their obligations immediately",
+        "Equity treats obligations as already accomplished when parties are bound to perform",
+        "Done deals cannot be undone in equity",
+        "Equity ignores future obligations"
+      ],
+      correct: 1,
+      explanation: "This maxim underlies doctrines like conversion, where equity treats property as transformed based on contractual obligations."
+    }
+  ],
+  'conduct-maxims': [
+    {
+      question: "What is the 'clean hands' doctrine?",
+      options: [
+        "Courts require physical cleanliness",
+        "A party seeking equity must not have engaged in inequitable conduct regarding the matter",
+        "Only innocent parties can sue",
+        "Equity courts must be impartial"
+      ],
+      correct: 1,
+      explanation: "The clean hands doctrine means a party's own misconduct related to the claim may bar equitable relief."
+    }
+  ],
+  'what-is-trust': [
+    {
+      question: "What are the three key parties in a trust arrangement?",
+      options: [
+        "Judge, Lawyer, Client",
+        "Settlor, Trustee, Beneficiary",
+        "Owner, Manager, User",
+        "Principal, Agent, Third Party"
+      ],
+      correct: 1,
+      explanation: "A trust involves the Settlor (creator), Trustee (legal title holder), and Beneficiary (beneficial interest holder)."
+    },
+    {
+      question: "Who holds legal title in a trust?",
+      options: [
+        "The beneficiary",
+        "The settlor",
+        "The trustee",
+        "The court"
+      ],
+      correct: 2,
+      explanation: "The trustee holds legal title while the beneficiary holds equitable (beneficial) title."
+    }
+  ],
+  'types-of-trusts': [
+    {
+      question: "What is a constructive trust?",
+      options: [
+        "A trust created by written declaration",
+        "A trust imposed by equity to prevent unjust enrichment",
+        "A trust built from construction materials",
+        "A trust created by will"
+      ],
+      correct: 1,
+      explanation: "Constructive trusts are imposed by equity to prevent unjust enrichment when property is obtained through fraud or breach of duty."
+    }
+  ],
+  'trustee-duties': [
+    {
+      question: "What is the trustee's primary duty?",
+      options: [
+        "To maximize their own profit",
+        "To act solely in the beneficiary's interest",
+        "To follow the settlor's wishes above all else",
+        "To minimize taxes"
+      ],
+      correct: 1,
+      explanation: "The duty of loyalty requires the trustee to act solely in the beneficiary's interest, prohibiting self-dealing."
+    }
+  ],
+  'trustee-beneficiary': [
+    {
+      question: "What does 'cestui que trust' refer to?",
+      options: [
+        "The trustee",
+        "The settlor",
+        "The beneficiary",
+        "The trust property"
+      ],
+      correct: 2,
+      explanation: "Cestui que trust literally means 'the one for whose benefit' - the beneficiary of the trust."
+    }
+  ],
+  'agent-principal': [
+    {
+      question: "How does agency differ from a trust?",
+      options: [
+        "Agents are not fiduciaries",
+        "A principal can control and direct an agent; beneficiaries generally cannot control trustees",
+        "Agency only involves money",
+        "They are identical relationships"
+      ],
+      correct: 1,
+      explanation: "A key distinction is that principals can direct agents, while beneficiaries generally cannot control trustee discretion."
+    }
+  ],
+  'declaration-of-trust': [
+    {
+      question: "What does the Declaration of Trust establish?",
+      options: [
+        "Only the trust property",
+        "The creation and defining terms of the trust including parties, property, and purposes",
+        "The tax status of the trust",
+        "The trustee's compensation"
+      ],
+      correct: 1,
+      explanation: "The Declaration is the foundational document that creates and defines all aspects of the trust."
+    }
+  ],
+  'transfer-deed': [
+    {
+      question: "What is the purpose of a Trust Transfer Grant Deed?",
+      options: [
+        "To create the trust",
+        "To convey property into the trust",
+        "To dissolve the trust",
+        "To appoint beneficiaries"
+      ],
+      correct: 1,
+      explanation: "The TTGD transfers title to property into the trust; the Declaration creates the trust relationship."
+    }
+  ],
+  'notices-affidavits': [
+    {
+      question: "What is the purpose of a Notice of Interest?",
+      options: [
+        "To express curiosity",
+        "To declare an equitable interest and put third parties on notice",
+        "To terminate the trust",
+        "To change beneficiaries"
+      ],
+      correct: 1,
+      explanation: "A Notice of Interest establishes priority and triggers constructive notice protections."
+    }
+  ]
+};
+
+// Enhanced learning modules with quizzes
 const learningModules = [
   {
     id: 'foundations',
@@ -40,6 +245,12 @@ The fundamental distinction lies in approach: while law focuses on strict rules 
           'Operates on principles of fairness and conscience',
           'Looks to substance over form',
           'Originated in the Court of Chancery'
+        ],
+        checklist: [
+          'Understand the historical origins of equity',
+          'Distinguish equity from common law',
+          'Recognize equity\'s focus on conscience',
+          'Apply the substance over form principle'
         ]
       },
       {
@@ -61,6 +272,12 @@ Key distinctions include:
           'Different remedies: injunctions, specific performance',
           'Discretionary vs automatic relief',
           'Focuses on conscience and fairness'
+        ],
+        checklist: [
+          'Compare legal vs equitable remedies',
+          'Understand discretionary nature of equity',
+          'Apply the clean hands doctrine',
+          'Distinguish in personam from in rem'
         ]
       },
       {
@@ -80,6 +297,12 @@ Today, most jurisdictions have merged law and equity procedurally, but the subst
           'Trust matters are exclusively equitable',
           'Modern courts merged but distinctions remain',
           'Jurisdiction affects available remedies'
+        ],
+        checklist: [
+          'Identify exclusive equitable matters',
+          'Recognize concurrent jurisdiction situations',
+          'Understand modern merger of courts',
+          'Apply jurisdictional principles'
         ]
       }
     ]
@@ -112,6 +335,12 @@ When two parties have equally valid equitable claims, legal title determines the
           'Equity treats obligations as performed',
           'Substance prevails over form',
           'Every wrong has a remedy in equity'
+        ],
+        checklist: [
+          'Memorize the primary maxims',
+          'Apply "equity regards done" to scenarios',
+          'Use substance over form analysis',
+          'Understand priority rules'
         ]
       },
       {
@@ -138,6 +367,12 @@ Equitable orders bind the person, compelling them to act or refrain from acting,
           'Clean hands doctrine bars inequitable plaintiffs',
           'Delay can bar relief (laches)',
           'Equity presumes good faith intentions'
+        ],
+        checklist: [
+          'Apply clean hands analysis',
+          'Recognize laches situations',
+          'Understand the "do equity" requirement',
+          'Apply in personam principle'
         ]
       }
     ]
@@ -171,6 +406,12 @@ As the maxim states, "Equity regards the beneficiary as the true owner." This me
           'Three key parties: Settlor, Trustee, Beneficiary',
           'Six essential elements must be present',
           'Beneficiary holds equitable (beneficial) interest'
+        ],
+        checklist: [
+          'Identify all six essential elements',
+          'Distinguish legal from equitable title',
+          'Recognize the three key parties',
+          'Understand beneficial ownership'
         ]
       },
       {
@@ -205,6 +446,12 @@ A trust operating purely under equitable principles, often used for asset protec
           'Resulting trusts arise from circumstances',
           'Constructive trusts prevent unjust enrichment',
           'Pure equity trusts operate on maxim principles'
+        ],
+        checklist: [
+          'Classify trusts by origin',
+          'Identify resulting trust situations',
+          'Recognize constructive trust scenarios',
+          'Apply equity principles to trusts'
         ]
       },
       {
@@ -234,6 +481,12 @@ Safeguard trust assets, maintain appropriate insurance, and defend against threa
           'No self-dealing or conflicts of interest',
           'Must account to beneficiaries',
           'Balance interests of multiple beneficiaries'
+        ],
+        checklist: [
+          'Apply duty of loyalty',
+          'Understand care standards',
+          'Recognize accounting requirements',
+          'Identify delegation limits'
         ]
       }
     ]
@@ -274,6 +527,12 @@ This split between legal and equitable ownership is the genius of the trust—al
           'Trustee: legal title and duties',
           'Beneficiary: equitable title and rights',
           'Beneficiary can trace and enforce'
+        ],
+        checklist: [
+          'List trustee duties',
+          'List beneficiary rights',
+          'Understand enforcement mechanisms',
+          'Apply tracing principles'
         ]
       },
       {
@@ -308,6 +567,12 @@ Both relationships are fiduciary, meaning both agent and trustee must exercise u
           'Principal can direct and control',
           'Both are fiduciary relationships',
           'Different from trust in control aspects'
+        ],
+        checklist: [
+          'Compare agent and trustee duties',
+          'Understand principal control',
+          'Distinguish from trust relationship',
+          'Apply fiduciary principles'
         ]
       }
     ]
@@ -349,6 +614,12 @@ The declaration should be in writing, properly executed, and ideally notarized. 
           'Identifies all parties and their roles',
           'Describes trust property clearly',
           'Sets forth governing terms and powers'
+        ],
+        checklist: [
+          'Draft party identification sections',
+          'Describe trust property accurately',
+          'Include essential trust terms',
+          'Incorporate governing principles'
         ]
       },
       {
@@ -381,6 +652,12 @@ Proper signatures, witnesses, and notarization as required by jurisdiction for t
           'Must clearly describe property',
           'Includes covenants about title',
           'Requires proper execution'
+        ],
+        checklist: [
+          'Draft granting clause',
+          'Include property description',
+          'Add habendum clause',
+          'Execute properly'
         ]
       },
       {
@@ -416,6 +693,12 @@ The jurat (notary attestation) verifies the affiant swore to the truth of statem
           'Delivery must be documented',
           'Trustee acknowledges receipt formally',
           'Affidavits provide sworn evidence'
+        ],
+        checklist: [
+          'Draft Notice of Interest',
+          'Document delivery properly',
+          'Create acknowledgment records',
+          'Use affidavits for evidence'
         ]
       }
     ]
@@ -425,6 +708,239 @@ The jurat (notary attestation) verifies the affiant swore to the truth of statem
 export default function LearnPage({ user }) {
   const [selectedModule, setSelectedModule] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [progress, setProgress] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchProgress();
+    }
+  }, [user]);
+
+  const fetchProgress = async () => {
+    try {
+      const response = await axios.get(`${API}/learning/progress`);
+      const progressMap = {};
+      response.data.forEach(p => {
+        if (!progressMap[p.module_id]) progressMap[p.module_id] = {};
+        progressMap[p.module_id][p.lesson_id] = p;
+      });
+      setProgress(progressMap);
+    } catch (error) {
+      // User might not be logged in
+    }
+  };
+
+  const markComplete = async (moduleId, lessonId) => {
+    if (!user) {
+      toast.info('Sign in to track your progress');
+      return;
+    }
+    try {
+      await axios.post(`${API}/learning/progress?module_id=${moduleId}&lesson_id=${lessonId}&completed=true`);
+      setProgress(prev => ({
+        ...prev,
+        [moduleId]: {
+          ...(prev[moduleId] || {}),
+          [lessonId]: { ...(prev[moduleId]?.[lessonId] || {}), completed: true }
+        }
+      }));
+      toast.success('Lesson completed!');
+    } catch (error) {
+      toast.error('Failed to save progress');
+    }
+  };
+
+  const submitQuiz = async () => {
+    if (!selectedLesson) return;
+    
+    const quiz = lessonQuizzes[selectedLesson.id];
+    if (!quiz) return;
+    
+    let correct = 0;
+    quiz.forEach((q, idx) => {
+      if (quizAnswers[idx] === q.correct) correct++;
+    });
+    
+    const score = Math.round((correct / quiz.length) * 100);
+    setQuizSubmitted(true);
+    
+    if (user) {
+      try {
+        await axios.post(`${API}/learning/progress?module_id=${selectedModule.id}&lesson_id=${selectedLesson.id}&quiz_score=${score}`);
+        setProgress(prev => ({
+          ...prev,
+          [selectedModule.id]: {
+            ...(prev[selectedModule.id] || {}),
+            [selectedLesson.id]: { 
+              ...(prev[selectedModule.id]?.[selectedLesson.id] || {}), 
+              quiz_score: score 
+            }
+          }
+        }));
+      } catch (error) {
+        console.error('Failed to save quiz score');
+      }
+    }
+    
+    if (score >= 70) {
+      toast.success(`Great job! You scored ${score}%`);
+    } else {
+      toast.info(`You scored ${score}%. Review the material and try again!`);
+    }
+  };
+
+  const resetQuiz = () => {
+    setQuizAnswers({});
+    setQuizSubmitted(false);
+  };
+
+  const getModuleProgress = (moduleId) => {
+    const module = learningModules.find(m => m.id === moduleId);
+    if (!module || !progress[moduleId]) return 0;
+    
+    const completedCount = module.lessons.filter(
+      l => progress[moduleId]?.[l.id]?.completed
+    ).length;
+    
+    return Math.round((completedCount / module.lessons.length) * 100);
+  };
+
+  const isLessonComplete = (moduleId, lessonId) => {
+    return progress[moduleId]?.[lessonId]?.completed;
+  };
+
+  // Quiz View
+  if (showQuiz && selectedLesson) {
+    const quiz = lessonQuizzes[selectedLesson.id];
+    
+    if (!quiz) {
+      return (
+        <div className="p-8">
+          <button
+            onClick={() => setShowQuiz(false)}
+            className="flex items-center gap-2 text-vault-gold mb-6 hover:underline"
+          >
+            ← Back to Lesson
+          </button>
+          <GlassCard className="max-w-2xl mx-auto text-center py-12">
+            <Brain className="w-16 h-16 text-white/20 mx-auto mb-4" />
+            <h3 className="text-xl text-white mb-2">Quiz Coming Soon</h3>
+            <p className="text-white/50">Quiz questions for this lesson are being developed.</p>
+          </GlassCard>
+        </div>
+      );
+    }
+
+    return (
+      <div className="p-8">
+        <button
+          onClick={() => { setShowQuiz(false); resetQuiz(); }}
+          className="flex items-center gap-2 text-vault-gold mb-6 hover:underline"
+        >
+          ← Back to Lesson
+        </button>
+
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-heading text-white mb-2">Knowledge Check</h2>
+            <p className="text-white/50">{selectedLesson.title}</p>
+          </div>
+
+          <div className="space-y-6">
+            {quiz.map((q, qIdx) => (
+              <GlassCard key={qIdx}>
+                <p className="text-white font-medium mb-4">
+                  {qIdx + 1}. {q.question}
+                </p>
+                <div className="space-y-2">
+                  {q.options.map((opt, oIdx) => {
+                    const isSelected = quizAnswers[qIdx] === oIdx;
+                    const isCorrect = q.correct === oIdx;
+                    const showResult = quizSubmitted;
+                    
+                    let bgClass = 'bg-white/5 hover:bg-white/10';
+                    if (showResult) {
+                      if (isCorrect) bgClass = 'bg-green-500/20 border-green-500/50';
+                      else if (isSelected && !isCorrect) bgClass = 'bg-red-500/20 border-red-500/50';
+                    } else if (isSelected) {
+                      bgClass = 'bg-vault-gold/20 border-vault-gold/50';
+                    }
+                    
+                    return (
+                      <button
+                        key={oIdx}
+                        onClick={() => !quizSubmitted && setQuizAnswers({...quizAnswers, [qIdx]: oIdx})}
+                        disabled={quizSubmitted}
+                        className={`w-full text-left p-3 rounded-lg border border-white/10 transition-all ${bgClass}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          {showResult ? (
+                            isCorrect ? (
+                              <CheckCircle className="w-5 h-5 text-green-400" />
+                            ) : isSelected ? (
+                              <X className="w-5 h-5 text-red-400" />
+                            ) : (
+                              <Circle className="w-5 h-5 text-white/30" />
+                            )
+                          ) : (
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                              isSelected ? 'border-vault-gold bg-vault-gold' : 'border-white/30'
+                            }`}>
+                              {isSelected && <Check className="w-3 h-3 text-vault-navy" />}
+                            </div>
+                          )}
+                          <span className={showResult && isCorrect ? 'text-green-400' : 'text-white/80'}>
+                            {opt}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                {quizSubmitted && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mt-4 p-3 rounded-lg bg-vault-gold/10 border border-vault-gold/20"
+                  >
+                    <p className="text-sm text-white/70">
+                      <span className="text-vault-gold font-medium">Explanation: </span>
+                      {q.explanation}
+                    </p>
+                  </motion.div>
+                )}
+              </GlassCard>
+            ))}
+          </div>
+
+          <div className="flex justify-center gap-4 mt-8">
+            {!quizSubmitted ? (
+              <Button
+                onClick={submitQuiz}
+                disabled={Object.keys(quizAnswers).length < quiz.length}
+                className="btn-primary"
+              >
+                Submit Answers
+              </Button>
+            ) : (
+              <>
+                <Button onClick={resetQuiz} variant="outline" className="btn-secondary">
+                  <RotateCcw className="w-4 h-4 mr-2" /> Try Again
+                </Button>
+                <Button onClick={() => { setShowQuiz(false); resetQuiz(); }} className="btn-primary">
+                  Continue Learning
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
@@ -442,26 +958,47 @@ export default function LearnPage({ user }) {
           animate="animate"
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {learningModules.map((module, idx) => (
-            <motion.div key={module.id} variants={fadeInUp}>
-              <GlassCard
-                interactive
-                glow
-                onClick={() => setSelectedModule(module)}
-                className="h-full"
-              >
-                <div className="w-12 h-12 rounded-xl bg-vault-gold/10 flex items-center justify-center mb-4">
-                  <module.icon className="w-6 h-6 text-vault-gold" />
-                </div>
-                <h3 className="text-xl font-heading text-white mb-2">{module.title}</h3>
-                <p className="text-white/50 text-sm mb-4">{module.description}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-white/40">{module.lessons.length} lessons</span>
-                  <span className="text-vault-gold">{module.duration}</span>
-                </div>
-              </GlassCard>
-            </motion.div>
-          ))}
+          {learningModules.map((module, idx) => {
+            const moduleProgress = getModuleProgress(module.id);
+            
+            return (
+              <motion.div key={module.id} variants={fadeInUp}>
+                <GlassCard
+                  interactive
+                  glow
+                  onClick={() => setSelectedModule(module)}
+                  className="h-full"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-vault-gold/10 flex items-center justify-center">
+                      <module.icon className="w-6 h-6 text-vault-gold" />
+                    </div>
+                    {moduleProgress > 0 && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-vault-gold">{moduleProgress}%</span>
+                        {moduleProgress === 100 && (
+                          <Trophy className="w-4 h-4 text-vault-gold" />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-heading text-white mb-2">{module.title}</h3>
+                  <p className="text-white/50 text-sm mb-4">{module.description}</p>
+                  
+                  {moduleProgress > 0 && (
+                    <div className="mb-4">
+                      <Progress value={moduleProgress} className="h-1" />
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-white/40">{module.lessons.length} lessons</span>
+                    <span className="text-vault-gold">{module.duration}</span>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            );
+          })}
         </motion.div>
       ) : !selectedLesson ? (
         // Lesson List
@@ -480,30 +1017,61 @@ export default function LearnPage({ user }) {
             <div className="w-14 h-14 rounded-xl bg-vault-gold/10 flex items-center justify-center">
               <selectedModule.icon className="w-7 h-7 text-vault-gold" />
             </div>
-            <div>
+            <div className="flex-1">
               <h2 className="text-2xl font-heading text-white">{selectedModule.title}</h2>
               <p className="text-white/50">{selectedModule.description}</p>
             </div>
+            <div className="text-right">
+              <div className="text-2xl font-heading text-vault-gold">
+                {getModuleProgress(selectedModule.id)}%
+              </div>
+              <p className="text-white/40 text-sm">Complete</p>
+            </div>
           </div>
 
+          <Progress value={getModuleProgress(selectedModule.id)} className="h-2 mb-8" />
+
           <div className="space-y-3">
-            {selectedModule.lessons.map((lesson, idx) => (
-              <GlassCard
-                key={lesson.id}
-                interactive
-                onClick={() => setSelectedLesson(lesson)}
-                className="flex items-center gap-4"
-              >
-                <div className="w-10 h-10 rounded-lg bg-vault-gold/10 flex items-center justify-center text-vault-gold font-mono">
-                  {idx + 1}
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-white font-medium">{lesson.title}</h4>
-                  <p className="text-white/40 text-sm">{lesson.keyPoints.length} key concepts</p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-white/30" />
-              </GlassCard>
-            ))}
+            {selectedModule.lessons.map((lesson, idx) => {
+              const isComplete = isLessonComplete(selectedModule.id, lesson.id);
+              const hasQuiz = !!lessonQuizzes[lesson.id];
+              const quizScore = progress[selectedModule.id]?.[lesson.id]?.quiz_score;
+              
+              return (
+                <GlassCard
+                  key={lesson.id}
+                  interactive
+                  onClick={() => setSelectedLesson(lesson)}
+                  className="flex items-center gap-4"
+                >
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    isComplete ? 'bg-green-500/20' : 'bg-vault-gold/10'
+                  }`}>
+                    {isComplete ? (
+                      <CheckCircle className="w-5 h-5 text-green-400" />
+                    ) : (
+                      <span className="text-vault-gold font-mono">{idx + 1}</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-white font-medium">{lesson.title}</h4>
+                    <p className="text-white/40 text-sm">{lesson.keyPoints.length} key concepts</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {hasQuiz && (
+                      <div className={`px-2 py-1 rounded text-xs ${
+                        quizScore >= 70 ? 'bg-green-500/20 text-green-400' :
+                        quizScore ? 'bg-yellow-500/20 text-yellow-400' :
+                        'bg-white/5 text-white/40'
+                      }`}>
+                        {quizScore ? `${quizScore}%` : 'Quiz'}
+                      </div>
+                    )}
+                    <ChevronRight className="w-5 h-5 text-white/30" />
+                  </div>
+                </GlassCard>
+              );
+            })}
           </div>
         </motion.div>
       ) : (
@@ -519,29 +1087,109 @@ export default function LearnPage({ user }) {
             ← Back to {selectedModule.title}
           </button>
 
-          <GlassCard className="max-w-4xl">
-            <h2 className="text-3xl font-heading text-white mb-6">{selectedLesson.title}</h2>
-            
-            <div className="prose prose-invert max-w-none">
-              {selectedLesson.content.split('\n\n').map((para, idx) => (
-                <p key={idx} className="text-white/70 leading-relaxed mb-4 whitespace-pre-line">
-                  {para}
-                </p>
-              ))}
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-white/10">
-              <h4 className="text-vault-gold uppercase tracking-wider text-sm mb-4">Key Takeaways</h4>
-              <ul className="space-y-2">
-                {selectedLesson.keyPoints.map((point, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-white/60">
-                    <CheckCircle className="w-5 h-5 text-vault-gold flex-shrink-0 mt-0.5" />
-                    <span>{point}</span>
-                  </li>
+          <div className="max-w-4xl">
+            <GlassCard>
+              <div className="flex items-start justify-between mb-6">
+                <h2 className="text-3xl font-heading text-white">{selectedLesson.title}</h2>
+                {isLessonComplete(selectedModule.id, selectedLesson.id) && (
+                  <div className="flex items-center gap-2 px-3 py-1 bg-green-500/20 rounded-full">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-green-400 text-sm">Completed</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="prose prose-invert max-w-none">
+                {selectedLesson.content.split('\n\n').map((para, idx) => (
+                  <p key={idx} className="text-white/70 leading-relaxed mb-4 whitespace-pre-line">
+                    {para}
+                  </p>
                 ))}
-              </ul>
+              </div>
+
+              {/* Key Takeaways */}
+              <div className="mt-8 pt-6 border-t border-white/10">
+                <h4 className="text-vault-gold uppercase tracking-wider text-sm mb-4">Key Takeaways</h4>
+                <ul className="space-y-2">
+                  {selectedLesson.keyPoints.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-3 text-white/60">
+                      <CheckCircle className="w-5 h-5 text-vault-gold flex-shrink-0 mt-0.5" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Checklist */}
+              {selectedLesson.checklist && (
+                <div className="mt-8 pt-6 border-t border-white/10">
+                  <h4 className="text-vault-gold uppercase tracking-wider text-sm mb-4">Learning Checklist</h4>
+                  <div className="grid md:grid-cols-2 gap-2">
+                    {selectedLesson.checklist.map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-white/50 text-sm">
+                        <div className="w-4 h-4 rounded border border-white/20" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap gap-4">
+                {!isLessonComplete(selectedModule.id, selectedLesson.id) && (
+                  <Button
+                    onClick={() => markComplete(selectedModule.id, selectedLesson.id)}
+                    className="btn-primary"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Mark Complete
+                  </Button>
+                )}
+                {lessonQuizzes[selectedLesson.id] && (
+                  <Button
+                    onClick={() => setShowQuiz(true)}
+                    variant="outline"
+                    className="btn-secondary"
+                  >
+                    <Brain className="w-4 h-4 mr-2" />
+                    Take Quiz
+                  </Button>
+                )}
+              </div>
+            </GlassCard>
+
+            {/* Navigation */}
+            <div className="flex justify-between mt-6">
+              {selectedModule.lessons.indexOf(selectedLesson) > 0 && (
+                <Button
+                  onClick={() => {
+                    const idx = selectedModule.lessons.indexOf(selectedLesson);
+                    setSelectedLesson(selectedModule.lessons[idx - 1]);
+                  }}
+                  variant="ghost"
+                  className="text-white/60 hover:text-white"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Previous Lesson
+                </Button>
+              )}
+              <div className="flex-1" />
+              {selectedModule.lessons.indexOf(selectedLesson) < selectedModule.lessons.length - 1 && (
+                <Button
+                  onClick={() => {
+                    const idx = selectedModule.lessons.indexOf(selectedLesson);
+                    setSelectedLesson(selectedModule.lessons[idx + 1]);
+                  }}
+                  variant="ghost"
+                  className="text-white/60 hover:text-white"
+                >
+                  Next Lesson
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
             </div>
-          </GlassCard>
+          </div>
         </motion.div>
       )}
     </div>
