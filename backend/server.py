@@ -270,6 +270,51 @@ class TrustProfileUpdate(BaseModel):
     extinguishment_conditions: Optional[str] = None
     conveyance_conditions: Optional[str] = None
     additional_notes: Optional[str] = None
+    # RM-ID fields
+    rm_record_id: Optional[str] = None
+    rm_series_start: Optional[str] = None
+    rm_series_end: Optional[str] = None
+    rm_evidence_files: Optional[List[str]] = None
+    # Tax ID fields
+    trust_ein: Optional[str] = None
+    estate_ein: Optional[str] = None
+    tax_classification: Optional[str] = None
+    tax_notes: Optional[str] = None
+    status: Optional[str] = None
+
+
+class MailEventCreate(BaseModel):
+    trust_profile_id: str
+    portfolio_id: str
+    rm_id: str
+    event_type: str
+    date: str
+    from_party: Optional[str] = ""
+    to_party: Optional[str] = ""
+    purpose: Optional[str] = ""
+    evidence_files: Optional[List[str]] = []
+    notes: Optional[str] = ""
+
+
+class PartyCreate(BaseModel):
+    portfolio_id: str
+    name: str
+    party_type: str
+    role: Optional[str] = ""
+    address: Optional[str] = ""
+    email: Optional[str] = ""
+    phone: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
+class PartyUpdate(BaseModel):
+    name: Optional[str] = None
+    party_type: Optional[str] = None
+    role: Optional[str] = None
+    address: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    notes: Optional[str] = None
 
 
 class AssetCreate(BaseModel):
