@@ -363,29 +363,58 @@ export default function TrustProfilePage({ user }) {
               </div>
             </div>
 
+            {/* Placeholder Warning */}
+            {form.rm_id_is_placeholder && (
+              <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <p className="text-yellow-400 text-sm font-medium">⚠️ Placeholder RM-ID</p>
+                <p className="text-white/60 text-sm mt-1">
+                  This is a temporary placeholder. Replace with your actual registered mail sticker number when available.
+                </p>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <div className="flex items-center gap-2">
-                  <Label className="text-white/60">RM Record ID</Label>
+              <div className="md:col-span-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Label className="text-white/60">Main RM-ID (User Entered)</Label>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
                         <HelpCircle className="w-3 h-3 text-white/30" />
                       </TooltipTrigger>
                       <TooltipContent className="bg-vault-navy border-white/10 max-w-xs">
-                        <p className="text-sm">Enter the registered mail sticker number (e.g., RF 123 456 789 US). This is your internal recordkeeping identifier, not a government-issued entity ID.</p>
+                        <p className="text-sm">Enter the registered mail sticker number from your physical sticker/receipt (e.g., RF 123 456 789 US). This becomes the base for all sub-record IDs.</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <Input
-                  value={form.rm_record_id}
-                  onChange={e => handleChange('rm_record_id', e.target.value)}
-                  placeholder="e.g., RF 123 456 789 US"
-                  className="mt-1 bg-white/5 border-white/10 font-mono"
-                />
-                <p className="text-white/30 text-xs mt-1">Internal recordkeeping identifier only</p>
+                <div className="flex gap-2">
+                  <Input
+                    value={form.rm_id_raw}
+                    onChange={e => handleChange('rm_id_raw', e.target.value)}
+                    placeholder="e.g., RF 123 456 789 US"
+                    className="flex-1 bg-white/5 border-white/10 font-mono text-lg"
+                  />
+                  <Button 
+                    variant="outline" 
+                    onClick={generatePlaceholderRmId}
+                    disabled={generatingPlaceholder}
+                    className="btn-secondary whitespace-nowrap"
+                  >
+                    {generatingPlaceholder ? 'Generating...' : 'Generate Placeholder'}
+                  </Button>
+                </div>
+                <p className="text-white/30 text-xs mt-1">
+                  This is your internal recordkeeping ID from your registered mail sticker
+                </p>
               </div>
+
+              {form.rm_id_normalized && (
+                <div className="md:col-span-2 p-3 bg-vault-gold/10 rounded-lg">
+                  <Label className="text-white/40 text-xs uppercase">Normalized ID (Used for Sub-Records)</Label>
+                  <p className="text-vault-gold font-mono text-lg">{form.rm_id_normalized}</p>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
