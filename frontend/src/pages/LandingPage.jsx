@@ -109,42 +109,38 @@ export default function LandingPage() {
             Enter Vault
           </Button>
         </nav>
-              Enter Vault
-            </Button>
-          </div>
-        </nav>
 
         {/* Hero Section */}
         <motion.section 
           variants={staggerContainer}
           initial="initial"
           animate="animate"
-          className="px-8 pt-20 pb-32 max-w-7xl mx-auto"
+          className="px-4 sm:px-8 pt-12 sm:pt-20 pb-16 sm:pb-32 max-w-7xl mx-auto"
         >
           <motion.div variants={fadeInUp} className="max-w-3xl">
-            <p className="text-vault-gold uppercase tracking-[0.3em] text-sm mb-6">
+            <p className="text-vault-gold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm mb-4 sm:mb-6">
               The Sovereign's Workspace
             </p>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading text-white leading-tight mb-6">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-heading text-white leading-tight mb-4 sm:mb-6">
               Master <span className="text-gold-gradient italic">Equity</span>,
               <br />Build Your Trust
             </h1>
-            <p className="text-xl text-white/60 leading-relaxed mb-10 max-w-2xl">
+            <p className="text-base sm:text-xl text-white/60 leading-relaxed mb-8 sm:mb-10 max-w-2xl">
               A comprehensive platform for understanding equity jurisprudence, 
               managing trust portfolios, and creating legally-structured documents 
               with AI-powered assistance.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button 
                 onClick={handleLogin}
-                className="btn-primary text-lg px-8 py-4"
+                className="btn-primary text-sm sm:text-lg px-6 sm:px-8 py-3 sm:py-4 w-full sm:w-auto"
               >
-                Get Started <ArrowRight className="w-5 h-5 ml-2" />
+                Get Started <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </Button>
               <Button 
                 onClick={() => navigate('/learn')}
                 variant="outline"
-                className="btn-secondary text-lg px-8 py-4"
+                className="btn-secondary text-sm sm:text-lg px-6 sm:px-8 py-3 sm:py-4 w-full sm:w-auto"
               >
                 Explore Learning
               </Button>
@@ -154,19 +150,19 @@ export default function LandingPage() {
           {/* Stats */}
           <motion.div 
             variants={fadeInUp}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-12 sm:mt-20"
           >
             {stats.map((stat, idx) => (
               <div key={idx} className="text-center">
-                <p className="text-4xl font-heading text-vault-gold mb-2">{stat.value}</p>
-                <p className="text-sm text-white/40 uppercase tracking-wider">{stat.label}</p>
+                <p className="text-2xl sm:text-4xl font-heading text-vault-gold mb-1 sm:mb-2">{stat.value}</p>
+                <p className="text-xs sm:text-sm text-white/40 uppercase tracking-wider">{stat.label}</p>
               </div>
             ))}
           </motion.div>
         </motion.section>
 
         {/* Features */}
-        <section className="px-8 py-24 bg-vault-void/50">
+        <section className="px-4 sm:px-8 py-16 sm:py-24 bg-vault-void/50">
           <div className="max-w-7xl mx-auto">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
