@@ -1021,7 +1021,25 @@ export default function PortfolioOverviewPage({ user }) {
 
       {/* Add/Edit Asset Dialog */}
       <Dialog open={showAssetDialog} onOpenChange={(open) => { if (!open) resetAssetForm(); setShowAssetDialog(open); }}>
-        <DialogContent className="bg-vault-navy border-white/10">
+        <DialogContent 
+          className="bg-vault-navy border-white/10"
+          onInteractOutside={(e) => {
+            const target = e.target;
+            if (target?.closest?.('[data-radix-select-content]') || 
+                target?.closest?.('[role="listbox"]') ||
+                target?.closest?.('[data-radix-popper-content-wrapper]')) {
+              e.preventDefault();
+            }
+          }}
+          onPointerDownOutside={(e) => {
+            const target = e.target;
+            if (target?.closest?.('[data-radix-select-content]') || 
+                target?.closest?.('[role="listbox"]') ||
+                target?.closest?.('[data-radix-popper-content-wrapper]')) {
+              e.preventDefault();
+            }
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="text-white font-heading">
               {editingAsset ? 'Edit Asset' : 'Add Asset to Trust'}
