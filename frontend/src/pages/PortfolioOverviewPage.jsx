@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import axios from 'axios';
 import {
-  FolderArchive, FileText, Users, Briefcase, Bell, Settings,
-  Plus, ArrowLeft, Edit2, Trash2, Download, ChevronRight, Clock,
-  BookOpen, DollarSign, ArrowUpRight, ArrowDownRight, Hash,
-  Lock, Unlock, Eye, CheckCircle, AlertCircle
+  FolderArchive, FileText, Users, Briefcase,
+  Plus, ArrowLeft, Edit2, Trash2, ChevronRight,
+  DollarSign, Hash, Lock, Filter
 } from 'lucide-react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
@@ -21,7 +20,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '../components/ui/select';
-import { staggerContainer, fadeInUp } from '../lib/motion';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
+} from '../components/ui/alert-dialog';
 import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -35,6 +37,7 @@ export default function PortfolioOverviewPage({ user }) {
   const [assets, setAssets] = useState([]);
   const [parties, setParties] = useState([]);
   const [ledger, setLedger] = useState({ entries: [], summary: {} });
+  const [subjectCategories, setSubjectCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -43,18 +46,27 @@ export default function PortfolioOverviewPage({ user }) {
   
   // Asset dialog state
   const [showAssetDialog, setShowAssetDialog] = useState(false);
+  const [editingAsset, setEditingAsset] = useState(null);
   const [newAssetDescription, setNewAssetDescription] = useState('');
   const [newAssetType, setNewAssetType] = useState('real_property');
+  const [newAssetSubjectCode, setNewAssetSubjectCode] = useState('00');
   const [newAssetValue, setNewAssetValue] = useState('');
   const [newAssetNotes, setNewAssetNotes] = useState('');
   const [assetTransactionType, setAssetTransactionType] = useState('deposit');
+  const [deleteAssetId, setDeleteAssetId] = useState(null);
   
   // Ledger entry dialog
   const [showLedgerDialog, setShowLedgerDialog] = useState(false);
+  const [editingLedger, setEditingLedger] = useState(null);
   const [ledgerEntryType, setLedgerEntryType] = useState('deposit');
+  const [ledgerSubjectCode, setLedgerSubjectCode] = useState('00');
   const [ledgerDescription, setLedgerDescription] = useState('');
   const [ledgerValue, setLedgerValue] = useState('');
   const [ledgerNotes, setLedgerNotes] = useState('');
+  const [deleteLedgerId, setDeleteLedgerId] = useState(null);
+  
+  // Filters
+  const [ledgerFilter, setLedgerFilter] = useState('all');
 
   useEffect(() => {
     fetchPortfolioData();
