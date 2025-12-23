@@ -430,60 +430,60 @@ export default function DocumentEditorPage({ user }) {
   }
 
   return (
-    <div className="h-[calc(100vh-2rem)] flex flex-col">
+    <div className="h-[100dvh] flex flex-col overflow-hidden">
       {/* Header */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="flex items-center gap-4 p-4 border-b border-white/10"
+        className="shrink-0 flex items-center gap-2 sm:gap-4 p-3 sm:p-4 border-b border-white/10"
       >
         <button
           onClick={() => navigate('/vault/documents')}
-          className="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+          className="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-colors shrink-0"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        <div className="flex-1 flex items-center gap-4">
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+        <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-4">
+          <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 ${
             document?.is_locked ? 'bg-green-500/20' : 'bg-vault-gold/10'
           }`}>
             {document?.is_locked ? (
-              <Lock className="w-5 h-5 text-green-400" />
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
             ) : (
-              <FileText className="w-5 h-5 text-vault-gold" />
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-vault-gold" />
             )}
           </div>
           
           {document?.is_locked ? (
-            <div>
-              <h2 className="text-white font-heading">{title}</h2>
-              <div className="flex items-center gap-2 text-sm">
+            <div className="min-w-0">
+              <h2 className="text-white font-heading text-sm sm:text-base truncate">{title}</h2>
+              <div className="flex items-center gap-2 text-xs sm:text-sm">
                 <span className="text-green-400 flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3" /> Finalized
+                  <CheckCircle className="w-3 h-3" /> <span className="hidden sm:inline">Finalized</span>
                 </span>
                 {document.sub_record_id && (
-                  <span className="text-vault-gold/60 font-mono">{document.sub_record_id}</span>
+                  <span className="text-vault-gold/60 font-mono text-xs truncate max-w-[100px] sm:max-w-none">{document.sub_record_id}</span>
                 )}
               </div>
             </div>
           ) : (
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <Input
                 value={title}
                 onChange={(e) => { setTitle(e.target.value); setHasChanges(true); }}
-                className="bg-transparent border-none text-xl font-heading text-white p-0 h-auto focus-visible:ring-0"
+                className="bg-transparent border-none text-base sm:text-xl font-heading text-white p-0 h-auto focus-visible:ring-0"
                 placeholder="Document Title"
               />
               {document?.sub_record_id && (
-                <span className="text-vault-gold/60 text-sm font-mono">{document.sub_record_id}</span>
+                <span className="text-vault-gold/60 text-xs font-mono truncate block max-w-[150px] sm:max-w-none">{document.sub_record_id}</span>
               )}
             </div>
           )}
         </div>
 
-        {/* Status Indicator */}
-        <div className="flex items-center gap-2">
+        {/* Status Indicator - hidden on mobile */}
+        <div className="hidden sm:flex items-center gap-2 shrink-0">
           {lastSaved && !document?.is_locked && (
             <span className="text-white/30 text-sm flex items-center gap-1">
               <Clock className="w-3 h-3" />
@@ -495,9 +495,9 @@ export default function DocumentEditorPage({ user }) {
           )}
         </div>
 
-        {/* View Toggle (for non-locked documents) */}
+        {/* View Toggle - hidden on small mobile */}
         {!document?.is_locked && (
-          <div className="flex border border-white/10 rounded-lg overflow-hidden">
+          <div className="hidden sm:flex border border-white/10 rounded-lg overflow-hidden shrink-0">
             <button
               onClick={() => setViewMode('edit')}
               className={`px-3 py-1.5 text-sm flex items-center gap-1.5 ${
