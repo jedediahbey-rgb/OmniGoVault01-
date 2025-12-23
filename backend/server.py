@@ -2171,6 +2171,255 @@ async def get_chat_history(session_id: str, user: User = Depends(get_current_use
     return messages
 
 
+# ============ AI DOCUMENT TOOLS ============
+
+class GenerateDocumentRequest(BaseModel):
+    template_id: str  # Template to use
+    portfolio_id: str
+    instructions: str  # What to fill in
+    title: Optional[str] = None
+
+
+class UpdateDocumentRequest(BaseModel):
+    document_id: str
+    instructions: str  # What changes to make
+
+
+@api_router.post("/assistant/generate-document")
+async def ai_generate_document(data: GenerateDocumentRequest, user: User = Depends(get_current_user)):
+    """Generate a document from template using AI"""
+    # Get the template
+    template = await db.templates.find_one({"template_id": data.template_id}, {"_id": 0})
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    # Get user's trust profile for context
+    trust_profile = await db.trust_profiles.find_one(
+        {"portfolio_id": data.portfolio_id, "user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="LLM API key not configured")
+    
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        # Build context from trust profile
+        profile_context = ""
+        if trust_profile:
+            profile_context = f"""
+TRUST PROFILE DATA:
+- Trust Name: {trust_profile.get('trust_name', 'N/A')}
+- Grantor: {trust_profile.get('grantor_name', 'N/A')}
+- Trustee: {trust_profile.get('trustee_name', 'N/A')}
+- Beneficiary: {trust_profile.get('beneficiary_name', 'N/A')}
+- RM-ID: {trust_profile.get('rm_id_raw', 'N/A')}
+"""
+        
+        system_message = """You are a document generation assistant for an equity trust platform.
+Your task is to fill in legal document templates with the provided information.
+Maintain the exact structure and formatting of the template.
+Only fill in placeholders and blank fields - do not remove any standard language.
+Use professional, precise legal language.
+If information is missing, use appropriate placeholder text like "[TO BE COMPLETED]"."""
+
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"gen_{uuid.uuid4().hex[:8]}",
+            system_message=system_message
+        ).with_model("openai", "gpt-4o")
+        
+        prompt = f"""Fill in this document template based on the user's instructions.
+
+TEMPLATE NAME: {template.get('name', 'Document')}
+TEMPLATE TYPE: {template.get('template_type', 'general')}
+
+TEMPLATE CONTENT:
+{template.get('content', '')}
+
+{profile_context}
+
+USER INSTRUCTIONS:
+{data.instructions}
+
+Return ONLY the filled-in document content in HTML format. Preserve all formatting."""
+
+        user_message = UserMessage(text=prompt)
+        generated_content = await chat.send_message(user_message)
+        
+        # Generate RM-ID for the new document
+        subject_code = "05"  # Contract/Documents category
+        rm_id, cat_code, seq_num, cat_name = await generate_subject_rm_id(
+            data.portfolio_id, user.user_id, subject_code, "Contract"
+        )
+        
+        # Create the document
+        doc = Document(
+            portfolio_id=data.portfolio_id,
+            user_id=user.user_id,
+            title=data.title or f"Generated: {template.get('name', 'Document')}",
+            content=generated_content,
+            document_type=template.get('template_type', 'general'),
+            rm_id=rm_id,
+            sub_record_id=rm_id,
+            status="draft",
+            template_id=data.template_id
+        )
+        
+        doc_dict = doc.model_dump()
+        doc_dict['created_at'] = doc_dict['created_at'].isoformat()
+        doc_dict['updated_at'] = doc_dict['updated_at'].isoformat()
+        doc_dict['last_accessed'] = doc_dict['last_accessed'].isoformat()
+        
+        await db.documents.insert_one(doc_dict)
+        
+        return {
+            "message": "Document generated successfully",
+            "document_id": doc.document_id,
+            "rm_id": rm_id,
+            "title": doc.title
+        }
+        
+    except Exception as e:
+        logger.error(f"Document generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Generation error: {str(e)}")
+
+
+@api_router.post("/assistant/update-document")
+async def ai_update_document(data: UpdateDocumentRequest, user: User = Depends(get_current_user)):
+    """Update a document using AI based on instructions"""
+    # Get the document
+    doc = await db.documents.find_one(
+        {"document_id": data.document_id, "user_id": user.user_id},
+        {"_id": 0}
+    )
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    if doc.get('is_locked'):
+        raise HTTPException(status_code=400, detail="Cannot update finalized document")
+    
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="LLM API key not configured")
+    
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        system_message = """You are a document editing assistant for an equity trust platform.
+Your task is to modify legal documents based on user instructions.
+Maintain professional legal language and document structure.
+Make only the requested changes - preserve everything else.
+Return the complete updated document."""
+
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"upd_{uuid.uuid4().hex[:8]}",
+            system_message=system_message
+        ).with_model("openai", "gpt-4o")
+        
+        prompt = f"""Update this document based on the user's instructions.
+
+DOCUMENT TITLE: {doc.get('title', 'Document')}
+DOCUMENT TYPE: {doc.get('document_type', 'general')}
+
+CURRENT CONTENT:
+{doc.get('content', '')}
+
+USER INSTRUCTIONS:
+{data.instructions}
+
+Return ONLY the updated document content in HTML format. Preserve all formatting not explicitly changed."""
+
+        user_message = UserMessage(text=prompt)
+        updated_content = await chat.send_message(user_message)
+        
+        # Save version before update
+        version_doc = {
+            "version_id": f"ver_{uuid.uuid4().hex[:12]}",
+            "document_id": data.document_id,
+            "version_number": doc.get("version", 1),
+            "content": doc.get("content", ""),
+            "changed_by": user.user_id,
+            "change_summary": f"AI Update: {data.instructions[:100]}...",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.document_versions.insert_one(version_doc)
+        
+        # Update the document
+        await db.documents.update_one(
+            {"document_id": data.document_id},
+            {
+                "$set": {
+                    "content": updated_content,
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "version": doc.get("version", 1) + 1
+                }
+            }
+        )
+        
+        return {
+            "message": "Document updated successfully",
+            "document_id": data.document_id,
+            "version": doc.get("version", 1) + 1
+        }
+        
+    except Exception as e:
+        logger.error(f"Document update error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Update error: {str(e)}")
+
+
+@api_router.post("/assistant/summarize-document")
+async def ai_summarize_document(document_id: str, user: User = Depends(get_current_user)):
+    """Generate an AI summary of a document"""
+    doc = await db.documents.find_one(
+        {"document_id": document_id, "user_id": user.user_id},
+        {"_id": 0}
+    )
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="LLM API key not configured")
+    
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"sum_{uuid.uuid4().hex[:8]}",
+            system_message="You are a legal document analyst. Provide clear, concise summaries."
+        ).with_model("openai", "gpt-4o")
+        
+        prompt = f"""Analyze this legal document and provide:
+1. A brief summary (2-3 sentences)
+2. Key parties involved
+3. Main obligations or terms
+4. Important dates or deadlines (if any)
+
+DOCUMENT TITLE: {doc.get('title', 'Document')}
+DOCUMENT TYPE: {doc.get('document_type', 'general')}
+
+CONTENT:
+{doc.get('content', '')}"""
+
+        user_message = UserMessage(text=prompt)
+        summary = await chat.send_message(user_message)
+        
+        return {
+            "document_id": document_id,
+            "title": doc.get('title'),
+            "summary": summary
+        }
+        
+    except Exception as e:
+        logger.error(f"Summarization error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Summarization error: {str(e)}")
+
+
 # ============ PDF EXPORT ENDPOINTS ============
 
 def html_to_pdf_elements(html_content: str, styles):
