@@ -736,6 +736,14 @@ async def update_trust_profile(profile_id: str, data: TrustProfileUpdate, user: 
         raise HTTPException(status_code=404, detail="Trust profile not found")
     
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    
+    # Auto-normalize RM-ID if raw is provided
+    if "rm_id_raw" in update_data and update_data["rm_id_raw"]:
+        update_data["rm_id_normalized"] = normalize_rm_id(update_data["rm_id_raw"])
+        update_data["rm_id_is_placeholder"] = False
+        # Also update legacy field for backward compatibility
+        update_data["rm_record_id"] = update_data["rm_id_raw"]
+    
     update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
     
     await db.trust_profiles.update_one({"profile_id": profile_id}, {"$set": update_data})
@@ -743,7 +751,38 @@ async def update_trust_profile(profile_id: str, data: TrustProfileUpdate, user: 
     return doc
 
 
-# ============ ASSET ENDPOINTS ============
+@api_router.post("/trust-profiles/{profile_id}/generate-placeholder-rm-id")
+async def generate_placeholder_rm_id(profile_id: str, user: User = Depends(get_current_user)):
+    """Generate a placeholder RM-ID for users who don't have a sticker yet"""
+    existing = await db.trust_profiles.find_one({"profile_id": profile_id, "user_id": user.user_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Trust profile not found")
+    
+    # Generate a temporary placeholder RM-ID
+    placeholder_raw = f"TEMP {uuid.uuid4().hex[:4].upper()} {uuid.uuid4().hex[:4].upper()} {uuid.uuid4().hex[:4].upper()} XX"
+    placeholder_normalized = normalize_rm_id(placeholder_raw)
+    
+    update_data = {
+        "rm_id_raw": placeholder_raw,
+        "rm_id_normalized": placeholder_normalized,
+        "rm_id_is_placeholder": True,
+        "rm_record_id": placeholder_raw,  # Legacy field
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.trust_profiles.update_one({"profile_id": profile_id}, {"$set": update_data})
+    doc = await db.trust_profiles.find_one({"profile_id": profile_id}, {"_id": 0})
+    
+    return {
+        "message": "Placeholder RM-ID generated. Replace with your actual registered mail sticker number when available.",
+        "rm_id_raw": placeholder_raw,
+        "rm_id_normalized": placeholder_normalized,
+        "is_placeholder": True,
+        "profile": doc
+    }
+
+
+# Helper function for RM-ID normalization (moved before usage)
 
 def normalize_rm_id(rm_id_raw: str) -> str:
     """Normalize RM-ID: uppercase, remove extra spaces"""
