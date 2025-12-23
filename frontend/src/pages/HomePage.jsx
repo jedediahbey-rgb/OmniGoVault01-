@@ -78,36 +78,36 @@ const HomePage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-24 px-6 relative overflow-hidden">
+      <section className="pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#C6A87C] rounded-full blur-[150px]"></div>
           <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-[#C6A87C] rounded-full blur-[100px]"></div>
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6 sm:mb-8">
               <Sparkles className="w-4 h-4 text-[#C6A87C]" />
               <span className="font-sans text-xs text-slate-400 uppercase tracking-wider">
-                AI-Powered · Source-Grounded · Secure
+                AI-Powered · Source-Grounded
               </span>
             </div>
-            <h1 className="font-serif text-5xl md:text-7xl font-medium text-[#F8FAFC] tracking-tight leading-[0.95] mb-8">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-medium text-[#F8FAFC] tracking-tight leading-[1.1] sm:leading-[0.95] mb-6 sm:mb-8">
               Master <span className="text-[#C6A87C]">Equity</span>,<br />
               Structure Your <span className="text-[#C6A87C]">Trust</span>
             </h1>
-            <p className="font-sans text-lg text-slate-400 leading-relaxed mb-10 max-w-2xl">
+            <p className="font-sans text-base sm:text-lg text-slate-400 leading-relaxed mb-8 sm:mb-10 max-w-2xl">
               A comprehensive platform for learning pure equity trust law, managing trust portfolios, 
-              and creating professional documents — all grounded in authoritative source materials with citations.
+              and creating professional documents — all grounded in authoritative source materials.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/knowledge" data-testid="hero-learn">
-                <Button className="bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-8 py-3 rounded-sm shadow-[0_0_20px_rgba(198,168,124,0.3)]">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <Link to="/knowledge" data-testid="hero-learn" className="w-full sm:w-auto">
+                <Button className="w-full sm:w-auto bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-6 sm:px-8 py-3 rounded-sm shadow-[0_0_20px_rgba(198,168,124,0.3)]">
                   Start Learning
                   <BookOpen className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
-              <Link to="/vault" data-testid="hero-vault">
-                <Button variant="outline" className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 font-sans font-semibold uppercase tracking-wider text-xs px-8 py-3 rounded-sm">
+              <Link to="/vault" data-testid="hero-vault" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full sm:w-auto border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 font-sans font-semibold uppercase tracking-wider text-xs px-6 sm:px-8 py-3 rounded-sm">
                   Create Portfolio
                   <Shield className="w-4 h-4 ml-2" />
                 </Button>
