@@ -547,7 +547,8 @@ async def create_document(data: DocumentCreate, user: User = Depends(get_current
     doc_dict['created_at'] = doc_dict['created_at'].isoformat()
     doc_dict['updated_at'] = doc_dict['updated_at'].isoformat()
     await db.documents.insert_one(doc_dict)
-    return doc_dict
+    # Return document without MongoDB _id field
+    return {k: v for k, v in doc_dict.items() if k != '_id'}
 
 
 @api_router.get("/documents/{document_id}")
