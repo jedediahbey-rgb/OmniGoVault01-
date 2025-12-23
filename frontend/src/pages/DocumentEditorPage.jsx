@@ -563,17 +563,17 @@ export default function DocumentEditorPage({ user }) {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button onClick={saveDocument} disabled={saving || !hasChanges} variant="outline" className="btn-secondary">
-                <Save className="w-4 h-4 mr-2" />
-                {saving ? 'Saving...' : 'Save'}
+              <Button onClick={saveDocument} disabled={saving || !hasChanges} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
+                <Save className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
               </Button>
-              <Button onClick={exportToPDF} variant="outline" className="btn-secondary">
+              <Button onClick={exportToPDF} variant="outline" className="hidden sm:flex btn-secondary">
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
-              <Button onClick={() => setShowFinalizeDialog(true)} className="btn-primary">
-                <Lock className="w-4 h-4 mr-2" />
-                Finalize
+              <Button onClick={() => setShowFinalizeDialog(true)} className="btn-primary text-xs sm:text-sm px-2 sm:px-4">
+                <Lock className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Finalize</span>
               </Button>
             </>
           )}
@@ -581,7 +581,7 @@ export default function DocumentEditorPage({ user }) {
       </motion.div>
 
       {/* Editor or Preview Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 min-h-0 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
         <AnimatePresence mode="wait">
           {viewMode === 'edit' && !document?.is_locked ? (
             <motion.div
@@ -589,11 +589,13 @@ export default function DocumentEditorPage({ user }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="max-w-4xl mx-auto my-8"
+              className="w-full max-w-none md:max-w-4xl mx-auto px-3 py-4 md:px-8 md:py-8"
             >
               <GlassCard className="overflow-hidden">
                 <EditorToolbar editor={editor} disabled={document?.is_locked} />
-                <EditorContent editor={editor} />
+                <div className="prose prose-invert max-w-none w-full">
+                  <EditorContent editor={editor} className="min-h-[50vh]" />
+                </div>
               </GlassCard>
             </motion.div>
           ) : (
@@ -602,7 +604,7 @@ export default function DocumentEditorPage({ user }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="py-8 px-4"
+              className="w-full max-w-none px-3 py-4 md:px-8 md:py-8"
             >
               <DocumentView 
                 document={document} 
