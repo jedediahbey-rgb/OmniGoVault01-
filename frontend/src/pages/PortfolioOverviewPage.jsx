@@ -900,14 +900,14 @@ export default function PortfolioOverviewPage({ user }) {
                           <p className="text-white/40 text-xs">{entry.notes}</p>
                         )}
                       </td>
-                      <td className="py-3 px-2 text-right">
+                      <td className="py-3 px-2 text-right overflow-hidden">
                         {entry.balance_effect === 'credit' && entry.value ? (
-                          <span className="text-green-400 text-xs sm:text-sm">{formatCurrency(entry.value)}</span>
+                          <span className="text-green-400 text-xs sm:text-sm whitespace-nowrap">{formatCurrency(entry.value)}</span>
                         ) : '-'}
                       </td>
-                      <td className="py-3 px-2 text-right">
+                      <td className="py-3 px-2 text-right overflow-hidden">
                         {entry.balance_effect === 'debit' && entry.value ? (
-                          <span className="text-red-400 text-xs sm:text-sm">{formatCurrency(entry.value)}</span>
+                          <span className="text-red-400 text-xs sm:text-sm whitespace-nowrap">{formatCurrency(entry.value)}</span>
                         ) : '-'}
                       </td>
                       <td className="py-3 px-2 text-right">
