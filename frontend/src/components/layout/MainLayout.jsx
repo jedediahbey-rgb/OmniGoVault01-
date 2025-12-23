@@ -10,7 +10,7 @@ export default function MainLayout({ children, user, onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-vault-navy">
+    <div className="h-[100dvh] flex flex-col overflow-hidden bg-vault-navy">
       {/* Background gradient */}
       <div className="fixed inset-0 bg-gradient-to-br from-vault-navy via-vault-navy to-vault-void pointer-events-none" />
       
