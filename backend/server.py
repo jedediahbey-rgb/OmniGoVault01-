@@ -1131,6 +1131,56 @@ async def duplicate_document(document_id: str, user: User = Depends(get_current_
     return {k: v for k, v in doc_dict.items() if k != '_id'}
 
 
+@api_router.post("/documents/{document_id}/finalize")
+async def finalize_document(document_id: str, user: User = Depends(get_current_user)):
+    """Mark a document as final and lock it for editing"""
+    doc = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    if doc.get("is_locked"):
+        raise HTTPException(status_code=400, detail="Document is already finalized")
+    
+    now = datetime.now(timezone.utc)
+    await db.documents.update_one(
+        {"document_id": document_id},
+        {"$set": {
+            "status": "final",
+            "is_locked": True,
+            "locked_at": now.isoformat(),
+            "locked_by": user.user_id,
+            "updated_at": now.isoformat()
+        }}
+    )
+    
+    return {"message": "Document finalized and locked", "status": "final"}
+
+
+@api_router.post("/documents/{document_id}/unlock")
+async def unlock_document(document_id: str, user: User = Depends(get_current_user)):
+    """Unlock a finalized document for editing"""
+    doc = await db.documents.find_one({"document_id": document_id, "user_id": user.user_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    if not doc.get("is_locked"):
+        raise HTTPException(status_code=400, detail="Document is not locked")
+    
+    now = datetime.now(timezone.utc)
+    await db.documents.update_one(
+        {"document_id": document_id},
+        {"$set": {
+            "status": "draft",
+            "is_locked": False,
+            "locked_at": None,
+            "locked_by": None,
+            "updated_at": now.isoformat()
+        }}
+    )
+    
+    return {"message": "Document unlocked for editing", "status": "draft"}
+
+
 @api_router.get("/documents/{document_id}/versions")
 async def get_document_versions(document_id: str, user: User = Depends(get_current_user)):
     # Verify ownership
