@@ -322,9 +322,15 @@ class VaultDocumentOSTester:
     
     def test_ai_generate_document(self):
         """Test POST /api/assistant/generate-document"""
-        if not self.session_token or not self.test_portfolio_id or not self.test_template_id:
-            self.log_test("AI Generate Document", False, "Missing required data (session, portfolio, or template)")
+        if not self.session_token or not self.test_portfolio_id:
+            self.log_test("AI Generate Document", False, "Missing required data (session or portfolio)")
             return False
+        
+        # Get template ID if not available
+        if not self.test_template_id:
+            if not self.get_test_template_id():
+                self.log_test("AI Generate Document", False, "No template available for testing")
+                return False
         
         try:
             headers = {
