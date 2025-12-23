@@ -20,6 +20,7 @@ import AssistantPage from './pages/AssistantPage';
 import DocumentEditorPage from './pages/DocumentEditorPage';
 import TrustProfilePage from './pages/TrustProfilePage';
 import PortfolioOverviewPage from './pages/PortfolioOverviewPage';
+import DiagramsPage from './pages/DiagramsPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
