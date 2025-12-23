@@ -671,7 +671,7 @@ export default function PortfolioOverviewPage({ user }) {
                 <h3 className="font-heading text-lg text-white">Trust Ledger</h3>
                 <p className="text-white/40 text-sm">Track all res (property) movements in and out of the trust</p>
               </div>
-              <Button onClick={() => setShowLedgerDialog(true)} className="btn-primary">
+              <Button onClick={() => { resetLedgerForm(); setShowLedgerDialog(true); }} className="btn-primary">
                 <Plus className="w-4 h-4 mr-2" /> Add Entry
               </Button>
             </div>
@@ -696,6 +696,29 @@ export default function PortfolioOverviewPage({ user }) {
               </div>
             </div>
 
+            {/* Filters */}
+            <div className="flex items-center gap-3 mb-4">
+              <Filter className="w-4 h-4 text-white/40" />
+              <Select value={ledgerFilter} onValueChange={setLedgerFilter}>
+                <SelectTrigger className="w-40 bg-white/5 border-white/10">
+                  <SelectValue placeholder="Filter" />
+                </SelectTrigger>
+                <SelectContent className="bg-vault-navy border-white/10">
+                  <SelectItem value="all">All Entries</SelectItem>
+                  <SelectItem value="credits">Credits Only</SelectItem>
+                  <SelectItem value="debits">Debits Only</SelectItem>
+                  {subjectCategories.map(cat => (
+                    <SelectItem key={cat.code} value={cat.code}>
+                      {cat.code} - {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-white/40 text-sm">
+                Showing {filteredLedgerEntries.length} of {ledger.entries?.length || 0} entries
+              </span>
+            </div>
+
             {/* Ledger Entries Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -703,14 +726,16 @@ export default function PortfolioOverviewPage({ user }) {
                   <tr className="border-b border-white/10">
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Date</th>
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">RM-ID</th>
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Subject</th>
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Type</th>
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Description</th>
                     <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Credit</th>
                     <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Debit</th>
+                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {ledger.entries?.map(entry => (
+                  {filteredLedgerEntries.map(entry => (
                     <tr key={entry.entry_id} className="border-b border-white/5 hover:bg-white/5">
                       <td className="py-3 px-2">
                         <span className="text-white/60 text-sm">
@@ -718,7 +743,10 @@ export default function PortfolioOverviewPage({ user }) {
                         </span>
                       </td>
                       <td className="py-3 px-2">
-                        <span className="text-vault-gold font-mono text-sm">{entry.rm_id}</span>
+                        <span className="text-vault-gold font-mono text-sm block whitespace-nowrap">{entry.rm_id}</span>
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className="text-white/60 text-sm">{entry.subject_name || 'General'}</span>
                       </td>
                       <td className="py-3 px-2">
                         <span className={`px-2 py-1 rounded text-xs ${
@@ -743,12 +771,32 @@ export default function PortfolioOverviewPage({ user }) {
                           <span className="text-red-400">{formatCurrency(entry.value)}</span>
                         ) : '-'}
                       </td>
+                      <td className="py-3 px-2 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => openEditLedger(entry)}
+                            className="text-white/40 hover:text-white p-1"
+                            title="Edit entry"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          {!entry.asset_id && (
+                            <button
+                              onClick={() => setDeleteLedgerId(entry.entry_id)}
+                              className="text-red-400 hover:text-red-300 p-1"
+                              title="Delete entry"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {(!ledger.entries || ledger.entries.length === 0) && (
-                <p className="text-white/30 text-center py-8">No ledger entries yet</p>
+              {filteredLedgerEntries.length === 0 && (
+                <p className="text-white/30 text-center py-8">No ledger entries match filter</p>
               )}
             </div>
           </GlassCard>
