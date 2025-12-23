@@ -971,31 +971,61 @@ export default function PortfolioOverviewPage({ user }) {
         </DialogContent>
       </Dialog>
 
-      {/* Add Ledger Entry Dialog */}
-      <Dialog open={showLedgerDialog} onOpenChange={setShowLedgerDialog}>
+      {/* Add/Edit Ledger Entry Dialog */}
+      <Dialog open={showLedgerDialog} onOpenChange={(open) => { if (!open) resetLedgerForm(); setShowLedgerDialog(open); }}>
         <DialogContent className="bg-vault-navy border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-white font-heading">Add Ledger Entry</DialogTitle>
+            <DialogTitle className="text-white font-heading">
+              {editingLedger ? 'Edit Ledger Entry' : 'Add Ledger Entry'}
+            </DialogTitle>
             <DialogDescription className="text-white/50">
-              Record a transaction in the trust ledger
+              {editingLedger ? 'Update entry details (RM-ID cannot be changed)' : 'Record a transaction in the trust ledger'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div>
-              <label className="text-white/60 text-sm mb-2 block">Entry Type</label>
-              <Select value={ledgerEntryType} onValueChange={setLedgerEntryType}>
-                <SelectTrigger className="bg-white/5 border-white/10">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-vault-navy border-white/10">
-                  <SelectItem value="deposit">Deposit (Credit)</SelectItem>
-                  <SelectItem value="withdrawal">Withdrawal (Debit)</SelectItem>
-                  <SelectItem value="transfer_in">Transfer In (Credit)</SelectItem>
-                  <SelectItem value="transfer_out">Transfer Out (Debit)</SelectItem>
-                  <SelectItem value="adjustment">Adjustment</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {editingLedger && (
+              <div className="p-3 bg-vault-gold/10 rounded-lg">
+                <p className="text-white/40 text-xs uppercase">Current RM-ID</p>
+                <p className="text-vault-gold font-mono">{editingLedger.rm_id}</p>
+              </div>
+            )}
+            {!editingLedger && (
+              <>
+                <div>
+                  <label className="text-white/60 text-sm mb-2 block">Subject Category</label>
+                  <Select value={ledgerSubjectCode} onValueChange={setLedgerSubjectCode}>
+                    <SelectTrigger className="bg-white/5 border-white/10">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-vault-navy border-white/10">
+                      {subjectCategories.map(cat => (
+                        <SelectItem key={cat.code} value={cat.code}>
+                          {cat.code} - {cat.name}
+                        </SelectItem>
+                      ))}
+                      {subjectCategories.length === 0 && (
+                        <SelectItem value="00">00 - General</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-white/60 text-sm mb-2 block">Entry Type</label>
+                  <Select value={ledgerEntryType} onValueChange={setLedgerEntryType}>
+                    <SelectTrigger className="bg-white/5 border-white/10">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-vault-navy border-white/10">
+                      <SelectItem value="deposit">Deposit (Credit)</SelectItem>
+                      <SelectItem value="withdrawal">Withdrawal (Debit)</SelectItem>
+                      <SelectItem value="transfer_in">Transfer In (Credit)</SelectItem>
+                      <SelectItem value="transfer_out">Transfer Out (Debit)</SelectItem>
+                      <SelectItem value="adjustment">Adjustment</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
             <div>
               <label className="text-white/60 text-sm mb-2 block">Description *</label>
               <Input
@@ -1028,10 +1058,48 @@ export default function PortfolioOverviewPage({ user }) {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setShowLedgerDialog(false); resetLedgerForm(); }}>Cancel</Button>
-            <Button onClick={addLedgerEntry} className="btn-primary">Add Entry</Button>
+            <Button onClick={editingLedger ? updateLedgerEntry : addLedgerEntry} className="btn-primary">
+              {editingLedger ? 'Save Changes' : 'Add Entry'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Asset Confirmation */}
+      <AlertDialog open={!!deleteAssetId} onOpenChange={(open) => !open && setDeleteAssetId(null)}>
+        <AlertDialogContent className="bg-vault-navy border-white/10">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Asset?</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/60">
+              This will remove the asset and create a withdrawal entry in the ledger. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteAsset} className="bg-red-600 hover:bg-red-700">
+              Delete Asset
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Ledger Entry Confirmation */}
+      <AlertDialog open={!!deleteLedgerId} onOpenChange={(open) => !open && setDeleteLedgerId(null)}>
+        <AlertDialogContent className="bg-vault-navy border-white/10">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Ledger Entry?</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/60">
+              This will permanently remove this ledger entry. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteLedger} className="bg-red-600 hover:bg-red-700">
+              Delete Entry
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
