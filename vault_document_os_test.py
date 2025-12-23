@@ -428,7 +428,7 @@ class VaultDocumentOSTester:
             return False
     
     def test_ai_summarize_document(self):
-        """Test POST /api/assistant/summarize-document/{document_id}"""
+        """Test POST /api/assistant/summarize-document"""
         if not self.session_token or not self.test_document_id:
             self.log_test("AI Summarize Document", False, "No session token or document ID available")
             return False
@@ -439,8 +439,11 @@ class VaultDocumentOSTester:
                 "Content-Type": "application/json"
             }
             
-            # Try as path parameter first
-            response = requests.post(f"{API_BASE}/assistant/summarize-document/{self.test_document_id}", headers=headers, timeout=30)
+            # Try as form data parameter
+            response = requests.post(f"{API_BASE}/assistant/summarize-document", 
+                                   headers=headers, 
+                                   data={"document_id": self.test_document_id}, 
+                                   timeout=30)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
