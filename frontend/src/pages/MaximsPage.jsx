@@ -9,13 +9,23 @@ import {
   ChevronUp,
   Filter,
   ArrowRight,
-  Bookmark
+  ArrowLeft,
+  Bookmark,
+  Brain,
+  RotateCcw,
+  Check,
+  X,
+  Clock,
+  Flame,
+  Trophy
 } from 'lucide-react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { Progress } from '../components/ui/progress';
 import { staggerContainer, fadeInUp } from '../lib/motion';
+import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -217,8 +227,66 @@ export default function MaximsPage({ user }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [expandedId, setExpandedId] = useState(null);
-  const [studyMode, setStudyMode] = useState(false);
+  const [studyMode, setStudyMode] = useState(null); // null, 'study', 'flashcard', 'review'
   const [currentStudyIndex, setCurrentStudyIndex] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [studyProgress, setStudyProgress] = useState({});
+  const [studyStats, setStudyStats] = useState(null);
+  const [dueForReview, setDueForReview] = useState([]);
+
+  useEffect(() => {
+    if (user) {
+      fetchStudyProgress();
+      fetchStudyStats();
+      fetchDueMaxims();
+    }
+  }, [user]);
+
+  const fetchStudyProgress = async () => {
+    try {
+      const response = await axios.get(`${API}/study/maxims`);
+      const progressMap = {};
+      response.data.forEach(p => {
+        progressMap[p.maxim_id] = p;
+      });
+      setStudyProgress(progressMap);
+    } catch (error) {
+      console.error('Failed to fetch study progress');
+    }
+  };
+
+  const fetchStudyStats = async () => {
+    try {
+      const response = await axios.get(`${API}/study/stats`);
+      setStudyStats(response.data);
+    } catch (error) {
+      console.error('Failed to fetch study stats');
+    }
+  };
+
+  const fetchDueMaxims = async () => {
+    try {
+      const response = await axios.get(`${API}/study/maxims/due`);
+      setDueForReview(response.data.map(d => d.maxim_id));
+    } catch (error) {
+      console.error('Failed to fetch due maxims');
+    }
+  };
+
+  const recordReview = async (maximId, quality) => {
+    if (!user) {
+      toast.info('Sign in to track your progress');
+      return;
+    }
+    try {
+      await axios.post(`${API}/study/maxims/review?maxim_id=${maximId}&quality=${quality}`);
+      fetchStudyProgress();
+      fetchStudyStats();
+      fetchDueMaxims();
+    } catch (error) {
+      toast.error('Failed to save review');
+    }
+  };
 
   const filteredMaxims = maxims.filter(m => {
     const matchesSearch = searchTerm === '' || 
@@ -228,13 +296,169 @@ export default function MaximsPage({ user }) {
     return matchesSearch && matchesCategory;
   });
 
-  if (studyMode) {
+  // Flashcard Mode
+  if (studyMode === 'flashcard') {
     const currentMaxim = filteredMaxims[currentStudyIndex];
     
     return (
       <div className="p-8">
         <button
-          onClick={() => setStudyMode(false)}
+          onClick={() => { setStudyMode(null); setShowAnswer(false); setCurrentStudyIndex(0); }}
+          className="flex items-center gap-2 text-vault-gold mb-6 hover:underline"
+        >
+          ← Exit Flashcard Mode
+        </button>
+
+        <div className="max-w-3xl mx-auto">
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex justify-between text-sm text-white/40 mb-2">
+              <span>Card {currentStudyIndex + 1} of {filteredMaxims.length}</span>
+              <span>{Math.round((currentStudyIndex / filteredMaxims.length) * 100)}% Complete</span>
+            </div>
+            <Progress value={(currentStudyIndex / filteredMaxims.length) * 100} className="h-2" />
+          </div>
+
+          <motion.div
+            key={currentMaxim.id}
+            initial={{ opacity: 0, rotateY: -90 }}
+            animate={{ opacity: 1, rotateY: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <GlassCard 
+              className="min-h-[400px] flex flex-col cursor-pointer"
+              onClick={() => setShowAnswer(!showAnswer)}
+            >
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+                {!showAnswer ? (
+                  <>
+                    <div className="text-vault-gold/40 text-sm uppercase tracking-widest mb-4">
+                      Maxim #{currentMaxim.id}
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-heading text-white italic">
+                      "{currentMaxim.maxim}"
+                    </h2>
+                    {currentMaxim.latin && (
+                      <p className="text-white/30 font-legal italic mt-4">{currentMaxim.latin}</p>
+                    )}
+                    <p className="text-white/40 text-sm mt-8">Click to reveal explanation</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-vault-gold/40 text-sm uppercase tracking-widest mb-4">
+                      Explanation
+                    </div>
+                    <p className="text-white/80 text-lg leading-relaxed mb-6">
+                      {currentMaxim.explanation}
+                    </p>
+                    <div className="w-full border-t border-white/10 pt-6 mt-auto">
+                      <h4 className="text-vault-gold text-sm uppercase tracking-wider mb-3">Application</h4>
+                      <p className="text-white/60 text-sm">{currentMaxim.application}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          {/* Rating Buttons (when answer is shown) */}
+          {showAnswer && user && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6"
+            >
+              <p className="text-center text-white/40 text-sm mb-4">How well did you know this?</p>
+              <div className="flex justify-center gap-3">
+                <Button
+                  onClick={() => {
+                    recordReview(currentMaxim.id, 1);
+                    setShowAnswer(false);
+                    setCurrentStudyIndex(Math.min(filteredMaxims.length - 1, currentStudyIndex + 1));
+                  }}
+                  variant="outline"
+                  className="border-red-500/50 text-red-400 hover:bg-red-500/20"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Didn't Know
+                </Button>
+                <Button
+                  onClick={() => {
+                    recordReview(currentMaxim.id, 3);
+                    setShowAnswer(false);
+                    setCurrentStudyIndex(Math.min(filteredMaxims.length - 1, currentStudyIndex + 1));
+                  }}
+                  variant="outline"
+                  className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/20"
+                >
+                  Hard
+                </Button>
+                <Button
+                  onClick={() => {
+                    recordReview(currentMaxim.id, 4);
+                    setShowAnswer(false);
+                    setCurrentStudyIndex(Math.min(filteredMaxims.length - 1, currentStudyIndex + 1));
+                  }}
+                  variant="outline"
+                  className="border-green-500/50 text-green-400 hover:bg-green-500/20"
+                >
+                  Good
+                </Button>
+                <Button
+                  onClick={() => {
+                    recordReview(currentMaxim.id, 5);
+                    setShowAnswer(false);
+                    setCurrentStudyIndex(Math.min(filteredMaxims.length - 1, currentStudyIndex + 1));
+                  }}
+                  className="btn-primary"
+                >
+                  <Check className="w-4 h-4 mr-2" />
+                  Easy
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Navigation */}
+          <div className="flex justify-between mt-6">
+            <Button
+              onClick={() => {
+                setShowAnswer(false);
+                setCurrentStudyIndex(Math.max(0, currentStudyIndex - 1));
+              }}
+              disabled={currentStudyIndex === 0}
+              variant="ghost"
+              className="text-white/60"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Button>
+            <Button
+              onClick={() => {
+                setShowAnswer(false);
+                setCurrentStudyIndex(Math.min(filteredMaxims.length - 1, currentStudyIndex + 1));
+              }}
+              disabled={currentStudyIndex === filteredMaxims.length - 1}
+              variant="ghost"
+              className="text-white/60"
+            >
+              Next
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Study Mode (Original)
+  if (studyMode === 'study') {
+    const currentMaxim = filteredMaxims[currentStudyIndex];
+    
+    return (
+      <div className="p-8">
+        <button
+          onClick={() => setStudyMode(null)}
           className="flex items-center gap-2 text-vault-gold mb-6 hover:underline"
         >
           ← Exit Study Mode
@@ -301,6 +525,126 @@ export default function MaximsPage({ user }) {
     );
   }
 
+  // Review Mode (Due for review)
+  if (studyMode === 'review') {
+    const dueMaxims = maxims.filter(m => dueForReview.includes(m.id));
+    
+    if (dueMaxims.length === 0) {
+      return (
+        <div className="p-8">
+          <button
+            onClick={() => setStudyMode(null)}
+            className="flex items-center gap-2 text-vault-gold mb-6 hover:underline"
+          >
+            ← Back to Maxims
+          </button>
+          <GlassCard className="max-w-2xl mx-auto text-center py-12">
+            <Trophy className="w-16 h-16 text-vault-gold mx-auto mb-4" />
+            <h3 className="text-2xl font-heading text-white mb-2">All Caught Up!</h3>
+            <p className="text-white/50 mb-6">You have no maxims due for review right now.</p>
+            <Button onClick={() => setStudyMode('flashcard')} className="btn-primary">
+              Practice All Maxims
+            </Button>
+          </GlassCard>
+        </div>
+      );
+    }
+
+    const currentMaxim = dueMaxims[currentStudyIndex % dueMaxims.length];
+    
+    return (
+      <div className="p-8">
+        <button
+          onClick={() => { setStudyMode(null); setShowAnswer(false); setCurrentStudyIndex(0); }}
+          className="flex items-center gap-2 text-vault-gold mb-6 hover:underline"
+        >
+          ← Exit Review Mode
+        </button>
+
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2 text-vault-gold">
+              <Clock className="w-5 h-5" />
+              <span>{dueMaxims.length} cards due for review</span>
+            </div>
+            <span className="text-white/40">Card {(currentStudyIndex % dueMaxims.length) + 1} of {dueMaxims.length}</span>
+          </div>
+
+          <GlassCard 
+            className="min-h-[400px] flex flex-col cursor-pointer"
+            onClick={() => setShowAnswer(!showAnswer)}
+          >
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+              {!showAnswer ? (
+                <>
+                  <h2 className="text-2xl md:text-3xl font-heading text-white italic">
+                    "{currentMaxim.maxim}"
+                  </h2>
+                  <p className="text-white/40 text-sm mt-8">Click to reveal</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-white/80 text-lg leading-relaxed">
+                    {currentMaxim.explanation}
+                  </p>
+                </>
+              )}
+            </div>
+          </GlassCard>
+
+          {showAnswer && (
+            <div className="flex justify-center gap-3 mt-6">
+              <Button
+                onClick={() => {
+                  recordReview(currentMaxim.id, 1);
+                  setShowAnswer(false);
+                  setCurrentStudyIndex(currentStudyIndex + 1);
+                }}
+                variant="outline"
+                className="border-red-500/50 text-red-400"
+              >
+                Again
+              </Button>
+              <Button
+                onClick={() => {
+                  recordReview(currentMaxim.id, 3);
+                  setShowAnswer(false);
+                  setCurrentStudyIndex(currentStudyIndex + 1);
+                }}
+                variant="outline"
+                className="border-yellow-500/50 text-yellow-400"
+              >
+                Hard
+              </Button>
+              <Button
+                onClick={() => {
+                  recordReview(currentMaxim.id, 4);
+                  setShowAnswer(false);
+                  setCurrentStudyIndex(currentStudyIndex + 1);
+                }}
+                className="btn-primary"
+              >
+                Good
+              </Button>
+              <Button
+                onClick={() => {
+                  recordReview(currentMaxim.id, 5);
+                  setShowAnswer(false);
+                  setCurrentStudyIndex(currentStudyIndex + 1);
+                }}
+                variant="outline"
+                className="border-green-500/50 text-green-400"
+              >
+                Easy
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Main Maxims List View
   return (
     <div className="p-8">
       <PageHeader
@@ -308,12 +652,57 @@ export default function MaximsPage({ user }) {
         title="Maxims of Equity"
         subtitle="The foundational principles governing equitable jurisprudence"
         actions={
-          <Button onClick={() => { setStudyMode(true); setCurrentStudyIndex(0); }} className="btn-primary">
-            <BookOpen className="w-4 h-4 mr-2" />
-            Study Mode
-          </Button>
+          <div className="flex gap-2">
+            {dueForReview.length > 0 && (
+              <Button 
+                onClick={() => { setStudyMode('review'); setCurrentStudyIndex(0); setShowAnswer(false); }}
+                variant="outline"
+                className="btn-secondary"
+              >
+                <Clock className="w-4 h-4 mr-2" />
+                Review ({dueForReview.length})
+              </Button>
+            )}
+            <Button 
+              onClick={() => { setStudyMode('flashcard'); setCurrentStudyIndex(0); setShowAnswer(false); }}
+              variant="outline"
+              className="btn-secondary"
+            >
+              <Brain className="w-4 h-4 mr-2" />
+              Flashcards
+            </Button>
+            <Button 
+              onClick={() => { setStudyMode('study'); setCurrentStudyIndex(0); }} 
+              className="btn-primary"
+            >
+              <BookOpen className="w-4 h-4 mr-2" />
+              Study Mode
+            </Button>
+          </div>
         }
       />
+
+      {/* Study Stats */}
+      {studyStats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <GlassCard className="text-center py-4">
+            <div className="text-2xl font-heading text-vault-gold">{studyStats.maxims_studied}</div>
+            <div className="text-white/40 text-sm">Maxims Studied</div>
+          </GlassCard>
+          <GlassCard className="text-center py-4">
+            <div className="text-2xl font-heading text-vault-gold">{studyStats.maxims_due}</div>
+            <div className="text-white/40 text-sm">Due for Review</div>
+          </GlassCard>
+          <GlassCard className="text-center py-4">
+            <div className="text-2xl font-heading text-vault-gold">{studyStats.best_streak}</div>
+            <div className="text-white/40 text-sm">Best Streak</div>
+          </GlassCard>
+          <GlassCard className="text-center py-4">
+            <div className="text-2xl font-heading text-vault-gold">{studyStats.lessons_completed}</div>
+            <div className="text-white/40 text-sm">Lessons Done</div>
+          </GlassCard>
+        </div>
+      )}
 
       {/* Search and Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -350,64 +739,92 @@ export default function MaximsPage({ user }) {
         animate="animate"
         className="space-y-4"
       >
-        {filteredMaxims.map((maxim) => (
-          <motion.div key={maxim.id} variants={fadeInUp}>
-            <GlassCard
-              className="cursor-pointer"
-              onClick={() => setExpandedId(expandedId === maxim.id ? null : maxim.id)}
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-vault-gold/10 flex items-center justify-center flex-shrink-0">
-                  <span className="text-vault-gold font-mono text-sm">{maxim.id}</span>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-heading text-white mb-1 italic">
-                    "{maxim.maxim}"
-                  </h3>
-                  <p className="text-white/50 text-sm line-clamp-2">
-                    {maxim.explanation}
-                  </p>
-                </div>
-                {expandedId === maxim.id ? (
-                  <ChevronUp className="w-5 h-5 text-vault-gold" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-white/30" />
-                )}
-              </div>
-
-              <AnimatePresence>
-                {expandedId === maxim.id && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="mt-6 pt-6 border-t border-white/10 space-y-4">
-                      {maxim.latin && (
-                        <p className="text-white/40 font-legal italic">Latin: {maxim.latin}</p>
+        {filteredMaxims.map((maxim) => {
+          const progress = studyProgress[maxim.id];
+          const isDue = dueForReview.includes(maxim.id);
+          
+          return (
+            <motion.div key={maxim.id} variants={fadeInUp}>
+              <GlassCard
+                className="cursor-pointer"
+                onClick={() => setExpandedId(expandedId === maxim.id ? null : maxim.id)}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    progress?.correct_streak >= 3 ? 'bg-green-500/20' :
+                    progress ? 'bg-vault-gold/20' : 'bg-vault-gold/10'
+                  }`}>
+                    {progress?.correct_streak >= 3 ? (
+                      <Flame className="w-5 h-5 text-green-400" />
+                    ) : (
+                      <span className="text-vault-gold font-mono text-sm">{maxim.id}</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-start gap-2">
+                      <h3 className="text-lg font-heading text-white mb-1 italic flex-1">
+                        "{maxim.maxim}"
+                      </h3>
+                      {isDue && (
+                        <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded">
+                          Due
+                        </span>
                       )}
-                      <div>
-                        <h4 className="text-vault-gold uppercase tracking-wider text-xs mb-2">Application</h4>
-                        <p className="text-white/60 text-sm">{maxim.application}</p>
-                      </div>
-                      <div>
-                        <h4 className="text-vault-gold uppercase tracking-wider text-xs mb-2">Related Doctrines</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {maxim.relatedDoctrines.map((doc, idx) => (
-                            <span key={idx} className="px-2 py-1 bg-white/5 text-white/50 text-xs rounded">
-                              {doc}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </GlassCard>
-          </motion.div>
-        ))}
+                    <p className="text-white/50 text-sm line-clamp-2">
+                      {maxim.explanation}
+                    </p>
+                  </div>
+                  {expandedId === maxim.id ? (
+                    <ChevronUp className="w-5 h-5 text-vault-gold" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-white/30" />
+                  )}
+                </div>
+
+                <AnimatePresence>
+                  {expandedId === maxim.id && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-6 pt-6 border-t border-white/10 space-y-4">
+                        {maxim.latin && (
+                          <p className="text-white/40 font-legal italic">Latin: {maxim.latin}</p>
+                        )}
+                        <div>
+                          <h4 className="text-vault-gold uppercase tracking-wider text-xs mb-2">Application</h4>
+                          <p className="text-white/60 text-sm">{maxim.application}</p>
+                        </div>
+                        <div>
+                          <h4 className="text-vault-gold uppercase tracking-wider text-xs mb-2">Related Doctrines</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {maxim.relatedDoctrines.map((doc, idx) => (
+                              <span key={idx} className="px-2 py-1 bg-white/5 text-white/50 text-xs rounded">
+                                {doc}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        {progress && (
+                          <div className="pt-4 border-t border-white/10">
+                            <div className="flex items-center gap-4 text-xs text-white/40">
+                              <span>Reviews: {progress.total_reviews}</span>
+                              <span>Streak: {progress.correct_streak}</span>
+                              <span>Next: {progress.interval_days} day{progress.interval_days !== 1 ? 's' : ''}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </GlassCard>
+            </motion.div>
+          );
+        })}
       </motion.div>
 
       {filteredMaxims.length === 0 && (
