@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import Sidebar from './Sidebar';
 import { pageTransition } from '../../lib/motion';
 
 export default function MainLayout({ children, user, onLogout }) {
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-vault-navy">
@@ -22,12 +25,45 @@ export default function MainLayout({ children, user, onLogout }) {
           backgroundSize: '50px 50px'
         }}
       />
+
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-vault-void/95 backdrop-blur-xl border-b border-white/10 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            aria-label="Open menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <span className="font-heading text-lg text-white">Equity Trust</span>
+          <div className="w-9" /> {/* Spacer for centering */}
+        </div>
+      </header>
+
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden fixed inset-0 bg-black/60 z-40"
+          />
+        )}
+      </AnimatePresence>
       
-      {/* Sidebar */}
-      <Sidebar user={user} onLogout={onLogout} />
+      {/* Sidebar - drawer on mobile, fixed on desktop */}
+      <Sidebar 
+        user={user} 
+        onLogout={onLogout} 
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
       
       {/* Main Content */}
-      <main className="ml-64 min-h-screen relative">
+      <main className="lg:ml-64 min-h-screen relative pt-14 lg:pt-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -35,7 +71,7 @@ export default function MainLayout({ children, user, onLogout }) {
             animate={pageTransition.animate}
             exit={pageTransition.exit}
             transition={pageTransition.transition}
-            className="min-h-screen"
+            className="min-h-screen min-w-0 w-full max-w-full"
           >
             {children}
           </motion.div>
