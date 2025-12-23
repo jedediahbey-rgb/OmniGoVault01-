@@ -519,7 +519,7 @@ const PortfolioPage = ({ user, logout }) => {
                         <SelectTrigger className="bg-[#0B1221] border-white/10 text-[#F8FAFC]">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#111827] border-white/10">
+                        <SelectContent className="bg-[#111827] border-white/10 z-[100]" position="popper" sideOffset={4}>
                           <SelectItem value="notice_of_intent">Notice of Intent</SelectItem>
                           <SelectItem value="acknowledgement">Acknowledgement</SelectItem>
                           <SelectItem value="delivery">Delivery</SelectItem>
