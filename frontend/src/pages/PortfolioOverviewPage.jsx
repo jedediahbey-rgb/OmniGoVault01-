@@ -775,7 +775,6 @@ export default function PortfolioOverviewPage({ user }) {
             {assets.length === 0 && (
               <p className="text-white/30 text-center py-8">No assets recorded</p>
             )}
-            </div>
           </GlassCard>
         </TabsContent>
 
