@@ -221,6 +221,13 @@ export default function DocumentEditorPage({ user }) {
   const [viewMode, setViewMode] = useState('edit'); // 'edit' or 'preview'
   const [showFinalizeDialog, setShowFinalizeDialog] = useState(false);
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
+  
+  // AI Tools State
+  const [showAiUpdateDialog, setShowAiUpdateDialog] = useState(false);
+  const [showAiSummaryDialog, setShowAiSummaryDialog] = useState(false);
+  const [aiInstructions, setAiInstructions] = useState('');
+  const [aiProcessing, setAiProcessing] = useState(false);
+  const [aiSummary, setAiSummary] = useState('');
 
   const editor = useEditor({
     extensions: [
