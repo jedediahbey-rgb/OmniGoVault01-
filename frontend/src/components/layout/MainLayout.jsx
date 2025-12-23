@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -8,6 +8,16 @@ import { pageTransition } from '../../lib/motion';
 export default function MainLayout({ children, user, onLogout }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const scrollContainerRef = useRef(null);
+
+  // Reset scroll to top on route change
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo(0, 0);
+    }
+    // Also reset window scroll for any edge cases
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden bg-vault-navy">
