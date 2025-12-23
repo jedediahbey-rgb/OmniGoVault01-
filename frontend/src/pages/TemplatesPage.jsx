@@ -11,12 +11,15 @@ import {
   Stamp,
   Scale,
   ArrowRight,
-  Plus
+  Plus,
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
 import {
   Dialog,
   DialogContent,
