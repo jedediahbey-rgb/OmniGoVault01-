@@ -1,20 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import {
   FolderArchive, FileText, Users, Briefcase, Bell, Settings,
-  Plus, ArrowLeft, Edit2, Trash2, Download, ChevronRight, Clock
+  Plus, ArrowLeft, Edit2, Trash2, Download, ChevronRight, Clock,
+  BookOpen, DollarSign, ArrowUpRight, ArrowDownRight, Hash,
+  Lock, Unlock, Eye, CheckCircle, AlertCircle
 } from 'lucide-react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import StatCard from '../components/shared/StatCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription
 } from '../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from '../components/ui/select';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import { toast } from 'sonner';
 
@@ -28,6 +34,7 @@ export default function PortfolioOverviewPage({ user }) {
   const [documents, setDocuments] = useState([]);
   const [assets, setAssets] = useState([]);
   const [parties, setParties] = useState([]);
+  const [ledger, setLedger] = useState({ entries: [], summary: {} });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -37,8 +44,17 @@ export default function PortfolioOverviewPage({ user }) {
   // Asset dialog state
   const [showAssetDialog, setShowAssetDialog] = useState(false);
   const [newAssetDescription, setNewAssetDescription] = useState('');
-  const [newAssetType, setNewAssetType] = useState('');
+  const [newAssetType, setNewAssetType] = useState('real_property');
   const [newAssetValue, setNewAssetValue] = useState('');
+  const [newAssetNotes, setNewAssetNotes] = useState('');
+  const [assetTransactionType, setAssetTransactionType] = useState('deposit');
+  
+  // Ledger entry dialog
+  const [showLedgerDialog, setShowLedgerDialog] = useState(false);
+  const [ledgerEntryType, setLedgerEntryType] = useState('deposit');
+  const [ledgerDescription, setLedgerDescription] = useState('');
+  const [ledgerValue, setLedgerValue] = useState('');
+  const [ledgerNotes, setLedgerNotes] = useState('');
 
   useEffect(() => {
     fetchPortfolioData();
@@ -46,23 +62,22 @@ export default function PortfolioOverviewPage({ user }) {
 
   const fetchPortfolioData = async () => {
     try {
-      const [portfolioRes, trustRes, docsRes, assetsRes, partiesRes] = await Promise.all([
+      const [portfolioRes, trustRes, docsRes, assetsRes, partiesRes, ledgerRes] = await Promise.all([
         axios.get(`${API}/portfolios/${portfolioId}`),
-        axios.get(`${API}/portfolios/${portfolioId}/trust-profile`).catch(() => ({ data: null })),
-        axios.get(`${API}/documents?portfolio_id=${portfolioId}`),
-        axios.get(`${API}/portfolios/${portfolioId}/assets`),
-        axios.get(`${API}/portfolios/${portfolioId}/parties`).catch(() => ({ data: [] }))
+        axios.get(`${API}/trust-profiles/by-portfolio/${portfolioId}`).catch(() => ({ data: null })),
+        axios.get(`${API}/documents?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
+        axios.get(`${API}/portfolios/${portfolioId}/assets`).catch(() => ({ data: [] })),
+        axios.get(`${API}/parties?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
+        axios.get(`${API}/portfolios/${portfolioId}/ledger`).catch(() => ({ data: { entries: [], summary: {} } }))
       ]);
       setPortfolio(portfolioRes.data);
       setTrustProfile(trustRes.data);
       setDocuments(docsRes.data || []);
       setAssets(assetsRes.data || []);
       setParties(partiesRes.data || []);
-      setEditName(portfolioRes.data.name);
-      setEditDescription(portfolioRes.data.description || '');
+      setLedger(ledgerRes.data || { entries: [], summary: {} });
     } catch (error) {
       toast.error('Failed to load portfolio');
-      navigate('/vault');
     } finally {
       setLoading(false);
     }
@@ -101,18 +116,80 @@ export default function PortfolioOverviewPage({ user }) {
     try {
       const response = await axios.post(`${API}/portfolios/${portfolioId}/assets`, {
         description: newAssetDescription,
-        asset_type: newAssetType || 'General',
-        value: newAssetValue ? parseFloat(newAssetValue) : null
+        asset_type: newAssetType,
+        value: newAssetValue ? parseFloat(newAssetValue) : null,
+        transaction_type: assetTransactionType,
+        notes: newAssetNotes
       });
       setAssets([...assets, response.data]);
+      // Refresh ledger to show new entry
+      const ledgerRes = await axios.get(`${API}/portfolios/${portfolioId}/ledger`);
+      setLedger(ledgerRes.data);
       setShowAssetDialog(false);
-      setNewAssetDescription('');
-      setNewAssetType('');
-      setNewAssetValue('');
-      toast.success('Asset added');
+      resetAssetForm();
+      toast.success('Asset added successfully');
     } catch (error) {
+      console.error('Add asset error:', error);
       toast.error('Failed to add asset');
     }
+  };
+
+  const deleteAsset = async (assetId) => {
+    if (!confirm('Are you sure you want to remove this asset?')) return;
+    try {
+      await axios.delete(`${API}/assets/${assetId}`);
+      setAssets(assets.filter(a => a.asset_id !== assetId));
+      // Refresh ledger
+      const ledgerRes = await axios.get(`${API}/portfolios/${portfolioId}/ledger`);
+      setLedger(ledgerRes.data);
+      toast.success('Asset removed');
+    } catch (error) {
+      toast.error('Failed to remove asset');
+    }
+  };
+
+  const addLedgerEntry = async () => {
+    if (!ledgerDescription.trim()) {
+      toast.error('Please enter a description');
+      return;
+    }
+    try {
+      await axios.post(`${API}/portfolios/${portfolioId}/ledger`, {
+        entry_type: ledgerEntryType,
+        description: ledgerDescription,
+        value: ledgerValue ? parseFloat(ledgerValue) : null,
+        balance_effect: ledgerEntryType === 'deposit' || ledgerEntryType === 'transfer_in' ? 'credit' : 'debit',
+        notes: ledgerNotes
+      });
+      // Refresh ledger
+      const ledgerRes = await axios.get(`${API}/portfolios/${portfolioId}/ledger`);
+      setLedger(ledgerRes.data);
+      setShowLedgerDialog(false);
+      resetLedgerForm();
+      toast.success('Ledger entry added');
+    } catch (error) {
+      toast.error('Failed to add ledger entry');
+    }
+  };
+
+  const resetAssetForm = () => {
+    setNewAssetDescription('');
+    setNewAssetType('real_property');
+    setNewAssetValue('');
+    setNewAssetNotes('');
+    setAssetTransactionType('deposit');
+  };
+
+  const resetLedgerForm = () => {
+    setLedgerEntryType('deposit');
+    setLedgerDescription('');
+    setLedgerValue('');
+    setLedgerNotes('');
+  };
+
+  const formatCurrency = (value) => {
+    if (!value) return '-';
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
   };
 
   if (loading) {
@@ -140,155 +217,247 @@ export default function PortfolioOverviewPage({ user }) {
         subtitle={portfolio?.description || 'Portfolio workspace'}
         actions={
           <div className="flex gap-2">
-            <Button onClick={() => setEditDialogOpen(true)} variant="outline" className="btn-secondary">
-              <Edit2 className="w-4 h-4 mr-2" /> Edit
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setEditName(portfolio?.name || '');
+                setEditDescription(portfolio?.description || '');
+                setEditDialogOpen(true);
+              }}
+              className="btn-secondary"
+            >
+              <Edit2 className="w-4 h-4 mr-2" />
+              Edit
             </Button>
-            <Button onClick={deletePortfolio} variant="ghost" className="text-red-400 hover:text-red-300 hover:bg-red-400/10">
+            <Button
+              variant="outline"
+              onClick={deletePortfolio}
+              className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+            >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         }
       />
 
-      {/* Portfolio Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-        <TabsList className="bg-white/5 border border-white/10 p-1">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="trust-profile" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            Trust Profile
-          </TabsTrigger>
-          <TabsTrigger value="parties" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            Parties
-          </TabsTrigger>
-          <TabsTrigger value="assets" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            Assets
-          </TabsTrigger>
-          <TabsTrigger value="documents" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            Documents
-          </TabsTrigger>
+      {/* RM-ID Display */}
+      {trustProfile?.rm_id_details?.full_rm_id && (
+        <GlassCard className="mb-6 flex items-center gap-4 p-4">
+          <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center">
+            <Hash className="w-5 h-5 text-vault-gold" />
+          </div>
+          <div>
+            <p className="text-white/40 text-xs uppercase tracking-wider">Trust RM-ID</p>
+            <p className="text-vault-gold font-mono text-lg">{trustProfile.rm_id_details.full_rm_id}</p>
+          </div>
+        </GlassCard>
+      )}
+
+      {/* Stats Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <StatCard
+          title="Documents"
+          value={documents.length}
+          icon={FileText}
+        />
+        <StatCard
+          title="Assets"
+          value={assets.length}
+          icon={Briefcase}
+        />
+        <StatCard
+          title="Trust Balance"
+          value={formatCurrency(ledger.summary?.balance || 0)}
+          icon={DollarSign}
+          subtitle="Total res value"
+        />
+        <StatCard
+          title="Parties"
+          value={parties.length}
+          icon={Users}
+        />
+      </div>
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="bg-white/5 border border-white/10 mb-6">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="assets">Assets</TabsTrigger>
+          <TabsTrigger value="ledger">Trust Ledger</TabsTrigger>
+          <TabsTrigger value="parties">Parties</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="mt-6">
-          <motion.div variants={staggerContainer} initial="initial" animate="animate">
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <motion.div variants={fadeInUp}>
-                <StatCard label="Documents" value={documents.length} icon={FileText} variant="gold" />
-              </motion.div>
-              <motion.div variants={fadeInUp}>
-                <StatCard label="Assets" value={assets.length} icon={Briefcase} variant="blue" />
-              </motion.div>
-              <motion.div variants={fadeInUp}>
-                <StatCard label="Parties" value={parties.length} icon={Users} />
-              </motion.div>
-              <motion.div variants={fadeInUp}>
-                <StatCard label="RM-ID" value={trustProfile?.rm_record_id ? '1' : '0'} icon={Bell} />
-              </motion.div>
-            </div>
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Recent Documents */}
+            <GlassCard>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading text-lg text-white">Recent Documents</h3>
+                <Link to="/templates" className="text-vault-gold text-sm hover:underline">
+                  + New
+                </Link>
+              </div>
+              {documents.slice(0, 3).map(doc => (
+                <Link 
+                  key={doc.document_id} 
+                  to={`/vault/document/${doc.document_id}`}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors"
+                >
+                  <div className={`w-8 h-8 rounded flex items-center justify-center ${
+                    doc.is_locked ? 'bg-green-500/20' : 'bg-vault-gold/10'
+                  }`}>
+                    {doc.is_locked ? (
+                      <Lock className="w-4 h-4 text-green-400" />
+                    ) : (
+                      <FileText className="w-4 h-4 text-vault-gold" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white truncate">{doc.title}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-white/40 text-xs">{doc.document_type}</p>
+                      {doc.rm_id && (
+                        <span className="text-vault-gold/60 text-xs font-mono">{doc.sub_record_id || doc.rm_id}</span>
+                      )}
+                    </div>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded text-xs ${
+                    doc.status === 'final' ? 'bg-green-500/20 text-green-400' :
+                    doc.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
+                    'bg-white/10 text-white/50'
+                  }`}>
+                    {doc.status}
+                  </span>
+                </Link>
+              ))}
+              {documents.length === 0 && (
+                <p className="text-white/30 text-sm text-center py-4">No documents yet</p>
+              )}
+            </GlassCard>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <GlassCard>
-                <h3 className="font-heading text-lg text-white mb-4">Quick Actions</h3>
-                <div className="space-y-2">
-                  <Button onClick={() => navigate('/templates')} className="w-full justify-start btn-secondary">
-                    <Plus className="w-4 h-4 mr-2" /> New Document from Template
-                  </Button>
-                  <Button onClick={() => setActiveTab('trust-profile')} className="w-full justify-start btn-secondary">
-                    <Settings className="w-4 h-4 mr-2" /> Configure Trust Profile
+            {/* Trust Profile Summary */}
+            <GlassCard>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading text-lg text-white">Trust Profile</h3>
+                {trustProfile && (
+                  <Link to={`/vault/trust-profile/${trustProfile.profile_id}`} className="text-vault-gold text-sm hover:underline">
+                    Manage
+                  </Link>
+                )}
+              </div>
+              {trustProfile ? (
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-white/40">Trust Name</span>
+                    <span className="text-white">{trustProfile.trust_name || '-'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/40">RM-ID</span>
+                    <span className="text-vault-gold font-mono">{trustProfile.rm_id_details?.full_rm_id || '-'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/40">Date Established</span>
+                    <span className="text-white">{trustProfile.date_established || '-'}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-white/30 text-sm mb-3">No trust profile yet</p>
+                  <Button 
+                    onClick={() => navigate(`/vault/trust-profile/new?portfolio=${portfolioId}`)} 
+                    size="sm" 
+                    className="btn-primary"
+                  >
+                    Create Trust Profile
                   </Button>
                 </div>
-              </GlassCard>
+              )}
+            </GlassCard>
+          </div>
 
-              <GlassCard>
-                <h3 className="font-heading text-lg text-white mb-4">Recent Documents</h3>
-                {documents.slice(0, 3).map(doc => (
-                  <div
-                    key={doc.document_id}
-                    onClick={() => navigate(`/vault/document/${doc.document_id}`)}
-                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer"
-                  >
-                    <FileText className="w-4 h-4 text-white/40" />
-                    <span className="text-white/80 flex-1 truncate">{doc.title}</span>
-                    <ChevronRight className="w-4 h-4 text-white/20" />
-                  </div>
-                ))}
-                {documents.length === 0 && (
-                  <p className="text-white/40 text-sm">No documents yet</p>
-                )}
-              </GlassCard>
-            </div>
-          </motion.div>
-        </TabsContent>
-
-        {/* Trust Profile Tab */}
-        <TabsContent value="trust-profile" className="mt-6">
+          {/* Ledger Summary */}
           <GlassCard>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-heading text-lg text-white">Trust Profile</h3>
-              <Button
-                onClick={() => navigate(`/vault/portfolio/${portfolioId}/trust-profile`)}
-                className="btn-primary"
-              >
-                {trustProfile ? 'Edit Profile' : 'Create Profile'}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-heading text-lg text-white">Trust Ledger Summary</h3>
+              <Button onClick={() => setActiveTab('ledger')} variant="ghost" size="sm" className="text-vault-gold">
+                View Full Ledger
               </Button>
             </div>
-            
-            {trustProfile ? (
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Trust Name</p>
-                  <p className="text-white">{trustProfile.trust_name}</p>
-                </div>
-                {trustProfile.rm_record_id && (
-                  <div>
-                    <p className="text-white/40 text-xs uppercase tracking-wider mb-1">RM Record ID</p>
-                    <p className="text-vault-gold font-mono">{trustProfile.rm_record_id}</p>
-                    <p className="text-white/30 text-xs mt-1">Internal recordkeeping identifier</p>
-                  </div>
-                )}
-                <div>
-                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Grantor</p>
-                  <p className="text-white">{trustProfile.grantor_name || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Trustee</p>
-                  <p className="text-white">{trustProfile.trustee_name || '-'}</p>
-                </div>
+            <div className="grid grid-cols-3 gap-6">
+              <div className="text-center p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                <ArrowDownRight className="w-6 h-6 text-green-400 mx-auto mb-2" />
+                <p className="text-green-400 text-xl font-heading">{formatCurrency(ledger.summary?.total_deposits)}</p>
+                <p className="text-white/40 text-sm">Total Deposits</p>
               </div>
-            ) : (
-              <p className="text-white/50">No trust profile configured. Create one to enable RM-ID tracking and document generation.</p>
-            )}
+              <div className="text-center p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                <ArrowUpRight className="w-6 h-6 text-red-400 mx-auto mb-2" />
+                <p className="text-red-400 text-xl font-heading">{formatCurrency(ledger.summary?.total_withdrawals)}</p>
+                <p className="text-white/40 text-sm">Total Withdrawals</p>
+              </div>
+              <div className="text-center p-4 bg-vault-gold/10 rounded-lg border border-vault-gold/20">
+                <DollarSign className="w-6 h-6 text-vault-gold mx-auto mb-2" />
+                <p className="text-vault-gold text-xl font-heading">{formatCurrency(ledger.summary?.balance)}</p>
+                <p className="text-white/40 text-sm">Current Balance</p>
+              </div>
+            </div>
           </GlassCard>
         </TabsContent>
 
-        {/* Parties Tab */}
-        <TabsContent value="parties" className="mt-6">
+        {/* Documents Tab */}
+        <TabsContent value="documents" className="mt-6">
           <GlassCard>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-lg text-white">Parties Directory</h3>
-              <Button className="btn-primary">
-                <Plus className="w-4 h-4 mr-2" /> Add Party
-              </Button>
+              <h3 className="font-heading text-lg text-white">Documents</h3>
+              <Link to="/templates">
+                <Button className="btn-primary">
+                  <Plus className="w-4 h-4 mr-2" /> New Document
+                </Button>
+              </Link>
             </div>
-            {parties.length > 0 ? (
-              <div className="space-y-2">
-                {parties.map(party => (
-                  <div key={party.party_id} className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
-                    <Users className="w-5 h-5 text-white/40" />
-                    <div className="flex-1">
-                      <p className="text-white">{party.name}</p>
-                      <p className="text-white/40 text-xs">{party.role} • {party.party_type}</p>
+            
+            <div className="space-y-2">
+              {documents.map(doc => (
+                <Link
+                  key={doc.document_id}
+                  to={`/vault/document/${doc.document_id}`}
+                  className="flex items-center gap-4 p-4 rounded-lg border border-white/5 hover:border-vault-gold/30 bg-white/5 hover:bg-white/10 transition-all"
+                >
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    doc.is_locked ? 'bg-green-500/20' : 'bg-vault-gold/10'
+                  }`}>
+                    {doc.is_locked ? (
+                      <Lock className="w-5 h-5 text-green-400" />
+                    ) : (
+                      <FileText className="w-5 h-5 text-vault-gold" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium truncate">{doc.title}</p>
+                    <div className="flex items-center gap-3 text-xs">
+                      <span className="text-white/40">{doc.document_type}</span>
+                      {doc.sub_record_id && (
+                        <span className="text-vault-gold/60 font-mono">{doc.sub_record_id}</span>
+                      )}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-white/50">No parties added yet.</p>
-            )}
+                  <div className="flex items-center gap-3">
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      doc.status === 'final' ? 'bg-green-500/20 text-green-400' :
+                      doc.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
+                      'bg-white/10 text-white/50'
+                    }`}>
+                      {doc.is_locked ? 'Finalized' : doc.status}
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-white/30" />
+                  </div>
+                </Link>
+              ))}
+              {documents.length === 0 && (
+                <p className="text-white/30 text-center py-8">No documents in this portfolio</p>
+              )}
+            </div>
           </GlassCard>
         </TabsContent>
 
@@ -301,58 +470,182 @@ export default function PortfolioOverviewPage({ user }) {
                 <Plus className="w-4 h-4 mr-2" /> Add Asset
               </Button>
             </div>
-            {assets.length > 0 ? (
-              <div className="space-y-2">
-                {assets.map(asset => (
-                  <div key={asset.asset_id} className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
-                    <Briefcase className="w-5 h-5 text-vault-gold" />
-                    <div className="flex-1">
-                      <p className="text-white">{asset.description}</p>
-                      <p className="text-white/40 text-xs">{asset.asset_type}</p>
-                    </div>
-                    {asset.value && <p className="text-vault-gold">${asset.value}</p>}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-white/50">No assets recorded yet.</p>
-            )}
+
+            {/* Assets Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">RM-ID</th>
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Description</th>
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Type</th>
+                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Value</th>
+                    <th className="text-center text-white/40 text-xs uppercase tracking-wider py-3 px-2">Status</th>
+                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assets.map(asset => (
+                    <tr key={asset.asset_id} className="border-b border-white/5 hover:bg-white/5">
+                      <td className="py-3 px-2">
+                        <span className="text-vault-gold font-mono text-sm">{asset.rm_id || '-'}</span>
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className="text-white">{asset.description}</span>
+                        {asset.notes && (
+                          <p className="text-white/40 text-xs mt-1">{asset.notes}</p>
+                        )}
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className="text-white/60 capitalize">{asset.asset_type?.replace('_', ' ')}</span>
+                      </td>
+                      <td className="py-3 px-2 text-right">
+                        <span className="text-white">{asset.value ? formatCurrency(asset.value) : '-'}</span>
+                      </td>
+                      <td className="py-3 px-2 text-center">
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          asset.status === 'active' ? 'bg-green-500/20 text-green-400' :
+                          asset.status === 'transferred_out' ? 'bg-red-500/20 text-red-400' :
+                          'bg-white/10 text-white/50'
+                        }`}>
+                          {asset.status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-2 text-right">
+                        <button
+                          onClick={() => deleteAsset(asset.asset_id)}
+                          className="text-red-400 hover:text-red-300 p-1"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {assets.length === 0 && (
+                <p className="text-white/30 text-center py-8">No assets recorded</p>
+              )}
+            </div>
           </GlassCard>
         </TabsContent>
 
-        {/* Documents Tab */}
-        <TabsContent value="documents" className="mt-6">
+        {/* Ledger Tab */}
+        <TabsContent value="ledger" className="mt-6">
           <GlassCard>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-lg text-white">Documents</h3>
-              <Button onClick={() => navigate('/templates')} className="btn-primary">
-                <Plus className="w-4 h-4 mr-2" /> New Document
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="font-heading text-lg text-white">Trust Ledger</h3>
+                <p className="text-white/40 text-sm">Track all res (property) movements in and out of the trust</p>
+              </div>
+              <Button onClick={() => setShowLedgerDialog(true)} className="btn-primary">
+                <Plus className="w-4 h-4 mr-2" /> Add Entry
               </Button>
             </div>
-            {documents.length > 0 ? (
-              <div className="space-y-2">
-                {documents.map(doc => (
-                  <div
-                    key={doc.document_id}
-                    onClick={() => navigate(`/vault/document/${doc.document_id}`)}
-                    className="flex items-center gap-4 p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
-                  >
-                    <FileText className="w-5 h-5 text-white/40" />
-                    <div className="flex-1">
-                      <p className="text-white">{doc.title}</p>
-                      <p className="text-white/40 text-xs">
-                        {doc.document_type} • {doc.status}
-                        {doc.sub_record_id && ` • ${doc.sub_record_id}`}
-                      </p>
+
+            {/* Balance Summary */}
+            <div className="grid grid-cols-4 gap-4 mb-6 p-4 bg-white/5 rounded-lg">
+              <div>
+                <p className="text-white/40 text-xs uppercase">Entries</p>
+                <p className="text-white text-xl font-heading">{ledger.summary?.entry_count || 0}</p>
+              </div>
+              <div>
+                <p className="text-white/40 text-xs uppercase">Total Credits</p>
+                <p className="text-green-400 text-xl font-heading">{formatCurrency(ledger.summary?.total_deposits)}</p>
+              </div>
+              <div>
+                <p className="text-white/40 text-xs uppercase">Total Debits</p>
+                <p className="text-red-400 text-xl font-heading">{formatCurrency(ledger.summary?.total_withdrawals)}</p>
+              </div>
+              <div>
+                <p className="text-white/40 text-xs uppercase">Balance</p>
+                <p className="text-vault-gold text-xl font-heading">{formatCurrency(ledger.summary?.balance)}</p>
+              </div>
+            </div>
+
+            {/* Ledger Entries Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Date</th>
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">RM-ID</th>
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Type</th>
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Description</th>
+                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Credit</th>
+                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Debit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ledger.entries?.map(entry => (
+                    <tr key={entry.entry_id} className="border-b border-white/5 hover:bg-white/5">
+                      <td className="py-3 px-2">
+                        <span className="text-white/60 text-sm">
+                          {new Date(entry.recorded_date).toLocaleDateString()}
+                        </span>
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className="text-vault-gold font-mono text-sm">{entry.rm_id}</span>
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          entry.balance_effect === 'credit' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                        }`}>
+                          {entry.entry_type}
+                        </span>
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className="text-white">{entry.description}</span>
+                        {entry.notes && (
+                          <p className="text-white/40 text-xs">{entry.notes}</p>
+                        )}
+                      </td>
+                      <td className="py-3 px-2 text-right">
+                        {entry.balance_effect === 'credit' && entry.value ? (
+                          <span className="text-green-400">{formatCurrency(entry.value)}</span>
+                        ) : '-'}
+                      </td>
+                      <td className="py-3 px-2 text-right">
+                        {entry.balance_effect === 'debit' && entry.value ? (
+                          <span className="text-red-400">{formatCurrency(entry.value)}</span>
+                        ) : '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {(!ledger.entries || ledger.entries.length === 0) && (
+                <p className="text-white/30 text-center py-8">No ledger entries yet</p>
+              )}
+            </div>
+          </GlassCard>
+        </TabsContent>
+
+        {/* Parties Tab */}
+        <TabsContent value="parties" className="mt-6">
+          <GlassCard>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-heading text-lg text-white">Trust Parties</h3>
+              <Button className="btn-primary">
+                <Plus className="w-4 h-4 mr-2" /> Add Party
+              </Button>
+            </div>
+            {parties.length > 0 ? (
+              <div className="space-y-3">
+                {parties.map(party => (
+                  <div key={party.party_id} className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
+                    <div className="w-10 h-10 rounded-full bg-vault-gold/20 flex items-center justify-center">
+                      <Users className="w-5 h-5 text-vault-gold" />
                     </div>
-                    <span className="text-white/30 text-xs">
-                      {new Date(doc.updated_at).toLocaleDateString()}
-                    </span>
+                    <div className="flex-1">
+                      <p className="text-white">{party.name}</p>
+                      <p className="text-white/40 text-sm capitalize">{party.role}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-white/50">No documents yet. Create one from templates.</p>
+              <p className="text-white/30 text-center py-8">No parties defined</p>
             )}
           </GlassCard>
         </TabsContent>
@@ -375,7 +668,7 @@ export default function PortfolioOverviewPage({ user }) {
             </div>
             <div>
               <label className="text-white/60 text-sm mb-2 block">Description</label>
-              <Input
+              <Textarea
                 value={editDescription}
                 onChange={e => setEditDescription(e.target.value)}
                 className="bg-white/5 border-white/10"
@@ -393,7 +686,10 @@ export default function PortfolioOverviewPage({ user }) {
       <Dialog open={showAssetDialog} onOpenChange={setShowAssetDialog}>
         <DialogContent className="bg-vault-navy border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-white font-heading">Add Asset</DialogTitle>
+            <DialogTitle className="text-white font-heading">Add Asset to Trust</DialogTitle>
+            <DialogDescription className="text-white/50">
+              Assets will be assigned a unique RM-ID automatically
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
@@ -405,14 +701,36 @@ export default function PortfolioOverviewPage({ user }) {
                 className="bg-white/5 border-white/10"
               />
             </div>
-            <div>
-              <label className="text-white/60 text-sm mb-2 block">Asset Type</label>
-              <Input
-                placeholder="e.g., Real Estate, Vehicle, Securities"
-                value={newAssetType}
-                onChange={e => setNewAssetType(e.target.value)}
-                className="bg-white/5 border-white/10"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-white/60 text-sm mb-2 block">Asset Type</label>
+                <Select value={newAssetType} onValueChange={setNewAssetType}>
+                  <SelectTrigger className="bg-white/5 border-white/10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-vault-navy border-white/10">
+                    <SelectItem value="real_property">Real Property</SelectItem>
+                    <SelectItem value="personal_property">Personal Property</SelectItem>
+                    <SelectItem value="financial_account">Financial Account</SelectItem>
+                    <SelectItem value="vehicle">Vehicle</SelectItem>
+                    <SelectItem value="securities">Securities</SelectItem>
+                    <SelectItem value="intellectual_property">Intellectual Property</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-white/60 text-sm mb-2 block">Transaction Type</label>
+                <Select value={assetTransactionType} onValueChange={setAssetTransactionType}>
+                  <SelectTrigger className="bg-white/5 border-white/10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-vault-navy border-white/10">
+                    <SelectItem value="deposit">Deposit into Trust</SelectItem>
+                    <SelectItem value="transfer_in">Transfer In</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div>
               <label className="text-white/60 text-sm mb-2 block">Value (Optional)</label>
@@ -424,10 +742,82 @@ export default function PortfolioOverviewPage({ user }) {
                 className="bg-white/5 border-white/10"
               />
             </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Notes (Optional)</label>
+              <Textarea
+                placeholder="Additional details about this asset..."
+                value={newAssetNotes}
+                onChange={e => setNewAssetNotes(e.target.value)}
+                className="bg-white/5 border-white/10"
+                rows={2}
+              />
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setShowAssetDialog(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => { setShowAssetDialog(false); resetAssetForm(); }}>Cancel</Button>
             <Button onClick={addAsset} className="btn-primary">Add Asset</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Ledger Entry Dialog */}
+      <Dialog open={showLedgerDialog} onOpenChange={setShowLedgerDialog}>
+        <DialogContent className="bg-vault-navy border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-white font-heading">Add Ledger Entry</DialogTitle>
+            <DialogDescription className="text-white/50">
+              Record a transaction in the trust ledger
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Entry Type</label>
+              <Select value={ledgerEntryType} onValueChange={setLedgerEntryType}>
+                <SelectTrigger className="bg-white/5 border-white/10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-vault-navy border-white/10">
+                  <SelectItem value="deposit">Deposit (Credit)</SelectItem>
+                  <SelectItem value="withdrawal">Withdrawal (Debit)</SelectItem>
+                  <SelectItem value="transfer_in">Transfer In (Credit)</SelectItem>
+                  <SelectItem value="transfer_out">Transfer Out (Debit)</SelectItem>
+                  <SelectItem value="adjustment">Adjustment</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Description *</label>
+              <Input
+                placeholder="e.g., Initial corpus deposit"
+                value={ledgerDescription}
+                onChange={e => setLedgerDescription(e.target.value)}
+                className="bg-white/5 border-white/10"
+              />
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Value (Optional)</label>
+              <Input
+                type="number"
+                placeholder="e.g., 10000"
+                value={ledgerValue}
+                onChange={e => setLedgerValue(e.target.value)}
+                className="bg-white/5 border-white/10"
+              />
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Notes (Optional)</label>
+              <Textarea
+                placeholder="Additional details..."
+                value={ledgerNotes}
+                onChange={e => setLedgerNotes(e.target.value)}
+                className="bg-white/5 border-white/10"
+                rows={2}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setShowLedgerDialog(false); resetLedgerForm(); }}>Cancel</Button>
+            <Button onClick={addLedgerEntry} className="btn-primary">Add Entry</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
