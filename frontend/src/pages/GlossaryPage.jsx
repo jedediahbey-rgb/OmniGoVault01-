@@ -593,7 +593,7 @@ export default function GlossaryPage({ user }) {
   // Detail Modal View
   if (selectedTerm) {
     return (
-      <div className="p-8">
+      <div ref={detailRef} tabIndex={-1} className="p-4 sm:p-8 outline-none">
         <button
           onClick={() => setSelectedTerm(null)}
           className="flex items-center gap-2 text-vault-gold mb-6 hover:underline"
@@ -603,9 +603,9 @@ export default function GlossaryPage({ user }) {
 
         <div className="max-w-4xl">
           <GlassCard>
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <h2 className="text-3xl font-heading text-white">{selectedTerm.term}</h2>
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+              <div className="min-w-0">
+                <h2 className="text-2xl sm:text-3xl font-heading text-white break-words">{selectedTerm.term}</h2>
                 {selectedTerm.aka && (
                   <p className="text-vault-gold text-sm mt-1">Also known as: {selectedTerm.aka}</p>
                 )}
