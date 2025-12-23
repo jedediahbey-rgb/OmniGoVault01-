@@ -1539,6 +1539,242 @@ async def export_document_pdf(document_id: str, user: User = Depends(get_current
     return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename={filename}"})
 
 
+# ============ LEARNING PROGRESS ENDPOINTS ============
+
+@api_router.get("/learning/progress")
+async def get_learning_progress(user: User = Depends(get_current_user)):
+    """Get all learning progress for user"""
+    progress = await db.learning_progress.find({"user_id": user.user_id}, {"_id": 0}).to_list(1000)
+    return progress
+
+
+@api_router.get("/learning/progress/{module_id}")
+async def get_module_progress(module_id: str, user: User = Depends(get_current_user)):
+    """Get progress for a specific module"""
+    progress = await db.learning_progress.find(
+        {"user_id": user.user_id, "module_id": module_id}, {"_id": 0}
+    ).to_list(100)
+    return progress
+
+
+@api_router.post("/learning/progress")
+async def update_learning_progress(
+    module_id: str,
+    lesson_id: str,
+    completed: bool = False,
+    quiz_score: Optional[int] = None,
+    time_spent: int = 0,
+    user: User = Depends(get_current_user)
+):
+    """Update or create learning progress"""
+    existing = await db.learning_progress.find_one({
+        "user_id": user.user_id,
+        "module_id": module_id,
+        "lesson_id": lesson_id
+    })
+    
+    now = datetime.now(timezone.utc)
+    
+    if existing:
+        update_data = {
+            "last_accessed": now.isoformat(),
+            "time_spent_seconds": existing.get("time_spent_seconds", 0) + time_spent
+        }
+        if completed and not existing.get("completed"):
+            update_data["completed"] = True
+            update_data["completed_at"] = now.isoformat()
+        if quiz_score is not None:
+            update_data["quiz_score"] = quiz_score
+            update_data["quiz_attempts"] = existing.get("quiz_attempts", 0) + 1
+        
+        await db.learning_progress.update_one(
+            {"progress_id": existing["progress_id"]},
+            {"$set": update_data}
+        )
+        return {"status": "updated", "progress_id": existing["progress_id"]}
+    else:
+        progress = LearningProgress(
+            user_id=user.user_id,
+            module_id=module_id,
+            lesson_id=lesson_id,
+            completed=completed,
+            quiz_score=quiz_score,
+            quiz_attempts=1 if quiz_score is not None else 0,
+            time_spent_seconds=time_spent,
+            completed_at=now if completed else None
+        )
+        progress_dict = progress.model_dump()
+        progress_dict["last_accessed"] = progress_dict["last_accessed"].isoformat()
+        progress_dict["created_at"] = progress_dict["created_at"].isoformat()
+        if progress_dict["completed_at"]:
+            progress_dict["completed_at"] = progress_dict["completed_at"].isoformat()
+        
+        await db.learning_progress.insert_one(progress_dict)
+        return {"status": "created", "progress_id": progress.progress_id}
+
+
+@api_router.post("/learning/bookmark")
+async def toggle_bookmark(module_id: str, lesson_id: str, user: User = Depends(get_current_user)):
+    """Toggle bookmark on a lesson"""
+    existing = await db.learning_progress.find_one({
+        "user_id": user.user_id,
+        "module_id": module_id,
+        "lesson_id": lesson_id
+    })
+    
+    if existing:
+        new_value = not existing.get("bookmarked", False)
+        await db.learning_progress.update_one(
+            {"progress_id": existing["progress_id"]},
+            {"$set": {"bookmarked": new_value}}
+        )
+        return {"bookmarked": new_value}
+    else:
+        progress = LearningProgress(
+            user_id=user.user_id,
+            module_id=module_id,
+            lesson_id=lesson_id,
+            bookmarked=True
+        )
+        progress_dict = progress.model_dump()
+        progress_dict["last_accessed"] = progress_dict["last_accessed"].isoformat()
+        progress_dict["created_at"] = progress_dict["created_at"].isoformat()
+        await db.learning_progress.insert_one(progress_dict)
+        return {"bookmarked": True}
+
+
+# ============ MAXIM STUDY/FLASHCARD ENDPOINTS ============
+
+@api_router.get("/study/maxims")
+async def get_maxim_study_progress(user: User = Depends(get_current_user)):
+    """Get all maxim study progress"""
+    progress = await db.maxim_study.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    return progress
+
+
+@api_router.get("/study/maxims/due")
+async def get_due_maxims(user: User = Depends(get_current_user)):
+    """Get maxims due for review (spaced repetition)"""
+    now = datetime.now(timezone.utc).isoformat()
+    due = await db.maxim_study.find(
+        {"user_id": user.user_id, "next_review": {"$lte": now}},
+        {"_id": 0}
+    ).sort("next_review", 1).to_list(20)
+    return due
+
+
+@api_router.post("/study/maxims/review")
+async def review_maxim(
+    maxim_id: int,
+    quality: int,  # 0-5: 0-2 = fail, 3-5 = pass with varying ease
+    user: User = Depends(get_current_user)
+):
+    """Record a maxim review using SM-2 spaced repetition algorithm"""
+    existing = await db.maxim_study.find_one({
+        "user_id": user.user_id,
+        "maxim_id": maxim_id
+    })
+    
+    now = datetime.now(timezone.utc)
+    
+    # SM-2 Algorithm implementation
+    if existing:
+        ef = existing.get("ease_factor", 2.5)
+        interval = existing.get("interval_days", 1)
+        reps = existing.get("repetitions", 0)
+        streak = existing.get("correct_streak", 0)
+        
+        if quality >= 3:  # Correct response
+            if reps == 0:
+                interval = 1
+            elif reps == 1:
+                interval = 6
+            else:
+                interval = round(interval * ef)
+            reps += 1
+            streak += 1
+        else:  # Incorrect response
+            reps = 0
+            interval = 1
+            streak = 0
+        
+        # Update ease factor (minimum 1.3)
+        ef = max(1.3, ef + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)))
+        
+        next_review = now + timedelta(days=interval)
+        
+        await db.maxim_study.update_one(
+            {"study_id": existing["study_id"]},
+            {"$set": {
+                "ease_factor": ef,
+                "interval_days": interval,
+                "repetitions": reps,
+                "next_review": next_review.isoformat(),
+                "last_reviewed": now.isoformat(),
+                "correct_streak": streak,
+                "total_reviews": existing.get("total_reviews", 0) + 1
+            }}
+        )
+    else:
+        # First time studying this maxim
+        interval = 1 if quality >= 3 else 0
+        next_review = now + timedelta(days=interval)
+        
+        study = MaximStudyProgress(
+            user_id=user.user_id,
+            maxim_id=maxim_id,
+            interval_days=interval,
+            repetitions=1 if quality >= 3 else 0,
+            next_review=next_review,
+            last_reviewed=now,
+            correct_streak=1 if quality >= 3 else 0,
+            total_reviews=1
+        )
+        study_dict = study.model_dump()
+        study_dict["next_review"] = study_dict["next_review"].isoformat()
+        study_dict["last_reviewed"] = study_dict["last_reviewed"].isoformat()
+        study_dict["created_at"] = study_dict["created_at"].isoformat()
+        
+        await db.maxim_study.insert_one(study_dict)
+    
+    return {"status": "recorded", "next_review_days": interval}
+
+
+@api_router.get("/study/stats")
+async def get_study_stats(user: User = Depends(get_current_user)):
+    """Get overall study statistics"""
+    # Learning progress stats
+    total_lessons = await db.learning_progress.count_documents({"user_id": user.user_id})
+    completed_lessons = await db.learning_progress.count_documents({
+        "user_id": user.user_id,
+        "completed": True
+    })
+    
+    # Maxim study stats
+    total_maxims_studied = await db.maxim_study.count_documents({"user_id": user.user_id})
+    now = datetime.now(timezone.utc).isoformat()
+    due_for_review = await db.maxim_study.count_documents({
+        "user_id": user.user_id,
+        "next_review": {"$lte": now}
+    })
+    
+    # Calculate streak
+    streak_docs = await db.maxim_study.find(
+        {"user_id": user.user_id},
+        {"correct_streak": 1, "_id": 0}
+    ).to_list(100)
+    max_streak = max([d.get("correct_streak", 0) for d in streak_docs]) if streak_docs else 0
+    
+    return {
+        "lessons_started": total_lessons,
+        "lessons_completed": completed_lessons,
+        "completion_rate": round(completed_lessons / total_lessons * 100) if total_lessons > 0 else 0,
+        "maxims_studied": total_maxims_studied,
+        "maxims_due": due_for_review,
+        "best_streak": max_streak
+    }
+
+
 # ============ STATS/DASHBOARD ENDPOINTS ============
 
 @api_router.get("/dashboard/stats")
