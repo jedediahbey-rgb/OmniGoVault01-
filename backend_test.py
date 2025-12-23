@@ -8,7 +8,7 @@ import uuid
 import os
 
 # Get backend URL from frontend .env
-BACKEND_URL = "https://equityfolio.preview.emergentagent.com"
+BACKEND_URL = "https://equity-os-1.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class EquityTrustAPITester:
