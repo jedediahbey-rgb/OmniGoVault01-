@@ -1295,7 +1295,25 @@ export default function PortfolioOverviewPage({ user }) {
 
       {/* Add/Edit Party Dialog */}
       <Dialog open={showPartyDialog} onOpenChange={(open) => { if (!open) resetPartyForm(); setShowPartyDialog(open); }}>
-        <DialogContent className="bg-vault-navy border-white/10">
+        <DialogContent 
+          className="bg-vault-navy border-white/10"
+          onInteractOutside={(e) => {
+            const target = e.target;
+            if (target?.closest?.('[data-radix-select-content]') || 
+                target?.closest?.('[role="listbox"]') ||
+                target?.closest?.('[data-radix-popper-content-wrapper]')) {
+              e.preventDefault();
+            }
+          }}
+          onPointerDownOutside={(e) => {
+            const target = e.target;
+            if (target?.closest?.('[data-radix-select-content]') || 
+                target?.closest?.('[role="listbox"]') ||
+                target?.closest?.('[data-radix-popper-content-wrapper]')) {
+              e.preventDefault();
+            }
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="text-white font-heading">
               {editingParty ? 'Edit Party' : 'Add Trust Party'}
