@@ -297,7 +297,7 @@ export default function PortfolioOverviewPage({ user }) {
           <GlassCard>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Assets Ledger</h3>
-              <Button className="btn-primary">
+              <Button onClick={() => setShowAssetDialog(true)} className="btn-primary">
                 <Plus className="w-4 h-4 mr-2" /> Add Asset
               </Button>
             </div>
