@@ -26,6 +26,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
 } from '../components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { humanizeSlug, formatCurrency as formatCurrencyUtil, formatDate } from '../lib/utils';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
