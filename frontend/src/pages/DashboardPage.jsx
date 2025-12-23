@@ -119,7 +119,7 @@ export default function DashboardPage({ user }) {
     { icon: Plus, label: 'New Portfolio', action: () => setShowNewPortfolio(true), color: 'gold' },
     { icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'blue' },
     { icon: BookOpen, label: 'Start Learning', action: () => navigate('/learn'), color: 'default' },
-    { icon: Bot, label: 'Ask Assistant', action: () => {}, color: 'gold', hint: 'Ctrl+J' },
+    { icon: Bot, label: 'Ask Assistant', action: () => navigate('/assistant'), color: 'gold', hint: 'Ctrl+J' },
   ];
 
   if (loading) {
@@ -137,9 +137,9 @@ export default function DashboardPage({ user }) {
         subtitle="Your trust portfolio dashboard"
         actions={
           <div className="flex items-center gap-2">
-            <span className="text-white/30 text-xs">Ctrl+K for commands</span>
+            <span className="hidden sm:inline text-white/30 text-xs">Ctrl+K for commands</span>
             <Button onClick={() => setShowNewPortfolio(true)} className="btn-primary">
-              <Plus className="w-4 h-4 mr-2" /> New Portfolio
+              <Plus className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">New Portfolio</span>
             </Button>
           </div>
         }
@@ -195,7 +195,7 @@ export default function DashboardPage({ user }) {
                     action.color === 'blue' ? 'text-vault-blue' : 'text-white/60'
                   }`} />
                   <span className="text-xs text-white/70 group-hover:text-white">{action.label}</span>
-                  {action.hint && <span className="text-[10px] text-white/30">{action.hint}</span>}
+                  {action.hint && <span className="hidden sm:inline text-[10px] text-white/30">{action.hint}</span>}
                 </button>
               ))}
             </div>
