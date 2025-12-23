@@ -835,15 +835,15 @@ export default function PortfolioOverviewPage({ user }) {
             </div>
 
             {/* Ledger Entries Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <table className="w-full min-w-[600px]">
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Date</th>
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">RM-ID</th>
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Subject</th>
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2 hidden sm:table-cell">Subject</th>
                     <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Type</th>
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Description</th>
+                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2 hidden md:table-cell">Description</th>
                     <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Credit</th>
                     <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Debit</th>
                     <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Actions</th>
@@ -853,14 +853,14 @@ export default function PortfolioOverviewPage({ user }) {
                   {filteredLedgerEntries.map(entry => (
                     <tr key={entry.entry_id} className="border-b border-white/5 hover:bg-white/5">
                       <td className="py-3 px-2">
-                        <span className="text-white/60 text-sm">
+                        <span className="text-white/60 text-xs sm:text-sm">
                           {new Date(entry.recorded_date).toLocaleDateString()}
                         </span>
                       </td>
-                      <td className="py-3 px-2">
-                        <span className="text-vault-gold font-mono text-sm block whitespace-nowrap">{entry.rm_id}</span>
+                      <td className="py-3 px-2 max-w-[120px] sm:max-w-[180px]">
+                        <span className="text-vault-gold font-mono text-xs sm:text-sm block truncate" title={entry.rm_id}>{entry.rm_id}</span>
                       </td>
-                      <td className="py-3 px-2">
+                      <td className="py-3 px-2 hidden sm:table-cell">
                         <span className="text-white/60 text-sm">{entry.subject_name || 'General'}</span>
                       </td>
                       <td className="py-3 px-2">
@@ -870,7 +870,7 @@ export default function PortfolioOverviewPage({ user }) {
                           {entry.entry_type}
                         </span>
                       </td>
-                      <td className="py-3 px-2">
+                      <td className="py-3 px-2 hidden md:table-cell">
                         <span className="text-white">{entry.description}</span>
                         {entry.notes && (
                           <p className="text-white/40 text-xs">{entry.notes}</p>
@@ -878,12 +878,12 @@ export default function PortfolioOverviewPage({ user }) {
                       </td>
                       <td className="py-3 px-2 text-right">
                         {entry.balance_effect === 'credit' && entry.value ? (
-                          <span className="text-green-400">{formatCurrency(entry.value)}</span>
+                          <span className="text-green-400 text-xs sm:text-sm">{formatCurrency(entry.value)}</span>
                         ) : '-'}
                       </td>
                       <td className="py-3 px-2 text-right">
                         {entry.balance_effect === 'debit' && entry.value ? (
-                          <span className="text-red-400">{formatCurrency(entry.value)}</span>
+                          <span className="text-red-400 text-xs sm:text-sm">{formatCurrency(entry.value)}</span>
                         ) : '-'}
                       </td>
                       <td className="py-3 px-2 text-right">
