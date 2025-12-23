@@ -234,14 +234,6 @@ export default function MaximsPage({ user }) {
   const [studyStats, setStudyStats] = useState(null);
   const [dueForReview, setDueForReview] = useState([]);
 
-  useEffect(() => {
-    if (user) {
-      fetchStudyProgress();
-      fetchStudyStats();
-      fetchDueMaxims();
-    }
-  }, [user]);
-
   const fetchStudyProgress = async () => {
     try {
       const response = await axios.get(`${API}/study/maxims`);
@@ -272,6 +264,14 @@ export default function MaximsPage({ user }) {
       console.error('Failed to fetch due maxims');
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      fetchStudyProgress();
+      fetchStudyStats();
+      fetchDueMaxims();
+    }
+  }, [user]);
 
   const recordReview = async (maximId, quality) => {
     if (!user) {
