@@ -497,12 +497,12 @@ export default function PortfolioOverviewPage({ user }) {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-white/5 border border-white/10 mb-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="assets">Assets</TabsTrigger>
-          <TabsTrigger value="ledger">Trust Ledger</TabsTrigger>
-          <TabsTrigger value="parties">Parties</TabsTrigger>
+        <TabsList className="bg-white/5 border border-white/10 mb-6 flex-wrap h-auto gap-1 p-1">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2">Overview</TabsTrigger>
+          <TabsTrigger value="documents" className="text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2">Docs</TabsTrigger>
+          <TabsTrigger value="assets" className="text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2">Assets</TabsTrigger>
+          <TabsTrigger value="ledger" className="text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2">Ledger</TabsTrigger>
+          <TabsTrigger value="parties" className="text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2">Parties</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
