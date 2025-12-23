@@ -74,13 +74,14 @@ export default function PortfolioOverviewPage({ user }) {
 
   const fetchPortfolioData = async () => {
     try {
-      const [portfolioRes, trustRes, docsRes, assetsRes, partiesRes, ledgerRes] = await Promise.all([
+      const [portfolioRes, trustRes, docsRes, assetsRes, partiesRes, ledgerRes, categoriesRes] = await Promise.all([
         axios.get(`${API}/portfolios/${portfolioId}`),
         axios.get(`${API}/trust-profiles/by-portfolio/${portfolioId}`).catch(() => ({ data: null })),
         axios.get(`${API}/documents?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
         axios.get(`${API}/portfolios/${portfolioId}/assets`).catch(() => ({ data: [] })),
         axios.get(`${API}/parties?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
-        axios.get(`${API}/portfolios/${portfolioId}/ledger`).catch(() => ({ data: { entries: [], summary: {} } }))
+        axios.get(`${API}/portfolios/${portfolioId}/ledger`).catch(() => ({ data: { entries: [], summary: {} } })),
+        axios.get(`${API}/portfolios/${portfolioId}/subject-categories`).catch(() => ({ data: [] }))
       ]);
       setPortfolio(portfolioRes.data);
       setTrustProfile(trustRes.data);
@@ -88,6 +89,7 @@ export default function PortfolioOverviewPage({ user }) {
       setAssets(assetsRes.data || []);
       setParties(partiesRes.data || []);
       setLedger(ledgerRes.data || { entries: [], summary: {} });
+      setSubjectCategories(categoriesRes.data || []);
     } catch (error) {
       toast.error('Failed to load portfolio');
     } finally {
