@@ -238,6 +238,38 @@ class ChatMessage(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
+class LearningProgress(BaseModel):
+    """Track user progress through learning modules"""
+    progress_id: str = Field(default_factory=lambda: f"prog_{uuid.uuid4().hex[:12]}")
+    user_id: str
+    module_id: str
+    lesson_id: str
+    completed: bool = False
+    quiz_score: Optional[int] = None
+    quiz_attempts: int = 0
+    notes: str = ""
+    bookmarked: bool = False
+    time_spent_seconds: int = 0
+    last_accessed: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    completed_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class MaximStudyProgress(BaseModel):
+    """Track spaced repetition study of maxims"""
+    study_id: str = Field(default_factory=lambda: f"study_{uuid.uuid4().hex[:12]}")
+    user_id: str
+    maxim_id: int
+    ease_factor: float = 2.5  # SM-2 algorithm factor
+    interval_days: int = 1
+    repetitions: int = 0
+    next_review: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_reviewed: Optional[datetime] = None
+    correct_streak: int = 0
+    total_reviews: int = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 # ============ REQUEST/RESPONSE MODELS ============
 
 class PortfolioCreate(BaseModel):
