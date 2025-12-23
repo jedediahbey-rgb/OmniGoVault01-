@@ -292,8 +292,6 @@ export default function PortfolioOverviewPage({ user }) {
     if (ledgerFilter === 'debits') return entry.balance_effect === 'debit';
     return entry.subject_code === ledgerFilter;
   }) || [];
-    setLedgerNotes('');
-  };
 
   const formatCurrency = (value) => {
     if (!value) return '-';
