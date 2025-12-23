@@ -469,18 +469,6 @@ export default function PortfolioOverviewPage({ user }) {
           </div>
         </GlassCard>
       )}
-            <p className="text-vault-gold font-mono text-lg">
-              {trustProfile.rm_id_raw || trustProfile.rm_record_id || 'Not set'}
-            </p>
-          </div>
-          <Link 
-            to={`/vault/portfolio/${portfolioId}/trust-profile`}
-            className="text-white/40 hover:text-white text-sm"
-          >
-            Edit RM-ID →
-          </Link>
-        </GlassCard>
-      )}
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
