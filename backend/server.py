@@ -335,10 +335,12 @@ class NoticeCreate(BaseModel):
 
 class DocumentCreate(BaseModel):
     portfolio_id: Optional[str] = None
+    trust_profile_id: Optional[str] = None
     template_id: Optional[str] = None
     title: str
     document_type: str
     content: Optional[str] = ""
+    editor_content: Optional[Dict] = None
     tags: Optional[List[str]] = []
     folder: Optional[str] = "/"
 
@@ -346,6 +348,7 @@ class DocumentCreate(BaseModel):
 class DocumentUpdate(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
+    editor_content: Optional[Dict] = None
     status: Optional[str] = None
     tags: Optional[List[str]] = None
     folder: Optional[str] = None
