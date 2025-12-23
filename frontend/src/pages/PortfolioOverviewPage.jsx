@@ -534,7 +534,7 @@ export default function PortfolioOverviewPage({ user }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-white line-clamp-2 text-sm">{doc.title}</p>
-                    <p className="text-white/40 text-xs mt-0.5">{doc.document_type}</p>
+                    <p className="text-white/40 text-xs mt-0.5">{humanizeSlug(doc.document_type)}</p>
                     {doc.rm_id && (
                       <p className="text-vault-gold/60 text-xs font-mono break-words mt-0.5 sm:hidden">
                         {doc.sub_record_id || doc.rm_id}
@@ -665,7 +665,7 @@ export default function PortfolioOverviewPage({ user }) {
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-medium truncate">{doc.title}</p>
                     <div className="flex items-center gap-3 text-xs">
-                      <span className="text-white/40">{doc.document_type}</span>
+                      <span className="text-white/40">{humanizeSlug(doc.document_type)}</span>
                       {doc.sub_record_id && (
                         <span className="text-vault-gold/60 font-mono">{doc.sub_record_id}</span>
                       )}
