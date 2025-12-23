@@ -1,43 +1,46 @@
-# Test Results - Equity Trust Portfolio Platform Phase 1A
+# Test Results - Equity Trust Portfolio Platform Phase 1B
 
-## Features Implemented in Phase 1A
-1. ✅ Disclaimer banner on all pages ("Educational only. Not legal advice.")
-2. ✅ Command Palette (Ctrl+K)
-3. ✅ AI Assistant Drawer (Ctrl+J)
-4. ✅ Portfolio CRUD (create/edit/delete) on Dashboard
-5. ✅ Trust Profile with RM-ID System and Tax IDs
-6. ✅ Portfolio Overview page with tabs (Overview, Trust Profile, Parties, Assets, Documents)
-7. ✅ Mail Event Log endpoints
-8. ✅ Parties directory endpoints
-9. ✅ Document soft delete (trash/restore)
-10. ✅ Document duplicate feature
-11. ✅ Enhanced template → document creation with reliable linking
+## Features Implemented in Phase 1B
 
-## Backend APIs Added
-- PUT /api/portfolios/{id} - Update portfolio
-- GET /api/trust-profiles - Get all trust profiles
-- GET /api/portfolios/{id}/trust-profiles - Get profiles for portfolio
-- GET /api/trust-profiles/{id} - Get profile by ID
-- GET /api/portfolios/{id}/parties - Get parties
-- POST /api/parties - Create party
-- PUT /api/parties/{id} - Update party
-- DELETE /api/parties/{id} - Delete party
-- GET /api/trust-profiles/{id}/mail-events - Get mail events
-- POST /api/mail-events - Create mail event
-- DELETE /api/mail-events/{id} - Delete mail event
-- GET /api/search/mail-events - Search mail events
-- GET /api/documents/trash - Get deleted documents
-- POST /api/documents/{id}/restore - Restore from trash
-- POST /api/documents/{id}/duplicate - Duplicate document
+### 1. Learn Page Enhancements
+- ✅ Progress tracking per module and lesson
+- ✅ Quiz system with multiple-choice questions
+- ✅ Learning checklists for each lesson
+- ✅ Mark complete functionality
+- ✅ Quiz scoring and feedback
 
-## Models Updated
-- TrustProfile: Added rm_record_id, rm_series_*, rm_evidence_files, trust_ein, estate_ein, tax_classification, tax_notes
-- Document: Added trust_profile_id, editor_content, sub_record_id, is_deleted, deleted_at
-- MailEvent: New model for mail tracking
-- Party: New model for party directory
+### 2. Maxims Page Enhancements
+- ✅ Flashcard mode for studying maxims
+- ✅ Spaced repetition algorithm (SM-2)
+- ✅ Study progress tracking
+- ✅ "Due for review" functionality
+- ✅ Study statistics dashboard
+
+### 3. Interactive Diagrams (React Flow)
+- ✅ Trust Relationship Structure diagram
+- ✅ Equity vs Common Law diagram
+- ✅ Fiduciary Relationships diagram
+- ✅ Drag, zoom, pan functionality
+- ✅ Info panel with explanations
+
+### 4. UI Cleanup
+- ✅ Removed excessive educational disclaimers
+- ✅ Diagrams added to sidebar navigation
+
+## New Backend APIs Added
+- GET /api/learning/progress - Get all learning progress
+- GET /api/learning/progress/{module_id} - Get module progress
+- POST /api/learning/progress - Update/create progress
+- POST /api/learning/bookmark - Toggle lesson bookmark
+- GET /api/study/maxims - Get maxim study progress
+- GET /api/study/maxims/due - Get maxims due for review
+- POST /api/study/maxims/review - Record maxim review (SM-2)
+- GET /api/study/stats - Get overall study statistics
 
 ## Testing Protocol
-- Test Portfolio CRUD on Dashboard
-- Test Trust Profile creation with RM-ID
-- Test Document creation from template
-- Test AI Assistant drawer
+- Test Learn page module/lesson navigation
+- Test quiz functionality
+- Test progress tracking (requires login)
+- Test Maxims flashcard mode
+- Test interactive diagrams (drag, zoom)
+- Test spaced repetition functionality
