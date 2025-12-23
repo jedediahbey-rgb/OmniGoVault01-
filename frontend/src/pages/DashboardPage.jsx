@@ -102,7 +102,8 @@ export default function DashboardPage({ user }) {
       setPortfolios(portfolios.filter(p => p.portfolio_id !== portfolio.portfolio_id));
       toast.success('Portfolio deleted');
     } catch (error) {
-      toast.error('Failed to delete portfolio');
+      console.error('Delete portfolio error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to delete portfolio');
     }
   };
 
