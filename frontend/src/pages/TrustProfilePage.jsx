@@ -482,7 +482,7 @@ export default function TrustProfilePage({ user }) {
                         <HelpCircle className="w-3 h-3 text-white/30" />
                       </TooltipTrigger>
                       <TooltipContent className="bg-vault-navy border-white/10 max-w-xs">
-                        <p className="text-sm">Domestic vs Foreign trust classification depends on the "court test" and "control test" under IRC §7701(a)(30). This is fact-dependent—consult qualified tax counsel.</p>
+                        <p className="text-sm">Domestic vs Foreign trust classification depends on the court test and control test under IRC §7701(a)(30). This is fact-dependent—consult qualified tax counsel.</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
