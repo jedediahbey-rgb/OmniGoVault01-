@@ -606,7 +606,7 @@ const PortfolioPage = ({ user, logout }) => {
                         <SelectTrigger className="bg-[#0B1221] border-white/10 text-[#F8FAFC]">
                           <SelectValue placeholder="Select template" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#111827] border-white/10">
+                        <SelectContent className="bg-[#111827] border-white/10 z-[100]" position="popper" sideOffset={4}>
                           {templates.map(t => (
                             <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                           ))}
