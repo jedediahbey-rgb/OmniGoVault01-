@@ -124,19 +124,24 @@ export default function TrustProfilePage({ user }) {
         // Update existing
         await axios.put(`${API}/trust-profiles/${profile.profile_id}`, form);
         toast.success('Trust profile updated');
+        // Refresh the data
+        fetchData();
       } else {
         // Create new
         const response = await axios.post(`${API}/trust-profiles`, {
           portfolio_id: portfolioId,
           trust_name: form.trust_name
         });
+        setProfile(response.data);
         // Then update with all fields
         await axios.put(`${API}/trust-profiles/${response.data.profile_id}`, form);
-        setProfile(response.data);
         toast.success('Trust profile created');
+        // Refresh the data
+        fetchData();
       }
     } catch (error) {
-      toast.error('Failed to save trust profile');
+      console.error('Save profile error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to save trust profile');
     } finally {
       setSaving(false);
     }
