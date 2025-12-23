@@ -77,6 +77,7 @@ export default function MainLayout({ children, user, onLogout }) {
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
+            ref={scrollContainerRef}
             initial={pageTransition.initial}
             animate={pageTransition.animate}
             exit={pageTransition.exit}
