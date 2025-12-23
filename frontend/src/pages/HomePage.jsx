@@ -118,29 +118,29 @@ const HomePage = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="py-24 px-6 bg-[#0F172A]">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0F172A]">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="font-serif text-4xl text-[#F8FAFC] mb-4">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="font-serif text-2xl sm:text-4xl text-[#F8FAFC] mb-4">
               Your Complete <span className="text-[#C6A87C]">Trust Platform</span>
             </h2>
-            <p className="font-sans text-slate-400 max-w-2xl mx-auto">
+            <p className="font-sans text-sm sm:text-base text-slate-400 max-w-2xl mx-auto px-4">
               Everything you need to understand equity law and manage your trust documents in one secure platform.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {features.map((feature, index) => (
               <Link
                 key={index}
                 to={feature.link}
-                className="group bg-[#111827] border border-white/5 p-8 rounded-sm hover:border-[#C6A87C]/30 transition-all duration-300"
+                className="group bg-[#111827] border border-white/5 p-6 sm:p-8 rounded-sm hover:border-[#C6A87C]/30 transition-all duration-300"
                 data-testid={`feature-${index}`}
               >
-                <div className="text-[#C6A87C] mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="text-[#C6A87C] mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
                   {feature.icon}
                 </div>
-                <h3 className="font-serif text-xl text-[#F8FAFC] mb-3">{feature.title}</h3>
-                <p className="font-sans text-sm text-slate-400 mb-6 leading-relaxed">{feature.description}</p>
+                <h3 className="font-serif text-lg sm:text-xl text-[#F8FAFC] mb-2 sm:mb-3">{feature.title}</h3>
+                <p className="font-sans text-sm text-slate-400 mb-4 sm:mb-6 leading-relaxed">{feature.description}</p>
                 <span className="inline-flex items-center gap-2 text-[#C6A87C] font-sans text-sm font-medium group-hover:gap-3 transition-all">
                   {feature.cta}
                   <ArrowRight className="w-4 h-4" />
