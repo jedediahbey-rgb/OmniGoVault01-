@@ -213,6 +213,7 @@ class EquityTrustFeaturesTest:
             
             payload = {
                 "name": "John Smith",
+                "party_type": "individual",
                 "role": "grantor",
                 "address": "123 Main Street, Anytown, ST 12345",
                 "email": "john.smith@example.com",
