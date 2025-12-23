@@ -4,20 +4,24 @@ import { Toaster } from "./components/ui/sonner";
 import axios from "axios";
 
 // Pages
-import LandingPage from "./pages/LandingPage";
+import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
-import Dashboard from "./pages/Dashboard";
-import CreateTrust from "./pages/CreateTrust";
-import EditTrust from "./pages/EditTrust";
-import Education from "./pages/Education";
+import KnowledgePage from "./pages/KnowledgePage";
+import MaximsPage from "./pages/MaximsPage";
+import RelationshipsPage from "./pages/RelationshipsPage";
+import TemplatesPage from "./pages/TemplatesPage";
+import SourceLibraryPage from "./pages/SourceLibraryPage";
+import AssistantPage from "./pages/AssistantPage";
+import DashboardPage from "./pages/DashboardPage";
+import PortfolioPage from "./pages/PortfolioPage";
+import DocumentEditorPage from "./pages/DocumentEditorPage";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Configure axios defaults
 axios.defaults.withCredentials = true;
 
-// Auth Context
+// Auth Hook
 export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,8 +51,7 @@ export const useAuth = () => {
   return { user, setUser, loading, setLoading, checkAuth, logout };
 };
 
-// Auth Callback Component - Handles OAuth redirect
-// REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+// Auth Callback Component
 const AuthCallback = ({ setUser, setLoading }) => {
   const hasProcessed = useRef(false);
   const navigate = useNavigate();
@@ -70,14 +73,11 @@ const AuthCallback = ({ setUser, setLoading }) => {
       const sessionId = sessionIdMatch[1];
 
       try {
-        const response = await axios.post(`${API}/auth/session`, {
-          session_id: sessionId
-        });
-
+        const response = await axios.post(`${API}/auth/session`, { session_id: sessionId });
         if (response.data.user) {
           setUser(response.data.user);
           setLoading(false);
-          navigate("/dashboard", { state: { user: response.data.user } });
+          navigate("/vault", { state: { user: response.data.user } });
         } else {
           navigate("/login");
         }
@@ -128,10 +128,7 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
   if (isAuthenticated === null || loading) {
     return (
       <div className="min-h-screen bg-[#0B1221] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[#C6A87C] font-serif text-lg">Loading...</p>
-        </div>
+        <div className="w-12 h-12 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -148,40 +145,48 @@ const AppRouter = ({ auth }) => {
   const location = useLocation();
   const { user, setUser, loading, setLoading, checkAuth, logout } = auth;
 
-  // Check URL fragment for session_id SYNCHRONOUSLY during render
   if (location.hash?.includes("session_id=")) {
     return <AuthCallback setUser={setUser} setLoading={setLoading} />;
   }
 
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      {/* Public Routes */}
+      <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/education" element={<Education />} />
+      <Route path="/knowledge" element={<KnowledgePage />} />
+      <Route path="/maxims" element={<MaximsPage />} />
+      <Route path="/relationships" element={<RelationshipsPage />} />
+      <Route path="/templates" element={<TemplatesPage user={user} />} />
+      <Route path="/sources" element={<SourceLibraryPage />} />
+      <Route path="/assistant" element={<AssistantPage user={user} />} />
+      
+      {/* Protected Routes */}
       <Route
-        path="/dashboard"
+        path="/vault"
         element={
           <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
-            <Dashboard user={user} logout={logout} />
+            <DashboardPage user={user} logout={logout} />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/trusts/new"
+        path="/vault/portfolio/:portfolioId"
         element={
           <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
-            <CreateTrust user={user} logout={logout} />
+            <PortfolioPage user={user} logout={logout} />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/trusts/:id"
+        path="/vault/document/:documentId"
         element={
           <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
-            <EditTrust user={user} logout={logout} />
+            <DocumentEditorPage user={user} logout={logout} />
           </ProtectedRoute>
         }
       />
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
