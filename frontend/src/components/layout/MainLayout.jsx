@@ -63,7 +63,7 @@ export default function MainLayout({ children, user, onLogout }) {
       />
       
       {/* Main Content */}
-      <main className="lg:ml-64 min-h-screen relative pt-14 lg:pt-0">
+      <main className="lg:ml-64 flex-1 min-h-0 relative pt-14 lg:pt-0 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -71,7 +71,8 @@ export default function MainLayout({ children, user, onLogout }) {
             animate={pageTransition.animate}
             exit={pageTransition.exit}
             transition={pageTransition.transition}
-            className="min-h-screen min-w-0 w-full max-w-full"
+            className="h-full min-w-0 w-full max-w-full overflow-y-auto"
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {children}
           </motion.div>
