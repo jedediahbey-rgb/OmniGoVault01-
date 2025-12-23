@@ -1105,6 +1105,36 @@ async def get_chat_history(session_id: str, user: User = Depends(get_current_use
 
 # ============ PDF EXPORT ENDPOINTS ============
 
+def html_to_pdf_elements(html_content: str, styles):
+    """Convert HTML content to ReportLab elements"""
+    elements = []
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    h1_style = ParagraphStyle('H1', parent=styles['Heading1'], fontSize=18, alignment=TA_CENTER, spaceAfter=20, fontName='Times-Bold')
+    h2_style = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=14, spaceAfter=12, fontName='Times-Bold')
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=11, alignment=TA_JUSTIFY, spaceAfter=10, fontName='Times-Roman', leading=14)
+    
+    for element in soup.children:
+        if element.name == 'h1':
+            elements.append(Paragraph(element.get_text(), h1_style))
+        elif element.name == 'h2':
+            elements.append(Paragraph(element.get_text(), h2_style))
+        elif element.name == 'p':
+            text = str(element).replace('<strong>', '<b>').replace('</strong>', '</b>')
+            text = re.sub(r'<br\s*/?>', '<br/>', text)
+            elements.append(Paragraph(text, body_style))
+        elif element.name == 'ul':
+            for li in element.find_all('li'):
+                elements.append(Paragraph(f"• {li.get_text()}", body_style))
+        elif element.name == 'ol':
+            for idx, li in enumerate(element.find_all('li'), 1):
+                elements.append(Paragraph(f"{idx}. {li.get_text()}", body_style))
+        elif element.name and element.get_text().strip():
+            elements.append(Paragraph(element.get_text(), body_style))
+    
+    return elements
+
+
 @api_router.get("/documents/{document_id}/export/pdf")
 async def export_document_pdf(document_id: str, user: User = Depends(get_current_user)):
     """Export document as PDF"""
@@ -1120,15 +1150,20 @@ async def export_document_pdf(document_id: str, user: User = Depends(get_current
     body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=11, alignment=TA_JUSTIFY, spaceAfter=10, fontName='Times-Roman', leading=14)
     
     elements = []
-    elements.append(Paragraph(doc.get('title', 'Document'), title_style))
-    elements.append(Spacer(1, 0.2*inch))
     
     content = doc.get('content', '')
     if content:
-        # Parse content as paragraphs
-        for para in content.split('\n\n'):
-            if para.strip():
-                elements.append(Paragraph(para.strip(), body_style))
+        # Check if content is HTML
+        if '<' in content and '>' in content:
+            elements.extend(html_to_pdf_elements(content, styles))
+        else:
+            elements.append(Paragraph(doc.get('title', 'Document'), title_style))
+            elements.append(Spacer(1, 0.2*inch))
+            for para in content.split('\n\n'):
+                if para.strip():
+                    elements.append(Paragraph(para.strip(), body_style))
+    else:
+        elements.append(Paragraph(doc.get('title', 'Document'), title_style))
     
     # Add signature block
     elements.append(Spacer(1, 0.5*inch))
