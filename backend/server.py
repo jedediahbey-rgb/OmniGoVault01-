@@ -1698,6 +1698,19 @@ async def restore_document_version(document_id: str, version_id: str, user: User
 
 # ============ TEMPLATE ENDPOINTS ============
 
+# Default subject codes for templates (01-09 reserved)
+TEMPLATE_SUBJECT_CODES = {
+    "declaration_of_trust": "01",
+    "trust_transfer_grant_deed": "02",
+    "acknowledgement_receipt_acceptance": "03",
+    "notice_of_interest": "04",
+    "notice_of_delivery": "05",
+    "special_notice_deed_conveyance": "06",
+    "affidavit_of_fact": "07",
+    "trustee_acceptance": "08",
+    "certificate_of_trust": "09"
+}
+
 @api_router.get("/templates")
 async def get_templates():
     templates = [
@@ -1707,6 +1720,7 @@ async def get_templates():
             "description": "Establishes a pure equity trust with defined roles for grantor/settlor, trustee, and beneficiary. Includes maxims of equity and governing statements.",
             "source": "Pure Trust Under Equity, Pages 1-5",
             "icon": "scroll",
+            "subject_code": "01",
             "fields": ["trust_name", "grantor", "trustee", "beneficiary", "property", "purpose", "terms"]
         },
         {
@@ -1715,6 +1729,7 @@ async def get_templates():
             "description": "Conveys property and rights into an established trust structure with proper grant and habendum clauses.",
             "source": "Pure Trust Under Equity, Pages 6-8",
             "icon": "file-signature",
+            "subject_code": "02",
             "fields": ["grantor", "grantee", "property", "consideration", "covenants"]
         },
         {
@@ -1723,6 +1738,7 @@ async def get_templates():
             "description": "Formal acknowledgement of receipt and acceptance for lawful consideration in trust transactions.",
             "source": "Pure Trust Under Equity, Page 9",
             "icon": "check-circle",
+            "subject_code": "03",
             "fields": ["parties", "items", "consideration", "date"]
         },
         {
@@ -1731,6 +1747,7 @@ async def get_templates():
             "description": "Formal notice declaring equitable interest in property or assets.",
             "source": "Pure Trust Under Equity, Page 10",
             "icon": "bell",
+            "subject_code": "04",
             "fields": ["declarant", "property", "interest_type", "effective_date"]
         },
         {
@@ -1739,6 +1756,7 @@ async def get_templates():
             "description": "Documentation of delivery of property or documents to trust.",
             "source": "Pure Trust Under Equity, Page 11",
             "icon": "package",
+            "subject_code": "05",
             "fields": ["sender", "recipient", "items", "date", "conditions"]
         },
         {
@@ -1747,6 +1765,7 @@ async def get_templates():
             "description": "Special notice regarding conveyance of deed and title transfer.",
             "source": "Pure Trust Under Equity, Page 12",
             "icon": "stamp",
+            "subject_code": "06",
             "fields": ["grantor", "grantee", "property", "conveyance_terms"]
         },
         {
@@ -1755,6 +1774,7 @@ async def get_templates():
             "description": "Sworn statement establishing facts under oath with jurat.",
             "source": "Pure Trust Under Equity, Page 13",
             "icon": "scale",
+            "subject_code": "07",
             "fields": ["affiant", "facts", "attestation"]
         },
         {
@@ -1763,6 +1783,7 @@ async def get_templates():
             "description": "Notice of acceptance by trustee acknowledging receipt of certificate of legal title and duties.",
             "source": "Pure Trust Under Equity, Pages 14-15",
             "icon": "check-circle",
+            "subject_code": "08",
             "fields": ["trustee", "trust_name", "rm_id", "address"]
         },
         {
@@ -1771,6 +1792,7 @@ async def get_templates():
             "description": "Formal certificate establishing the trust under full faith and credit with all essential details.",
             "source": "Pure Trust Under Equity, Pages 16-17",
             "icon": "scroll",
+            "subject_code": "09",
             "fields": ["trust_name", "grantor", "trustee", "creation_date", "execution_date"]
         }
     ]
