@@ -48,6 +48,7 @@ import {
 } from '../components/ui/dialog';
 import { staggerContainer, fadeInUp, paneTransition } from '../lib/motion';
 import { toast } from 'sonner';
+import { humanizeSlug } from '../lib/utils';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -584,7 +585,7 @@ export default function VaultPage({ user }) {
                           )}
                         </div>
                         <h3 className="text-white font-medium mb-1 line-clamp-2 min-w-0">{doc.title}</h3>
-                        <p className="text-white/40 text-xs mb-3">{doc.document_type}</p>
+                        <p className="text-white/40 text-xs mb-3">{humanizeSlug(doc.document_type)}</p>
                         {doc.rm_id && (
                           <p className="text-vault-gold/60 text-xs font-mono break-words mb-2 sm:hidden">
                             {doc.sub_record_id || doc.rm_id}
@@ -617,7 +618,7 @@ export default function VaultPage({ user }) {
                         <FileText className="w-5 h-5 text-white/40 shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
                           <p className="text-white line-clamp-2 text-sm">{doc.title}</p>
-                          <p className="text-white/40 text-xs mt-0.5">{doc.document_type}</p>
+                          <p className="text-white/40 text-xs mt-0.5">{humanizeSlug(doc.document_type)}</p>
                           {doc.rm_id && (
                             <p className="text-vault-gold/60 text-xs font-mono break-words mt-0.5 sm:hidden">
                               {doc.sub_record_id || doc.rm_id}
@@ -685,7 +686,7 @@ export default function VaultPage({ user }) {
               </div>
               
               <h2 className="text-xl font-heading text-white mb-2">{selectedDocument.title}</h2>
-              <p className="text-vault-gold text-sm mb-4">{selectedDocument.document_type}</p>
+              <p className="text-vault-gold text-sm mb-4">{humanizeSlug(selectedDocument.document_type)}</p>
               
               <div className="space-y-4">
                 <div>
@@ -840,7 +841,7 @@ export default function VaultPage({ user }) {
                   <FileText className="w-4 h-4 text-white/40" />
                   <div className="flex-1">
                     <p className="text-white text-sm">{doc.title}</p>
-                    <p className="text-white/40 text-xs">{doc.document_type}</p>
+                    <p className="text-white/40 text-xs">{humanizeSlug(doc.document_type)}</p>
                   </div>
                 </div>
               ))}
