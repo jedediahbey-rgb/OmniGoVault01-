@@ -184,7 +184,7 @@ class TrustLedgerEntry(BaseModel):
     portfolio_id: str
     user_id: str
     rm_id: str = ""  # Full RM-ID for this entry (e.g., RF123456789US-01.001)
-    subject_category: int = 1  # Subject category number (01, 02, 03...)
+    subject_code: str = "00"  # Subject category code (2-digit: "01", "02", etc.)
     subject_name: str = ""  # Name of the subject category
     sequence_number: int = 1  # Sequence within category (.001, .002, .003...)
     entry_type: str  # deposit, withdrawal, transfer_in, transfer_out
