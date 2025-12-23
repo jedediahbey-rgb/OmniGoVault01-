@@ -5,7 +5,7 @@ import axios from 'axios';
 import {
   FolderArchive, FileText, Users, Briefcase,
   Plus, ArrowLeft, Edit2, Trash2, ChevronRight,
-  DollarSign, Hash, Lock, Filter
+  DollarSign, Hash, Lock, Filter, ArrowUpRight, ArrowDownRight
 } from 'lucide-react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
