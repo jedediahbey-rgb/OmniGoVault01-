@@ -406,7 +406,7 @@ export default function VaultPage({ user }) {
               }
             >
               {sortedDocuments.map((doc) => {
-                const isPinned = pinnedDocs.includes(doc.document_id);
+                const isPinned = pinnedDocs.some(d => d.document_id === doc.document_id);
                 
                 return (
                   <motion.div key={doc.document_id} variants={fadeInUp}>
