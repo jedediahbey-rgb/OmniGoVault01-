@@ -438,16 +438,37 @@ export default function PortfolioOverviewPage({ user }) {
         }
       />
 
-      {/* RM-ID Display */}
+      {/* RM-ID Display - Mobile Optimized */}
       {(trustProfile?.rm_id_normalized || trustProfile?.rm_id_raw || trustProfile?.rm_record_id) && (
-        <GlassCard className="mb-6 flex items-center gap-4 p-4">
-          <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center">
-            <Hash className="w-5 h-5 text-vault-gold" />
+        <GlassCard className="mb-6 p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center flex-shrink-0">
+                <Hash className="w-5 h-5 text-vault-gold" />
+              </div>
+              <div className="sm:hidden">
+                <p className="text-white/40 text-xs uppercase tracking-wider">
+                  Main RM-ID {trustProfile?.rm_id_is_placeholder && <span className="text-yellow-400">(Temp)</span>}
+                </p>
+              </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="hidden sm:block text-white/40 text-xs uppercase tracking-wider mb-1">
+                Main RM-ID {trustProfile?.rm_id_is_placeholder && <span className="text-yellow-400">(Placeholder)</span>}
+              </p>
+              <p className="text-vault-gold font-mono text-base sm:text-lg break-all">
+                {trustProfile.rm_id_raw || trustProfile.rm_record_id || 'Not set'}
+              </p>
+            </div>
+            <Link 
+              to={`/vault/portfolio/${portfolioId}/trust-profile`}
+              className="text-white/40 hover:text-white text-sm whitespace-nowrap self-end sm:self-center"
+            >
+              Edit RM-ID →
+            </Link>
           </div>
-          <div className="flex-1">
-            <p className="text-white/40 text-xs uppercase tracking-wider">
-              Main RM-ID {trustProfile?.rm_id_is_placeholder && <span className="text-yellow-400">(Placeholder)</span>}
-            </p>
+        </GlassCard>
+      )}
             <p className="text-vault-gold font-mono text-lg">
               {trustProfile.rm_id_raw || trustProfile.rm_record_id || 'Not set'}
             </p>
