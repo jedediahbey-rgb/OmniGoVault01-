@@ -1148,6 +1148,42 @@ async def create_ledger_entry(portfolio_id: str, data: dict, user: User = Depend
     return {k: v for k, v in doc.items() if k != '_id'}
 
 
+@api_router.put("/ledger/{entry_id}")
+async def update_ledger_entry(entry_id: str, data: LedgerEntryUpdate, user: User = Depends(get_current_user)):
+    """Update a ledger entry (description, value, notes only - RM-ID cannot be changed)"""
+    entry = await db.trust_ledger.find_one({"entry_id": entry_id, "user_id": user.user_id}, {"_id": 0})
+    if not entry:
+        raise HTTPException(status_code=404, detail="Ledger entry not found")
+    
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if update_data:
+        await db.trust_ledger.update_one(
+            {"entry_id": entry_id},
+            {"$set": update_data}
+        )
+    
+    updated_entry = await db.trust_ledger.find_one({"entry_id": entry_id}, {"_id": 0})
+    return updated_entry
+
+
+@api_router.delete("/ledger/{entry_id}")
+async def delete_ledger_entry(entry_id: str, user: User = Depends(get_current_user)):
+    """Delete a ledger entry"""
+    entry = await db.trust_ledger.find_one({"entry_id": entry_id, "user_id": user.user_id})
+    if not entry:
+        raise HTTPException(status_code=404, detail="Ledger entry not found")
+    
+    # Check if this entry was auto-generated from an asset - those shouldn't be deleted directly
+    if entry.get("asset_id") and entry.get("entry_type") in ["deposit", "withdrawal"]:
+        raise HTTPException(
+            status_code=400, 
+            detail="Cannot delete auto-generated asset entries. Delete the asset instead."
+        )
+    
+    await db.trust_ledger.delete_one({"entry_id": entry_id})
+    return {"message": "Ledger entry deleted", "rm_id": entry.get("rm_id", "")}
+
+
 # ============ NOTICE ENDPOINTS ============
 
 @api_router.get("/portfolios/{portfolio_id}/notices")
