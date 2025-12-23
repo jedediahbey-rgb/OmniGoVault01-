@@ -10,7 +10,8 @@ import {
   LogOut,
   Home,
   ChevronRight,
-  Shield
+  Shield,
+  GitBranch
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -19,6 +20,7 @@ const navItems = [
   { name: 'Learn', href: '/learn', icon: BookOpen, section: 'knowledge' },
   { name: 'Maxims', href: '/maxims', icon: Sparkles, section: 'knowledge' },
   { name: 'Glossary', href: '/glossary', icon: BookText, section: 'knowledge' },
+  { name: 'Diagrams', href: '/diagrams', icon: GitBranch, section: 'knowledge' },
   { name: 'Vault', href: '/vault/documents', icon: FolderArchive, section: 'workspace' },
   { name: 'Templates', href: '/templates', icon: FileText, section: 'workspace' },
   { name: 'Assistant', href: '/assistant', icon: Bot, section: 'tools' },
