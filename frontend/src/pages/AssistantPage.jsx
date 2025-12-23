@@ -1,254 +1,324 @@
-import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Scale, Send, User, Bot, FileText, AlertCircle, Sparkles } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Textarea } from "../components/ui/textarea";
-import axios from "axios";
+import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+import { marked } from 'marked';
+import { 
+  Bot, 
+  Send, 
+  User,
+  Sparkles,
+  BookOpen,
+  FileText,
+  AlertTriangle,
+  Copy,
+  RefreshCw
+} from 'lucide-react';
+import PageHeader from '../components/shared/PageHeader';
+import GlassCard from '../components/shared/GlassCard';
+import { Button } from '../components/ui/button';
+import { Textarea } from '../components/ui/textarea';
+import { fadeInUp } from '../lib/motion';
+import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Public API calls (no credentials needed for chat)
-const publicApi = axios.create({
-  baseURL: API,
-  withCredentials: false
-});
+const suggestedQuestions = [
+  "What are the maxims of equity?",
+  "Explain the trustee-beneficiary relationship",
+  "What is a constructive trust?",
+  "How does laches work in equity?",
+  "What documents are needed for a pure trust?"
+];
 
-const AssistantPage = ({ user }) => {
+export default function AssistantPage({ user }) {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Initial greeting
-  useEffect(() => {
-    setMessages([{
-      role: "assistant",
-      content: `Welcome to the Equity Trust Assistant! I can help you understand pure equity trusts, maxims of equity, and trust relationships.
+  const sendMessage = async (messageText = input) => {
+    if (!messageText.trim() || loading) return;
 
-**I am grounded in two source documents:**
-- Kingdom vs Empire (Roark) - equity jurisprudence, maxims, relationships
-- Pure Trust Under Equity - trust document templates and forms
+    const userMessage = {
+      id: Date.now(),
+      role: 'user',
+      content: messageText
+    };
 
-Every answer I provide will include citations to these sources. If information is not found in the sources, I will tell you.
-
-**Ask me about:**
-• Maxims of Equity
-• Trust relationships (Trustee-Beneficiary, Agent-Principal)
-• Trust document structure
-• Grantor, Trustee, and Beneficiary roles
-
-*This is for educational purposes only and does not constitute legal advice.*
-
-How can I help you today?`
-    }]);
-  }, []);
-
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
-
-    const userMessage = input.trim();
-    setInput("");
-    setMessages(prev => [...prev, { role: "user", content: userMessage }]);
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
     setLoading(true);
 
     try {
-      const response = await publicApi.post(`/assistant/chat`, {
-        message: userMessage,
+      const response = await axios.post(`${API}/assistant/chat`, {
+        message: messageText,
         session_id: sessionId
       });
 
-      setSessionId(response.data.session_id);
-      setMessages(prev => [...prev, {
-        role: "assistant",
+      const assistantMessage = {
+        id: Date.now() + 1,
+        role: 'assistant',
         content: response.data.response,
         disclaimer: response.data.disclaimer
-      }]);
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+      
+      if (!sessionId && response.data.session_id) {
+        setSessionId(response.data.session_id);
+      }
     } catch (error) {
-      console.error("Chat error:", error);
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "I apologize, but I encountered an error processing your request. Please try again.",
-        error: true
-      }]);
+      console.error('Assistant error:', error);
+      const errorMessage = {
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: 'I apologize, but I encountered an error processing your request. Please try again.',
+        isError: true
+      };
+      setMessages(prev => [...prev, errorMessage]);
+      toast.error('Failed to get response');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  const copyMessage = (content) => {
+    navigator.clipboard.writeText(content);
+    toast.success('Copied to clipboard');
+  };
+
+  const resetChat = () => {
+    setMessages([]);
+    setSessionId(null);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      sendMessage();
     }
   };
 
-  const suggestedQuestions = [
-    "What are the maxims of equity?",
-    "Explain the trustee-beneficiary relationship",
-    "What is required for a Declaration of Trust?",
-    "What does 'equity looks to the intent' mean?"
-  ];
-
   return (
-    <div className="min-h-screen bg-[#0B1221] flex flex-col">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0B1221]/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-                <Scale className="w-5 h-5 text-[#C6A87C]" />
-              </div>
-              <span className="font-serif text-2xl font-semibold text-[#F8FAFC] tracking-tight">
-                Equity Trust Portfolio
-              </span>
-            </Link>
-            <div className="flex items-center gap-6">
-              <Link to="/knowledge" className="font-sans text-sm text-slate-400 hover:text-[#C6A87C] transition-colors">Knowledge</Link>
-              <Link to="/maxims" className="font-sans text-sm text-slate-400 hover:text-[#C6A87C] transition-colors">Maxims</Link>
-              <Link to="/templates" className="font-sans text-sm text-slate-400 hover:text-[#C6A87C] transition-colors">Templates</Link>
-              <Link to="/assistant" className="font-sans text-sm text-[#C6A87C] transition-colors">Assistant</Link>
-              <Link to="/vault">
-                <Button className="bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-6 py-2 rounded-sm">
-                  Vault
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="h-[calc(100vh-2rem)] flex flex-col p-8">
+      <PageHeader
+        icon={Bot}
+        title="AI Assistant"
+        subtitle="Your guide to equity and trust law—grounded in source materials"
+        actions={
+          messages.length > 0 && (
+            <Button onClick={resetChat} variant="outline" className="btn-secondary">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              New Chat
+            </Button>
+          )
+        }
+      />
 
-      {/* Chat Container */}
-      <div className="flex-1 pt-24 pb-32 px-6 overflow-y-auto">
-        <div className="max-w-3xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#C6A87C]/10 border border-[#C6A87C]/20 rounded-full mb-4">
-              <Sparkles className="w-4 h-4 text-[#C6A87C]" />
-              <span className="font-sans text-xs text-[#C6A87C] uppercase tracking-wider">AI Assistant</span>
-            </div>
-            <h1 className="font-serif text-3xl text-[#F8FAFC] mb-2" data-testid="assistant-title">
-              Equity Trust <span className="text-[#C6A87C]">Assistant</span>
-            </h1>
-            <p className="font-sans text-slate-400 text-sm">
-              Grounded in source documents · Every answer includes citations
-            </p>
-          </div>
-
-          {/* Messages */}
-          <div className="space-y-6" data-testid="chat-messages">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex gap-4 ${message.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                {message.role === "assistant" && (
-                  <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Bot className="w-5 h-5 text-[#C6A87C]" />
-                  </div>
-                )}
-                <div
-                  className={`max-w-[80%] rounded-sm p-4 ${
-                    message.role === "user"
-                      ? "bg-[#C6A87C] text-[#0B1221]"
-                      : message.error
-                      ? "bg-red-500/10 border border-red-500/20 text-slate-300"
-                      : "bg-[#111827] border border-white/5 text-slate-300"
-                  }`}
+      <div className="flex-1 flex gap-6 min-h-0">
+        {/* Chat Area */}
+        <div className="flex-1 flex flex-col">
+          <GlassCard className="flex-1 flex flex-col overflow-hidden p-0">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+              {messages.length === 0 ? (
+                <motion.div 
+                  {...fadeInUp}
+                  className="h-full flex flex-col items-center justify-center text-center"
                 >
-                  <div className="font-sans text-sm whitespace-pre-wrap leading-relaxed">
-                    {message.content}
+                  <div className="w-20 h-20 rounded-2xl bg-vault-gold/10 flex items-center justify-center mb-6">
+                    <Sparkles className="w-10 h-10 text-vault-gold" />
                   </div>
-                  {message.disclaimer && (
-                    <div className="flex items-start gap-2 mt-4 pt-4 border-t border-white/10">
-                      <AlertCircle className="w-4 h-4 text-slate-500 mt-0.5" />
-                      <span className="font-sans text-xs text-slate-500">{message.disclaimer}</span>
-                    </div>
-                  )}
-                </div>
-                {message.role === "user" && (
-                  <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0">
-                    <User className="w-5 h-5 text-slate-300" />
+                  <h3 className="text-2xl font-heading text-white mb-3">
+                    Equity Trust Assistant
+                  </h3>
+                  <p className="text-white/50 max-w-md mb-8">
+                    Ask questions about equity jurisprudence, trust law, maxims, 
+                    or get help drafting documents. All answers are grounded in 
+                    the source materials.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl w-full">
+                    {suggestedQuestions.map((question, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => sendMessage(question)}
+                        className="p-3 text-left rounded-lg border border-white/10 hover:border-vault-gold/30 hover:bg-vault-gold/5 transition-all group"
+                      >
+                        <span className="text-white/60 group-hover:text-white text-sm">
+                          {question}
+                        </span>
+                      </button>
+                    ))}
                   </div>
-                )}
-              </div>
-            ))}
-
-            {loading && (
-              <div className="flex gap-4">
-                <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-5 h-5 text-[#C6A87C]" />
-                </div>
-                <div className="bg-[#111827] border border-white/5 rounded-sm p-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-[#C6A87C] rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-[#C6A87C] rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-                    <div className="w-2 h-2 bg-[#C6A87C] rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Suggested Questions */}
-          {messages.length <= 1 && (
-            <div className="mt-8">
-              <p className="font-sans text-xs text-slate-500 uppercase tracking-wider mb-3">Suggested Questions</p>
-              <div className="flex flex-wrap gap-2">
-                {suggestedQuestions.map((question, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setInput(question)}
-                    className="px-4 py-2 bg-[#111827] border border-white/5 rounded-full text-slate-400 text-sm hover:border-[#C6A87C]/30 hover:text-[#C6A87C] transition-colors"
+                </motion.div>
+              ) : (
+                messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex gap-4 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
                   >
-                    {question}
-                  </button>
+                    <div className={`w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center ${
+                      message.role === 'user' 
+                        ? 'bg-vault-blue/20' 
+                        : message.isError 
+                        ? 'bg-red-500/20' 
+                        : 'bg-vault-gold/20'
+                    }`}>
+                      {message.role === 'user' ? (
+                        <User className="w-5 h-5 text-vault-blue" />
+                      ) : message.isError ? (
+                        <AlertTriangle className="w-5 h-5 text-red-400" />
+                      ) : (
+                        <Bot className="w-5 h-5 text-vault-gold" />
+                      )}
+                    </div>
+                    
+                    <div className={`flex-1 max-w-[80%] ${
+                      message.role === 'user' ? 'text-right' : ''
+                    }`}>
+                      <div className={`inline-block p-4 rounded-xl ${
+                        message.role === 'user'
+                          ? 'bg-vault-blue/20 text-white'
+                          : 'bg-white/5 text-white/80'
+                      }`}>
+                        {message.role === 'assistant' ? (
+                          <div 
+                            className="prose prose-invert prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: marked(message.content) }}
+                          />
+                        ) : (
+                          <p>{message.content}</p>
+                        )}
+                        
+                        {message.disclaimer && (
+                          <p className="text-xs text-vault-gold/60 mt-3 pt-3 border-t border-white/10">
+                            {message.disclaimer}
+                          </p>
+                        )}
+                      </div>
+                      
+                      {message.role === 'assistant' && !message.isError && (
+                        <button
+                          onClick={() => copyMessage(message.content)}
+                          className="mt-2 text-xs text-white/30 hover:text-white/60 flex items-center gap-1"
+                        >
+                          <Copy className="w-3 h-3" /> Copy
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                ))
+              )}
+              
+              {loading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex gap-4"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center">
+                    <Bot className="w-5 h-5 text-vault-gold" />
+                  </div>
+                  <div className="flex items-center gap-2 text-white/40">
+                    <div className="w-2 h-2 bg-vault-gold rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <div className="w-2 h-2 bg-vault-gold rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <div className="w-2 h-2 bg-vault-gold rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
+                </motion.div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Area */}
+            <div className="p-4 border-t border-white/10">
+              <div className="flex gap-3">
+                <Textarea
+                  placeholder="Ask about equity, trusts, maxims, or documents..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="flex-1 min-h-[60px] max-h-[120px] bg-white/5 border-white/10 focus:border-vault-gold resize-none"
+                  rows={2}
+                />
+                <Button
+                  onClick={() => sendMessage()}
+                  disabled={!input.trim() || loading}
+                  className="btn-primary h-auto"
+                >
+                  <Send className="w-5 h-5" />
+                </Button>
+              </div>
+              <p className="text-xs text-white/30 mt-2">
+                Press Enter to send, Shift+Enter for new line
+              </p>
+            </div>
+          </GlassCard>
+        </div>
+
+        {/* Sidebar - Knowledge Context */}
+        <div className="w-80 hidden lg:block">
+          <GlassCard className="h-full overflow-y-auto custom-scrollbar">
+            <h3 className="font-heading text-white text-lg mb-4">Knowledge Sources</h3>
+            
+            <div className="space-y-4">
+              <div className="p-3 rounded-lg bg-vault-gold/5 border border-vault-gold/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <BookOpen className="w-4 h-4 text-vault-gold" />
+                  <span className="text-white text-sm">Kingdom vs Empire</span>
+                </div>
+                <p className="text-white/40 text-xs">
+                  Comprehensive guide to equity jurisprudence, maxims, and trust relationships.
+                </p>
+              </div>
+              
+              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="w-4 h-4 text-white/60" />
+                  <span className="text-white text-sm">Pure Trust Under Equity</span>
+                </div>
+                <p className="text-white/40 text-xs">
+                  Template documents and forms for establishing pure equity trusts.
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <h4 className="text-white/60 text-sm mb-3">Topics I Can Help With</h4>
+              <div className="flex flex-wrap gap-2">
+                {['Maxims', 'Trusts', 'Trustees', 'Beneficiaries', 'Documents', 'Conveyance', 'Notice'].map(topic => (
+                  <span key={topic} className="px-2 py-1 bg-white/5 text-white/50 text-xs rounded">
+                    {topic}
+                  </span>
                 ))}
               </div>
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Input Area */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#0B1221]/95 backdrop-blur-md border-t border-white/5 p-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex gap-3">
-            <Textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask about equity trusts, maxims, relationships..."
-              className="flex-1 bg-[#111827] border-white/10 text-[#F8FAFC] placeholder:text-slate-500 focus:border-[#C6A87C]/50 min-h-[50px] max-h-[150px] resize-none"
-              data-testid="chat-input"
-            />
-            <Button
-              onClick={handleSend}
-              disabled={!input.trim() || loading}
-              className="bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] px-6 disabled:opacity-50"
-              data-testid="send-btn"
-            >
-              <Send className="w-5 h-5" />
-            </Button>
-          </div>
-          <p className="font-sans text-xs text-slate-600 mt-2 text-center">
-            Answers grounded in: Kingdom vs Empire (Roark) · Pure Trust Under Equity
-          </p>
+            
+            <div className="mt-6 p-3 rounded-lg bg-vault-gold/5 border border-vault-gold/20">
+              <div className="flex items-center gap-2 text-vault-gold text-sm mb-2">
+                <AlertTriangle className="w-4 h-4" />
+                <span>Disclaimer</span>
+              </div>
+              <p className="text-white/40 text-xs">
+                This assistant provides educational information only and does not constitute legal advice. 
+                Always consult a qualified attorney for legal matters.
+              </p>
+            </div>
+          </GlassCard>
         </div>
       </div>
     </div>
   );
-};
-
-export default AssistantPage;
+}
