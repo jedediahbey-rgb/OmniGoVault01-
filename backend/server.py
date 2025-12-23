@@ -745,30 +745,85 @@ async def update_trust_profile(profile_id: str, data: TrustProfileUpdate, user: 
 
 # ============ ASSET ENDPOINTS ============
 
-async def get_or_create_subject_category(portfolio_id: str, user_id: str, subject_name: str) -> dict:
-    """Get or create a subject category and return its details"""
-    # Look for existing category with this name
+def normalize_rm_id(rm_id_raw: str) -> str:
+    """Normalize RM-ID: uppercase, remove extra spaces"""
+    if not rm_id_raw:
+        return ""
+    # Remove extra spaces and uppercase
+    normalized = re.sub(r'\s+', '', rm_id_raw.strip().upper())
+    return normalized
+
+
+async def seed_default_categories(portfolio_id: str, user_id: str):
+    """Seed default subject categories for a new portfolio"""
+    existing = await db.subject_categories.count_documents({
+        "portfolio_id": portfolio_id,
+        "user_id": user_id
+    })
+    
+    if existing > 0:
+        return  # Already has categories
+    
+    for cat_data in DEFAULT_SUBJECT_CATEGORIES:
+        category = SubjectCategory(
+            portfolio_id=portfolio_id,
+            user_id=user_id,
+            code=cat_data["code"],
+            name=cat_data["name"],
+            description=cat_data["description"],
+            next_sequence=1
+        )
+        doc = category.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        await db.subject_categories.insert_one(doc)
+
+
+async def get_or_create_subject_category(portfolio_id: str, user_id: str, subject_code: str = "00", subject_name: str = "General") -> dict:
+    """Get or create a subject category by code and return its details"""
+    # Seed defaults if needed
+    await seed_default_categories(portfolio_id, user_id)
+    
+    # Look for existing category with this code
     existing = await db.subject_categories.find_one({
         "portfolio_id": portfolio_id,
         "user_id": user_id,
-        "name": subject_name
+        "code": subject_code
     })
     
     if existing:
         return existing
     
-    # Find the next category number
-    max_category = await db.subject_categories.find(
-        {"portfolio_id": portfolio_id, "user_id": user_id}
-    ).sort("category_number", -1).limit(1).to_list(1)
+    # If not found by code, try by name
+    existing_by_name = await db.subject_categories.find_one({
+        "portfolio_id": portfolio_id,
+        "user_id": user_id,
+        "name": subject_name
+    })
     
-    next_category_number = (max_category[0]["category_number"] + 1) if max_category else 1
+    if existing_by_name:
+        return existing_by_name
+    
+    # Find the next available code
+    all_codes = await db.subject_categories.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id},
+        {"code": 1}
+    ).to_list(100)
+    used_codes = set(c.get("code", "00") for c in all_codes)
+    
+    new_code = subject_code
+    if new_code in used_codes:
+        # Find next available
+        for i in range(8, 100):
+            potential_code = f"{i:02d}"
+            if potential_code not in used_codes:
+                new_code = potential_code
+                break
     
     # Create new category
     category = SubjectCategory(
         portfolio_id=portfolio_id,
         user_id=user_id,
-        category_number=next_category_number,
+        code=new_code,
         name=subject_name,
         next_sequence=1
     )
@@ -779,25 +834,30 @@ async def get_or_create_subject_category(portfolio_id: str, user_id: str, subjec
     return doc
 
 
-async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_name: str) -> tuple:
-    """Generate RM-ID based on subject category. Returns (full_rm_id, category_num, sequence_num, subject_name)"""
+async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: str = "00", subject_name: str = "General") -> tuple:
+    """Generate RM-ID based on subject category. Returns (full_rm_id, subject_code, sequence_num, subject_name)"""
     # Get trust profile for base RM-ID
     trust_profile = await db.trust_profiles.find_one(
         {"portfolio_id": portfolio_id, "user_id": user_id},
-        {"rm_id_details": 1, "rm_record_id": 1}
+        {"rm_id_normalized": 1, "rm_id_raw": 1, "rm_record_id": 1}
     )
     
-    if trust_profile and trust_profile.get("rm_id_details", {}).get("full_rm_id"):
-        base_rm_id = trust_profile["rm_id_details"]["full_rm_id"]
-    elif trust_profile and trust_profile.get("rm_record_id"):
-        base_rm_id = trust_profile.get("rm_record_id")
-    else:
-        # Generate a default base RM-ID
-        base_rm_id = f"RF{uuid.uuid4().hex[:9].upper()}US"
+    # Priority: rm_id_normalized > rm_record_id (legacy) > placeholder
+    base_rm_id = None
+    if trust_profile:
+        if trust_profile.get("rm_id_normalized"):
+            base_rm_id = trust_profile["rm_id_normalized"]
+        elif trust_profile.get("rm_record_id"):
+            base_rm_id = normalize_rm_id(trust_profile["rm_record_id"])
+    
+    if not base_rm_id:
+        # Generate a placeholder RM-ID
+        base_rm_id = f"TEMP{uuid.uuid4().hex[:8].upper()}"
     
     # Get or create subject category
-    category = await get_or_create_subject_category(portfolio_id, user_id, subject_name)
-    category_num = category.get("category_number", 1)
+    category = await get_or_create_subject_category(portfolio_id, user_id, subject_code, subject_name)
+    cat_code = category.get("code", "00")
+    cat_name = category.get("name", "General")
     sequence_num = category.get("next_sequence", 1)
     
     # Increment the sequence for next use
@@ -806,20 +866,93 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_name: 
         {"$inc": {"next_sequence": 1}}
     )
     
-    # Format: RF123456789US-01.001
-    full_rm_id = f"{base_rm_id}-{category_num:02d}.{sequence_num:03d}"
+    # Format: BASE-CODE.SEQUENCE (e.g., RF123456789US-01.001)
+    full_rm_id = f"{base_rm_id}-{cat_code}.{sequence_num:03d}"
     
-    return full_rm_id, category_num, sequence_num, subject_name
+    return full_rm_id, cat_code, sequence_num, cat_name
 
 
 @api_router.get("/portfolios/{portfolio_id}/subject-categories")
 async def get_subject_categories(portfolio_id: str, user: User = Depends(get_current_user)):
     """Get all subject categories for a portfolio"""
+    # Seed defaults if needed
+    await seed_default_categories(portfolio_id, user.user_id)
+    
     categories = await db.subject_categories.find(
         {"portfolio_id": portfolio_id, "user_id": user.user_id},
         {"_id": 0}
-    ).sort("category_number", 1).to_list(100)
+    ).sort("code", 1).to_list(100)
     return categories
+
+
+@api_router.post("/portfolios/{portfolio_id}/subject-categories")
+async def create_subject_category(portfolio_id: str, data: SubjectCategoryCreate, user: User = Depends(get_current_user)):
+    """Create a new subject category"""
+    # Check if code already exists
+    existing = await db.subject_categories.find_one({
+        "portfolio_id": portfolio_id,
+        "user_id": user.user_id,
+        "code": data.code
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail=f"Subject category with code {data.code} already exists")
+    
+    category = SubjectCategory(
+        portfolio_id=portfolio_id,
+        user_id=user.user_id,
+        code=data.code,
+        name=data.name,
+        description=data.description or "",
+        next_sequence=1
+    )
+    doc = category.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.subject_categories.insert_one(doc)
+    
+    return {k: v for k, v in doc.items() if k != '_id'}
+
+
+@api_router.put("/subject-categories/{category_id}")
+async def update_subject_category(category_id: str, data: SubjectCategoryUpdate, user: User = Depends(get_current_user)):
+    """Update a subject category"""
+    existing = await db.subject_categories.find_one({
+        "category_id": category_id,
+        "user_id": user.user_id
+    })
+    if not existing:
+        raise HTTPException(status_code=404, detail="Subject category not found")
+    
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    if update_data:
+        await db.subject_categories.update_one(
+            {"category_id": category_id},
+            {"$set": update_data}
+        )
+    
+    doc = await db.subject_categories.find_one({"category_id": category_id}, {"_id": 0})
+    return doc
+
+
+@api_router.delete("/subject-categories/{category_id}")
+async def delete_subject_category(category_id: str, user: User = Depends(get_current_user)):
+    """Delete a subject category (only if not in use)"""
+    existing = await db.subject_categories.find_one({
+        "category_id": category_id,
+        "user_id": user.user_id
+    })
+    if not existing:
+        raise HTTPException(status_code=404, detail="Subject category not found")
+    
+    # Check if category is in use
+    in_use = await db.assets.count_documents({
+        "subject_code": existing.get("code"),
+        "portfolio_id": existing.get("portfolio_id")
+    })
+    if in_use > 0:
+        raise HTTPException(status_code=400, detail="Cannot delete category that is in use by assets")
+    
+    await db.subject_categories.delete_one({"category_id": category_id})
+    return {"message": "Category deleted"}
 
 
 @api_router.get("/portfolios/{portfolio_id}/assets")
@@ -831,18 +964,19 @@ async def get_assets(portfolio_id: str, user: User = Depends(get_current_user)):
 @api_router.post("/portfolios/{portfolio_id}/assets")
 async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User = Depends(get_current_user)):
     """Create asset with subject-based RM-ID"""
+    subject_code = data.get("subject_code", "00")
     subject_name = data.get("subject_name") or data.get("asset_type", "General")
     
-    rm_id, category_num, sequence_num, subject = await generate_subject_rm_id(
-        portfolio_id, user.user_id, subject_name
+    rm_id, cat_code, sequence_num, cat_name = await generate_subject_rm_id(
+        portfolio_id, user.user_id, subject_code, subject_name
     )
     
     asset = AssetItem(
         portfolio_id=portfolio_id,
         user_id=user.user_id,
         rm_id=rm_id,
-        subject_category=category_num,
-        subject_name=subject,
+        subject_code=cat_code,
+        subject_name=cat_name,
         sequence_number=sequence_num,
         asset_type=data.get("asset_type", "General"),
         description=data.get("description", ""),
@@ -860,8 +994,8 @@ async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User =
         portfolio_id=portfolio_id,
         user_id=user.user_id,
         rm_id=rm_id,
-        subject_category=category_num,
-        subject_name=subject,
+        subject_code=cat_code,
+        subject_name=cat_name,
         sequence_number=sequence_num,
         entry_type="deposit",
         description=f"Asset deposited: {data.get('description', '')}",
@@ -902,16 +1036,16 @@ async def update_asset(asset_id: str, data: dict, user: User = Depends(get_curre
 @api_router.post("/assets")
 async def create_asset(data: AssetCreate, user: User = Depends(get_current_user)):
     subject_name = data.asset_type or "General"
-    rm_id, category_num, sequence_num, subject = await generate_subject_rm_id(
-        data.portfolio_id, user.user_id, subject_name
+    rm_id, cat_code, sequence_num, cat_name = await generate_subject_rm_id(
+        data.portfolio_id, user.user_id, "00", subject_name
     )
     
     asset = AssetItem(
         portfolio_id=data.portfolio_id,
         user_id=user.user_id,
         rm_id=rm_id,
-        subject_category=category_num,
-        subject_name=subject,
+        subject_code=cat_code,
+        subject_name=cat_name,
         sequence_number=sequence_num,
         asset_type=data.asset_type,
         description=data.description,
