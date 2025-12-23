@@ -631,7 +631,25 @@ const PortfolioPage = ({ user, logout }) => {
                     New Document
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-[#111827] border-white/10 text-[#F8FAFC]">
+                <DialogContent 
+                  className="bg-[#111827] border-white/10 text-[#F8FAFC]"
+                  onInteractOutside={(e) => {
+                    const target = e.target;
+                    if (target?.closest?.('[data-radix-select-content]') || 
+                        target?.closest?.('[role="listbox"]') ||
+                        target?.closest?.('[data-radix-popper-content-wrapper]')) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onPointerDownOutside={(e) => {
+                    const target = e.target;
+                    if (target?.closest?.('[data-radix-select-content]') || 
+                        target?.closest?.('[role="listbox"]') ||
+                        target?.closest?.('[data-radix-popper-content-wrapper]')) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
                   <DialogHeader>
                     <DialogTitle className="font-serif text-xl text-[#C6A87C]">Create Document</DialogTitle>
                   </DialogHeader>
