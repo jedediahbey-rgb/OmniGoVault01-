@@ -863,16 +863,24 @@ export default function PortfolioOverviewPage({ user }) {
         </DialogContent>
       </Dialog>
 
-      {/* Add Asset Dialog */}
-      <Dialog open={showAssetDialog} onOpenChange={setShowAssetDialog}>
+      {/* Add/Edit Asset Dialog */}
+      <Dialog open={showAssetDialog} onOpenChange={(open) => { if (!open) resetAssetForm(); setShowAssetDialog(open); }}>
         <DialogContent className="bg-vault-navy border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-white font-heading">Add Asset to Trust</DialogTitle>
+            <DialogTitle className="text-white font-heading">
+              {editingAsset ? 'Edit Asset' : 'Add Asset to Trust'}
+            </DialogTitle>
             <DialogDescription className="text-white/50">
-              Assets will be assigned a unique RM-ID automatically
+              {editingAsset ? 'Update asset details (RM-ID cannot be changed)' : 'Assets will be assigned a unique RM-ID automatically'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            {editingAsset && (
+              <div className="p-3 bg-vault-gold/10 rounded-lg">
+                <p className="text-white/40 text-xs uppercase">Current RM-ID</p>
+                <p className="text-vault-gold font-mono">{editingAsset.rm_id}</p>
+              </div>
+            )}
             <div>
               <label className="text-white/60 text-sm mb-2 block">Description *</label>
               <Input
@@ -883,6 +891,24 @@ export default function PortfolioOverviewPage({ user }) {
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-white/60 text-sm mb-2 block">Subject Category</label>
+                <Select value={newAssetSubjectCode} onValueChange={setNewAssetSubjectCode} disabled={!!editingAsset}>
+                  <SelectTrigger className="bg-white/5 border-white/10">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-vault-navy border-white/10">
+                    {subjectCategories.map(cat => (
+                      <SelectItem key={cat.code} value={cat.code}>
+                        {cat.code} - {cat.name}
+                      </SelectItem>
+                    ))}
+                    {subjectCategories.length === 0 && (
+                      <SelectItem value="00">00 - General</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
               <div>
                 <label className="text-white/60 text-sm mb-2 block">Asset Type</label>
                 <Select value={newAssetType} onValueChange={setNewAssetType}>
@@ -900,6 +926,8 @@ export default function PortfolioOverviewPage({ user }) {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            {!editingAsset && (
               <div>
                 <label className="text-white/60 text-sm mb-2 block">Transaction Type</label>
                 <Select value={assetTransactionType} onValueChange={setAssetTransactionType}>
@@ -912,7 +940,7 @@ export default function PortfolioOverviewPage({ user }) {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+            )}
             <div>
               <label className="text-white/60 text-sm mb-2 block">Value (Optional)</label>
               <Input
@@ -936,7 +964,9 @@ export default function PortfolioOverviewPage({ user }) {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setShowAssetDialog(false); resetAssetForm(); }}>Cancel</Button>
-            <Button onClick={addAsset} className="btn-primary">Add Asset</Button>
+            <Button onClick={editingAsset ? updateAsset : addAsset} className="btn-primary">
+              {editingAsset ? 'Save Changes' : 'Add Asset'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
