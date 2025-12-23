@@ -1,42 +1,27 @@
-# Test Results - Equity Trust Portfolio Asset & Document Enhancements
+# Test Result Documentation
 
-## New Features Implemented
+## Current Testing Session
+- Session Date: 2024-12-23
+- Testing Focus: P0 RM-ID System Overhaul + Assets/Ledger CRUD
 
-### 1. Asset Ledger Enhancements
-- ✅ Assets now have auto-generated RM-ID (e.g., RF123456789US-01.001)
-- ✅ RM-ID displayed next to each asset
-- ✅ Asset deletion with confirmation
-- ✅ Asset type selection (real property, personal property, etc.)
-- ✅ Transaction type (deposit, transfer_in)
-- ✅ Asset deletion creates ledger entry
+## Features to Test
 
-### 2. Trust Ledger (New)
-- ✅ New "Trust Ledger" tab in portfolio overview
-- ✅ Tracks all res (property) movements in/out of trust
-- ✅ Each entry has unique RM-ID
-- ✅ Balance summary (credits, debits, balance)
-- ✅ Manual ledger entry creation
+### P0 Issue #1: RM-ID System
+1. Main RM-ID entry in Trust Profile (user-entered)
+2. Generate Placeholder RM-ID button
+3. Subject Categories API (CRUD + default seed)
+4. Auto-generate RM-ID on assets (format: MAIN-SUBJECT.SEQUENCE)
+5. Auto-generate RM-ID on ledger entries 
+6. RM-ID display alignment in Document Editor
 
-### 3. Document Finalization
-- ✅ "Finalize" button to lock document
-- ✅ Locked documents show in preview mode
-- ✅ Sophisticated document view with header/footer
-- ✅ "Unlock to Edit" option
-- ✅ Edit/Preview toggle for draft documents
-- ✅ Documents show RM-ID and sub-record ID
+### P0 Issue #2: Assets/Ledger CRUD
+1. Add Asset with subject category selection
+2. Edit Asset (update description, value, notes)
+3. Delete Asset with confirmation modal
+4. Add Ledger Entry with subject category
+5. Edit Ledger Entry (description, value, notes)
+6. Delete Ledger Entry with confirmation modal
+7. Ledger filters (by subject, credits, debits)
 
-### 4. Backend Enhancements
-- ✅ Asset model with RM-ID, transaction_type, status fields
-- ✅ TrustLedgerEntry model
-- ✅ POST /api/documents/{id}/finalize
-- ✅ POST /api/documents/{id}/unlock
-- ✅ GET /api/portfolios/{id}/ledger
-- ✅ POST /api/portfolios/{id}/ledger
-- ✅ DELETE /api/assets/{id} with ledger entry
-
-## Testing Protocol
-- Test asset creation with RM-ID display
-- Test asset deletion
-- Test Trust Ledger tab
-- Test document finalization workflow
-- Test document preview mode
+## User Testing Pending
+- Needs user verification after testing agent completes
