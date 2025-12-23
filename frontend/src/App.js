@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from
 import { Toaster } from './components/ui/sonner';
 import axios from 'axios';
 import MainLayout from './components/layout/MainLayout';
-import Disclaimer from './components/shared/Disclaimer';
+// Disclaimer component available but not used globally
 import CommandPalette from './components/shared/CommandPalette';
 import AssistantDrawer from './components/shared/AssistantDrawer';
 
@@ -282,7 +282,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Disclaimer variant="banner" />
       <Toaster position="top-right" richColors />
       <CommandPalette 
         isOpen={commandPaletteOpen} 

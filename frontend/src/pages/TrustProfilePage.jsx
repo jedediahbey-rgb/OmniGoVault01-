@@ -398,8 +398,7 @@ export default function TrustProfilePage({ user }) {
         {/* Tax IDs Tab */}
         <TabsContent value="tax-ids" className="mt-6">
           <GlassCard>
-            <h3 className="font-heading text-lg text-white mb-4">Tax Identifiers (Educational)</h3>
-            <Disclaimer variant="inline" className="mb-6" />
+            <h3 className="font-heading text-lg text-white mb-4">Tax Identifiers</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
