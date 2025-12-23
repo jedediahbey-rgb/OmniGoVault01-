@@ -1147,7 +1147,25 @@ export default function PortfolioOverviewPage({ user }) {
 
       {/* Add/Edit Ledger Entry Dialog */}
       <Dialog open={showLedgerDialog} onOpenChange={(open) => { if (!open) resetLedgerForm(); setShowLedgerDialog(open); }}>
-        <DialogContent className="bg-vault-navy border-white/10">
+        <DialogContent 
+          className="bg-vault-navy border-white/10"
+          onInteractOutside={(e) => {
+            const target = e.target;
+            if (target?.closest?.('[data-radix-select-content]') || 
+                target?.closest?.('[role="listbox"]') ||
+                target?.closest?.('[data-radix-popper-content-wrapper]')) {
+              e.preventDefault();
+            }
+          }}
+          onPointerDownOutside={(e) => {
+            const target = e.target;
+            if (target?.closest?.('[data-radix-select-content]') || 
+                target?.closest?.('[role="listbox"]') ||
+                target?.closest?.('[data-radix-popper-content-wrapper]')) {
+              e.preventDefault();
+            }
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="text-white font-heading">
               {editingLedger ? 'Edit Ledger Entry' : 'Add Ledger Entry'}
