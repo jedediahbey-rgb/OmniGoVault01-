@@ -1416,7 +1416,8 @@ async def get_documents(portfolio_id: Optional[str] = None, include_deleted: boo
         query["portfolio_id"] = portfolio_id
     if not include_deleted:
         query["$or"] = [{"is_deleted": False}, {"is_deleted": {"$exists": False}}]
-    docs = await db.documents.find(query, {"_id": 0}).sort("updated_at", -1).to_list(100)
+    # Sort ascending by created_at (oldest first, lowest sequence first)
+    docs = await db.documents.find(query, {"_id": 0}).sort("created_at", 1).to_list(100)
     return docs
 
 
