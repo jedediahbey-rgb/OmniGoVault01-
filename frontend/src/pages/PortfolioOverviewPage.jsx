@@ -483,7 +483,7 @@ export default function PortfolioOverviewPage({ user }) {
                 <div className="text-center py-4">
                   <p className="text-white/30 text-sm mb-3">No trust profile yet</p>
                   <Button 
-                    onClick={() => navigate(`/vault/trust-profile/new?portfolio=${portfolioId}`)} 
+                    onClick={() => navigate(`/vault/portfolio/${portfolioId}/trust-profile`)} 
                     size="sm" 
                     className="btn-primary"
                   >
