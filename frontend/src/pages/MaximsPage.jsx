@@ -761,20 +761,22 @@ export default function MaximsPage({ user }) {
                       <span className="text-vault-gold font-mono text-sm">{maxim.id}</span>
                     )}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2">
                       <h3 className="text-lg font-heading text-white mb-1 italic flex-1">
                         "{maxim.maxim}"
                       </h3>
                       {isDue && (
-                        <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded">
+                        <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded flex-shrink-0">
                           Due
                         </span>
                       )}
                     </div>
-                    <p className="text-white/50 text-sm line-clamp-2">
-                      {maxim.explanation}
-                    </p>
+                    <ExpandableText 
+                      text={maxim.explanation}
+                      previewLines={3}
+                      className="mt-2"
+                    />
                   </div>
                   {expandedId === maxim.id ? (
                     <ChevronUp className="w-5 h-5 text-vault-gold" />
