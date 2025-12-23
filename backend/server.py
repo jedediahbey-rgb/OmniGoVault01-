@@ -872,8 +872,8 @@ async def get_or_create_subject_category(portfolio_id: str, user_id: str, subjec
     
     new_code = subject_code
     if new_code in used_codes:
-        # Find next available
-        for i in range(8, 100):
+        # Find next available - start from 10 to skip reserved template codes (01-09)
+        for i in range(10, 100):
             potential_code = f"{i:02d}"
             if potential_code not in used_codes:
                 new_code = potential_code
