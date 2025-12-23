@@ -536,6 +536,33 @@ export default function DocumentEditorPage({ user }) {
             </>
           ) : (
             <>
+              {/* AI Tools Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="btn-secondary">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    AI Tools
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-vault-navy border-white/10">
+                  <DropdownMenuItem 
+                    onClick={() => setShowAiUpdateDialog(true)}
+                    className="text-white hover:bg-white/10 cursor-pointer"
+                  >
+                    <Wand2 className="w-4 h-4 mr-2" />
+                    Update with AI
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={aiSummarizeDocument}
+                    disabled={aiProcessing}
+                    className="text-white hover:bg-white/10 cursor-pointer"
+                  >
+                    <FileSearch className="w-4 h-4 mr-2" />
+                    {aiProcessing ? 'Summarizing...' : 'Summarize Document'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button onClick={saveDocument} disabled={saving || !hasChanges} variant="outline" className="btn-secondary">
                 <Save className="w-4 h-4 mr-2" />
                 {saving ? 'Saving...' : 'Save'}
