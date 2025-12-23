@@ -1400,46 +1400,49 @@ async def get_deleted_documents(user: User = Depends(get_current_user)):
 
 @api_router.post("/documents")
 async def create_document(data: DocumentCreate, user: User = Depends(get_current_user)):
-    """Create a new document - returns stable document_id"""
-    # Generate sub-record ID and RM-ID if trust profile has RM-ID
-    sub_record_id = ""
+    """Create a new document - returns stable document_id with subject-based RM-ID"""
     rm_id = ""
+    subject_code = getattr(data, 'subject_code', None) or "00"
+    
+    # Get template's subject code if template_id is provided
+    if data.template_id and data.template_id in TEMPLATE_SUBJECT_CODES:
+        subject_code = TEMPLATE_SUBJECT_CODES[data.template_id]
+    
+    # Generate RM-ID using subject-based system
     if data.portfolio_id:
-        trust_profile = await db.trust_profiles.find_one({"portfolio_id": data.portfolio_id, "user_id": user.user_id})
-        if trust_profile:
-            # Get RM-ID from trust profile
-            if trust_profile.get("rm_id_details", {}).get("full_rm_id"):
-                rm_id = trust_profile["rm_id_details"]["full_rm_id"]
-            elif trust_profile.get("rm_record_id"):
-                rm_id = trust_profile.get("rm_record_id", "")
-            
-            if rm_id:
-                next_series = trust_profile.get("rm_next_series", 1)
-                sub_record_id = f"{rm_id}-{next_series:02d}.001"
-                # Increment series counter
-                await db.trust_profiles.update_one(
-                    {"profile_id": trust_profile["profile_id"]},
-                    {"$inc": {"rm_next_series": 1}}
-                )
+        # Get subject name from templates or default
+        subject_name = data.document_type or "General"
+        templates = await get_templates()
+        template = next((t for t in templates if t.get('id') == data.template_id), None)
+        if template:
+            subject_name = template.get('name', subject_name)
+        
+        rm_id, cat_code, seq_num, cat_name = await generate_subject_rm_id(
+            data.portfolio_id, user.user_id, subject_code, subject_name
+        )
     
     doc = Document(
         portfolio_id=data.portfolio_id, 
-        trust_profile_id=data.trust_profile_id if hasattr(data, 'trust_profile_id') else None,
         user_id=user.user_id, 
         template_id=data.template_id,
         title=data.title, 
         document_type=data.document_type, 
         content=data.content or "",
         rm_id=rm_id,
-        sub_record_id=sub_record_id,
-        tags=data.tags or [], 
-        folder=data.folder or "/"
+        sub_record_id=rm_id,
+        tags=data.tags if hasattr(data, 'tags') and data.tags else [], 
+        folder=data.folder if hasattr(data, 'folder') and data.folder else "/"
     )
     doc_dict = doc.model_dump()
     doc_dict['created_at'] = doc_dict['created_at'].isoformat()
     doc_dict['updated_at'] = doc_dict['updated_at'].isoformat()
+    doc_dict['last_accessed'] = doc_dict['last_accessed'].isoformat()
     if doc_dict.get('deleted_at'):
         doc_dict['deleted_at'] = doc_dict['deleted_at'].isoformat()
+    if doc_dict.get('locked_at'):
+        doc_dict['locked_at'] = doc_dict['locked_at'].isoformat()
+    if doc_dict.get('pinned_at'):
+        doc_dict['pinned_at'] = doc_dict['pinned_at'].isoformat()
     await db.documents.insert_one(doc_dict)
     # Return document without MongoDB _id field - ensure document_id is returned
     result = {k: v for k, v in doc_dict.items() if k != '_id'}
