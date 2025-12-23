@@ -2269,7 +2269,7 @@ Return ONLY the document content in HTML format."""
             user_id=user.user_id,
             title=data.title or f"Generated: {template.get('name', 'Document')}",
             content=generated_content,
-            document_type=template.get('template_type', 'general'),
+            document_type=template.get('id', 'general'),
             rm_id=rm_id,
             sub_record_id=rm_id,
             status="draft",
