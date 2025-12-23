@@ -118,7 +118,8 @@ export default function PortfolioOverviewPage({ user }) {
       toast.success('Portfolio deleted');
       navigate('/vault');
     } catch (error) {
-      toast.error('Failed to delete portfolio');
+      console.error('Delete portfolio error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to delete portfolio');
     }
   };
 
