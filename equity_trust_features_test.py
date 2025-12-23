@@ -254,6 +254,7 @@ class EquityTrustFeaturesTest:
             
             payload = {
                 "name": "John Smith Jr.",
+                "party_type": "individual",
                 "role": "trustee",
                 "address": "456 Oak Avenue, Newtown, ST 67890",
                 "email": "john.smith.jr@example.com",
