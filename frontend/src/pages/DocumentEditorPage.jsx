@@ -151,20 +151,20 @@ const EditorToolbar = ({ editor, disabled }) => {
 // Document View Component (for finalized documents)
 const DocumentView = ({ document, content }) => {
   return (
-    <div className="max-w-3xl mx-auto bg-white text-slate-900 shadow-2xl rounded-lg overflow-hidden">
+    <div className="w-full max-w-none md:max-w-3xl mx-auto bg-white text-slate-900 shadow-2xl rounded-lg overflow-hidden">
       {/* Document Header */}
-      <div className="bg-gradient-to-r from-slate-800 to-slate-700 p-6 md:p-8">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h1 className="text-white font-serif text-xl md:text-2xl font-bold">
+      <div className="bg-gradient-to-r from-slate-800 to-slate-700 p-4 sm:p-6 md:p-8">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-white font-serif text-lg sm:text-xl md:text-2xl font-bold break-words">
               {document.title}
             </h1>
-            <p className="text-slate-300 text-sm mt-1">{document.document_type?.replace(/_/g, ' ').toUpperCase()}</p>
+            <p className="text-slate-300 text-xs sm:text-sm mt-1">{document.document_type?.replace(/_/g, ' ').toUpperCase()}</p>
           </div>
           {document.sub_record_id && (
-            <div className="text-right flex-shrink-0 ml-4">
+            <div className="text-left sm:text-right shrink-0">
               <p className="text-slate-400 text-xs uppercase tracking-wider">RM-ID</p>
-              <p className="text-amber-400 font-mono text-sm whitespace-nowrap">{document.sub_record_id}</p>
+              <p className="text-amber-400 font-mono text-xs sm:text-sm break-all">{document.sub_record_id}</p>
             </div>
           )}
         </div>
@@ -173,24 +173,24 @@ const DocumentView = ({ document, content }) => {
       {/* Document Seal/Badge */}
       {document.is_locked && (
         <div className="flex justify-center -mt-4 relative z-10">
-          <div className="bg-green-600 text-white px-4 md:px-6 py-2 rounded-full flex items-center gap-2 shadow-lg text-sm">
-            <CheckCircle className="w-4 h-4" />
-            <span className="font-semibold">FINALIZED DOCUMENT</span>
+          <div className="bg-green-600 text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full flex items-center gap-2 shadow-lg text-xs sm:text-sm">
+            <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="font-semibold">FINALIZED</span>
           </div>
         </div>
       )}
 
       {/* Document Content */}
-      <div className="p-6 md:p-8 lg:p-12">
+      <div className="p-4 sm:p-6 md:p-8 lg:p-12">
         <div 
-          className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-slate-800 prose-p:text-slate-700 prose-p:leading-relaxed prose-li:text-slate-700"
+          className="prose prose-sm sm:prose-base md:prose-lg max-w-none prose-headings:font-serif prose-headings:text-slate-800 prose-p:text-slate-700 prose-p:leading-relaxed prose-li:text-slate-700"
           dangerouslySetInnerHTML={{ __html: content }}
         />
       </div>
 
       {/* Document Footer */}
-      <div className="bg-slate-50 p-4 md:p-6 border-t border-slate-200">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-sm text-slate-500">
+      <div className="bg-slate-50 p-3 sm:p-4 md:p-6 border-t border-slate-200">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs sm:text-sm text-slate-500">
           <div>
             <p>Created: {new Date(document.created_at).toLocaleDateString()}</p>
             {document.locked_at && (
