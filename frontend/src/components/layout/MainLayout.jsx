@@ -78,6 +78,7 @@ export default function MainLayout({ children, user, onLogout }) {
           <motion.div
             key={location.pathname}
             ref={scrollContainerRef}
+            data-scroll-container="true"
             initial={pageTransition.initial}
             animate={pageTransition.animate}
             exit={pageTransition.exit}
