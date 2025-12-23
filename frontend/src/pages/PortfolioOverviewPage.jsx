@@ -131,6 +131,7 @@ export default function PortfolioOverviewPage({ user }) {
       const response = await axios.post(`${API}/portfolios/${portfolioId}/assets`, {
         description: newAssetDescription,
         asset_type: newAssetType,
+        subject_code: newAssetSubjectCode,
         value: newAssetValue ? parseFloat(newAssetValue) : null,
         transaction_type: assetTransactionType,
         notes: newAssetNotes
@@ -141,25 +142,57 @@ export default function PortfolioOverviewPage({ user }) {
       setLedger(ledgerRes.data);
       setShowAssetDialog(false);
       resetAssetForm();
-      toast.success('Asset added successfully');
+      toast.success('Asset added with RM-ID: ' + response.data.rm_id);
     } catch (error) {
       console.error('Add asset error:', error);
       toast.error('Failed to add asset');
     }
   };
 
-  const deleteAsset = async (assetId) => {
-    if (!confirm('Are you sure you want to remove this asset?')) return;
+  const updateAsset = async () => {
+    if (!editingAsset || !newAssetDescription.trim()) {
+      toast.error('Please enter an asset description');
+      return;
+    }
     try {
-      await axios.delete(`${API}/assets/${assetId}`);
-      setAssets(assets.filter(a => a.asset_id !== assetId));
+      const response = await axios.put(`${API}/assets/${editingAsset.asset_id}`, {
+        description: newAssetDescription,
+        asset_type: newAssetType,
+        value: newAssetValue ? parseFloat(newAssetValue) : null,
+        notes: newAssetNotes
+      });
+      setAssets(assets.map(a => a.asset_id === editingAsset.asset_id ? response.data : a));
+      setShowAssetDialog(false);
+      resetAssetForm();
+      toast.success('Asset updated');
+    } catch (error) {
+      toast.error('Failed to update asset');
+    }
+  };
+
+  const confirmDeleteAsset = async () => {
+    if (!deleteAssetId) return;
+    try {
+      await axios.delete(`${API}/assets/${deleteAssetId}`);
+      setAssets(assets.filter(a => a.asset_id !== deleteAssetId));
       // Refresh ledger
       const ledgerRes = await axios.get(`${API}/portfolios/${portfolioId}/ledger`);
       setLedger(ledgerRes.data);
+      setDeleteAssetId(null);
       toast.success('Asset removed');
     } catch (error) {
       toast.error('Failed to remove asset');
     }
+  };
+
+  const openEditAsset = (asset) => {
+    setEditingAsset(asset);
+    setNewAssetDescription(asset.description || '');
+    setNewAssetType(asset.asset_type || 'real_property');
+    setNewAssetSubjectCode(asset.subject_code || '00');
+    setNewAssetValue(asset.value ? String(asset.value) : '');
+    setNewAssetNotes(asset.notes || '');
+    setShowAssetDialog(true);
   };
 
   const addLedgerEntry = async () => {
@@ -170,6 +203,7 @@ export default function PortfolioOverviewPage({ user }) {
     try {
       await axios.post(`${API}/portfolios/${portfolioId}/ledger`, {
         entry_type: ledgerEntryType,
+        subject_code: ledgerSubjectCode,
         description: ledgerDescription,
         value: ledgerValue ? parseFloat(ledgerValue) : null,
         balance_effect: ledgerEntryType === 'deposit' || ledgerEntryType === 'transfer_in' ? 'credit' : 'debit',
@@ -186,18 +220,78 @@ export default function PortfolioOverviewPage({ user }) {
     }
   };
 
+  const updateLedgerEntry = async () => {
+    if (!editingLedger || !ledgerDescription.trim()) {
+      toast.error('Please enter a description');
+      return;
+    }
+    try {
+      await axios.put(`${API}/ledger/${editingLedger.entry_id}`, {
+        description: ledgerDescription,
+        value: ledgerValue ? parseFloat(ledgerValue) : null,
+        notes: ledgerNotes
+      });
+      // Refresh ledger
+      const ledgerRes = await axios.get(`${API}/portfolios/${portfolioId}/ledger`);
+      setLedger(ledgerRes.data);
+      setShowLedgerDialog(false);
+      resetLedgerForm();
+      toast.success('Ledger entry updated');
+    } catch (error) {
+      toast.error('Failed to update ledger entry');
+    }
+  };
+
+  const confirmDeleteLedger = async () => {
+    if (!deleteLedgerId) return;
+    try {
+      await axios.delete(`${API}/ledger/${deleteLedgerId}`);
+      // Refresh ledger
+      const ledgerRes = await axios.get(`${API}/portfolios/${portfolioId}/ledger`);
+      setLedger(ledgerRes.data);
+      setDeleteLedgerId(null);
+      toast.success('Ledger entry deleted');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to delete ledger entry');
+    }
+  };
+
+  const openEditLedger = (entry) => {
+    setEditingLedger(entry);
+    setLedgerEntryType(entry.entry_type || 'deposit');
+    setLedgerSubjectCode(entry.subject_code || '00');
+    setLedgerDescription(entry.description || '');
+    setLedgerValue(entry.value ? String(entry.value) : '');
+    setLedgerNotes(entry.notes || '');
+    setShowLedgerDialog(true);
+  };
+
   const resetAssetForm = () => {
+    setEditingAsset(null);
     setNewAssetDescription('');
     setNewAssetType('real_property');
+    setNewAssetSubjectCode('00');
     setNewAssetValue('');
     setNewAssetNotes('');
     setAssetTransactionType('deposit');
   };
 
   const resetLedgerForm = () => {
+    setEditingLedger(null);
     setLedgerEntryType('deposit');
+    setLedgerSubjectCode('00');
     setLedgerDescription('');
     setLedgerValue('');
+    setLedgerNotes('');
+  };
+
+  // Filter ledger entries
+  const filteredLedgerEntries = ledger.entries?.filter(entry => {
+    if (ledgerFilter === 'all') return true;
+    if (ledgerFilter === 'credits') return entry.balance_effect === 'credit';
+    if (ledgerFilter === 'debits') return entry.balance_effect === 'debit';
+    return entry.subject_code === ledgerFilter;
+  }) || [];
     setLedgerNotes('');
   };
 
