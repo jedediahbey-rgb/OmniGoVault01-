@@ -1,203 +1,145 @@
 {
-  "design_system": {
-    "identity": {
-      "name": "Sovereign Vault",
-      "archetype": "Jewel & Luxury",
-      "vibe": "Authoritative, Secure, Timeless, Intelligent",
-      "core_values": ["Sovereignty", "Privacy", "Equity", "Wisdom"]
-    },
-    "typography": {
-      "fonts": {
-        "heading": {
-          "family": "Cormorant Garamond",
-          "weights": ["600", "700"],
-          "usage": "Page titles, Section headers, Hero text",
-          "fallback": "serif"
-        },
-        "body": {
-          "family": "Manrope",
-          "weights": ["400", "500", "600"],
-          "usage": "UI elements, Dashboard data, Navigation",
-          "fallback": "sans-serif"
-        },
-        "legal": {
-          "family": "Crimson Pro",
-          "weights": ["400", "600"],
-          "usage": "Long-form legal documents, Maxims, Articles",
-          "fallback": "serif"
-        },
-        "mono": {
-          "family": "JetBrains Mono",
-          "weights": ["400"],
-          "usage": "Document IDs, Hash keys, Data tables",
-          "fallback": "monospace"
-        }
-      },
-      "scale": {
-        "h1": "text-5xl md:text-6xl font-serif tracking-tight leading-none",
-        "h2": "text-3xl md:text-4xl font-serif tracking-tight",
-        "h3": "text-2xl font-serif font-semibold text-gold-400",
-        "body_lg": "text-lg font-sans leading-relaxed",
-        "body_base": "text-base font-sans leading-relaxed text-slate-300",
-        "legal_text": "text-lg font-legal leading-loose text-slate-200",
-        "caption": "text-xs font-sans uppercase tracking-widest text-slate-500"
-      }
-    },
-    "colors": {
-      "palette": {
-        "background": {
-          "default": "#0B1221",
-          "paper": "#0F172A",
-          "card": "#111827"
-        },
-        "primary": {
-          "main": "#C6A87C",
-          "light": "#E8D5B5",
-          "dark": "#8C7350",
-          "glow": "rgba(198, 168, 124, 0.15)"
-        },
-        "secondary": {
-          "main": "#1E293B",
-          "light": "#334155",
-          "dark": "#020617"
-        },
-        "text": {
-          "primary": "#F8FAFC",
-          "secondary": "#94A3B8",
-          "muted": "#64748B",
-          "gold": "#C6A87C"
-        },
-        "status": {
-          "success": "#10B981",
-          "warning": "#F59E0B",
-          "error": "#EF4444",
-          "info": "#3B82F6"
-        }
-      },
-      "gradients": {
-        "gold_text": "linear-gradient(135deg, #C6A87C 0%, #E8D5B5 50%, #C6A87C 100%)",
-        "vault_glow": "radial-gradient(circle at center, rgba(198, 168, 124, 0.08) 0%, transparent 70%)",
-        "dark_overlay": "linear-gradient(to bottom, rgba(11, 18, 33, 0) 0%, #0B1221 100%)"
-      }
-    },
-    "visual_enhancers": {
-      "borders": {
-        "subtle": "border border-white/5",
-        "gold_highlight": "border border-[#C6A87C]/30",
-        "interactive": "hover:border-[#C6A87C]/50 transition-colors duration-300"
-      },
-      "shadows": {
-        "gold_glow": "0 0 20px rgba(198, 168, 124, 0.1)",
-        "card_depth": "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
-        "inner_inset": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)"
-      },
-      "textures": {
-        "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E\")"
-      },
-      "glassmorphism": {
-        "nav": "bg-[#0B1221]/80 backdrop-blur-md border-b border-white/5",
-        "modal": "bg-[#0F172A]/90 backdrop-blur-xl border border-white/10 shadow-2xl"
-      }
-    },
-    "layout_strategies": {
-      "marketing": {
-        "grid": "grid-cols-1 md:grid-cols-12 gap-8",
-        "container": "max-w-7xl mx-auto px-6 md:px-12",
-        "spacing": "py-24 md:py-32"
-      },
-      "dashboard": {
-        "grid": "grid-cols-1 md:grid-cols-4 gap-6",
-        "container": "w-full px-6 py-8",
-        "spacing": "space-y-6"
-      },
-      "document_view": {
-        "layout": "max-w-4xl mx-auto bg-[#0F172A] min-h-screen shadow-2xl border-x border-white/5",
-        "typography": "prose prose-invert prose-lg prose-headings:font-serif prose-p:font-legal"
-      }
-    },
-    "components": {
-      "buttons": {
-        "primary": "bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-8 py-3 rounded-sm shadow-[0_0_15px_rgba(198,168,124,0.3)] transition-all hover:shadow-[0_0_25px_rgba(198,168,124,0.5)]",
-        "secondary": "bg-transparent border border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 font-sans font-semibold uppercase tracking-wider text-xs px-8 py-3 rounded-sm",
-        "ghost": "text-slate-400 hover:text-[#C6A87C] hover:bg-white/5 font-sans font-medium"
-      },
-      "cards": {
-        "vault": "bg-[#111827] border border-white/5 rounded-sm p-6 hover:border-[#C6A87C]/30 transition-all duration-300 relative overflow-hidden group",
-        "feature": "bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-white/5 p-8 rounded-sm hover:-translate-y-1 transition-transform duration-300"
-      },
-      "inputs": {
-        "legal": "bg-transparent border-b border-slate-700 focus:border-[#C6A87C] rounded-none px-0 py-2 text-lg font-legal placeholder:text-slate-600 focus:ring-0 transition-colors",
-        "search": "bg-[#1E293B] border border-white/10 rounded-full px-4 py-2 text-sm font-sans focus:border-[#C6A87C]/50 focus:ring-1 focus:ring-[#C6A87C]/50"
-      }
-    },
-    "motion": {
-      "transitions": {
-        "default": "transition-all duration-300 ease-out",
-        "slow": "transition-all duration-700 ease-in-out"
-      },
-      "animations": {
-        "fade_in": "animate-fade-in",
-        "slide_up": "animate-slide-up",
-        "gold_shimmer": "animate-shimmer"
-      }
-    },
-    "media": {
-      "image_urls": {
-        "hero_background": {
-          "url": "https://images.unsplash.com/photo-1761437855740-c894da924d79?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3MjQyMTd8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMGdvbGQlMjB0ZXh0dXJlJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzY2NDg5ODM0fDA&ixlib=rb-4.1.0&q=85",
-          "description": "Elegant abstract gold lines on black, for Hero sections and Auth backgrounds",
-          "category": "background"
-        },
-        "vault_security": {
-          "url": "https://images.unsplash.com/photo-1696013910376-c56f76dd8178?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3MjQyMTd8MHwxfHNlYXJjaHwyfHxzZWN1cmUlMjB2YXVsdCUyMGxvY2slMjBhYnN0cmFjdCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzY2NDg5ODM3fDA&ixlib=rb-4.1.0&q=85",
-          "description": "Dark padlock on black surface, for Security/Vault features",
-          "category": "feature"
-        },
-        "knowledge_library": {
-          "url": "https://images.unsplash.com/photo-1587397070638-81d3cce10435?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3MjQyMTd8MHwxfHNlYXJjaHwzfHxjbGFzc2ljJTIwbGlicmFyeSUyMGJvb2tzJTIwa25vd2xlZGdlfGVufDB8fHx8MTc2NjQ4OTg0MHww&ixlib=rb-4.1.0&q=85",
-          "description": "Classic library shelves, for Knowledge Base/Maxims section",
-          "category": "feature"
-        },
-        "trust_handshake": {
-          "url": "https://images.unsplash.com/photo-1647104568641-bd427704384c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3MjQyMTd8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMGdvbGQlMjB0ZXh0dXJlJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzY2NDg5ODM0fDA&ixlib=rb-4.1.0&q=85",
-          "description": "Abstract gold object, representing assets/trust",
-          "category": "feature"
-        }
-      }
-    },
-    "3d_libraries": {
-      "relationship_explorer": {
-        "library": "react-force-graph-2d",
-        "usage": "Visualizing Duty <-> Right relationships between entities",
-        "style": "Dark nodes, gold links, interactive zooming"
-      },
-      "charts": {
-        "library": "recharts",
-        "usage": "Portfolio asset allocation, Trust distribution",
-        "style": "Custom tooltips, gold/slate color palette"
-      }
-    },
-    "instructions_to_main_agent": [
-      "Use 'Cormorant Garamond' for all headings to maintain the 'Sovereign' feel.",
-      "Use 'Crimson Pro' for any text that resembles a legal document or maxim.",
-      "Ensure all backgrounds are dark (#0B1221 or #0F172A). Never use pure black or white.",
-      "Use the 'gold-glow' shadow effect on primary actions to simulate gold leaf reflection.",
-      "Implement the 'Duty-Right Explorer' using a force-directed graph where nodes are Entities and links are Duties/Rights.",
-      "For the 'Portfolio Vault', use a dense 'Control Room' grid layout with 'vault-card' components.",
-      "The 'Knowledge Base' should feel like a digital library - use the library image as a subtle background or header.",
-      "All inputs in the 'Document Editor' should look like lines on a paper contract (border-bottom only).",
-      "Use 'sonner' for all notifications (e.g., 'Document Saved to Vault').",
-      "Ensure high contrast for accessibility: Gold text is for large headers only; use off-white for body text."
-    ],
-    "universal_guidelines": [
-      "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
-      "Don't make generic centered layouts. Use asymmetry.",
-      "Create depth through layered design elements with z-index hierarchy.",
-      "Use glass-morphism effects with backdrop filters (12-24px blur) for overlays.",
-      "Every interaction needs micro-animations - hover states, transitions.",
-      "Use 2-3x more spacing than feels comfortable.",
-      "Subtle grain textures (noise) are mandatory for the background.",
-      "All interactive elements MUST include data-testid attribute."
+  "identity": {
+    "name": "E1",
+    "archetype": "The Sovereign Architect",
+    "mission": "Rebuild TrustVault as a futuristic, visually popping Document OS.",
+    "principles": [
+      "Fusion over Imitation: Mix Fintech precision with Museum aesthetics.",
+      "Emotion First: Every interaction must feel 'expensive' and 'secure'.",
+      "Content is King: Data is the art. No decoration without function.",
+      "Zoom In: Focus on the texture of the digital paper and the glow of the vault.",
+      "Negative Space: Luxury is the abundance of space."
     ]
-  }
+  },
+  "typography": {
+    "font_family": {
+      "heading": "Cormorant Garamond, serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace",
+      "legal": "Crimson Pro, serif"
+    },
+    "usage_rules": {
+      "headings": "Use Cormorant Garamond for all H1-H3. Use Italics for emphasis words. Tracking: -0.02em.",
+      "body": "Use Manrope for all UI text. Weights: 400 (Regular), 500 (Medium). Avoid Bold unless critical.",
+      "labels": "Use Manrope Uppercase, tracking-widest (0.2em), text-xs.",
+      "data": "Use JetBrains Mono for transaction hashes, IDs, and code snippets."
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": {
+        "default": "#0B1221",
+        "void": "#05080F",
+        "paper": "#1A202C"
+      },
+      "primary": {
+        "gold": "#C6A87C",
+        "gold_dim": "#8C7350",
+        "gold_glow": "rgba(198, 168, 124, 0.5)"
+      },
+      "secondary": {
+        "holo_blue": "#3B82F6",
+        "holo_glow": "rgba(59, 130, 246, 0.5)"
+      },
+      "neutral": {
+        "glass_border": "rgba(255, 255, 255, 0.1)",
+        "glass_surface": "rgba(11, 18, 33, 0.7)",
+        "text_muted": "#94A3B8"
+      }
+    },
+    "tailwind_config": {
+      "colors": {
+        "vault-navy": "#0B1221",
+        "vault-void": "#05080F",
+        "vault-gold": "#C6A87C",
+        "vault-blue": "#3B82F6"
+      }
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": {
+      "panel": "bg-vault-navy/70 backdrop-blur-xl border border-white/10 shadow-2xl",
+      "card": "bg-white/5 backdrop-blur-md border border-white/5 hover:border-vault-gold/50 transition-colors duration-300",
+      "overlay": "bg-black/60 backdrop-blur-sm"
+    },
+    "gradients": {
+      "gold_text": "bg-clip-text text-transparent bg-gradient-to-r from-[#C6A87C] via-[#E8D5B5] to-[#C6A87C]",
+      "void_fade": "bg-gradient-to-b from-transparent to-vault-void"
+    },
+    "shadows": {
+      "gold_glow": "0 0 20px rgba(198, 168, 124, 0.15)",
+      "neon_glow": "0 0 15px rgba(59, 130, 246, 0.3)"
+    }
+  },
+  "layout_strategy": {
+    "dashboard": {
+      "type": "Bento Grid (Tetris Mode)",
+      "grid_cols": "grid-cols-1 md:grid-cols-4 lg:grid-cols-12",
+      "gap": "gap-6",
+      "rules": "Asymmetry is key. Mix 1x1, 2x2, and 2x1 tiles. Never fill 100% perfectly."
+    },
+    "vault": {
+      "type": "Three-Pane Layout",
+      "structure": "Sidebar (Navigation) | List (Items) | Preview (Detail)",
+      "widths": "w-64 | w-96 | flex-1",
+      "behavior": "Panels slide in from right on selection."
+    },
+    "learn": {
+      "type": "Constellation Map",
+      "library": "React Flow or D3",
+      "visual": "Nodes are stars, connections are lines. Dark background with subtle particle dust."
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-vault-gold text-vault-navy font-bold uppercase tracking-wider px-6 py-3 rounded-sm hover:shadow-[0_0_20px_rgba(198,168,124,0.4)] transition-all",
+      "secondary": "border border-vault-gold/30 text-vault-gold uppercase tracking-wider px-6 py-3 rounded-sm hover:bg-vault-gold/10 transition-all",
+      "ghost": "text-muted-foreground hover:text-vault-gold transition-colors"
+    },
+    "cards": {
+      "default": "vault-card p-6 rounded-xl border border-white/5 bg-white/5 backdrop-blur-sm hover:border-vault-gold/30 transition-all group",
+      "interactive": "cursor-pointer hover:-translate-y-1 hover:shadow-xl"
+    },
+    "inputs": {
+      "style": "bg-transparent border-b border-white/20 focus:border-vault-gold px-0 py-2 rounded-none transition-colors placeholder:text-white/20"
+    }
+  },
+  "motion": {
+    "page_transition": {
+      "initial": { "opacity": 0, "y": 20 },
+      "animate": { "opacity": 1, "y": 0 },
+      "exit": { "opacity": 0, "y": -20 },
+      "transition": { "duration": 0.4, "ease": "easeOut" }
+    },
+    "hover_effects": {
+      "scale": "hover:scale-[1.02]",
+      "glow": "hover:shadow-[0_0_15px_rgba(198,168,124,0.3)]"
+    }
+  },
+  "assets": {
+    "images": {
+      "hero_background": "https://images.unsplash.com/photo-1758637612400-09e155a1278c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGdvbGQlMjBnZW9tZXRyaWMlMjBzaGFwZXMlMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3NjY0OTM2MTN8MA&ixlib=rb-4.1.0&q=85",
+      "vault_concept": "https://images.unsplash.com/photo-1639152446002-ffd04bd3d529?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3MjQyMTd8MHwxfHNlYXJjaHwxfHxmdXR1cmlzdGljJTIwZGlnaXRhbCUyMHZhdWx0JTIwY29uY2VwdHxlbnwwfHx8fDE3NjY0OTM2MTZ8MA&ixlib=rb-4.1.0&q=85",
+      "user_avatar": "https://images.unsplash.com/photo-1765776830139-72b2184dae5a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwyfHxwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc2NjQ5MzYxOHww&ixlib=rb-4.1.0&q=85"
+    },
+    "icons": {
+      "library": "Lucide React",
+      "style": "Stroke width 1.5px. Color: vault-gold or muted-foreground."
+    }
+  },
+  "universal_guidelines": {
+    "do_not": [
+      "Do NOT use solid white backgrounds.",
+      "Do NOT use 'Inter' font.",
+      "Do NOT use default blue links.",
+      "Do NOT use rounded-full buttons (use rounded-sm or rounded-md for 'tech' feel)."
+    ],
+    "must_do": [
+      "MUST use 'backdrop-blur' for all overlays.",
+      "MUST use 'data-testid' for all interactive elements.",
+      "MUST ensure text contrast ratio > 4.5:1.",
+      "MUST use 'sonner' for toasts."
+    ]
+  },
+  "instructions_to_main_agent": "You are building the 'Sovereign Vault'. It is not a SaaS; it is a digital fortress. Every pixel must feel intentional. Use the provided Tailwind config and CSS variables. Implement the 'Bento Grid' for the dashboard and 'Three-Pane' for the vault. Use Framer Motion for all transitions."
 }
