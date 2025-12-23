@@ -387,10 +387,8 @@ export default function PortfolioOverviewPage({ user }) {
     return entry.subject_code === ledgerFilter;
   }) || [];
 
-  const formatCurrency = (value) => {
-    if (!value) return '-';
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
-  };
+  // Use shared formatCurrency utility
+  const formatCurrency = formatCurrencyUtil;
 
   if (loading) {
     return (
