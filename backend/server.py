@@ -1066,6 +1066,22 @@ async def get_templates():
             "source": "Pure Trust Under Equity, Page 13",
             "icon": "scale",
             "fields": ["affiant", "facts", "attestation"]
+        },
+        {
+            "id": "trustee_acceptance",
+            "name": "Trustee Acceptance",
+            "description": "Notice of acceptance by trustee acknowledging receipt of certificate of legal title and duties.",
+            "source": "Pure Trust Under Equity, Pages 14-15",
+            "icon": "check-circle",
+            "fields": ["trustee", "trust_name", "rm_id", "address"]
+        },
+        {
+            "id": "certificate_of_trust",
+            "name": "Certificate of Foreign Grantor Trust",
+            "description": "Formal certificate establishing the trust under full faith and credit with all essential details.",
+            "source": "Pure Trust Under Equity, Pages 16-17",
+            "icon": "scroll",
+            "fields": ["trust_name", "grantor", "trustee", "creation_date", "execution_date"]
         }
     ]
     return templates
