@@ -297,10 +297,11 @@ const EditTrust = ({ user, logout }) => {
             {/* Grantor */}
             <div className="vault-card bg-[#111A2F] border-[#2D3748]/50 p-6">
               <h2 className="font-serif text-xl text-[#C6A87C] mb-6">
-                Grantor (Settlor) Information
+                Grantor/Settlor Information
               </h2>
               <p className="font-sans text-sm text-[#F9F7F1]/50 mb-4">
-                The Grantor is the person who creates and funds the trust.
+                The Grantor/Settlor is the creator of the Trust who transfers property into the Trust for the benefit of the Beneficiary. 
+                By their freewill act and Deed, the Grantor executes this acknowledgement, receipt, and acceptance for private lawful consideration.
               </p>
               <div className="space-y-4">
                 <div>
@@ -332,7 +333,8 @@ const EditTrust = ({ user, logout }) => {
                 Trustee Information
               </h2>
               <p className="font-sans text-sm text-[#F9F7F1]/50 mb-4">
-                The Trustee holds legal title and manages the trust according to its terms.
+                The Trustee holds legal title to the Trust property and has full dispositive and discretionary powers to manage, 
+                sell, convey, pledge, mortgage, lease, or transfer title to any interest in real or personal property for the benefit of the Beneficiary.
               </p>
               <div className="space-y-4">
                 <div>
@@ -364,7 +366,8 @@ const EditTrust = ({ user, logout }) => {
                 Beneficiary Information
               </h2>
               <p className="font-sans text-sm text-[#F9F7F1]/50 mb-4">
-                The Beneficiary is the true owner in equity who receives the benefits of the trust.
+                The Beneficiary is the true owner in equity who possesses all right, title and interest in the Trust. 
+                The Beneficiary holds equitable title and is competent with age of majority sufficient to terminate any presumed or express trust relation.
               </p>
               <div className="space-y-4">
                 <div>
@@ -395,13 +398,17 @@ const EditTrust = ({ user, logout }) => {
               <h2 className="font-serif text-xl text-[#C6A87C] mb-6">
                 Trust Details
               </h2>
+              <p className="font-sans text-sm text-[#F9F7F1]/50 mb-4">
+                The Trust shall be administered, managed, governed and regulated according to the laws of equity 
+                and the Maxims of Equity, under judicial power and inherited civilian due process protections.
+              </p>
               <div className="space-y-4">
                 <div>
                   <Label className="text-[#F9F7F1]/70 mb-2 block">Trust Name</Label>
                   <Input
                     value={formData.trust_name}
                     onChange={(e) => handleChange('trust_name', e.target.value)}
-                    placeholder="e.g., The Smith Family Pure Equity Trust"
+                    placeholder="e.g., The Smith Family Living Estate Trust"
                     className="bg-[#0B1221] border-[#2D3748] text-[#F9F7F1] placeholder:text-[#F9F7F1]/30 focus:border-[#C6A87C]"
                     data-testid="input-trust-name"
                   />
@@ -411,7 +418,7 @@ const EditTrust = ({ user, logout }) => {
                   <Textarea
                     value={formData.trust_purpose}
                     onChange={(e) => handleChange('trust_purpose', e.target.value)}
-                    placeholder="Describe the purpose of the trust..."
+                    placeholder="e.g., To re-unite, deliver, transfer, merge titles for all the corpus of this Trust for the use and benefit of the Beneficiary..."
                     className="bg-[#0B1221] border-[#2D3748] text-[#F9F7F1] placeholder:text-[#F9F7F1]/30 focus:border-[#C6A87C] min-h-[100px]"
                     data-testid="input-trust-purpose"
                   />
@@ -422,15 +429,16 @@ const EditTrust = ({ user, logout }) => {
             {/* Property Description */}
             <div className="vault-card bg-[#111A2F] border-[#2D3748]/50 p-6">
               <h2 className="font-serif text-xl text-[#C6A87C] mb-6">
-                Property Description
+                Trust Property (Corpus/Res)
               </h2>
               <p className="font-sans text-sm text-[#F9F7F1]/50 mb-4">
-                Describe the property or assets being placed into the trust.
+                Describe the corpus (res) of the Trust - all property, assets, real estate, or rights being transferred 
+                and conveyed to the Trustee to be held in trust. This forms the principal amount of the Trust estate.
               </p>
               <Textarea
                 value={formData.property_description}
                 onChange={(e) => handleChange('property_description', e.target.value)}
-                placeholder="Describe the property, real estate, or assets being transferred into the trust..."
+                placeholder="e.g., All real property located at [ADDRESS], including all improvements, fixtures, and appurtenances thereto; Personal property including [DESCRIPTION]; All rights, titles, deeds, and interests associated therewith..."
                 className="bg-[#0B1221] border-[#2D3748] text-[#F9F7F1] placeholder:text-[#F9F7F1]/30 focus:border-[#C6A87C] min-h-[150px]"
                 data-testid="input-property-description"
               />
