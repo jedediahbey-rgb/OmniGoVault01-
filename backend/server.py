@@ -190,14 +190,19 @@ class NoticeEvent(BaseModel):
 class Document(BaseModel):
     document_id: str = Field(default_factory=lambda: f"doc_{uuid.uuid4().hex[:12]}")
     portfolio_id: Optional[str] = None
+    trust_profile_id: Optional[str] = None  # Link to trust profile
     user_id: str
     template_id: Optional[str] = None
     title: str
     document_type: str  # declaration_of_trust, ttgd, notice_of_intent, affidavit, custom
-    content: str = ""  # JSON or rich text content
-    status: str = "draft"  # draft, completed, signed
+    content: str = ""  # Rich text / HTML content
+    editor_content: Optional[Dict] = None  # TipTap JSON for editor state
+    sub_record_id: str = ""  # Auto-generated: RM-ID + series (e.g., RF...US-01.001)
+    status: str = "draft"  # draft, final, archived
     tags: List[str] = []
     folder: str = "/"
+    is_deleted: bool = False  # Soft delete for trash/recycle bin
+    deleted_at: Optional[datetime] = None
     version: int = 1
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
