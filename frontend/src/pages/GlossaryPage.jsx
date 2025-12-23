@@ -543,6 +543,25 @@ export default function GlossaryPage({ user }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [expandedTerm, setExpandedTerm] = useState(null);
   const [selectedTerm, setSelectedTerm] = useState(null);
+  const detailRef = useRef(null);
+
+  // Scroll to top when a term is selected
+  useEffect(() => {
+    if (selectedTerm) {
+      // Scroll the page container to top
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      // Also try to scroll any parent scroll containers
+      const scrollContainer = document.querySelector('[data-scroll-container]') || 
+                              document.querySelector('.overflow-y-auto');
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'instant' });
+      }
+      // Focus the detail container without scrolling
+      if (detailRef.current) {
+        detailRef.current.focus({ preventScroll: true });
+      }
+    }
+  }, [selectedTerm]);
 
   const filteredTerms = glossaryTerms.filter(t => {
     const matchesSearch = searchTerm === '' || 
