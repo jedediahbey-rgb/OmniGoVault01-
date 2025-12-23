@@ -218,9 +218,6 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
                 <Send className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-[10px] text-white/30 mt-2 text-center">
-              Educational guidance only • Not legal advice
-            </p>
           </div>
         </motion.div>
       )}
