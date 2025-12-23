@@ -897,26 +897,43 @@ export default function PortfolioOverviewPage({ user }) {
           <GlassCard>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Trust Parties</h3>
-              <Button className="btn-primary">
+              <Button onClick={() => { resetPartyForm(); setShowPartyDialog(true); }} className="btn-primary">
                 <Plus className="w-4 h-4 mr-2" /> Add Party
               </Button>
             </div>
             {parties.length > 0 ? (
               <div className="space-y-3">
                 {parties.map(party => (
-                  <div key={party.party_id} className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
-                    <div className="w-10 h-10 rounded-full bg-vault-gold/20 flex items-center justify-center">
+                  <div key={party.party_id} className="flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-vault-gold/20 flex items-center justify-center flex-shrink-0">
                       <Users className="w-5 h-5 text-vault-gold" />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-white">{party.name}</p>
-                      <p className="text-white/40 text-sm capitalize">{party.role}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-medium">{party.name}</p>
+                      <p className="text-vault-gold text-sm capitalize">{party.role?.replace('_', ' ')}</p>
+                      {party.email && <p className="text-white/40 text-sm truncate">{party.email}</p>}
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => openEditParty(party)}
+                        className="text-white/40 hover:text-white p-2"
+                        title="Edit party"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setDeletePartyId(party.party_id)}
+                        className="text-red-400 hover:text-red-300 p-2"
+                        title="Delete party"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-white/30 text-center py-8">No parties defined</p>
+              <p className="text-white/30 text-center py-8">No parties defined. Add grantors, trustees, and beneficiaries.</p>
             )}
           </GlassCard>
         </TabsContent>
