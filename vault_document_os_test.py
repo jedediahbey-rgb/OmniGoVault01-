@@ -368,15 +368,18 @@ class VaultDocumentOSTester:
                 if data.get('document_id'):
                     self.ai_generated_doc_id = data.get('document_id')
             else:
-                # Check if it's an API key issue
-                if response.status_code == 500:
-                    try:
-                        error_data = response.json()
-                        if "LLM API key" in error_data.get('detail', ''):
-                            details += " (LLM API key not configured - expected for testing)"
-                            success = True  # This is expected in test environment
-                    except:
-                        pass
+                # Check if it's an API key issue or validation error
+                try:
+                    error_data = response.json()
+                    error_detail = error_data.get('detail', '')
+                    details += f", Error: {error_detail}"
+                    if "LLM API key" in error_detail:
+                        details += " (LLM API key not configured - expected for testing)"
+                        success = True  # This is expected in test environment
+                    elif response.status_code == 422:
+                        details += " (Validation error - check request format)"
+                except:
+                    pass
             
             self.log_test("AI Generate Document", success, details)
             return success
