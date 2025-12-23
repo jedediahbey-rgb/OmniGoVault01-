@@ -514,14 +514,55 @@ async def delete_portfolio(portfolio_id: str, user: User = Depends(get_current_u
     await db.assets.delete_many({"portfolio_id": portfolio_id})
     await db.notices.delete_many({"portfolio_id": portfolio_id})
     await db.documents.delete_many({"portfolio_id": portfolio_id})
+    await db.parties.delete_many({"portfolio_id": portfolio_id})
+    await db.mail_events.delete_many({"portfolio_id": portfolio_id})
     return {"message": "Portfolio deleted"}
+
+
+@api_router.put("/portfolios/{portfolio_id}")
+async def update_portfolio(portfolio_id: str, data: PortfolioCreate, user: User = Depends(get_current_user)):
+    """Update portfolio name and description"""
+    existing = await db.portfolios.find_one({"portfolio_id": portfolio_id, "user_id": user.user_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    
+    update_data = {
+        "name": data.name,
+        "description": data.description or "",
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.portfolios.update_one({"portfolio_id": portfolio_id}, {"$set": update_data})
+    doc = await db.portfolios.find_one({"portfolio_id": portfolio_id}, {"_id": 0})
+    return doc
 
 
 # ============ TRUST PROFILE ENDPOINTS ============
 
+@api_router.get("/trust-profiles")
+async def get_all_trust_profiles(user: User = Depends(get_current_user)):
+    """Get all trust profiles for user"""
+    docs = await db.trust_profiles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    return docs
+
+
+@api_router.get("/portfolios/{portfolio_id}/trust-profiles")
+async def get_portfolio_trust_profiles(portfolio_id: str, user: User = Depends(get_current_user)):
+    """Get all trust profiles for a portfolio"""
+    docs = await db.trust_profiles.find({"portfolio_id": portfolio_id, "user_id": user.user_id}, {"_id": 0}).to_list(100)
+    return docs
+
+
 @api_router.get("/portfolios/{portfolio_id}/trust-profile")
 async def get_trust_profile(portfolio_id: str, user: User = Depends(get_current_user)):
     doc = await db.trust_profiles.find_one({"portfolio_id": portfolio_id, "user_id": user.user_id}, {"_id": 0})
+    return doc
+
+
+@api_router.get("/trust-profiles/{profile_id}")
+async def get_trust_profile_by_id(profile_id: str, user: User = Depends(get_current_user)):
+    doc = await db.trust_profiles.find_one({"profile_id": profile_id, "user_id": user.user_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Trust profile not found")
     return doc
 
 
