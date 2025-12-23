@@ -787,8 +787,8 @@ export default function GlossaryPage({ user }) {
                 className="group"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <h3 className="text-lg font-heading text-white group-hover:text-vault-gold transition-colors">
                         {term.term}
                       </h3>
@@ -796,9 +796,11 @@ export default function GlossaryPage({ user }) {
                         <span className="text-white/30 text-sm">({term.aka})</span>
                       )}
                     </div>
-                    <p className="text-white/50 text-sm line-clamp-2">
-                      {term.definition}
-                    </p>
+                    <ExpandableText 
+                      text={term.definition}
+                      previewLines={3}
+                      className="mt-1"
+                    />
                     
                     {/* Quick Links */}
                     <div className="flex flex-wrap gap-2 mt-3">
