@@ -460,7 +460,7 @@ export default function TemplatesPage({ user }) {
                     <SelectValue placeholder="Select a portfolio" />
                   </SelectTrigger>
                   <SelectContent className="bg-vault-navy border-white/10">
-                    <SelectItem value="" className="text-white/70">No Portfolio</SelectItem>
+                    <SelectItem value="none" className="text-white/70">No Portfolio</SelectItem>
                     {portfolios.map(p => (
                       <SelectItem key={p.portfolio_id} value={p.portfolio_id} className="text-white/70">
                         {p.name}
