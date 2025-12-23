@@ -50,13 +50,40 @@
   * {
     @apply border-border;
   }
+  
+  /* Mobile viewport handling */
+  html, body, #root {
+    height: 100%;
+    overflow: hidden;
+  }
+  
   body {
     @apply bg-[#0B1221] text-foreground font-body antialiased;
     font-family: 'Manrope', sans-serif;
+    overflow: hidden;
   }
+  
+  /* Main app container */
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+  
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Cormorant Garamond', serif;
     letter-spacing: -0.02em;
+  }
+  
+  /* Prevent iOS input zoom */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  @media (min-width: 640px) {
+    input, textarea, select {
+      font-size: inherit !important;
+    }
   }
 }
 
