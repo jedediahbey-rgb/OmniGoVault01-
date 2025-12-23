@@ -203,11 +203,32 @@ class SubjectCategory(BaseModel):
     category_id: str = Field(default_factory=lambda: f"cat_{uuid.uuid4().hex[:12]}")
     portfolio_id: str
     user_id: str
-    category_number: int  # 01, 02, 03...
+    code: str  # 2-digit string: "01", "02", etc.
     name: str  # e.g., "Real Estate", "Vehicle Loan", "Court Case"
     description: str = ""
+    is_active: bool = True
     next_sequence: int = 1  # Next sequence number for this category (.001, .002...)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Default seed categories
+DEFAULT_SUBJECT_CATEGORIES = [
+    {"code": "00", "name": "General", "description": "General/miscellaneous records"},
+    {"code": "01", "name": "Real Estate", "description": "Real property transactions"},
+    {"code": "02", "name": "Vehicle", "description": "Vehicle titles and loans"},
+    {"code": "03", "name": "Financial Account", "description": "Bank accounts, investments"},
+    {"code": "04", "name": "Court Case", "description": "Legal proceedings"},
+    {"code": "05", "name": "Contract", "description": "Contracts and agreements"},
+    {"code": "06", "name": "Notice", "description": "Notices and correspondence"},
+    {"code": "07", "name": "Trust Administration", "description": "Trust management records"},
+]
+
+
+class RmIdDetails(BaseModel):
+    """RM-ID configuration for a trust profile"""
+    rm_id_raw: str = ""  # Exact user input (e.g., "RF 123 456 789 US")
+    rm_id_normalized: str = ""  # Normalized: uppercase, trimmed (e.g., "RF123456789US")
+    is_placeholder: bool = False  # True if system-generated placeholder
 
 
 class NoticeEvent(BaseModel):
