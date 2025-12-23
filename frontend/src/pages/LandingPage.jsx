@@ -74,14 +74,14 @@ export default function LandingPage() {
 
       <div className="relative z-10">
         {/* Navigation */}
-        <nav className="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-vault-gold to-vault-gold-dim flex items-center justify-center">
-              <Shield className="w-5 h-5 text-vault-navy" />
+        <nav className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 max-w-7xl mx-auto">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-vault-gold to-vault-gold-dim flex items-center justify-center flex-shrink-0">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-vault-navy" />
             </div>
-            <span className="font-heading text-xl text-white">Equity Trust Portfolio</span>
+            <span className="font-heading text-lg sm:text-xl text-white truncate">Equity Trust</span>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6">
             <button 
               onClick={() => navigate('/learn')}
               className="text-white/60 hover:text-white transition-colors"
@@ -98,6 +98,17 @@ export default function LandingPage() {
               onClick={handleLogin}
               className="btn-primary"
             >
+              Enter Vault
+            </Button>
+          </div>
+          {/* Mobile: Just show Enter Vault button */}
+          <Button 
+            onClick={handleLogin}
+            className="btn-primary md:hidden text-sm px-4"
+          >
+            Enter Vault
+          </Button>
+        </nav>
               Enter Vault
             </Button>
           </div>
