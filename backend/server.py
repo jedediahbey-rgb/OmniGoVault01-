@@ -1294,32 +1294,61 @@ async def get_parties(portfolio_id: str, user: User = Depends(get_current_user))
     return docs
 
 
+@api_router.post("/portfolios/{portfolio_id}/parties")
+async def create_party_for_portfolio(portfolio_id: str, data: dict, user: User = Depends(get_current_user)):
+    """Create a new party for a portfolio"""
+    party = Party(
+        portfolio_id=portfolio_id,
+        user_id=user.user_id,
+        name=data.get("name", ""),
+        role=data.get("role", "beneficiary"),
+        address=data.get("address", ""),
+        email=data.get("email", ""),
+        phone=data.get("phone", ""),
+        notes=data.get("notes", ""),
+        is_primary=data.get("is_primary", False)
+    )
+    doc = party.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.parties.insert_one(doc)
+    return {k: v for k, v in doc.items() if k != '_id'}
+
+
 @api_router.post("/parties")
 async def create_party(data: PartyCreate, user: User = Depends(get_current_user)):
     """Create a new party"""
     party = Party(
-        portfolio_id=data.portfolio_id, user_id=user.user_id, name=data.name,
-        party_type=data.party_type, role=data.role or "", address=data.address or "",
-        email=data.email or "", phone=data.phone or "", notes=data.notes or ""
+        portfolio_id=data.portfolio_id,
+        user_id=user.user_id,
+        name=data.name,
+        role=data.role or "beneficiary",
+        address=data.address or "",
+        email=data.email or "",
+        phone=data.phone or "",
+        notes=data.notes or "",
+        is_primary=data.is_primary
     )
     doc = party.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
-    doc['updated_at'] = doc['updated_at'].isoformat()
     await db.parties.insert_one(doc)
     return {k: v for k, v in doc.items() if k != '_id'}
 
 
 @api_router.put("/parties/{party_id}")
-async def update_party(party_id: str, data: PartyUpdate, user: User = Depends(get_current_user)):
+async def update_party(party_id: str, data: dict, user: User = Depends(get_current_user)):
     """Update a party"""
     existing = await db.parties.find_one({"party_id": party_id, "user_id": user.user_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Party not found")
     
-    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
-    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    update_data = {}
+    for key in ["name", "role", "address", "email", "phone", "notes", "is_primary"]:
+        if key in data and data[key] is not None:
+            update_data[key] = data[key]
     
-    await db.parties.update_one({"party_id": party_id}, {"$set": update_data})
+    if update_data:
+        await db.parties.update_one({"party_id": party_id}, {"$set": update_data})
+    
     doc = await db.parties.find_one({"party_id": party_id}, {"_id": 0})
     return doc
 
