@@ -271,7 +271,15 @@ class VaultDocumentOSTester:
         try:
             headers = {"Authorization": f"Bearer {self.session_token}"}
             
-            # Get document to trigger access tracking
+            # Access document multiple times to test access tracking
+            for i in range(3):
+                response = requests.get(f"{API_BASE}/documents/{self.test_document_id}", headers=headers, timeout=10)
+                if response.status_code != 200:
+                    self.log_test("Document Access Tracking", False, f"Failed to access document: {response.status_code}")
+                    return False
+                time.sleep(0.5)  # Small delay between accesses
+            
+            # Get final document state
             response = requests.get(f"{API_BASE}/documents/{self.test_document_id}", headers=headers, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
@@ -282,11 +290,13 @@ class VaultDocumentOSTester:
                 access_count = data.get('access_count', 0)
                 details += f", Access count: {access_count}, Last accessed: {last_accessed}"
                 
-                # Access count should be at least 1
-                if access_count >= 1:
+                # Access count should be at least 4 (3 test accesses + 1 final check)
+                if access_count >= 4:
                     details += " (Access tracking working)"
+                elif access_count >= 1:
+                    details += " (Access tracking partially working)"
                 else:
-                    details += " (Access tracking may not be working)"
+                    details += " (Access tracking not working)"
                     success = False
             
             self.log_test("Document Access Tracking", success, details)
