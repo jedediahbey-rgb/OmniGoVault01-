@@ -1,14 +1,13 @@
-# Sovereign Vault - Pure Equity Trust Platform
+# Equity Trust Portfolio Platform
 
 ## Original Problem Statement
-Build a website focused on structuring pure equity trusts/holding company/LLC for ultimate asset protection, with an elegant backend login for generation of trust structure and storage of trust documents for review, editing or download. Having the concepts of the pure equity trust in alignment with the provided PDF about "Kingdom vs Empire" which covers Pure Equity vs Law distinction, Private vs Public jurisdiction, Grantor/Trustee/Beneficiary roles, Maxims of Equity, and various trust forms.
+Build a full-stack, dynamic, interactive website + backend called "Equity Trust Portfolio" that converts the attached PDFs into (1) a structured learning/knowledge site, (2) a secure trust-portfolio document workspace (edit/store/version/export/download), and (3) an AI assistant that is strictly grounded in the PDFs with citations.
 
-## User Requirements
-- Template-based trust document generation with fill-in forms
-- Downloadable PDFs
-- Google OAuth login via Emergent
-- Classic elegant design with gold/navy accents
-- Educational section about Pure Equity Trust concepts
+## User Requirements (Phase 1)
+- GPT-4o for AI assistant
+- Google OAuth authentication (Phase 1)
+- Dark navy/gold "Sovereign Vault" theme
+- Basic versioning for documents
 
 ## Architecture
 
@@ -17,76 +16,110 @@ Build a website focused on structuring pure equity trusts/holding company/LLC fo
 - **Frontend**: React with Tailwind CSS and Shadcn/UI components
 - **Database**: MongoDB
 - **Authentication**: Google OAuth via Emergent Auth
-- **PDF Generation**: ReportLab
+- **AI**: GPT-4o via emergentintegrations library
+- **PDF Export**: ReportLab
 
-### Backend Structure
-- `/api/auth/session` - Exchange session_id for session_token
-- `/api/auth/me` - Get current authenticated user
-- `/api/auth/logout` - Clear session and logout
-- `/api/templates` - Get available trust document templates
-- `/api/trusts` - CRUD operations for trust documents
-- `/api/trusts/{id}/pdf` - Generate and download PDF
+### Backend API Endpoints
+
+**Public Endpoints:**
+- `/api/knowledge/topics` - Get knowledge base topics
+- `/api/knowledge/maxims` - Get 12 maxims of equity with citations
+- `/api/knowledge/relationships` - Get duty-right relationship pairs
+- `/api/templates` - Get document templates
+- `/api/sources` - Get PDF source documents
+- `/api/assistant/chat` - Chat with AI assistant (grounded in PDFs)
+
+**Protected Endpoints (require auth):**
+- `/api/portfolios` - CRUD for trust portfolios
+- `/api/trust-profiles` - Manage trust profiles
+- `/api/assets` - Manage assets/res ledger
+- `/api/notices` - Manage notice events
+- `/api/documents` - CRUD for documents with versioning
+- `/api/documents/{id}/versions` - Version history
+- `/api/documents/{id}/export/pdf` - PDF export
+- `/api/dashboard/stats` - Dashboard statistics
 
 ### Frontend Pages
-- `/` - Landing page with hero, features, trust types, maxims
-- `/education` - Educational content about Pure Equity Trusts
+
+**Public Pages:**
+- `/` - Homepage with hero, features, CTAs
+- `/knowledge` - Knowledge base with topics from PDFs
+- `/maxims` - Searchable/filterable maxims library
+- `/relationships` - Duty ↔ Right explorer
+- `/templates` - Document templates preview
+- `/sources` - PDF viewer and source library
+- `/assistant` - AI chat grounded in PDFs
 - `/login` - Google OAuth login
-- `/dashboard` - User dashboard (protected)
-- `/trusts/new` - Create new trust document (protected)
-- `/trusts/:id` - Edit trust document (protected)
+
+**Protected Pages:**
+- `/vault` - Dashboard with stats and portfolios
+- `/vault/portfolio/:id` - Portfolio detail (profile, assets, notices, documents)
+- `/vault/document/:id` - Document editor with versioning
 
 ### Database Collections
-- `users` - User profiles (user_id, email, name, picture)
-- `user_sessions` - Session tokens for authentication
-- `trust_documents` - Trust document data with all form fields
+- `users` - User profiles
+- `user_sessions` - Auth sessions
+- `portfolios` - Trust portfolios
+- `trust_profiles` - Trust profile details (parties, terms, conditions)
+- `assets` - Assets/res ledger
+- `notices` - Notice events timeline
+- `documents` - Document content with versioning
+- `document_versions` - Version history
+- `chat_messages` - AI chat history
 
-### Trust Document Types
-1. Declaration of Trust
-2. Trust Transfer Grant Deed (TTGD)
-3. Notice of Intent to Preserve Interest
-4. Affidavit of Fact
+## Tasks Completed (Phase 1)
 
-## Tasks Completed
+### Knowledge Base ✅
+- [x] 10 knowledge topics derived from PDFs
+- [x] 12 maxims of equity with explanations, tags, and citations
+- [x] 4 duty-right relationship pairs with duties/rights lists
+- [x] Search and filter functionality
+- [x] Source citations on all content
 
-### Phase 1 - Core Implementation ✅
-- [x] Backend API with FastAPI
-- [x] Google OAuth integration via Emergent Auth
-- [x] MongoDB models for users, sessions, and trust documents
-- [x] CRUD operations for trust documents
-- [x] PDF generation using ReportLab
-- [x] React frontend with routing
-- [x] Landing page with "Sovereign Vault" branding
-- [x] Education page with trust roles, maxims, document types
-- [x] Login page with Google OAuth
-- [x] Dashboard with document listing, search, and stats
-- [x] Create Trust page with template selection
-- [x] Edit Trust page with comprehensive form fields
-- [x] Classic elegant design (Navy #0B1221, Gold #C6A87C)
-- [x] Cormorant Garamond serif typography for headings
-- [x] Protected routes with session verification
-- [x] PDF download functionality
+### Portfolio Vault ✅
+- [x] Portfolio creation and management
+- [x] Trust profile with all party information (Grantor, Trustee, Beneficiary)
+- [x] Governing statements, terms, renewal, revocation conditions
+- [x] Assets/Res ledger with type, description, value
+- [x] Notices timeline with status tracking
+- [x] Document management with folders and tags
 
-### Phase 2 - Pure Equity Trust Document Structure ✅
-- [x] Updated PDF generation based on "pure trust under equity.pdf"
-- [x] Declaration of Trust with FIRST through ELEVENTH articles
-- [x] Includes Grantor/Settlor definitions, Beneficiary as "true owner in equity"
-- [x] Trust Transfer Grant Deed with Grant Clause and Habendum Clause
-- [x] Covenants of Title in grant deeds
-- [x] Notice of Intent to Preserve Interest document type
-- [x] Affidavit of Fact with numbered statements and attestation
-- [x] Maxims of Equity embedded in documents
-- [x] Proper signature blocks with notarization certificates (Certificate of Jurat)
-- [x] Updated form descriptions with pure equity trust terminology
-- [x] Trust Property described as Corpus/Res
+### Document System ✅
+- [x] 7 document templates from Pure Trust Under Equity PDF
+- [x] Document editor with rich text
+- [x] Basic versioning (auto-save snapshots, restore)
+- [x] PDF export functionality
+- [x] Version history with restore capability
 
-## Next Tasks / Enhancements
-- [ ] Add user profile settings page
-- [ ] Implement document versioning/history
-- [ ] Add multiple beneficiaries support
-- [ ] Create document templates library with sample text
-- [ ] Add document sharing functionality
-- [ ] Implement digital signature integration
-- [ ] Add trust amendment workflow
-- [ ] Create mobile-responsive optimizations
-- [ ] Add export to Word/DOCX format
-- [ ] Implement document search with filters
+### AI Assistant ✅
+- [x] GPT-4o integration via emergentintegrations
+- [x] Grounded in source PDFs only
+- [x] Citations included in responses
+- [x] Educational disclaimer
+- [x] Suggested questions
+
+### Authentication ✅
+- [x] Google OAuth via Emergent Auth
+- [x] Session management with cookies
+- [x] Protected routes
+
+### Design ✅
+- [x] Dark navy (#0B1221) and gold (#C6A87C) theme
+- [x] Serif typography (Cormorant Garamond style)
+- [x] Modern UI with glass-morphism elements
+- [x] Responsive design
+
+## Phase 2 Tasks (Future)
+- [ ] Full audit logs
+- [ ] Role-based access (owner/admin/editor/viewer)
+- [ ] Email/password authentication with magic links
+- [ ] Light mode toggle
+- [ ] MFA authentication
+- [ ] E-signature integration
+- [ ] Full-text PDF search indexing
+- [ ] Kanban/timeline views for notices
+- [ ] Document collaboration features
+
+## Source Documents
+1. Kingdom vs Empire (Roark) - Equity jurisprudence, maxims, relationships
+2. Pure Trust Under Equity - Trust document templates and forms
