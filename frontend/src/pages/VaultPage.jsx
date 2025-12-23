@@ -381,6 +381,45 @@ export default function VaultPage({ user }) {
           )}
         </div>
 
+        {/* Quick Access Section (Pinned + Recent) */}
+        {!showTrash && showQuickAccess && (pinnedDocs.length > 0 || recentDocs.length > 0) && (
+          <div className="px-4 pb-4 border-b border-white/10">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-white/50 text-sm font-medium">Quick Access</span>
+              <button 
+                onClick={() => setShowQuickAccess(false)}
+                className="text-white/30 hover:text-white p-1"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+              {pinnedDocs.slice(0, 3).map(doc => (
+                <button
+                  key={doc.document_id}
+                  onClick={() => navigate(`/vault/document/${doc.document_id}`)}
+                  className="flex items-center gap-2 px-3 py-2 bg-vault-gold/10 border border-vault-gold/30 rounded-lg text-sm whitespace-nowrap hover:bg-vault-gold/20 transition-colors"
+                >
+                  <Star className="w-3 h-3 text-vault-gold fill-vault-gold" />
+                  <span className="text-white truncate max-w-[120px]">{doc.title}</span>
+                </button>
+              ))}
+              {recentDocs.slice(0, 3).map(doc => (
+                !pinnedDocs.some(p => p.document_id === doc.document_id) && (
+                  <button
+                    key={doc.document_id}
+                    onClick={() => navigate(`/vault/document/${doc.document_id}`)}
+                    className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm whitespace-nowrap hover:bg-white/10 transition-colors"
+                  >
+                    <Clock className="w-3 h-3 text-white/50" />
+                    <span className="text-white/70 truncate max-w-[120px]">{doc.title}</span>
+                  </button>
+                )
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Documents Grid/List */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
           {showTrash ? (
