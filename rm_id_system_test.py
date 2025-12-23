@@ -71,14 +71,10 @@ class EquityTrustPortfolioTester:
         """Create test user and session using MongoDB directly"""
         self.log("Creating test user and session...")
         
-        # Generate test data
-        timestamp = int(datetime.now().timestamp())
-        self.user_id = f"test-user-{timestamp}"
-        self.session_token = f"test_session_{timestamp}"
-        email = f"test.user.{timestamp}@example.com"
+        # Use the session token created via mongosh
+        self.session_token = "test_session_1766517109655"
+        self.user_id = "test-user-1766517109655"
         
-        # Create user and session via MongoDB (simulated)
-        # In real scenario, this would use mongosh commands from auth_testing.md
         self.log(f"Test User ID: {self.user_id}")
         self.log(f"Test Session Token: {self.session_token}")
         
