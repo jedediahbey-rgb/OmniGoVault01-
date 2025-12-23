@@ -108,8 +108,11 @@ class TrustProfile(BaseModel):
     extinguishment_conditions: str = ""
     conveyance_conditions: str = ""
     additional_notes: str = ""
-    # Registered Mail ID System (Internal Recordkeeping)
-    rm_record_id: str = ""  # e.g., "RF 123 456 789 US"
+    # Registered Mail ID System (Internal Recordkeeping) - Enhanced
+    rm_id_raw: str = ""  # Exact user input (e.g., "RF 123 456 789 US")
+    rm_id_normalized: str = ""  # Normalized: uppercase, no extra spaces (e.g., "RF123456789US")
+    rm_id_is_placeholder: bool = False  # True if system-generated placeholder
+    rm_record_id: str = ""  # Legacy field - kept for backward compatibility
     rm_series_start: str = ""  # e.g., "01.001"
     rm_series_end: str = ""  # e.g., "99.999"
     rm_next_series: int = 1  # Next available series number
