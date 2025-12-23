@@ -1,138 +1,203 @@
 {
-  "identity": {
-    "name": "E1: The Anti-AI Designer",
-    "mission": "Create a 'Sovereign Vault' aesthetic that feels like a digital extension of a private mahogany office, rejecting generic SaaS tropes.",
-    "tone": "Authority, Permanence, Sovereignty, Exclusive",
-    "aesthetic": "Classic Elegant (Gold/Navy) with a 'Private Banking' twist"
-  },
-  "typography": {
-    "font_family": {
-      "headings": "Cormorant Garamond, serif",
-      "body": "Manrope, sans-serif",
-      "legal": "Crimson Pro, serif",
-      "mono": "JetBrains Mono, monospace"
+  "design_system": {
+    "identity": {
+      "name": "Sovereign Vault",
+      "archetype": "Jewel & Luxury",
+      "vibe": "Authoritative, Secure, Timeless, Intelligent",
+      "core_values": ["Sovereignty", "Privacy", "Equity", "Wisdom"]
     },
-    "installation": "Import from Google Fonts: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Manrope:wght@400;500;600;700&display=swap",
-    "usage_rules": {
-      "h1": "font-serif text-5xl md:text-7xl font-medium tracking-tight leading-[0.95]",
-      "h2": "font-serif text-4xl md:text-5xl font-normal tracking-tight",
-      "h3": "font-serif text-2xl md:text-3xl font-medium text-accent",
-      "body": "font-sans text-base leading-relaxed text-muted-foreground",
-      "legal_text": "font-legal text-lg leading-loose text-foreground/90",
-      "button": "font-sans font-semibold tracking-wide uppercase text-xs"
-    }
-  },
-  "colors": {
-    "palette": {
-      "background": "#0B1221",
-      "foreground": "#F5F2EB",
-      "card": "#111A2F",
-      "card_foreground": "#E2E8F0",
-      "popover": "#111A2F",
-      "popover_foreground": "#E2E8F0",
-      "primary": "#C6A87C",
-      "primary_foreground": "#0B1221",
-      "secondary": "#1E293B",
-      "secondary_foreground": "#F5F2EB",
-      "muted": "#1E293B",
-      "muted_foreground": "#94A3B8",
-      "accent": "#C6A87C",
-      "accent_foreground": "#0B1221",
-      "destructive": "#7F1D1D",
-      "destructive_foreground": "#F5F2EB",
-      "border": "#2D3748",
-      "input": "#2D3748",
-      "ring": "#C6A87C"
-    },
-    "theme_strategy": {
-      "landing_page": "Light Mode (Paper/Parchment feel: bg-[#F9F7F1] text-[#0B1221])",
-      "dashboard": "Dark Mode (Vault feel: bg-[#0B1221] text-[#E2E8F0])",
-      "documents": "Light Mode (Bond Paper: bg-white text-black)"
-    }
-  },
-  "visual_enhancers": {
-    "textures": {
-      "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
-      "marble_overlay": "Use the dark marble image with low opacity (10%) on the dashboard sidebar."
-    },
-    "borders": {
-      "style": "1px solid",
-      "color": "border-white/10",
-      "radius": "rounded-sm (Sharp, precise feel)"
-    },
-    "shadows": {
-      "card": "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
-      "glow": "0 0 20px rgba(198, 168, 124, 0.15)"
-    }
-  },
-  "layout_strategies": {
-    "landing_page": {
-      "grid": "Mode A: The Tetris Grid (Asymmetrical)",
-      "spacing": "Generous (py-24, gap-12)",
-      "alignment": "Left aligned typography, offset images"
-    },
-    "dashboard": {
-      "grid": "Mode B: The Control Room (Dense, Functional)",
-      "structure": "Sidebar navigation (fixed), Top bar (minimal), Main content (scrollable)",
-      "card_style": "Flat background, 1px border, no shadow (unless hovered)"
-    }
-  },
-  "components": {
-    "buttons": {
-      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 rounded-sm px-8 py-6 shadow-[0_0_15px_rgba(198,168,124,0.3)] transition-all duration-300",
-      "secondary": "bg-transparent border border-primary/30 text-primary hover:bg-primary/10 rounded-sm px-8 py-6"
-    },
-    "cards": {
-      "default": "bg-card border border-border/50 rounded-sm p-6 relative overflow-hidden group",
-      "hover_effect": "group-hover:border-primary/50 transition-colors duration-300"
-    },
-    "inputs": {
-      "style": "bg-transparent border-b border-border focus:border-primary rounded-none px-0 py-3 focus:ring-0 transition-colors placeholder:text-muted-foreground/50"
-    }
-  },
-  "image_urls": {
-    "textures": [
-      {
-        "url": "https://images.unsplash.com/photo-1747696766706-5485b39bf358?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxkYXJrJTIwbWFyYmxlJTIwdGV4dHVyZSUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzY2NDg1MDE5fDA&ixlib=rb-4.1.0&q=85",
-        "description": "Dark Marble Texture (Use for Sidebar/Hero Backgrounds)",
-        "category": "background"
+    "typography": {
+      "fonts": {
+        "heading": {
+          "family": "Cormorant Garamond",
+          "weights": ["600", "700"],
+          "usage": "Page titles, Section headers, Hero text",
+          "fallback": "serif"
+        },
+        "body": {
+          "family": "Manrope",
+          "weights": ["400", "500", "600"],
+          "usage": "UI elements, Dashboard data, Navigation",
+          "fallback": "sans-serif"
+        },
+        "legal": {
+          "family": "Crimson Pro",
+          "weights": ["400", "600"],
+          "usage": "Long-form legal documents, Maxims, Articles",
+          "fallback": "serif"
+        },
+        "mono": {
+          "family": "JetBrains Mono",
+          "weights": ["400"],
+          "usage": "Document IDs, Hash keys, Data tables",
+          "fallback": "monospace"
+        }
       },
-      {
-        "url": "https://images.unsplash.com/photo-1595412134077-515f3c30b2fb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxhbnRpcXVlJTIwZ29sZCUyMG1ldGFsJTIwdGV4dHVyZXxlbnwwfHx8fDE3NjY0ODUwMjF8MA&ixlib=rb-4.1.0&q=85",
-        "description": "Antique Gold Texture (Use for masking text or borders)",
-        "category": "accent"
+      "scale": {
+        "h1": "text-5xl md:text-6xl font-serif tracking-tight leading-none",
+        "h2": "text-3xl md:text-4xl font-serif tracking-tight",
+        "h3": "text-2xl font-serif font-semibold text-gold-400",
+        "body_lg": "text-lg font-sans leading-relaxed",
+        "body_base": "text-base font-sans leading-relaxed text-slate-300",
+        "legal_text": "text-lg font-legal leading-loose text-slate-200",
+        "caption": "text-xs font-sans uppercase tracking-widest text-slate-500"
       }
+    },
+    "colors": {
+      "palette": {
+        "background": {
+          "default": "#0B1221",
+          "paper": "#0F172A",
+          "card": "#111827"
+        },
+        "primary": {
+          "main": "#C6A87C",
+          "light": "#E8D5B5",
+          "dark": "#8C7350",
+          "glow": "rgba(198, 168, 124, 0.15)"
+        },
+        "secondary": {
+          "main": "#1E293B",
+          "light": "#334155",
+          "dark": "#020617"
+        },
+        "text": {
+          "primary": "#F8FAFC",
+          "secondary": "#94A3B8",
+          "muted": "#64748B",
+          "gold": "#C6A87C"
+        },
+        "status": {
+          "success": "#10B981",
+          "warning": "#F59E0B",
+          "error": "#EF4444",
+          "info": "#3B82F6"
+        }
+      },
+      "gradients": {
+        "gold_text": "linear-gradient(135deg, #C6A87C 0%, #E8D5B5 50%, #C6A87C 100%)",
+        "vault_glow": "radial-gradient(circle at center, rgba(198, 168, 124, 0.08) 0%, transparent 70%)",
+        "dark_overlay": "linear-gradient(to bottom, rgba(11, 18, 33, 0) 0%, #0B1221 100%)"
+      }
+    },
+    "visual_enhancers": {
+      "borders": {
+        "subtle": "border border-white/5",
+        "gold_highlight": "border border-[#C6A87C]/30",
+        "interactive": "hover:border-[#C6A87C]/50 transition-colors duration-300"
+      },
+      "shadows": {
+        "gold_glow": "0 0 20px rgba(198, 168, 124, 0.1)",
+        "card_depth": "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
+        "inner_inset": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)"
+      },
+      "textures": {
+        "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E\")"
+      },
+      "glassmorphism": {
+        "nav": "bg-[#0B1221]/80 backdrop-blur-md border-b border-white/5",
+        "modal": "bg-[#0F172A]/90 backdrop-blur-xl border border-white/10 shadow-2xl"
+      }
+    },
+    "layout_strategies": {
+      "marketing": {
+        "grid": "grid-cols-1 md:grid-cols-12 gap-8",
+        "container": "max-w-7xl mx-auto px-6 md:px-12",
+        "spacing": "py-24 md:py-32"
+      },
+      "dashboard": {
+        "grid": "grid-cols-1 md:grid-cols-4 gap-6",
+        "container": "w-full px-6 py-8",
+        "spacing": "space-y-6"
+      },
+      "document_view": {
+        "layout": "max-w-4xl mx-auto bg-[#0F172A] min-h-screen shadow-2xl border-x border-white/5",
+        "typography": "prose prose-invert prose-lg prose-headings:font-serif prose-p:font-legal"
+      }
+    },
+    "components": {
+      "buttons": {
+        "primary": "bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-8 py-3 rounded-sm shadow-[0_0_15px_rgba(198,168,124,0.3)] transition-all hover:shadow-[0_0_25px_rgba(198,168,124,0.5)]",
+        "secondary": "bg-transparent border border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 font-sans font-semibold uppercase tracking-wider text-xs px-8 py-3 rounded-sm",
+        "ghost": "text-slate-400 hover:text-[#C6A87C] hover:bg-white/5 font-sans font-medium"
+      },
+      "cards": {
+        "vault": "bg-[#111827] border border-white/5 rounded-sm p-6 hover:border-[#C6A87C]/30 transition-all duration-300 relative overflow-hidden group",
+        "feature": "bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-white/5 p-8 rounded-sm hover:-translate-y-1 transition-transform duration-300"
+      },
+      "inputs": {
+        "legal": "bg-transparent border-b border-slate-700 focus:border-[#C6A87C] rounded-none px-0 py-2 text-lg font-legal placeholder:text-slate-600 focus:ring-0 transition-colors",
+        "search": "bg-[#1E293B] border border-white/10 rounded-full px-4 py-2 text-sm font-sans focus:border-[#C6A87C]/50 focus:ring-1 focus:ring-[#C6A87C]/50"
+      }
+    },
+    "motion": {
+      "transitions": {
+        "default": "transition-all duration-300 ease-out",
+        "slow": "transition-all duration-700 ease-in-out"
+      },
+      "animations": {
+        "fade_in": "animate-fade-in",
+        "slide_up": "animate-slide-up",
+        "gold_shimmer": "animate-shimmer"
+      }
+    },
+    "media": {
+      "image_urls": {
+        "hero_background": {
+          "url": "https://images.unsplash.com/photo-1761437855740-c894da924d79?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3MjQyMTd8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMGdvbGQlMjB0ZXh0dXJlJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzY2NDg5ODM0fDA&ixlib=rb-4.1.0&q=85",
+          "description": "Elegant abstract gold lines on black, for Hero sections and Auth backgrounds",
+          "category": "background"
+        },
+        "vault_security": {
+          "url": "https://images.unsplash.com/photo-1696013910376-c56f76dd8178?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3MjQyMTd8MHwxfHNlYXJjaHwyfHxzZWN1cmUlMjB2YXVsdCUyMGxvY2slMjBhYnN0cmFjdCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzY2NDg5ODM3fDA&ixlib=rb-4.1.0&q=85",
+          "description": "Dark padlock on black surface, for Security/Vault features",
+          "category": "feature"
+        },
+        "knowledge_library": {
+          "url": "https://images.unsplash.com/photo-1587397070638-81d3cce10435?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3MjQyMTd8MHwxfHNlYXJjaHwzfHxjbGFzc2ljJTIwbGlicmFyeSUyMGJvb2tzJTIwa25vd2xlZGdlfGVufDB8fHx8MTc2NjQ4OTg0MHww&ixlib=rb-4.1.0&q=85",
+          "description": "Classic library shelves, for Knowledge Base/Maxims section",
+          "category": "feature"
+        },
+        "trust_handshake": {
+          "url": "https://images.unsplash.com/photo-1647104568641-bd427704384c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3MjQyMTd8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMGdvbGQlMjB0ZXh0dXJlJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzY2NDg5ODM0fDA&ixlib=rb-4.1.0&q=85",
+          "description": "Abstract gold object, representing assets/trust",
+          "category": "feature"
+        }
+      }
+    },
+    "3d_libraries": {
+      "relationship_explorer": {
+        "library": "react-force-graph-2d",
+        "usage": "Visualizing Duty <-> Right relationships between entities",
+        "style": "Dark nodes, gold links, interactive zooming"
+      },
+      "charts": {
+        "library": "recharts",
+        "usage": "Portfolio asset allocation, Trust distribution",
+        "style": "Custom tooltips, gold/slate color palette"
+      }
+    },
+    "instructions_to_main_agent": [
+      "Use 'Cormorant Garamond' for all headings to maintain the 'Sovereign' feel.",
+      "Use 'Crimson Pro' for any text that resembles a legal document or maxim.",
+      "Ensure all backgrounds are dark (#0B1221 or #0F172A). Never use pure black or white.",
+      "Use the 'gold-glow' shadow effect on primary actions to simulate gold leaf reflection.",
+      "Implement the 'Duty-Right Explorer' using a force-directed graph where nodes are Entities and links are Duties/Rights.",
+      "For the 'Portfolio Vault', use a dense 'Control Room' grid layout with 'vault-card' components.",
+      "The 'Knowledge Base' should feel like a digital library - use the library image as a subtle background or header.",
+      "All inputs in the 'Document Editor' should look like lines on a paper contract (border-bottom only).",
+      "Use 'sonner' for all notifications (e.g., 'Document Saved to Vault').",
+      "Ensure high contrast for accessibility: Gold text is for large headers only; use off-white for body text."
     ],
-    "visuals": [
-      {
-        "url": "https://images.unsplash.com/photo-1759774620386-af473de87632?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxjbGFzc2ljJTIwYXJjaGl0ZWN0dXJlJTIwY29sdW1uJTIwZGV0YWlsfGVufDB8fHx8MTc2NjQ4NTAyMnww&ixlib=rb-4.1.0&q=85",
-        "description": "Classic Column Detail (Use for 'Structure' or 'Foundation' section)",
-        "category": "feature"
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1676312389476-fe01e238b422?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxmb3VudGFpbiUyMHBlbiUyMHdyaXRpbmclMjBvbiUyMHBhcGVyfGVufDB8fHx8MTc2NjQ4NTAyNXww&ixlib=rb-4.1.0&q=85",
-        "description": "Fountain Pen (Use for 'Signing' or 'Execution' section)",
-        "category": "feature"
-      }
+    "universal_guidelines": [
+      "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+      "Don't make generic centered layouts. Use asymmetry.",
+      "Create depth through layered design elements with z-index hierarchy.",
+      "Use glass-morphism effects with backdrop filters (12-24px blur) for overlays.",
+      "Every interaction needs micro-animations - hover states, transitions.",
+      "Use 2-3x more spacing than feels comfortable.",
+      "Subtle grain textures (noise) are mandatory for the background.",
+      "All interactive elements MUST include data-testid attribute."
     ]
-  },
-  "instructions_to_main_agent": [
-    "1. IGNORE App.css. Use index.css for all global styles.",
-    "2. IMPLEMENT the 'Sovereign Vault' aesthetic: Dark Navy backgrounds, Gold accents, Serif headings.",
-    "3. OVERRIDE Shadcn defaults. Do not use the default radius (0.5rem). Use 'rounded-sm' or 'rounded-none' for a sharper, more serious look.",
-    "4. USE 'Cormorant Garamond' for all headings. This is non-negotiable for the brand identity.",
-    "5. LANDING PAGE must be Light Mode (Parchment). DASHBOARD must be Dark Mode (Vault). Handle this via CSS classes or a theme provider that switches based on route.",
-    "6. DO NOT use gradients for backgrounds. Use solid colors with subtle noise or the provided marble texture overlay.",
-    "7. ENSURE all interactive elements have 'data-testid' attributes.",
-    "8. USE 'sonner' for toasts.",
-    "9. CREATE a 'Layout' component that handles the Sidebar/Header structure for the dashboard.",
-    "10. FORMS should feel like legal documents. Use the 'underlined' input style defined in components."
-  ],
-  "universal_guidelines": [
-    "Avoid 'AI Slop' (generic centered layouts, excessive gradients).",
-    "Use 2-3x more spacing than typical designs.",
-    "Every interaction needs micro-animations.",
-    "Never use AI assistant emojis.",
-    "Prioritize accessibility (APCA contrast)."
-  ]
+  }
 }
