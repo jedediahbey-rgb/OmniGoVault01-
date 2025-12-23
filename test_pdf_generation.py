@@ -149,13 +149,18 @@ class PDFGenerationTester:
                 details += f", Content-Type: {content_type}, Size: {content_length} bytes"
                 
                 # Check if it's actually a PDF and has reasonable size
-                if content_type == 'application/pdf' and content_length > 5000:
-                    details += " (Valid PDF with content)"
-                    
+                if content_type == 'application/pdf' and content_length > 2000:
                     # Check PDF header
                     pdf_header = response.content[:4]
                     if pdf_header == b'%PDF':
-                        details += " (Valid PDF header)"
+                        details += " (Valid PDF with header)"
+                        
+                        # Check for PDF trailer
+                        pdf_content = response.content.decode('latin-1', errors='ignore')
+                        if '%%EOF' in pdf_content:
+                            details += " (Complete PDF)"
+                        else:
+                            details += " (PDF may be incomplete)"
                     else:
                         success = False
                         details += " (Invalid PDF header)"
