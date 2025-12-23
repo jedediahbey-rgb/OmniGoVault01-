@@ -261,10 +261,42 @@ const AppRouter = ({ auth }) => {
 
 function App() {
   const auth = useAuth();
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [assistantOpen, setAssistantOpen] = useState(false);
+
+  // Keyboard shortcut for command palette
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(prev => !prev);
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'j') {
+        e.preventDefault();
+        setAssistantOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <BrowserRouter>
+      <Disclaimer variant="banner" />
       <Toaster position="top-right" richColors />
+      <CommandPalette 
+        isOpen={commandPaletteOpen} 
+        onClose={() => setCommandPaletteOpen(false)}
+        onAction={(action) => {
+          if (action === 'new-portfolio') {
+            // Handle new portfolio action
+          }
+        }}
+      />
+      <AssistantDrawer 
+        isOpen={assistantOpen} 
+        onClose={() => setAssistantOpen(false)} 
+      />
       <AppRouter auth={auth} />
     </BrowserRouter>
   );
