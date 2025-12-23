@@ -349,15 +349,25 @@ export default function PortfolioOverviewPage({ user }) {
       />
 
       {/* RM-ID Display */}
-      {trustProfile?.rm_id_details?.full_rm_id && (
+      {(trustProfile?.rm_id_normalized || trustProfile?.rm_id_raw || trustProfile?.rm_record_id) && (
         <GlassCard className="mb-6 flex items-center gap-4 p-4">
           <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center">
             <Hash className="w-5 h-5 text-vault-gold" />
           </div>
-          <div>
-            <p className="text-white/40 text-xs uppercase tracking-wider">Trust RM-ID</p>
-            <p className="text-vault-gold font-mono text-lg">{trustProfile.rm_id_details.full_rm_id}</p>
+          <div className="flex-1">
+            <p className="text-white/40 text-xs uppercase tracking-wider">
+              Main RM-ID {trustProfile?.rm_id_is_placeholder && <span className="text-yellow-400">(Placeholder)</span>}
+            </p>
+            <p className="text-vault-gold font-mono text-lg">
+              {trustProfile.rm_id_raw || trustProfile.rm_record_id || 'Not set'}
+            </p>
           </div>
+          <Link 
+            to={`/vault/trust-profile/${portfolioId}`}
+            className="text-white/40 hover:text-white text-sm"
+          >
+            Edit RM-ID →
+          </Link>
         </GlassCard>
       )}
 
