@@ -675,25 +675,81 @@ async def update_trust_profile(profile_id: str, data: TrustProfileUpdate, user: 
 
 # ============ ASSET ENDPOINTS ============
 
-async def generate_asset_rm_id(portfolio_id: str, user_id: str) -> str:
-    """Generate unique RM-ID for an asset based on trust profile"""
-    # Get trust profile for this portfolio
+async def get_or_create_subject_category(portfolio_id: str, user_id: str, subject_name: str) -> dict:
+    """Get or create a subject category and return its details"""
+    # Look for existing category with this name
+    existing = await db.subject_categories.find_one({
+        "portfolio_id": portfolio_id,
+        "user_id": user_id,
+        "name": subject_name
+    })
+    
+    if existing:
+        return existing
+    
+    # Find the next category number
+    max_category = await db.subject_categories.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id}
+    ).sort("category_number", -1).limit(1).to_list(1)
+    
+    next_category_number = (max_category[0]["category_number"] + 1) if max_category else 1
+    
+    # Create new category
+    category = SubjectCategory(
+        portfolio_id=portfolio_id,
+        user_id=user_id,
+        category_number=next_category_number,
+        name=subject_name,
+        next_sequence=1
+    )
+    doc = category.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.subject_categories.insert_one(doc)
+    
+    return doc
+
+
+async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_name: str) -> tuple:
+    """Generate RM-ID based on subject category. Returns (full_rm_id, category_num, sequence_num, subject_name)"""
+    # Get trust profile for base RM-ID
     trust_profile = await db.trust_profiles.find_one(
         {"portfolio_id": portfolio_id, "user_id": user_id},
-        {"rm_id_details": 1}
+        {"rm_id_details": 1, "rm_record_id": 1}
     )
     
     if trust_profile and trust_profile.get("rm_id_details", {}).get("full_rm_id"):
         base_rm_id = trust_profile["rm_id_details"]["full_rm_id"]
+    elif trust_profile and trust_profile.get("rm_record_id"):
+        base_rm_id = trust_profile.get("rm_record_id")
     else:
-        # Generate a random base RM-ID if no trust profile
+        # Generate a default base RM-ID
         base_rm_id = f"RF{uuid.uuid4().hex[:9].upper()}US"
     
-    # Count existing assets to generate next sub-record number
-    asset_count = await db.assets.count_documents({"portfolio_id": portfolio_id, "user_id": user_id})
-    sub_record = f"{(asset_count + 1):02d}.001"
+    # Get or create subject category
+    category = await get_or_create_subject_category(portfolio_id, user_id, subject_name)
+    category_num = category.get("category_number", 1)
+    sequence_num = category.get("next_sequence", 1)
     
-    return f"{base_rm_id}-{sub_record}"
+    # Increment the sequence for next use
+    await db.subject_categories.update_one(
+        {"category_id": category["category_id"]},
+        {"$inc": {"next_sequence": 1}}
+    )
+    
+    # Format: RF123456789US-01.001
+    full_rm_id = f"{base_rm_id}-{category_num:02d}.{sequence_num:03d}"
+    
+    return full_rm_id, category_num, sequence_num, subject_name
+
+
+@api_router.get("/portfolios/{portfolio_id}/subject-categories")
+async def get_subject_categories(portfolio_id: str, user: User = Depends(get_current_user)):
+    """Get all subject categories for a portfolio"""
+    categories = await db.subject_categories.find(
+        {"portfolio_id": portfolio_id, "user_id": user.user_id},
+        {"_id": 0}
+    ).sort("category_number", 1).to_list(100)
+    return categories
 
 
 @api_router.get("/portfolios/{portfolio_id}/assets")
@@ -704,13 +760,20 @@ async def get_assets(portfolio_id: str, user: User = Depends(get_current_user)):
 
 @api_router.post("/portfolios/{portfolio_id}/assets")
 async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User = Depends(get_current_user)):
-    """Create asset with auto-generated RM-ID"""
-    rm_id = await generate_asset_rm_id(portfolio_id, user.user_id)
+    """Create asset with subject-based RM-ID"""
+    subject_name = data.get("subject_name") or data.get("asset_type", "General")
+    
+    rm_id, category_num, sequence_num, subject = await generate_subject_rm_id(
+        portfolio_id, user.user_id, subject_name
+    )
     
     asset = AssetItem(
         portfolio_id=portfolio_id,
         user_id=user.user_id,
         rm_id=rm_id,
+        subject_category=category_num,
+        subject_name=subject,
+        sequence_number=sequence_num,
         asset_type=data.get("asset_type", "General"),
         description=data.get("description", ""),
         value=data.get("value"),
@@ -727,6 +790,9 @@ async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User =
         portfolio_id=portfolio_id,
         user_id=user.user_id,
         rm_id=rm_id,
+        subject_category=category_num,
+        subject_name=subject,
+        sequence_number=sequence_num,
         entry_type="deposit",
         description=f"Asset deposited: {data.get('description', '')}",
         asset_id=asset.asset_id,
@@ -741,14 +807,42 @@ async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User =
     return {k: v for k, v in doc.items() if k != '_id'}
 
 
+@api_router.put("/assets/{asset_id}")
+async def update_asset(asset_id: str, data: dict, user: User = Depends(get_current_user)):
+    """Update an existing asset"""
+    asset = await db.assets.find_one({"asset_id": asset_id, "user_id": user.user_id}, {"_id": 0})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    update_data = {
+        "description": data.get("description", asset.get("description")),
+        "asset_type": data.get("asset_type", asset.get("asset_type")),
+        "value": data.get("value", asset.get("value")),
+        "status": data.get("status", asset.get("status")),
+        "notes": data.get("notes", asset.get("notes")),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.assets.update_one({"asset_id": asset_id}, {"$set": update_data})
+    
+    updated_asset = await db.assets.find_one({"asset_id": asset_id}, {"_id": 0})
+    return updated_asset
+
+
 @api_router.post("/assets")
 async def create_asset(data: AssetCreate, user: User = Depends(get_current_user)):
-    rm_id = await generate_asset_rm_id(data.portfolio_id, user.user_id)
+    subject_name = data.asset_type or "General"
+    rm_id, category_num, sequence_num, subject = await generate_subject_rm_id(
+        data.portfolio_id, user.user_id, subject_name
+    )
     
     asset = AssetItem(
         portfolio_id=data.portfolio_id,
         user_id=user.user_id,
         rm_id=rm_id,
+        subject_category=category_num,
+        subject_name=subject,
+        sequence_number=sequence_num,
         asset_type=data.asset_type,
         description=data.description,
         value=float(data.value) if data.value else None,
@@ -773,6 +867,9 @@ async def delete_asset(asset_id: str, user: User = Depends(get_current_user)):
         portfolio_id=asset.get("portfolio_id", ""),
         user_id=user.user_id,
         rm_id=asset.get("rm_id", ""),
+        subject_category=asset.get("subject_category", 1),
+        subject_name=asset.get("subject_name", ""),
+        sequence_number=asset.get("sequence_number", 1),
         entry_type="withdrawal",
         description=f"Asset removed: {asset.get('description', '')}",
         asset_id=asset_id,
