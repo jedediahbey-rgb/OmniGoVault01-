@@ -7,6 +7,12 @@ import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Public API calls (no credentials needed)
+const publicApi = axios.create({
+  baseURL: API,
+  withCredentials: false
+});
+
 const SourceLibraryPage = () => {
   const [sources, setSources] = useState([]);
   const [selectedSource, setSelectedSource] = useState(null);
@@ -19,7 +25,7 @@ const SourceLibraryPage = () => {
 
   const fetchSources = async () => {
     try {
-      const response = await axios.get(`${API}/sources`);
+      const response = await publicApi.get(`/sources`);
       setSources(response.data);
       if (response.data.length > 0) {
         setSelectedSource(response.data[0]);

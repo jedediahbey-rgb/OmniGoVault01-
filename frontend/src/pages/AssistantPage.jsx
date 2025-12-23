@@ -7,6 +7,12 @@ import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Public API calls (no credentials needed for chat)
+const publicApi = axios.create({
+  baseURL: API,
+  withCredentials: false
+});
+
 const AssistantPage = ({ user }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -55,7 +61,7 @@ How can I help you today?`
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API}/assistant/chat`, {
+      const response = await publicApi.post(`/assistant/chat`, {
         message: userMessage,
         session_id: sessionId
       });

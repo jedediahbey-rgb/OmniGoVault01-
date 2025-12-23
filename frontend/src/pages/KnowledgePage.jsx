@@ -7,6 +7,12 @@ import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Public API calls (no credentials needed)
+const publicApi = axios.create({
+  baseURL: API,
+  withCredentials: false
+});
+
 const KnowledgePage = () => {
   const [topics, setTopics] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,7 +24,7 @@ const KnowledgePage = () => {
 
   const fetchTopics = async () => {
     try {
-      const response = await axios.get(`${API}/knowledge/topics`);
+      const response = await publicApi.get(`/knowledge/topics`);
       setTopics(response.data);
     } catch (error) {
       console.error("Error fetching topics:", error);

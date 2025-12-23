@@ -7,6 +7,12 @@ import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Public API calls (no credentials needed)
+const publicApi = axios.create({
+  baseURL: API,
+  withCredentials: false
+});
+
 const MaximsPage = () => {
   const [maxims, setMaxims] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +25,7 @@ const MaximsPage = () => {
 
   const fetchMaxims = async () => {
     try {
-      const response = await axios.get(`${API}/knowledge/maxims`);
+      const response = await publicApi.get(`/knowledge/maxims`);
       setMaxims(response.data);
     } catch (error) {
       console.error("Error fetching maxims:", error);

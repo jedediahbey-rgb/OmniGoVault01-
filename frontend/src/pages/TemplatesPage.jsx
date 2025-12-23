@@ -6,6 +6,12 @@ import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Public API calls (no credentials needed)
+const publicApi = axios.create({
+  baseURL: API,
+  withCredentials: false
+});
+
 const TemplatesPage = ({ user }) => {
   const navigate = useNavigate();
   const [templates, setTemplates] = useState([]);
@@ -17,7 +23,7 @@ const TemplatesPage = ({ user }) => {
 
   const fetchTemplates = async () => {
     try {
-      const response = await axios.get(`${API}/templates`);
+      const response = await publicApi.get(`/templates`);
       setTemplates(response.data);
     } catch (error) {
       console.error("Error fetching templates:", error);

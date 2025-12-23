@@ -6,6 +6,12 @@ import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Public API calls (no credentials needed)
+const publicApi = axios.create({
+  baseURL: API,
+  withCredentials: false
+});
+
 const RelationshipsPage = () => {
   const [relationships, setRelationships] = useState([]);
   const [selectedRelationship, setSelectedRelationship] = useState(null);
@@ -17,7 +23,7 @@ const RelationshipsPage = () => {
 
   const fetchRelationships = async () => {
     try {
-      const response = await axios.get(`${API}/knowledge/relationships`);
+      const response = await publicApi.get(`/knowledge/relationships`);
       setRelationships(response.data);
       if (response.data.length > 0) {
         setSelectedRelationship(response.data[0]);
