@@ -297,6 +297,86 @@ export default function PortfolioOverviewPage({ user }) {
     setLedgerNotes('');
   };
 
+  // Party CRUD functions
+  const addParty = async () => {
+    if (!partyName.trim()) {
+      toast.error('Please enter a party name');
+      return;
+    }
+    try {
+      const response = await axios.post(`${API}/portfolios/${portfolioId}/parties`, {
+        name: partyName,
+        role: partyRole,
+        address: partyAddress,
+        email: partyEmail,
+        phone: partyPhone,
+        notes: partyNotes
+      });
+      setParties([...parties, response.data]);
+      setShowPartyDialog(false);
+      resetPartyForm();
+      toast.success('Party added');
+    } catch (error) {
+      toast.error('Failed to add party');
+    }
+  };
+
+  const updateParty = async () => {
+    if (!editingParty || !partyName.trim()) {
+      toast.error('Please enter a party name');
+      return;
+    }
+    try {
+      const response = await axios.put(`${API}/parties/${editingParty.party_id}`, {
+        name: partyName,
+        role: partyRole,
+        address: partyAddress,
+        email: partyEmail,
+        phone: partyPhone,
+        notes: partyNotes
+      });
+      setParties(parties.map(p => p.party_id === editingParty.party_id ? response.data : p));
+      setShowPartyDialog(false);
+      resetPartyForm();
+      toast.success('Party updated');
+    } catch (error) {
+      toast.error('Failed to update party');
+    }
+  };
+
+  const confirmDeleteParty = async () => {
+    if (!deletePartyId) return;
+    try {
+      await axios.delete(`${API}/parties/${deletePartyId}`);
+      setParties(parties.filter(p => p.party_id !== deletePartyId));
+      setDeletePartyId(null);
+      toast.success('Party removed');
+    } catch (error) {
+      toast.error('Failed to remove party');
+    }
+  };
+
+  const openEditParty = (party) => {
+    setEditingParty(party);
+    setPartyName(party.name || '');
+    setPartyRole(party.role || 'beneficiary');
+    setPartyAddress(party.address || '');
+    setPartyEmail(party.email || '');
+    setPartyPhone(party.phone || '');
+    setPartyNotes(party.notes || '');
+    setShowPartyDialog(true);
+  };
+
+  const resetPartyForm = () => {
+    setEditingParty(null);
+    setPartyName('');
+    setPartyRole('beneficiary');
+    setPartyAddress('');
+    setPartyEmail('');
+    setPartyPhone('');
+    setPartyNotes('');
+  };
+
   // Filter ledger entries
   const filteredLedgerEntries = ledger.entries?.filter(entry => {
     if (ledgerFilter === 'all') return true;
