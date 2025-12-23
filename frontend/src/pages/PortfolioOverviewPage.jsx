@@ -563,7 +563,7 @@ export default function PortfolioOverviewPage({ user }) {
             </GlassCard>
 
             {/* Trust Profile Summary */}
-            <GlassCard>
+            <GlassCard className="overflow-hidden">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-heading text-lg text-white">Trust Profile</h3>
                 {trustProfile && (
@@ -576,15 +576,19 @@ export default function PortfolioOverviewPage({ user }) {
                 <div className="grid gap-3">
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-1 sm:gap-2">
                     <span className="text-white/40 text-sm">Trust Name</span>
-                    <span className="text-white min-w-0 break-words sm:text-right">{trustProfile.trust_name || '-'}</span>
+                    <span className="text-white min-w-0 break-words sm:text-right">{trustProfile.trust_name || '—'}</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-1 sm:gap-2">
                     <span className="text-white/40 text-sm">RM-ID</span>
-                    <span className="text-vault-gold font-mono text-sm min-w-0 break-words sm:text-right">{trustProfile.rm_id_details?.full_rm_id || '-'}</span>
+                    <span className="text-vault-gold font-mono text-sm min-w-0 break-words sm:text-right">
+                      {trustProfile.rm_id_raw || trustProfile.rm_record_id || trustProfile.rm_id_details?.full_rm_id || '—'}
+                    </span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-1 sm:gap-2">
                     <span className="text-white/40 text-sm">Date Established</span>
-                    <span className="text-white min-w-0 break-words sm:text-right">{trustProfile.date_established || '-'}</span>
+                    <span className="text-white min-w-0 break-words sm:text-right">
+                      {trustProfile.date_established ? formatDate(trustProfile.date_established) : '—'}
+                    </span>
                   </div>
                 </div>
               ) : (
