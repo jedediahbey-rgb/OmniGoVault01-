@@ -43,3 +43,20 @@
 - Backend API tests for new document features
 - Frontend Vault page with Quick Access section
 - AI document tools
+
+## Session Updates - Template RM-IDs, Party CRUD, Mobile Optimization
+
+### Template RM-ID System
+- Templates 01-09 have reserved subject codes for document templates
+- Assets/Res entries start from code 10+
+- Format: RF...US-01.001 (Declaration of Trust), RF...US-02.001 (TTGD), etc.
+
+### Party CRUD
+- Fixed party add/edit/delete functionality
+- Added role selection (grantor, trustee, beneficiary, etc.)
+- Added contact fields (email, phone, address)
+
+### Mobile Optimization
+- RM-ID display responsive with break-all
+- Assets table converts to cards on mobile
+- Improved touch targets
