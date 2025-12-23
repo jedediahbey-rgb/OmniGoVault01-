@@ -990,19 +990,26 @@ async def get_deleted_documents(user: User = Depends(get_current_user)):
 @api_router.post("/documents")
 async def create_document(data: DocumentCreate, user: User = Depends(get_current_user)):
     """Create a new document - returns stable document_id"""
-    # Generate sub-record ID if trust profile has RM-ID
+    # Generate sub-record ID and RM-ID if trust profile has RM-ID
     sub_record_id = ""
+    rm_id = ""
     if data.portfolio_id:
         trust_profile = await db.trust_profiles.find_one({"portfolio_id": data.portfolio_id, "user_id": user.user_id})
-        if trust_profile and trust_profile.get("rm_record_id"):
-            rm_id = trust_profile.get("rm_record_id", "")
-            next_series = trust_profile.get("rm_next_series", 1)
-            sub_record_id = f"{rm_id}-{next_series:05d}"
-            # Increment series counter
-            await db.trust_profiles.update_one(
-                {"profile_id": trust_profile["profile_id"]},
-                {"$inc": {"rm_next_series": 1}}
-            )
+        if trust_profile:
+            # Get RM-ID from trust profile
+            if trust_profile.get("rm_id_details", {}).get("full_rm_id"):
+                rm_id = trust_profile["rm_id_details"]["full_rm_id"]
+            elif trust_profile.get("rm_record_id"):
+                rm_id = trust_profile.get("rm_record_id", "")
+            
+            if rm_id:
+                next_series = trust_profile.get("rm_next_series", 1)
+                sub_record_id = f"{rm_id}-{next_series:02d}.001"
+                # Increment series counter
+                await db.trust_profiles.update_one(
+                    {"profile_id": trust_profile["profile_id"]},
+                    {"$inc": {"rm_next_series": 1}}
+                )
     
     doc = Document(
         portfolio_id=data.portfolio_id, 
@@ -1012,6 +1019,7 @@ async def create_document(data: DocumentCreate, user: User = Depends(get_current
         title=data.title, 
         document_type=data.document_type, 
         content=data.content or "",
+        rm_id=rm_id,
         sub_record_id=sub_record_id,
         tags=data.tags or [], 
         folder=data.folder or "/"
