@@ -388,6 +388,49 @@ export default function PortfolioOverviewPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Add Asset Dialog */}
+      <Dialog open={showAssetDialog} onOpenChange={setShowAssetDialog}>
+        <DialogContent className="bg-vault-navy border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-white font-heading">Add Asset</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Description *</label>
+              <Input
+                placeholder="e.g., Real Property at 123 Main St"
+                value={newAssetDescription}
+                onChange={e => setNewAssetDescription(e.target.value)}
+                className="bg-white/5 border-white/10"
+              />
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Asset Type</label>
+              <Input
+                placeholder="e.g., Real Estate, Vehicle, Securities"
+                value={newAssetType}
+                onChange={e => setNewAssetType(e.target.value)}
+                className="bg-white/5 border-white/10"
+              />
+            </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Value (Optional)</label>
+              <Input
+                type="number"
+                placeholder="e.g., 250000"
+                value={newAssetValue}
+                onChange={e => setNewAssetValue(e.target.value)}
+                className="bg-white/5 border-white/10"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowAssetDialog(false)}>Cancel</Button>
+            <Button onClick={addAsset} className="btn-primary">Add Asset</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
