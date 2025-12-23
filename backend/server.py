@@ -269,6 +269,10 @@ class Document(BaseModel):
     folder: str = "/"
     is_deleted: bool = False  # Soft delete for trash/recycle bin
     deleted_at: Optional[datetime] = None
+    is_pinned: bool = False  # User can pin important documents
+    pinned_at: Optional[datetime] = None
+    last_accessed: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    access_count: int = 0
     version: int = 1
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
