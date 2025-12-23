@@ -368,8 +368,11 @@ class TrustProfileUpdate(BaseModel):
     extinguishment_conditions: Optional[str] = None
     conveyance_conditions: Optional[str] = None
     additional_notes: Optional[str] = None
-    # RM-ID fields
-    rm_record_id: Optional[str] = None
+    # RM-ID fields (enhanced)
+    rm_id_raw: Optional[str] = None
+    rm_id_normalized: Optional[str] = None
+    rm_id_is_placeholder: Optional[bool] = None
+    rm_record_id: Optional[str] = None  # Legacy field
     rm_series_start: Optional[str] = None
     rm_series_end: Optional[str] = None
     rm_evidence_files: Optional[List[str]] = None
@@ -379,6 +382,49 @@ class TrustProfileUpdate(BaseModel):
     tax_classification: Optional[str] = None
     tax_notes: Optional[str] = None
     status: Optional[str] = None
+
+
+class SubjectCategoryCreate(BaseModel):
+    """Create a new subject category"""
+    code: str  # 2-digit: "01", "02", etc.
+    name: str
+    description: Optional[str] = ""
+
+
+class SubjectCategoryUpdate(BaseModel):
+    """Update a subject category"""
+    name: Optional[str] = None
+    description: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class AssetUpdate(BaseModel):
+    """Update an existing asset"""
+    description: Optional[str] = None
+    asset_type: Optional[str] = None
+    value: Optional[float] = None
+    status: Optional[str] = None
+    notes: Optional[str] = None
+    subject_code: Optional[str] = None
+
+
+class LedgerEntryCreate(BaseModel):
+    """Create a ledger entry"""
+    entry_type: str  # deposit, withdrawal, transfer_in, transfer_out
+    description: str
+    subject_code: Optional[str] = "00"
+    value: Optional[float] = None
+    balance_effect: Optional[str] = "credit"
+    notes: Optional[str] = ""
+    asset_id: Optional[str] = None
+    document_id: Optional[str] = None
+
+
+class LedgerEntryUpdate(BaseModel):
+    """Update a ledger entry"""
+    description: Optional[str] = None
+    value: Optional[float] = None
+    notes: Optional[str] = None
 
 
 class MailEventCreate(BaseModel):
