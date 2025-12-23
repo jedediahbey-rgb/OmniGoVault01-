@@ -14,6 +14,8 @@ import httpx
 from io import BytesIO
 import json
 import hashlib
+from bs4 import BeautifulSoup
+import re
 from PyPDF2 import PdfReader
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
