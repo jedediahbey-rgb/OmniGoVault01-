@@ -93,6 +93,28 @@ export default function PortfolioOverviewPage({ user }) {
     }
   };
 
+  const addAsset = async () => {
+    if (!newAssetDescription.trim()) {
+      toast.error('Please enter an asset description');
+      return;
+    }
+    try {
+      const response = await axios.post(`${API}/portfolios/${portfolioId}/assets`, {
+        description: newAssetDescription,
+        asset_type: newAssetType || 'General',
+        value: newAssetValue ? parseFloat(newAssetValue) : null
+      });
+      setAssets([...assets, response.data]);
+      setShowAssetDialog(false);
+      setNewAssetDescription('');
+      setNewAssetType('');
+      setNewAssetValue('');
+      toast.success('Asset added');
+    } catch (error) {
+      toast.error('Failed to add asset');
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
