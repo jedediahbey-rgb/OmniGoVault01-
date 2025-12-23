@@ -109,7 +109,7 @@ export default function TemplatesPage({ user }) {
       const response = await axios.post(`${API}/documents`, {
         title: documentTitle,
         document_type: selectedTemplate.id,
-        portfolio_id: (selectedPortfolio && selectedPortfolio !== 'none') ? selectedPortfolio : null,
+        portfolio_id: (selectedPortfolio && selectedPortfolio !== '__none__') ? selectedPortfolio : null,
         template_id: selectedTemplate.id,
         subject_code: subjectCode,
         content: initialContent,
@@ -139,7 +139,7 @@ export default function TemplatesPage({ user }) {
   };
 
   const handleAiGenerate = () => {
-    if (!selectedPortfolio || selectedPortfolio === 'none') {
+    if (!selectedPortfolio || selectedPortfolio === '__none__') {
       toast.error('Please select a portfolio for AI generation');
       return;
     }
@@ -152,7 +152,7 @@ export default function TemplatesPage({ user }) {
       toast.error('Please provide instructions for the AI');
       return;
     }
-    if (!selectedPortfolio || selectedPortfolio === 'none') {
+    if (!selectedPortfolio || selectedPortfolio === '__none__') {
       toast.error('Please select a portfolio');
       return;
     }
@@ -607,7 +607,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
             <Button 
               variant="outline" 
               onClick={handleAiGenerate}
-              disabled={!selectedPortfolio || selectedPortfolio === 'none'}
+              disabled={!selectedPortfolio || selectedPortfolio === '__none__'}
               className="btn-secondary"
             >
               <Sparkles className="w-4 h-4 mr-2" />
