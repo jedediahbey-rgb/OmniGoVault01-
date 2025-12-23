@@ -18,6 +18,7 @@ import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
+import { ExpandableText } from '../components/ui/expandable-text';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 
 // Comprehensive glossary with cross-links
