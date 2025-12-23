@@ -168,13 +168,13 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-10 sm:mb-16"
             >
-              <p className="text-vault-gold uppercase tracking-[0.2em] text-sm mb-4">Platform Features</p>
-              <h2 className="text-4xl font-heading text-white">Everything You Need</h2>
+              <p className="text-vault-gold uppercase tracking-[0.2em] text-xs sm:text-sm mb-3 sm:mb-4">Platform Features</p>
+              <h2 className="text-2xl sm:text-4xl font-heading text-white">Everything You Need</h2>
             </motion.div>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {features.map((feature, idx) => (
                 <motion.div
                   key={idx}
@@ -182,12 +182,12 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="glass-card p-6 rounded-xl group hover:border-vault-gold/30 transition-all duration-300"
+                  className="glass-card p-5 sm:p-6 rounded-xl group hover:border-vault-gold/30 transition-all duration-300"
                 >
-                  <div className="w-12 h-12 rounded-lg bg-vault-gold/10 flex items-center justify-center mb-4 group-hover:bg-vault-gold/20 transition-colors">
-                    <feature.icon className="w-6 h-6 text-vault-gold" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-vault-gold/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-vault-gold/20 transition-colors">
+                    <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-vault-gold" />
                   </div>
-                  <h3 className="text-xl font-heading text-white mb-2">{feature.title}</h3>
+                  <h3 className="text-lg sm:text-xl font-heading text-white mb-2">{feature.title}</h3>
                   <p className="text-white/50 text-sm leading-relaxed">{feature.description}</p>
                 </motion.div>
               ))}
@@ -196,37 +196,37 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="px-8 py-24">
+        <section className="px-4 sm:px-8 py-16 sm:py-24">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="glass-panel p-12 rounded-2xl"
+              className="glass-panel p-6 sm:p-12 rounded-2xl"
             >
-              <Scale className="w-16 h-16 text-vault-gold mx-auto mb-6" />
-              <h2 className="text-3xl md:text-4xl font-heading text-white mb-4">
+              <Scale className="w-12 h-12 sm:w-16 sm:h-16 text-vault-gold mx-auto mb-4 sm:mb-6" />
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading text-white mb-3 sm:mb-4">
                 Begin Your Journey in Equity
               </h2>
-              <p className="text-white/60 mb-8 max-w-xl mx-auto">
+              <p className="text-white/60 text-sm sm:text-base mb-6 sm:mb-8 max-w-xl mx-auto">
                 Access structured learning, manage your trust portfolios, and get AI-powered 
                 assistance—all grounded in centuries of equitable jurisprudence.
               </p>
-              <Button onClick={handleLogin} className="btn-primary text-lg px-10 py-4">
-                Enter the Vault <ArrowRight className="w-5 h-5 ml-2" />
+              <Button onClick={handleLogin} className="btn-primary text-sm sm:text-lg px-8 sm:px-10 py-3 sm:py-4 w-full sm:w-auto">
+                Enter the Vault <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </Button>
             </motion.div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="px-8 py-8 border-t border-white/5">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <p className="text-white/30 text-sm">
-              © 2025 Equity Trust Portfolio. Educational purposes only.
+        <footer className="px-4 sm:px-8 py-6 sm:py-8 border-t border-white/5">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+            <p className="text-white/30 text-xs sm:text-sm">
+              © 2025 Equity Trust Portfolio
             </p>
-            <p className="text-white/30 text-sm">
-              This is not legal advice.
+            <p className="text-white/30 text-xs sm:text-sm">
+              Educational purposes only · Not legal advice
             </p>
           </div>
         </footer>
