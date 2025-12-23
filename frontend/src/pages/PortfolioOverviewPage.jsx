@@ -1273,7 +1273,7 @@ export default function PortfolioOverviewPage({ user }) {
                   <SelectTrigger className="bg-white/5 border-white/10">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-vault-navy border-white/10">
+                  <SelectContent className="bg-vault-navy border-white/10 z-[100]" position="popper" sideOffset={4}>
                     <SelectItem value="grantor">Grantor / Settlor</SelectItem>
                     <SelectItem value="trustee">Trustee</SelectItem>
                     <SelectItem value="co_trustee">Co-Trustee</SelectItem>
