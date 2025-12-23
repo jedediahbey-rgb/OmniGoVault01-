@@ -3,11 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import {
-  ArrowLeft, Save, Mail, FileText, AlertTriangle, Plus, Upload, Clock, HelpCircle
+  ArrowLeft, Save, Mail, FileText, Plus, Upload, Clock, HelpCircle
 } from 'lucide-react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
-import Disclaimer from '../components/shared/Disclaimer';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
@@ -335,8 +334,6 @@ export default function TrustProfilePage({ user }) {
                 </p>
               </div>
             </div>
-
-            <Disclaimer variant="inline" className="mb-6" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
