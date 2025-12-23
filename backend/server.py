@@ -667,30 +667,158 @@ async def delete_notice(notice_id: str, user: User = Depends(get_current_user)):
     return {"message": "Notice deleted"}
 
 
+# ============ PARTY ENDPOINTS ============
+
+@api_router.get("/portfolios/{portfolio_id}/parties")
+async def get_parties(portfolio_id: str, user: User = Depends(get_current_user)):
+    """Get all parties for a portfolio"""
+    docs = await db.parties.find({"portfolio_id": portfolio_id, "user_id": user.user_id}, {"_id": 0}).to_list(100)
+    return docs
+
+
+@api_router.post("/parties")
+async def create_party(data: PartyCreate, user: User = Depends(get_current_user)):
+    """Create a new party"""
+    party = Party(
+        portfolio_id=data.portfolio_id, user_id=user.user_id, name=data.name,
+        party_type=data.party_type, role=data.role or "", address=data.address or "",
+        email=data.email or "", phone=data.phone or "", notes=data.notes or ""
+    )
+    doc = party.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    await db.parties.insert_one(doc)
+    return {k: v for k, v in doc.items() if k != '_id'}
+
+
+@api_router.put("/parties/{party_id}")
+async def update_party(party_id: str, data: PartyUpdate, user: User = Depends(get_current_user)):
+    """Update a party"""
+    existing = await db.parties.find_one({"party_id": party_id, "user_id": user.user_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Party not found")
+    
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.parties.update_one({"party_id": party_id}, {"$set": update_data})
+    doc = await db.parties.find_one({"party_id": party_id}, {"_id": 0})
+    return doc
+
+
+@api_router.delete("/parties/{party_id}")
+async def delete_party(party_id: str, user: User = Depends(get_current_user)):
+    result = await db.parties.delete_one({"party_id": party_id, "user_id": user.user_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Party not found")
+    return {"message": "Party deleted"}
+
+
+# ============ MAIL EVENT ENDPOINTS ============
+
+@api_router.get("/trust-profiles/{profile_id}/mail-events")
+async def get_mail_events(profile_id: str, user: User = Depends(get_current_user)):
+    """Get mail events for a trust profile"""
+    docs = await db.mail_events.find({"trust_profile_id": profile_id, "user_id": user.user_id}, {"_id": 0}).sort("date", -1).to_list(100)
+    return docs
+
+
+@api_router.post("/mail-events")
+async def create_mail_event(data: MailEventCreate, user: User = Depends(get_current_user)):
+    """Create a new mail event"""
+    event = MailEvent(
+        trust_profile_id=data.trust_profile_id, portfolio_id=data.portfolio_id,
+        user_id=user.user_id, rm_id=data.rm_id, event_type=data.event_type,
+        date=data.date, from_party=data.from_party or "", to_party=data.to_party or "",
+        purpose=data.purpose or "", evidence_files=data.evidence_files or [], notes=data.notes or ""
+    )
+    doc = event.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    await db.mail_events.insert_one(doc)
+    return {k: v for k, v in doc.items() if k != '_id'}
+
+
+@api_router.delete("/mail-events/{event_id}")
+async def delete_mail_event(event_id: str, user: User = Depends(get_current_user)):
+    result = await db.mail_events.delete_one({"event_id": event_id, "user_id": user.user_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Mail event not found")
+    return {"message": "Mail event deleted"}
+
+
+@api_router.get("/search/mail-events")
+async def search_mail_events(q: str, user: User = Depends(get_current_user)):
+    """Search mail events by RM-ID or purpose"""
+    docs = await db.mail_events.find({
+        "user_id": user.user_id,
+        "$or": [
+            {"rm_id": {"$regex": q, "$options": "i"}},
+            {"purpose": {"$regex": q, "$options": "i"}}
+        ]
+    }, {"_id": 0}).to_list(50)
+    return docs
+
+
 # ============ DOCUMENT ENDPOINTS ============
 
 @api_router.get("/documents")
-async def get_documents(portfolio_id: Optional[str] = None, user: User = Depends(get_current_user)):
+async def get_documents(portfolio_id: Optional[str] = None, include_deleted: bool = False, user: User = Depends(get_current_user)):
     query = {"user_id": user.user_id}
     if portfolio_id:
         query["portfolio_id"] = portfolio_id
+    if not include_deleted:
+        query["$or"] = [{"is_deleted": False}, {"is_deleted": {"$exists": False}}]
     docs = await db.documents.find(query, {"_id": 0}).sort("updated_at", -1).to_list(100)
+    return docs
+
+
+@api_router.get("/documents/trash")
+async def get_deleted_documents(user: User = Depends(get_current_user)):
+    """Get documents in trash"""
+    docs = await db.documents.find({"user_id": user.user_id, "is_deleted": True}, {"_id": 0}).sort("deleted_at", -1).to_list(100)
     return docs
 
 
 @api_router.post("/documents")
 async def create_document(data: DocumentCreate, user: User = Depends(get_current_user)):
+    """Create a new document - returns stable document_id"""
+    # Generate sub-record ID if trust profile has RM-ID
+    sub_record_id = ""
+    if data.portfolio_id:
+        trust_profile = await db.trust_profiles.find_one({"portfolio_id": data.portfolio_id, "user_id": user.user_id})
+        if trust_profile and trust_profile.get("rm_record_id"):
+            rm_id = trust_profile.get("rm_record_id", "")
+            next_series = trust_profile.get("rm_next_series", 1)
+            sub_record_id = f"{rm_id}-{next_series:05d}"
+            # Increment series counter
+            await db.trust_profiles.update_one(
+                {"profile_id": trust_profile["profile_id"]},
+                {"$inc": {"rm_next_series": 1}}
+            )
+    
     doc = Document(
-        portfolio_id=data.portfolio_id, user_id=user.user_id, template_id=data.template_id,
-        title=data.title, document_type=data.document_type, content=data.content or "",
-        tags=data.tags or [], folder=data.folder or "/"
+        portfolio_id=data.portfolio_id, 
+        trust_profile_id=data.trust_profile_id if hasattr(data, 'trust_profile_id') else None,
+        user_id=user.user_id, 
+        template_id=data.template_id,
+        title=data.title, 
+        document_type=data.document_type, 
+        content=data.content or "",
+        sub_record_id=sub_record_id,
+        tags=data.tags or [], 
+        folder=data.folder or "/"
     )
     doc_dict = doc.model_dump()
     doc_dict['created_at'] = doc_dict['created_at'].isoformat()
     doc_dict['updated_at'] = doc_dict['updated_at'].isoformat()
+    if doc_dict.get('deleted_at'):
+        doc_dict['deleted_at'] = doc_dict['deleted_at'].isoformat()
     await db.documents.insert_one(doc_dict)
-    # Return document without MongoDB _id field
-    return {k: v for k, v in doc_dict.items() if k != '_id'}
+    # Return document without MongoDB _id field - ensure document_id is returned
+    result = {k: v for k, v in doc_dict.items() if k != '_id'}
+    logger.info(f"Document created: {result['document_id']}")
+    return result
 
 
 @api_router.get("/documents/{document_id}")
