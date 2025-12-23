@@ -67,6 +67,17 @@ export default function PortfolioOverviewPage({ user }) {
   
   // Filters
   const [ledgerFilter, setLedgerFilter] = useState('all');
+  
+  // Party management state
+  const [showPartyDialog, setShowPartyDialog] = useState(false);
+  const [editingParty, setEditingParty] = useState(null);
+  const [partyName, setPartyName] = useState('');
+  const [partyRole, setPartyRole] = useState('beneficiary');
+  const [partyAddress, setPartyAddress] = useState('');
+  const [partyEmail, setPartyEmail] = useState('');
+  const [partyPhone, setPartyPhone] = useState('');
+  const [partyNotes, setPartyNotes] = useState('');
+  const [deletePartyId, setDeletePartyId] = useState(null);
 
   useEffect(() => {
     fetchPortfolioData();
