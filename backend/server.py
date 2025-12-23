@@ -217,8 +217,12 @@ class Document(BaseModel):
     document_type: str  # declaration_of_trust, ttgd, notice_of_intent, affidavit, custom
     content: str = ""  # Rich text / HTML content
     editor_content: Optional[Dict] = None  # TipTap JSON for editor state
+    rm_id: str = ""  # RM-ID for this document
     sub_record_id: str = ""  # Auto-generated: RM-ID + series (e.g., RF...US-01.001)
-    status: str = "draft"  # draft, final, archived
+    status: str = "draft"  # draft, final, signed, archived
+    is_locked: bool = False  # True when finalized - prevents editing
+    locked_at: Optional[datetime] = None
+    locked_by: Optional[str] = None
     tags: List[str] = []
     folder: str = "/"
     is_deleted: bool = False  # Soft delete for trash/recycle bin
