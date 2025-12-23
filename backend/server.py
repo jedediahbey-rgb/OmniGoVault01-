@@ -502,7 +502,8 @@ async def create_notice(data: NoticeCreate, user: User = Depends(get_current_use
     doc['created_at'] = doc['created_at'].isoformat()
     doc['updated_at'] = doc['updated_at'].isoformat()
     await db.notices.insert_one(doc)
-    return doc
+    # Return document without MongoDB _id field
+    return {k: v for k, v in doc.items() if k != '_id'}
 
 
 @api_router.put("/notices/{notice_id}")
