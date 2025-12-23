@@ -671,6 +671,81 @@ export default function DocumentEditorPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* AI Update Document Dialog */}
+      <Dialog open={showAiUpdateDialog} onOpenChange={setShowAiUpdateDialog}>
+        <DialogContent className="bg-vault-navy border-white/10 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-white font-heading flex items-center gap-2">
+              <Wand2 className="w-5 h-5 text-vault-gold" />
+              Update with AI
+            </DialogTitle>
+            <DialogDescription className="text-white/60">
+              Describe the changes you want the AI to make to this document.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Textarea
+              value={aiInstructions}
+              onChange={(e) => setAiInstructions(e.target.value)}
+              placeholder="e.g., Add a signature block at the end, Fix the date format, Make the language more formal..."
+              className="bg-white/5 border-white/10 min-h-[120px]"
+            />
+            <p className="text-white/30 text-xs mt-2">
+              The AI will modify the document based on your instructions while preserving its structure.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setShowAiUpdateDialog(false); setAiInstructions(''); }}>
+              Cancel
+            </Button>
+            <Button onClick={aiUpdateDocument} disabled={aiProcessing || !aiInstructions.trim()} className="btn-primary">
+              {aiProcessing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Apply Changes
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Summary Dialog */}
+      <Dialog open={showAiSummaryDialog} onOpenChange={setShowAiSummaryDialog}>
+        <DialogContent className="bg-vault-navy border-white/10 max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="text-white font-heading flex items-center gap-2">
+              <FileSearch className="w-5 h-5 text-vault-gold" />
+              Document Summary
+            </DialogTitle>
+            <DialogDescription className="text-white/60">
+              AI-generated analysis of this document
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            {aiSummary ? (
+              <div className="prose prose-invert prose-sm max-w-none bg-white/5 p-4 rounded-lg">
+                <div className="whitespace-pre-wrap text-white/80">{aiSummary}</div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 text-vault-gold animate-spin" />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowAiSummaryDialog(false)} className="btn-primary">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
