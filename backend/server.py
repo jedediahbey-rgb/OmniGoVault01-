@@ -793,15 +793,7 @@ async def generate_placeholder_rm_id(profile_id: str, user: User = Depends(get_c
     }
 
 
-# Helper function for RM-ID normalization (moved before usage)
-
-def normalize_rm_id(rm_id_raw: str) -> str:
-    """Normalize RM-ID: uppercase, remove extra spaces"""
-    if not rm_id_raw:
-        return ""
-    # Remove extra spaces and uppercase
-    normalized = re.sub(r'\s+', '', rm_id_raw.strip().upper())
-    return normalized
+# ============ ASSET ENDPOINTS ============
 
 
 async def seed_default_categories(portfolio_id: str, user_id: str):
