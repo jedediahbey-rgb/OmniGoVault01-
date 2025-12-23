@@ -105,11 +105,22 @@ export default function TemplatesPage({ user }) {
         folder: '/'
       });
       
+      // Verify we got a document_id back
+      if (!response.data?.document_id) {
+        throw new Error('No document ID returned from server');
+      }
+      
+      const documentId = response.data.document_id;
+      console.log('Document created with ID:', documentId);
+      
       toast.success('Document created');
-      navigate(`/vault/document/${response.data.document_id}`);
+      setShowCreateDialog(false);
+      
+      // Navigate to the document editor
+      navigate(`/vault/document/${documentId}`);
     } catch (error) {
       console.error('Failed to create document:', error);
-      toast.error('Failed to create document');
+      toast.error(error.response?.data?.detail || 'Failed to create document. Please try again.');
     } finally {
       setCreating(false);
     }
