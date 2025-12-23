@@ -25,6 +25,12 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 
+# Import modular components (new structure)
+# Note: Models are still defined inline for now - will migrate gradually
+# from models import *
+# from services.rmid import normalize_rm_id, generate_subject_rm_id
+# from utils.auth import get_current_user
+
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
