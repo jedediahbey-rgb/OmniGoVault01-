@@ -220,16 +220,24 @@ class SubjectCategory(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-# Default seed categories
+# Default seed categories - 01-09 reserved for document templates, 10+ for other entries
 DEFAULT_SUBJECT_CATEGORIES = [
     {"code": "00", "name": "General", "description": "General/miscellaneous records"},
-    {"code": "01", "name": "Real Estate", "description": "Real property transactions"},
-    {"code": "02", "name": "Vehicle", "description": "Vehicle titles and loans"},
-    {"code": "03", "name": "Financial Account", "description": "Bank accounts, investments"},
-    {"code": "04", "name": "Court Case", "description": "Legal proceedings"},
-    {"code": "05", "name": "Contract", "description": "Contracts and agreements"},
-    {"code": "06", "name": "Notice", "description": "Notices and correspondence"},
-    {"code": "07", "name": "Trust Administration", "description": "Trust management records"},
+    {"code": "01", "name": "Declaration of Trust", "description": "Trust declaration documents"},
+    {"code": "02", "name": "Trust Transfer Grant Deed", "description": "Property conveyance documents"},
+    {"code": "03", "name": "Acknowledgement/Receipt", "description": "Acknowledgement and receipt documents"},
+    {"code": "04", "name": "Notice of Interest", "description": "Interest declaration notices"},
+    {"code": "05", "name": "Notice of Delivery", "description": "Delivery documentation"},
+    {"code": "06", "name": "Deed of Conveyance", "description": "Conveyance notices"},
+    {"code": "07", "name": "Affidavit of Fact", "description": "Sworn statements"},
+    {"code": "08", "name": "Trustee Acceptance", "description": "Trustee acceptance documents"},
+    {"code": "09", "name": "Certificate of Trust", "description": "Trust certificates"},
+    {"code": "10", "name": "Real Estate", "description": "Real property transactions"},
+    {"code": "11", "name": "Vehicle", "description": "Vehicle titles and loans"},
+    {"code": "12", "name": "Financial Account", "description": "Bank accounts, investments"},
+    {"code": "13", "name": "Court Case", "description": "Legal proceedings"},
+    {"code": "14", "name": "Contract", "description": "Contracts and agreements"},
+    {"code": "15", "name": "Correspondence", "description": "Letters and correspondence"},
 ]
 
 
