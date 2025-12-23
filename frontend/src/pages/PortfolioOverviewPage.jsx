@@ -859,7 +859,7 @@ export default function PortfolioOverviewPage({ user }) {
                         </span>
                       </td>
                       <td className="py-3 px-2 max-w-[120px] sm:max-w-[180px]">
-                        <span className="text-vault-gold font-mono text-xs sm:text-sm block truncate" title={entry.rm_id}>{entry.rm_id}</span>
+                        <RmIdDisplay rmId={entry.rm_id} />
                       </td>
                       <td className="py-3 px-2 hidden sm:table-cell">
                         <span className="text-white/60 text-sm">{entry.subject_name || 'General'}</span>
