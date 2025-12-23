@@ -152,39 +152,39 @@ const HomePage = () => {
       </section>
 
       {/* Source Documents Section */}
-      <section className="py-24 px-6 bg-[#0B1221]">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0B1221]">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             <div>
-              <h2 className="font-serif text-4xl text-[#F8FAFC] mb-6">
+              <h2 className="font-serif text-2xl sm:text-4xl text-[#F8FAFC] mb-4 sm:mb-6">
                 Grounded in <span className="text-[#C6A87C]">Authority</span>
               </h2>
-              <p className="font-sans text-slate-400 mb-8 leading-relaxed">
+              <p className="font-sans text-sm sm:text-base text-slate-400 mb-6 sm:mb-8 leading-relaxed">
                 Every piece of knowledge on this platform is sourced from authoritative documents 
                 on equity jurisprudence. Every claim includes a citation — no hallucinations, no guessing.
               </p>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4 p-4 bg-[#111827] border border-white/5 rounded-sm">
-                  <FileText className="w-6 h-6 text-[#C6A87C] mt-1" />
-                  <div>
-                    <h4 className="font-sans font-semibold text-[#F8FAFC] mb-1">Kingdom vs Empire (Roark)</h4>
-                    <p className="font-sans text-sm text-slate-400">Comprehensive guide to equity jurisprudence, maxims, and trust relationships.</p>
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-[#111827] border border-white/5 rounded-sm">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#C6A87C] mt-1 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h4 className="font-sans font-semibold text-[#F8FAFC] mb-1 text-sm sm:text-base">Kingdom vs Empire (Roark)</h4>
+                    <p className="font-sans text-xs sm:text-sm text-slate-400">Comprehensive guide to equity jurisprudence, maxims, and trust relationships.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4 p-4 bg-[#111827] border border-white/5 rounded-sm">
-                  <FileText className="w-6 h-6 text-[#C6A87C] mt-1" />
-                  <div>
-                    <h4 className="font-sans font-semibold text-[#F8FAFC] mb-1">Pure Trust Under Equity</h4>
-                    <p className="font-sans text-sm text-slate-400">Template documents and forms for establishing pure equity trusts.</p>
+                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-[#111827] border border-white/5 rounded-sm">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#C6A87C] mt-1 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h4 className="font-sans font-semibold text-[#F8FAFC] mb-1 text-sm sm:text-base">Pure Trust Under Equity</h4>
+                    <p className="font-sans text-xs sm:text-sm text-slate-400">Template documents and forms for establishing pure equity trusts.</p>
                   </div>
                 </div>
               </div>
-              <Link to="/sources" className="inline-flex items-center gap-2 mt-8 text-[#C6A87C] font-sans font-medium hover:gap-3 transition-all" data-testid="view-sources">
+              <Link to="/sources" className="inline-flex items-center gap-2 mt-6 sm:mt-8 text-[#C6A87C] font-sans font-medium text-sm hover:gap-3 transition-all" data-testid="view-sources">
                 View Source Library
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="relative">
+            <div className="relative hidden lg:block">
               <div className="aspect-square bg-gradient-to-br from-[#1E293B] to-[#0F172A] rounded-sm p-12 flex items-center justify-center">
                 <div className="text-center">
                   <Users className="w-24 h-24 text-[#C6A87C]/20 mx-auto mb-6" />
