@@ -1301,12 +1301,12 @@ async def create_party_for_portfolio(portfolio_id: str, data: dict, user: User =
         portfolio_id=portfolio_id,
         user_id=user.user_id,
         name=data.get("name", ""),
+        party_type=data.get("party_type", "individual"),
         role=data.get("role", "beneficiary"),
         address=data.get("address", ""),
         email=data.get("email", ""),
         phone=data.get("phone", ""),
-        notes=data.get("notes", ""),
-        is_primary=data.get("is_primary", False)
+        notes=data.get("notes", "")
     )
     doc = party.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
