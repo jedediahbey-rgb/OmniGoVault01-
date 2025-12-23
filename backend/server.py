@@ -2233,20 +2233,26 @@ If information is missing, use appropriate placeholder text like "[TO BE COMPLET
             system_message=system_message
         ).with_model("openai", "gpt-4o")
         
-        prompt = f"""Fill in this document template based on the user's instructions.
+        prompt = f"""Generate a legal document based on this template type and instructions.
 
 TEMPLATE NAME: {template.get('name', 'Document')}
-TEMPLATE TYPE: {template.get('template_type', 'general')}
-
-TEMPLATE CONTENT:
-{template.get('content', '')}
+TEMPLATE DESCRIPTION: {template.get('description', '')}
+TEMPLATE SOURCE: {template.get('source', '')}
+FIELDS TO INCLUDE: {', '.join(template.get('fields', []))}
 
 {profile_context}
 
 USER INSTRUCTIONS:
 {data.instructions}
 
-Return ONLY the filled-in document content in HTML format. Preserve all formatting."""
+Generate a complete, professional legal document in HTML format. Include:
+1. A clear heading with the document title
+2. All standard sections for this document type
+3. Placeholders like [TO BE COMPLETED] for any missing information
+4. Proper legal language and formatting
+5. Signature blocks if appropriate for this document type
+
+Return ONLY the document content in HTML format."""
 
         user_message = UserMessage(text=prompt)
         generated_content = await chat.send_message(user_message)
