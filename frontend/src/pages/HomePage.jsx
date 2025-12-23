@@ -202,18 +202,18 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 bg-[#0F172A]">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0F172A]">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-serif text-4xl text-[#F8FAFC] mb-6">
+          <h2 className="font-serif text-2xl sm:text-4xl text-[#F8FAFC] mb-4 sm:mb-6">
             Ready to Begin Your <span className="text-[#C6A87C]">Journey</span>?
           </h2>
-          <p className="font-sans text-slate-400 mb-10 max-w-2xl mx-auto">
+          <p className="font-sans text-sm sm:text-base text-slate-400 mb-8 sm:mb-10 max-w-2xl mx-auto px-4">
             Create your secure vault, explore the knowledge base, or chat with our AI assistant 
             to start learning about pure equity trusts today.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/vault" data-testid="cta-vault">
-              <Button className="bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-10 py-4 rounded-sm shadow-[0_0_20px_rgba(198,168,124,0.3)]">
+          <div className="flex flex-wrap justify-center gap-4 px-4">
+            <Link to="/vault" data-testid="cta-vault" className="w-full sm:w-auto">
+              <Button className="w-full sm:w-auto bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-8 sm:px-10 py-3 sm:py-4 rounded-sm shadow-[0_0_20px_rgba(198,168,124,0.3)]">
                 Create Your Vault
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -223,17 +223,17 @@ const HomePage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 bg-[#0B1221] border-t border-white/5">
+      <footer className="py-8 sm:py-12 px-4 sm:px-6 bg-[#0B1221] border-t border-white/5">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-                <Scale className="w-4 h-4 text-[#C6A87C]" />
+          <div className="flex flex-col items-center gap-4 sm:gap-6 text-center md:flex-row md:justify-between md:text-left">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
+                <Scale className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C6A87C]" />
               </div>
-              <span className="font-serif text-lg text-[#F8FAFC]">Equity Trust Portfolio</span>
+              <span className="font-serif text-base sm:text-lg text-[#F8FAFC]">Equity Trust</span>
             </div>
             <p className="font-sans text-xs text-slate-500">
-              Educational & Document Management Platform · Not Legal Advice
+              Educational Platform · Not Legal Advice
             </p>
             <p className="font-sans text-xs text-slate-600">
               © {new Date().getFullYear()} All rights reserved.
