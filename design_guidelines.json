@@ -1,0 +1,138 @@
+{
+  "identity": {
+    "name": "E1: The Anti-AI Designer",
+    "mission": "Create a 'Sovereign Vault' aesthetic that feels like a digital extension of a private mahogany office, rejecting generic SaaS tropes.",
+    "tone": "Authority, Permanence, Sovereignty, Exclusive",
+    "aesthetic": "Classic Elegant (Gold/Navy) with a 'Private Banking' twist"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Cormorant Garamond, serif",
+      "body": "Manrope, sans-serif",
+      "legal": "Crimson Pro, serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "installation": "Import from Google Fonts: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Manrope:wght@400;500;600;700&display=swap",
+    "usage_rules": {
+      "h1": "font-serif text-5xl md:text-7xl font-medium tracking-tight leading-[0.95]",
+      "h2": "font-serif text-4xl md:text-5xl font-normal tracking-tight",
+      "h3": "font-serif text-2xl md:text-3xl font-medium text-accent",
+      "body": "font-sans text-base leading-relaxed text-muted-foreground",
+      "legal_text": "font-legal text-lg leading-loose text-foreground/90",
+      "button": "font-sans font-semibold tracking-wide uppercase text-xs"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#0B1221",
+      "foreground": "#F5F2EB",
+      "card": "#111A2F",
+      "card_foreground": "#E2E8F0",
+      "popover": "#111A2F",
+      "popover_foreground": "#E2E8F0",
+      "primary": "#C6A87C",
+      "primary_foreground": "#0B1221",
+      "secondary": "#1E293B",
+      "secondary_foreground": "#F5F2EB",
+      "muted": "#1E293B",
+      "muted_foreground": "#94A3B8",
+      "accent": "#C6A87C",
+      "accent_foreground": "#0B1221",
+      "destructive": "#7F1D1D",
+      "destructive_foreground": "#F5F2EB",
+      "border": "#2D3748",
+      "input": "#2D3748",
+      "ring": "#C6A87C"
+    },
+    "theme_strategy": {
+      "landing_page": "Light Mode (Paper/Parchment feel: bg-[#F9F7F1] text-[#0B1221])",
+      "dashboard": "Dark Mode (Vault feel: bg-[#0B1221] text-[#E2E8F0])",
+      "documents": "Light Mode (Bond Paper: bg-white text-black)"
+    }
+  },
+  "visual_enhancers": {
+    "textures": {
+      "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
+      "marble_overlay": "Use the dark marble image with low opacity (10%) on the dashboard sidebar."
+    },
+    "borders": {
+      "style": "1px solid",
+      "color": "border-white/10",
+      "radius": "rounded-sm (Sharp, precise feel)"
+    },
+    "shadows": {
+      "card": "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
+      "glow": "0 0 20px rgba(198, 168, 124, 0.15)"
+    }
+  },
+  "layout_strategies": {
+    "landing_page": {
+      "grid": "Mode A: The Tetris Grid (Asymmetrical)",
+      "spacing": "Generous (py-24, gap-12)",
+      "alignment": "Left aligned typography, offset images"
+    },
+    "dashboard": {
+      "grid": "Mode B: The Control Room (Dense, Functional)",
+      "structure": "Sidebar navigation (fixed), Top bar (minimal), Main content (scrollable)",
+      "card_style": "Flat background, 1px border, no shadow (unless hovered)"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 rounded-sm px-8 py-6 shadow-[0_0_15px_rgba(198,168,124,0.3)] transition-all duration-300",
+      "secondary": "bg-transparent border border-primary/30 text-primary hover:bg-primary/10 rounded-sm px-8 py-6"
+    },
+    "cards": {
+      "default": "bg-card border border-border/50 rounded-sm p-6 relative overflow-hidden group",
+      "hover_effect": "group-hover:border-primary/50 transition-colors duration-300"
+    },
+    "inputs": {
+      "style": "bg-transparent border-b border-border focus:border-primary rounded-none px-0 py-3 focus:ring-0 transition-colors placeholder:text-muted-foreground/50"
+    }
+  },
+  "image_urls": {
+    "textures": [
+      {
+        "url": "https://images.unsplash.com/photo-1747696766706-5485b39bf358?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxkYXJrJTIwbWFyYmxlJTIwdGV4dHVyZSUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzY2NDg1MDE5fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Dark Marble Texture (Use for Sidebar/Hero Backgrounds)",
+        "category": "background"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1595412134077-515f3c30b2fb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxhbnRpcXVlJTIwZ29sZCUyMG1ldGFsJTIwdGV4dHVyZXxlbnwwfHx8fDE3NjY0ODUwMjF8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Antique Gold Texture (Use for masking text or borders)",
+        "category": "accent"
+      }
+    ],
+    "visuals": [
+      {
+        "url": "https://images.unsplash.com/photo-1759774620386-af473de87632?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxjbGFzc2ljJTIwYXJjaGl0ZWN0dXJlJTIwY29sdW1uJTIwZGV0YWlsfGVufDB8fHx8MTc2NjQ4NTAyMnww&ixlib=rb-4.1.0&q=85",
+        "description": "Classic Column Detail (Use for 'Structure' or 'Foundation' section)",
+        "category": "feature"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1676312389476-fe01e238b422?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxmb3VudGFpbiUyMHBlbiUyMHdyaXRpbmclMjBvbiUyMHBhcGVyfGVufDB8fHx8MTc2NjQ4NTAyNXww&ixlib=rb-4.1.0&q=85",
+        "description": "Fountain Pen (Use for 'Signing' or 'Execution' section)",
+        "category": "feature"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. IGNORE App.css. Use index.css for all global styles.",
+    "2. IMPLEMENT the 'Sovereign Vault' aesthetic: Dark Navy backgrounds, Gold accents, Serif headings.",
+    "3. OVERRIDE Shadcn defaults. Do not use the default radius (0.5rem). Use 'rounded-sm' or 'rounded-none' for a sharper, more serious look.",
+    "4. USE 'Cormorant Garamond' for all headings. This is non-negotiable for the brand identity.",
+    "5. LANDING PAGE must be Light Mode (Parchment). DASHBOARD must be Dark Mode (Vault). Handle this via CSS classes or a theme provider that switches based on route.",
+    "6. DO NOT use gradients for backgrounds. Use solid colors with subtle noise or the provided marble texture overlay.",
+    "7. ENSURE all interactive elements have 'data-testid' attributes.",
+    "8. USE 'sonner' for toasts.",
+    "9. CREATE a 'Layout' component that handles the Sidebar/Header structure for the dashboard.",
+    "10. FORMS should feel like legal documents. Use the 'underlined' input style defined in components."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop' (generic centered layouts, excessive gradients).",
+    "Use 2-3x more spacing than typical designs.",
+    "Every interaction needs micro-animations.",
+    "Never use AI assistant emojis.",
+    "Prioritize accessibility (APCA contrast)."
+  ]
+}
