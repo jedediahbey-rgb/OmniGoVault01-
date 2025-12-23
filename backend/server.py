@@ -164,7 +164,7 @@ class AssetItem(BaseModel):
     portfolio_id: str
     user_id: str
     rm_id: str = ""  # Full RM-ID for the asset (e.g., RF123456789US-01.001)
-    subject_category: int = 1  # Subject category number (01, 02, 03...)
+    subject_code: str = "00"  # Subject category code (2-digit: "01", "02", etc.)
     subject_name: str = ""  # Name of the subject category (e.g., "Real Estate", "Vehicle", "Court Case")
     sequence_number: int = 1  # Sequence within category (.001, .002, .003...)
     asset_type: str  # real_property, personal_property, financial_account, intellectual_property, other
