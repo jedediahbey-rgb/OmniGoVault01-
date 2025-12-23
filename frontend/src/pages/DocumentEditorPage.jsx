@@ -143,18 +143,20 @@ const EditorToolbar = ({ editor, disabled }) => {
 // Document View Component (for finalized documents)
 const DocumentView = ({ document, content }) => {
   return (
-    <div className="bg-white text-black rounded-lg shadow-2xl max-w-4xl mx-auto overflow-hidden">
+    <div className="max-w-3xl mx-auto bg-white text-slate-900 shadow-2xl rounded-lg overflow-hidden">
       {/* Document Header */}
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-6 border-b-4 border-vault-gold">
+      <div className="bg-gradient-to-r from-slate-800 to-slate-700 p-6 md:p-8">
         <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-serif mb-1">{document.title}</h1>
-            <p className="text-white/60 text-sm">{document.document_type?.replace(/_/g, ' ').toUpperCase()}</p>
+          <div className="flex-1">
+            <h1 className="text-white font-serif text-xl md:text-2xl font-bold">
+              {document.title}
+            </h1>
+            <p className="text-slate-300 text-sm mt-1">{document.document_type?.replace(/_/g, ' ').toUpperCase()}</p>
           </div>
           {document.sub_record_id && (
-            <div className="text-right">
-              <p className="text-white/40 text-xs uppercase">Document ID</p>
-              <p className="text-vault-gold font-mono">{document.sub_record_id}</p>
+            <div className="text-right flex-shrink-0 ml-4">
+              <p className="text-slate-400 text-xs uppercase tracking-wider">RM-ID</p>
+              <p className="text-amber-400 font-mono text-sm whitespace-nowrap">{document.sub_record_id}</p>
             </div>
           )}
         </div>
@@ -162,16 +164,16 @@ const DocumentView = ({ document, content }) => {
 
       {/* Document Seal/Badge */}
       {document.is_locked && (
-        <div className="flex justify-center -mt-6 relative z-10">
-          <div className="bg-green-600 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-lg">
-            <CheckCircle className="w-5 h-5" />
+        <div className="flex justify-center -mt-4 relative z-10">
+          <div className="bg-green-600 text-white px-4 md:px-6 py-2 rounded-full flex items-center gap-2 shadow-lg text-sm">
+            <CheckCircle className="w-4 h-4" />
             <span className="font-semibold">FINALIZED DOCUMENT</span>
           </div>
         </div>
       )}
 
       {/* Document Content */}
-      <div className="p-8 md:p-12">
+      <div className="p-6 md:p-8 lg:p-12">
         <div 
           className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-slate-800 prose-p:text-slate-700 prose-p:leading-relaxed prose-li:text-slate-700"
           dangerouslySetInnerHTML={{ __html: content }}
@@ -179,8 +181,8 @@ const DocumentView = ({ document, content }) => {
       </div>
 
       {/* Document Footer */}
-      <div className="bg-slate-50 p-6 border-t border-slate-200">
-        <div className="flex items-center justify-between text-sm text-slate-500">
+      <div className="bg-slate-50 p-4 md:p-6 border-t border-slate-200">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-sm text-slate-500">
           <div>
             <p>Created: {new Date(document.created_at).toLocaleDateString()}</p>
             {document.locked_at && (
@@ -188,8 +190,8 @@ const DocumentView = ({ document, content }) => {
             )}
           </div>
           {document.rm_id && (
-            <div className="text-right">
-              <p className="text-slate-400 text-xs">Trust RM-ID</p>
+            <div className="md:text-right">
+              <p className="text-slate-400 text-xs">Sub-Record ID</p>
               <p className="font-mono text-slate-600">{document.rm_id}</p>
             </div>
           )}
