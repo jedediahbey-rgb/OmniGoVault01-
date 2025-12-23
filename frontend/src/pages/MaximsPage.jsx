@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { 
@@ -24,6 +24,7 @@ import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Progress } from '../components/ui/progress';
+import { ExpandableText } from '../components/ui/expandable-text';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import { toast } from 'sonner';
 
