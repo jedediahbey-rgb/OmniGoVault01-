@@ -1540,6 +1540,86 @@ async def export_document_pdf(document_id: str, user: User = Depends(get_current
     return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename={filename}"})
 
 
+class PacketRequest(BaseModel):
+    name: str
+    document_ids: List[str]
+
+
+@api_router.post("/documents/packet")
+async def create_document_packet(request: PacketRequest, user: User = Depends(get_current_user)):
+    """Create a ZIP packet containing multiple documents as PDFs"""
+    if not request.document_ids:
+        raise HTTPException(status_code=400, detail="No documents selected")
+    
+    # Create ZIP buffer
+    zip_buffer = BytesIO()
+    
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for doc_id in request.document_ids:
+            doc = await db.documents.find_one(
+                {"document_id": doc_id, "user_id": user.user_id, "deleted_at": None},
+                {"_id": 0}
+            )
+            
+            if not doc:
+                continue
+            
+            # Generate PDF for this document
+            pdf_buffer = BytesIO()
+            pdf_doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+            styles = getSampleStyleSheet()
+            
+            title_style = ParagraphStyle(
+                'CustomTitle',
+                parent=styles['Heading1'],
+                fontSize=18,
+                spaceAfter=20
+            )
+            body_style = ParagraphStyle(
+                'CustomBody',
+                parent=styles['Normal'],
+                fontSize=11,
+                leading=14
+            )
+            
+            elements = []
+            elements.append(Paragraph(doc.get('title', 'Document'), title_style))
+            elements.append(Spacer(1, 12))
+            
+            content = doc.get('editorContent', doc.get('content', ''))
+            if content:
+                soup = BeautifulSoup(content, 'html.parser')
+                for elem in soup.find_all(['p', 'h1', 'h2', 'h3', 'li']):
+                    text = elem.get_text().strip()
+                    if text:
+                        safe_text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                        if elem.name.startswith('h'):
+                            elements.append(Paragraph(safe_text, styles['Heading2']))
+                        else:
+                            elements.append(Paragraph(safe_text, body_style))
+                        elements.append(Spacer(1, 6))
+            
+            try:
+                pdf_doc.build(elements)
+                pdf_buffer.seek(0)
+                
+                # Add to ZIP with sanitized filename
+                safe_title = re.sub(r'[^\w\s-]', '', doc.get('title', 'document'))
+                zip_file.writestr(f"{safe_title}.pdf", pdf_buffer.getvalue())
+            except Exception as e:
+                logging.error(f"Failed to generate PDF for {doc_id}: {e}")
+                continue
+    
+    zip_buffer.seek(0)
+    
+    filename = f"{request.name.replace(' ', '_')}.zip"
+    return StreamingResponse(
+        zip_buffer, 
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
 # ============ LEARNING PROGRESS ENDPOINTS ============
 
 @api_router.get("/learning/progress")
