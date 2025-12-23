@@ -766,7 +766,7 @@ async def delete_asset(asset_id: str, user: User = Depends(get_current_user)):
     ledger_doc['created_at'] = ledger_doc['created_at'].isoformat()
     await db.trust_ledger.insert_one(ledger_doc)
     
-    result = await db.assets.delete_one({"asset_id": asset_id, "user_id": user.user_id})
+    await db.assets.delete_one({"asset_id": asset_id, "user_id": user.user_id})
     return {"message": "Asset deleted", "rm_id": asset.get("rm_id", "")}
 
 
