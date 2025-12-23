@@ -834,15 +834,21 @@ export default function PortfolioOverviewPage({ user }) {
               </div>
               <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Total Credits</p>
-                <p className="text-green-400 text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">{formatCurrency(ledger.summary?.total_deposits)}</p>
+                <span className="block text-green-400 text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">
+                  {formatCurrency(ledger.summary?.total_deposits)}
+                </span>
               </div>
               <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Total Debits</p>
-                <p className="text-red-400 text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">{formatCurrency(ledger.summary?.total_withdrawals)}</p>
+                <span className="block text-red-400 text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">
+                  {formatCurrency(ledger.summary?.total_withdrawals)}
+                </span>
               </div>
               <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Balance</p>
-                <p className="text-vault-gold text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">{formatCurrency(ledger.summary?.balance)}</p>
+                <span className="block text-vault-gold text-sm sm:text-xl font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">
+                  {formatCurrency(ledger.summary?.balance)}
+                </span>
               </div>
             </div>
 
