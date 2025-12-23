@@ -25,6 +25,7 @@ import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Progress } from '../components/ui/progress';
+import { ExpandableText } from '../components/ui/expandable-text';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import { toast } from 'sonner';
 
