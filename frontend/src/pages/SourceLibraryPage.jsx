@@ -191,12 +191,11 @@ const SourceLibraryPage = () => {
         </div>
       </section>
 
-      {/* Disclaimer */}
+      {/* Footer */}
       <section className="py-8 px-6 bg-[#0F172A] border-t border-white/5">
         <div className="max-w-7xl mx-auto text-center">
           <p className="font-sans text-xs text-slate-500">
-            Source documents are provided for educational purposes. All content on this platform 
-            is derived from and cited to these authoritative sources.
+            Source documents provided for reference. Content is derived from and cited to these authoritative sources.
           </p>
         </div>
       </section>
