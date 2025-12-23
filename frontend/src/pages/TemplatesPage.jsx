@@ -555,7 +555,26 @@ C/o: <strong>[ADDRESS]</strong><br/>
 
       {/* Create Document Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="bg-vault-navy border-white/10">
+        <DialogContent 
+          className="bg-vault-navy border-white/10"
+          onInteractOutside={(e) => {
+            // Prevent dialog from closing when interacting with Select dropdown
+            const target = e.target;
+            if (target?.closest?.('[data-radix-select-content]') || 
+                target?.closest?.('[role="listbox"]') ||
+                target?.closest?.('[data-radix-popper-content-wrapper]')) {
+              e.preventDefault();
+            }
+          }}
+          onPointerDownOutside={(e) => {
+            const target = e.target;
+            if (target?.closest?.('[data-radix-select-content]') || 
+                target?.closest?.('[role="listbox"]') ||
+                target?.closest?.('[data-radix-popper-content-wrapper]')) {
+              e.preventDefault();
+            }
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="text-white font-heading">
               Create {selectedTemplate?.name}
