@@ -618,39 +618,33 @@ export default function PortfolioOverviewPage({ user }) {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
               {/* Deposits */}
               <div className="flex flex-col items-center p-3 sm:p-4 bg-green-500/10 rounded-lg border border-green-500/20 overflow-hidden">
-                <div className="w-10 h-10 sm:w-[42px] sm:h-[42px] rounded-xl bg-green-500/20 border border-green-500/30 flex items-center justify-center mb-3 shadow-lg shadow-green-500/10">
-                  <ArrowDownRight className="w-5 h-5 sm:w-6 sm:h-6 text-green-400 drop-shadow-[0_0_4px_rgba(74,222,128,0.5)]" />
-                </div>
+                <IconChip variant="green" className="mb-3">
+                  <ArrowDownRight />
+                </IconChip>
                 <div className="w-full overflow-hidden text-center">
-                  <span className="block text-green-400 font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis text-base sm:text-xl">
-                    {formatCurrency(ledger.summary?.total_deposits)}
-                  </span>
+                  <CurrencyDisplay value={ledger.summary?.total_deposits} variant="green" />
                 </div>
                 <p className="text-white/40 text-xs sm:text-sm mt-1">Total Deposits</p>
               </div>
               
               {/* Withdrawals */}
               <div className="flex flex-col items-center p-3 sm:p-4 bg-red-500/10 rounded-lg border border-red-500/20 overflow-hidden">
-                <div className="w-10 h-10 sm:w-[42px] sm:h-[42px] rounded-xl bg-red-500/20 border border-red-500/30 flex items-center justify-center mb-3 shadow-lg shadow-red-500/10">
-                  <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 drop-shadow-[0_0_4px_rgba(248,113,113,0.5)]" />
-                </div>
+                <IconChip variant="red" className="mb-3">
+                  <ArrowUpRight />
+                </IconChip>
                 <div className="w-full overflow-hidden text-center">
-                  <span className="block text-red-400 font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis text-base sm:text-xl">
-                    {formatCurrency(ledger.summary?.total_withdrawals)}
-                  </span>
+                  <CurrencyDisplay value={ledger.summary?.total_withdrawals} variant="red" />
                 </div>
                 <p className="text-white/40 text-xs sm:text-sm mt-1">Total Withdrawals</p>
               </div>
               
               {/* Balance */}
               <div className="flex flex-col items-center p-3 sm:p-4 bg-vault-gold/10 rounded-lg border border-vault-gold/20 overflow-hidden">
-                <div className="w-10 h-10 sm:w-[42px] sm:h-[42px] rounded-xl bg-vault-gold/20 border border-vault-gold/30 flex items-center justify-center mb-3 shadow-lg shadow-vault-gold/10">
-                  <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-vault-gold drop-shadow-[0_0_4px_rgba(198,168,124,0.5)]" />
-                </div>
+                <IconChip variant="gold" className="mb-3">
+                  <DollarSign />
+                </IconChip>
                 <div className="w-full overflow-hidden text-center">
-                  <span className="block text-vault-gold font-heading font-mono tabular-nums whitespace-nowrap overflow-hidden text-ellipsis text-base sm:text-xl">
-                    {formatCurrency(ledger.summary?.balance)}
-                  </span>
+                  <CurrencyDisplay value={ledger.summary?.balance} variant="gold" />
                 </div>
                 <p className="text-white/40 text-xs sm:text-sm mt-1">Current Balance</p>
               </div>
