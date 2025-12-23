@@ -246,8 +246,8 @@ export default function VaultPage({ user }) {
 
   // Sort: pinned first, then by date
   const sortedDocuments = [...filteredDocuments].sort((a, b) => {
-    const aPinned = pinnedDocs.includes(a.document_id);
-    const bPinned = pinnedDocs.includes(b.document_id);
+    const aPinned = pinnedDocs.some(d => d.document_id === a.document_id);
+    const bPinned = pinnedDocs.some(d => d.document_id === b.document_id);
     if (aPinned && !bPinned) return -1;
     if (!aPinned && bPinned) return 1;
     return new Date(b.updated_at) - new Date(a.updated_at);
