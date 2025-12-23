@@ -9,7 +9,7 @@ import os
 import subprocess
 
 # Get backend URL from frontend .env
-BACKEND_URL = "https://equity-docs.preview.emergentagent.com"
+BACKEND_URL = "https://equityfolio.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class PDFGenerationTester:
