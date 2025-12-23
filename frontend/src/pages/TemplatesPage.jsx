@@ -60,6 +60,11 @@ export default function TemplatesPage({ user }) {
   const [documentTitle, setDocumentTitle] = useState('');
   const [selectedPortfolio, setSelectedPortfolio] = useState('');
   const [creating, setCreating] = useState(false);
+  
+  // AI Generation state
+  const [showAiGenerateDialog, setShowAiGenerateDialog] = useState(false);
+  const [aiInstructions, setAiInstructions] = useState('');
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   useEffect(() => {
     fetchData();
