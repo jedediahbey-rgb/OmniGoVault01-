@@ -76,7 +76,7 @@ export default function PortfolioOverviewPage({ user }) {
     try {
       const [portfolioRes, trustRes, docsRes, assetsRes, partiesRes, ledgerRes, categoriesRes] = await Promise.all([
         axios.get(`${API}/portfolios/${portfolioId}`),
-        axios.get(`${API}/trust-profiles/by-portfolio/${portfolioId}`).catch(() => ({ data: null })),
+        axios.get(`${API}/portfolios/${portfolioId}/trust-profile`).catch(() => ({ data: null })),
         axios.get(`${API}/documents?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
         axios.get(`${API}/portfolios/${portfolioId}/assets`).catch(() => ({ data: [] })),
         axios.get(`${API}/parties?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
