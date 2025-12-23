@@ -480,7 +480,7 @@ export default function TrustProfilePage({ user }) {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <Label className="text-white/60">Classification (Educational Label)</Label>
+                  <Label className="text-white/60">Classification</Label>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -498,8 +498,8 @@ export default function TrustProfilePage({ user }) {
                   className="mt-1 w-full bg-white/5 border border-white/10 rounded-md p-2 text-white"
                 >
                   <option value="" className="bg-vault-navy">Select...</option>
-                  <option value="domestic" className="bg-vault-navy">Domestic Trust (educational label)</option>
-                  <option value="foreign" className="bg-vault-navy">Foreign Trust (educational label)</option>
+                  <option value="domestic" className="bg-vault-navy">Domestic Trust</option>
+                  <option value="foreign" className="bg-vault-navy">Foreign Trust</option>
                   <option value="undetermined" className="bg-vault-navy">Undetermined / Consult Counsel</option>
                 </select>
               </div>
