@@ -368,6 +368,701 @@ async def delete_trust(document_id: str, user: User = Depends(get_current_user))
     return {"message": "Document deleted successfully"}
 
 
+def generate_declaration_of_trust_pdf(doc, buffer):
+    """Generate Declaration of Trust PDF based on pure equity trust structure"""
+    pdf_doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=60,
+        leftMargin=60,
+        topMargin=50,
+        bottomMargin=50
+    )
+    
+    styles = getSampleStyleSheet()
+    
+    # Custom styles
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=16,
+        alignment=TA_CENTER,
+        spaceAfter=20,
+        fontName='Times-Bold',
+        textTransform='uppercase'
+    )
+    
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=styles['Heading2'],
+        fontSize=12,
+        spaceAfter=10,
+        spaceBefore=15,
+        fontName='Times-Bold'
+    )
+    
+    article_style = ParagraphStyle(
+        'ArticleStyle',
+        parent=styles['Normal'],
+        fontSize=11,
+        spaceAfter=8,
+        fontName='Times-Bold',
+        textColor=colors.black
+    )
+    
+    body_style = ParagraphStyle(
+        'CustomBody',
+        parent=styles['Normal'],
+        fontSize=10,
+        alignment=TA_JUSTIFY,
+        spaceAfter=10,
+        fontName='Times-Roman',
+        leading=14
+    )
+    
+    indent_style = ParagraphStyle(
+        'IndentStyle',
+        parent=body_style,
+        leftIndent=20,
+        spaceAfter=8
+    )
+    
+    small_style = ParagraphStyle(
+        'SmallStyle',
+        parent=styles['Normal'],
+        fontSize=9,
+        alignment=TA_CENTER,
+        spaceAfter=6,
+        fontName='Times-Roman'
+    )
+    
+    elements = []
+    
+    # Header
+    elements.append(Paragraph("DECLARATION OF TRUST", title_style))
+    elements.append(Paragraph(f"<b>{doc.get('trust_name', 'PURE EQUITY TRUST')}</b>", 
+                             ParagraphStyle('TrustName', parent=title_style, fontSize=14)))
+    elements.append(Spacer(1, 0.2*inch))
+    
+    # Preamble
+    current_date = datetime.now().strftime('%B %d, %Y')
+    grantor = doc.get('grantor_name', '[GRANTOR NAME]')
+    trustee = doc.get('trustee_name', '[TRUSTEE NAME]')
+    beneficiary = doc.get('beneficiary_name', '[BENEFICIARY NAME]')
+    trust_name = doc.get('trust_name', '[TRUST NAME]')
+    
+    preamble = f"""This Declaration of Trust is a formal written and expressed trust indenture of the special 
+trust relationship between the parties for all transaction(s)/account(s) as the corpus "res" of this Trust 
+belonging to the Estate of {grantor} and any derivations by this Grantor/Settlor successors and assigns, 
+jointly and severally, and this Trust's Trustee and anyone appointed under the authority of this Trust."""
+    
+    elements.append(Paragraph(preamble, body_style))
+    elements.append(Spacer(1, 0.15*inch))
+    
+    # FIRST - Trust Name
+    elements.append(Paragraph("FIRST: TRUST NAME AND DESIGNATION", article_style))
+    elements.append(Paragraph(
+        f"""The name of this Trust shall be: <b>{trust_name}</b>, an equitable asset title, 
+for the use and benefit of the sole bona fide Trust beneficial interest holder in due course. 
+Grantor hereby transfers Certificate of Legal Title of {trust_name} to Trustee for special purpose.""",
+        body_style
+    ))
+    
+    # SECOND - Beneficiary
+    elements.append(Paragraph("SECOND: BENEFICIARY", article_style))
+    elements.append(Paragraph(
+        f"""The beneficiary of this Trust shall hold Trust Certificate by both the Settlor and Trustee. 
+The Beneficiary is: <b>{beneficiary}</b>, residing at {doc.get('beneficiary_address', '[ADDRESS]')}. 
+Beneficiary is competent with age of majority sufficient to terminate any presumed or express trust 
+relation and possesses all right, title and interest in the trust. The beneficiary is the true owner 
+in equity, holding equitable title while the Trustee holds legal title.""",
+        body_style
+    ))
+    
+    # THIRD - Duration
+    elements.append(Paragraph("THIRD: DURATION AND REVOCABILITY", article_style))
+    elements.append(Paragraph(
+        """This Trust is revocable and modifiable by the Grantor/Settlor with all rights reserved and shall 
+continue for a term of twenty-one (21) years from the date of trust res transfer to Trustees. Trust shall 
+also be renewable, if renewed prior to its termination. The Grantor reserves the right to amend, modify, 
+or revoke this Trust at any time during their lifetime.""",
+        body_style
+    ))
+    
+    # FOURTH - Governing Law
+    elements.append(Paragraph("FOURTH: GOVERNING LAW", article_style))
+    elements.append(Paragraph(
+        """This Trust shall be administered, managed, governed and regulated in all respects according to 
+the laws of equity, under judicial power and inherited civilian due process protections. The following 
+Maxims of Equity shall govern the interpretation and administration of this Trust:""",
+        body_style
+    ))
+    
+    maxims = [
+        "Equity regards as done that which ought to be done",
+        "Equity looks to the intent rather than to the form",
+        "Equity will not suffer a wrong to be without a remedy",
+        "Where there are equal equities, the law shall prevail",
+        "Equity follows the law",
+        "He who seeks equity must do equity",
+        "Equity delights in equality",
+        "Equity will not aid a volunteer",
+        "Equity imputes an intention to fulfill an obligation"
+    ]
+    
+    for maxim in maxims:
+        elements.append(Paragraph(f"• {maxim}", indent_style))
+    
+    # FIFTH - Trust Purpose
+    elements.append(Paragraph("FIFTH: TRUST PURPOSE", article_style))
+    trust_purpose = doc.get('trust_purpose', 'To hold, manage, and protect assets for the benefit of the beneficiary')
+    elements.append(Paragraph(
+        f"""The purpose of this Trust is to re-unite, deliver, transfer, and merge titles for all the corpus 
+of this Trust for the use and benefit of the beneficiary. Specifically: {trust_purpose}""",
+        body_style
+    ))
+    
+    # SIXTH - Trustee Powers
+    elements.append(Paragraph("SIXTH: POWERS OF TRUSTEE", article_style))
+    elements.append(Paragraph(
+        f"""The Trustee, <b>{trustee}</b>, shall have full dispositive and discretionary powers and is 
+authorized by the Instrument to:""",
+        body_style
+    ))
+    
+    powers = [
+        "Sell, convey, pledge, mortgage, lease, or transfer title to any interest in real or personal property",
+        "Enforce any and all mortgages, pledges and deeds of trust held by the Trust",
+        "Purchase at any sale any real or personal property subject to any mortgage, pledge or deed of trust",
+        "Initiate or defend any litigation affecting the Trust",
+        "Submit to a court of Equity, or in private, to compromise or release claims affecting the Trust estate",
+        "Invest and reinvest Trust funds in any property deemed appropriate",
+        "Make distributions to beneficiaries according to the terms of this Trust"
+    ]
+    
+    for power in powers:
+        elements.append(Paragraph(f"• {power}", indent_style))
+    
+    # SEVENTH - Trustee Compensation
+    elements.append(Paragraph("SEVENTH: TRUSTEE COMPENSATION", article_style))
+    elements.append(Paragraph(
+        """The Trustees shall receive reasonable emolument for the services performed by the Trustees, 
+but such emolument shall not exceed the amount customarily received by corporate fiduciaries in the 
+area for like services.""",
+        body_style
+    ))
+    
+    # EIGHTH - Liability
+    elements.append(Paragraph("EIGHTH: LIABILITY OF TRUSTEES", article_style))
+    elements.append(Paragraph(
+        """Trustees shall have full commercial and personal liability for the faithful performance of duties. 
+No Trustee shall be held liable for any action or default of any other person in connection with the 
+administration and management of this Trust unless caused by the individual's own gross negligence or 
+by commission of a willful act of breach of Trust.""",
+        body_style
+    ))
+    
+    # NINTH - Severability
+    elements.append(Paragraph("NINTH: SEVERABILITY", article_style))
+    elements.append(Paragraph(
+        """In the event that any portion of this Trust shall be held unlawful, invalid or otherwise 
+inoperative, it is the intention of the Grantor that all of the other provisions hereof shall continue 
+to be fully effective and operative insofar as is possible and reasonable.""",
+        body_style
+    ))
+    
+    # TENTH - Property Description
+    if doc.get('property_description'):
+        elements.append(Paragraph("TENTH: TRUST PROPERTY (CORPUS)", article_style))
+        elements.append(Paragraph(
+            f"""The following property is hereby transferred and conveyed to the Trustee to be held in 
+trust according to the terms herein: {doc.get('property_description')}""",
+            body_style
+        ))
+    
+    # Additional Terms
+    if doc.get('additional_terms'):
+        elements.append(Paragraph("ELEVENTH: ADDITIONAL TERMS AND CONDITIONS", article_style))
+        elements.append(Paragraph(doc.get('additional_terms'), body_style))
+    
+    # Parties
+    elements.append(Spacer(1, 0.3*inch))
+    elements.append(Paragraph("PARTIES TO THIS TRUST", heading_style))
+    
+    parties_data = [
+        ["GRANTOR/SETTLOR:", grantor],
+        ["Address:", doc.get('grantor_address', '[ADDRESS]')],
+        ["", ""],
+        ["TRUSTEE:", trustee],
+        ["Address:", doc.get('trustee_address', '[ADDRESS]')],
+        ["", ""],
+        ["BENEFICIARY:", beneficiary],
+        ["Address:", doc.get('beneficiary_address', '[ADDRESS]')]
+    ]
+    
+    parties_table = Table(parties_data, colWidths=[1.5*inch, 4.5*inch])
+    parties_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'Times-Roman'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('FONTNAME', (0, 0), (0, -1), 'Times-Bold'),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+    ]))
+    elements.append(parties_table)
+    
+    # Signature Block
+    elements.append(Spacer(1, 0.4*inch))
+    elements.append(Paragraph(
+        f"""IN WITNESS WHEREOF, I hereunto set my hand and seal on this {current_date} and hereby declare 
+under oath the execution, creation and establishment of this Trust:""",
+        body_style
+    ))
+    
+    elements.append(Spacer(1, 0.4*inch))
+    
+    sig_data = [
+        ["_" * 45, "", "_" * 45],
+        [f"{grantor}", "", "Date"],
+        ["Grantor/Settlor", "", ""],
+        ["", "", ""],
+        ["_" * 45, "", "_" * 45],
+        [f"{trustee}", "", "Date"],
+        ["Trustee", "", ""],
+    ]
+    
+    sig_table = Table(sig_data, colWidths=[2.5*inch, 0.5*inch, 2.5*inch])
+    sig_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'Times-Roman'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+    ]))
+    elements.append(sig_table)
+    
+    # Notarization
+    elements.append(Spacer(1, 0.4*inch))
+    elements.append(Paragraph("CERTIFICATE OF JURAT", heading_style))
+    elements.append(Paragraph(
+        f"""On this _____ day of _____________, 20___, before me, the undersigned notary public, 
+duly authorized, appeared {grantor}, personally known to me, who subscribed before me this 
+Declaration of Trust document and who affirmed before me under oath that the contents of the 
+document are truthful and accurate to the best of their knowledge and belief.""",
+        body_style
+    ))
+    
+    elements.append(Spacer(1, 0.3*inch))
+    notary_data = [
+        ["_" * 45, "", "_" * 45],
+        ["Notary Public Signature", "", "My Commission Expires"],
+        ["", "", ""],
+        ["(SEAL)", "", ""],
+    ]
+    
+    notary_table = Table(notary_data, colWidths=[2.5*inch, 0.5*inch, 2.5*inch])
+    notary_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'Times-Roman'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+    ]))
+    elements.append(notary_table)
+    
+    pdf_doc.build(elements)
+
+
+def generate_trust_transfer_grant_deed_pdf(doc, buffer):
+    """Generate Trust Transfer Grant Deed (TTGD) PDF"""
+    pdf_doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=60,
+        leftMargin=60,
+        topMargin=50,
+        bottomMargin=50
+    )
+    
+    styles = getSampleStyleSheet()
+    
+    title_style = ParagraphStyle(
+        'CustomTitle', parent=styles['Heading1'], fontSize=16, alignment=TA_CENTER,
+        spaceAfter=20, fontName='Times-Bold'
+    )
+    heading_style = ParagraphStyle(
+        'CustomHeading', parent=styles['Heading2'], fontSize=12, spaceAfter=10,
+        spaceBefore=15, fontName='Times-Bold'
+    )
+    body_style = ParagraphStyle(
+        'CustomBody', parent=styles['Normal'], fontSize=10, alignment=TA_JUSTIFY,
+        spaceAfter=10, fontName='Times-Roman', leading=14
+    )
+    
+    elements = []
+    
+    current_date = datetime.now().strftime('%B %d, %Y')
+    grantor = doc.get('grantor_name', '[GRANTOR NAME]')
+    trustee = doc.get('trustee_name', '[TRUSTEE NAME]')
+    trust_name = doc.get('trust_name', '[TRUST NAME]')
+    
+    elements.append(Paragraph("TRUST TRANSFER GRANT DEED", title_style))
+    elements.append(Paragraph("(Deed of Conveyance to Trust)", 
+                             ParagraphStyle('Subtitle', parent=title_style, fontSize=12)))
+    elements.append(Spacer(1, 0.2*inch))
+    
+    # Notice Statement
+    elements.append(Paragraph(
+        f"""This is Actual and Constructive Special Notice by the Grantor for sufficient private lawful 
+and valuable consideration of the transfer of property and assets to the Trust herein described.""",
+        body_style
+    ))
+    
+    # Parties
+    elements.append(Paragraph("PARTIES", heading_style))
+    elements.append(Paragraph(
+        f"""<b>GRANTOR:</b> {grantor}, residing at {doc.get('grantor_address', '[ADDRESS]')}, 
+by their freewill act and Deed, executes this Deed of acknowledgement, receipt, and acceptance 
+for private lawful consideration.""",
+        body_style
+    ))
+    elements.append(Paragraph(
+        f"""<b>GRANTEE (TRUSTEE):</b> {trustee}, as Trustee of {trust_name}, 
+residing at {doc.get('trustee_address', '[ADDRESS]')}.""",
+        body_style
+    ))
+    
+    # Grant Clause
+    elements.append(Paragraph("GRANT CLAUSE", heading_style))
+    elements.append(Paragraph(
+        f"""KNOW ALL MEN BY THESE PRESENTS, that the Grantor, {grantor}, for and in consideration 
+of the sum of TEN DOLLARS ($10.00) and other good and valuable consideration, the receipt and 
+sufficiency of which is hereby acknowledged, does hereby GRANT, BARGAIN, SELL, CONVEY, and CONFIRM 
+unto {trustee}, as Trustee of {trust_name}, and their successors in trust forever, the following 
+described property:""",
+        body_style
+    ))
+    
+    # Property Description
+    elements.append(Paragraph("PROPERTY DESCRIPTION", heading_style))
+    property_desc = doc.get('property_description', '[PROPERTY DESCRIPTION]')
+    elements.append(Paragraph(property_desc, body_style))
+    
+    # Habendum Clause
+    elements.append(Paragraph("HABENDUM CLAUSE", heading_style))
+    elements.append(Paragraph(
+        f"""TO HAVE AND TO HOLD the above-described property, together with all and singular the rights, 
+privileges, appurtenances, and immunities thereto belonging or in anywise appertaining, unto the said 
+Trustee of {trust_name}, and their successors in trust, FOREVER.""",
+        body_style
+    ))
+    
+    # Covenants
+    elements.append(Paragraph("COVENANTS OF TITLE", heading_style))
+    elements.append(Paragraph(
+        """The Grantor hereby covenants with the Grantee that:""",
+        body_style
+    ))
+    covenants = [
+        "The Grantor is lawfully seized of the property in fee simple and has full power and authority to convey the same;",
+        "The property is free from all encumbrances except as stated herein;",
+        "The Grantor will warrant and forever defend the title to the property against all lawful claims;",
+        "This conveyance is made pursuant to the principles of equity and the maxims thereof."
+    ]
+    for covenant in covenants:
+        elements.append(Paragraph(f"• {covenant}", 
+                                 ParagraphStyle('Indent', parent=body_style, leftIndent=20)))
+    
+    # Trust Reference
+    elements.append(Paragraph("TRUST REFERENCE", heading_style))
+    elements.append(Paragraph(
+        f"""This Grant Deed is made subject to and in accordance with the terms and conditions of the 
+Declaration of Trust creating {trust_name}, dated _____________, which Declaration of Trust is 
+incorporated herein by reference.""",
+        body_style
+    ))
+    
+    # Signature Block
+    elements.append(Spacer(1, 0.3*inch))
+    elements.append(Paragraph(
+        f"""Performed under my hand and seal, freewill act, volition and Deed on this {current_date}:""",
+        body_style
+    ))
+    
+    elements.append(Spacer(1, 0.4*inch))
+    sig_data = [
+        ["_" * 45, "", "_" * 45],
+        [f"{grantor}", "", "Date"],
+        ["Grantor", "", ""],
+        ["", "", ""],
+        ["_" * 45, "", "_" * 45],
+        [f"{trustee}", "", "Date"],
+        ["Trustee/Grantee", "", ""],
+    ]
+    sig_table = Table(sig_data, colWidths=[2.5*inch, 0.5*inch, 2.5*inch])
+    sig_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'Times-Roman'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+    ]))
+    elements.append(sig_table)
+    
+    # Notarization
+    elements.append(Spacer(1, 0.3*inch))
+    elements.append(Paragraph("CERTIFICATE OF ACKNOWLEDGEMENT", heading_style))
+    elements.append(Paragraph(
+        f"""STATE OF _________________
+COUNTY OF ________________
+
+On this _____ day of _____________, 20___, before me, the undersigned notary public, personally 
+appeared {grantor}, known to me (or proved to me on the basis of satisfactory evidence) to be the 
+person whose name is subscribed to the within instrument and acknowledged to me that they executed 
+the same in their authorized capacity, and that by their signature on the instrument the person, or 
+the entity upon behalf of which the person acted, executed the instrument.""",
+        body_style
+    ))
+    
+    elements.append(Spacer(1, 0.3*inch))
+    elements.append(Paragraph("_" * 45, body_style))
+    elements.append(Paragraph("Notary Public", body_style))
+    elements.append(Paragraph("My Commission Expires: _____________", body_style))
+    
+    pdf_doc.build(elements)
+
+
+def generate_notice_of_intent_pdf(doc, buffer):
+    """Generate Notice of Intent to Preserve Interest PDF"""
+    pdf_doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=60,
+        leftMargin=60,
+        topMargin=50,
+        bottomMargin=50
+    )
+    
+    styles = getSampleStyleSheet()
+    
+    title_style = ParagraphStyle(
+        'CustomTitle', parent=styles['Heading1'], fontSize=16, alignment=TA_CENTER,
+        spaceAfter=20, fontName='Times-Bold'
+    )
+    heading_style = ParagraphStyle(
+        'CustomHeading', parent=styles['Heading2'], fontSize=12, spaceAfter=10,
+        spaceBefore=15, fontName='Times-Bold'
+    )
+    body_style = ParagraphStyle(
+        'CustomBody', parent=styles['Normal'], fontSize=10, alignment=TA_JUSTIFY,
+        spaceAfter=10, fontName='Times-Roman', leading=14
+    )
+    
+    elements = []
+    
+    current_date = datetime.now().strftime('%B %d, %Y')
+    grantor = doc.get('grantor_name', '[NAME]')
+    trust_name = doc.get('trust_name', '[TRUST NAME]')
+    beneficiary = doc.get('beneficiary_name', '[BENEFICIARY NAME]')
+    
+    elements.append(Paragraph("NOTICE OF INTENT TO PRESERVE INTEREST", title_style))
+    elements.append(Spacer(1, 0.2*inch))
+    
+    elements.append(Paragraph("NOTICE", heading_style))
+    elements.append(Paragraph(
+        f"""NOTICE IS HEREBY GIVEN that {grantor}, as Grantor/Settlor and Beneficiary Interest Holder 
+of {trust_name}, hereby declares their intent to preserve all equitable interests in the property 
+and assets described herein.""",
+        body_style
+    ))
+    
+    elements.append(Paragraph("DECLARATION OF INTEREST", heading_style))
+    elements.append(Paragraph(
+        f"""The undersigned, {beneficiary}, hereby declares that they hold a beneficial interest in 
+{trust_name} and hereby asserts and preserves all equitable rights, titles, and interests therein. 
+This Notice is given pursuant to the Maxims of Equity which provide that "Equity will not suffer 
+a wrong to be without a remedy" and "Where there are equal equities, priority prevails.\"""",
+        body_style
+    ))
+    
+    elements.append(Paragraph("AFFECTED PROPERTY", heading_style))
+    property_desc = doc.get('property_description', '[PROPERTY DESCRIPTION]')
+    elements.append(Paragraph(
+        f"""The equitable interest being preserved relates to the following property: {property_desc}""",
+        body_style
+    ))
+    
+    elements.append(Paragraph("PURPOSE OF NOTICE", heading_style))
+    trust_purpose = doc.get('trust_purpose', 'asset protection and management')
+    elements.append(Paragraph(
+        f"""This Notice is filed for the purpose of putting all parties on notice of the beneficial 
+interest held in the above-described property. The purpose of the Trust is: {trust_purpose}. 
+Any person claiming a superior interest must present their claim under sworn affidavit.""",
+        body_style
+    ))
+    
+    elements.append(Paragraph("CONTACT INFORMATION", heading_style))
+    elements.append(Paragraph(
+        f"""All inquiries regarding this Notice should be directed to:
+{grantor}
+{doc.get('grantor_address', '[ADDRESS]')}""",
+        body_style
+    ))
+    
+    # Additional Terms
+    if doc.get('additional_terms'):
+        elements.append(Paragraph("ADDITIONAL PROVISIONS", heading_style))
+        elements.append(Paragraph(doc.get('additional_terms'), body_style))
+    
+    # Signature
+    elements.append(Spacer(1, 0.3*inch))
+    elements.append(Paragraph(
+        f"""Signed, sealed, acknowledged and specially deposited on this {current_date} under my hand 
+and seal affirmed under oath with intent, special purpose, freewill act and Deed.""",
+        body_style
+    ))
+    
+    elements.append(Spacer(1, 0.4*inch))
+    elements.append(Paragraph("_" * 45, body_style))
+    elements.append(Paragraph(f"{grantor}, Beneficiary Interest Holder", body_style))
+    
+    elements.append(Spacer(1, 0.3*inch))
+    elements.append(Paragraph("CERTIFICATE OF JURAT", heading_style))
+    elements.append(Paragraph(
+        f"""On this _____ day of _____________, 20___, before me appeared {grantor}, 
+personally known to me, who affirmed under oath that the contents of this Notice are truthful 
+and accurate to the best of their knowledge and belief.""",
+        body_style
+    ))
+    
+    elements.append(Spacer(1, 0.3*inch))
+    elements.append(Paragraph("_" * 45, body_style))
+    elements.append(Paragraph("Notary Public", body_style))
+    
+    pdf_doc.build(elements)
+
+
+def generate_affidavit_of_fact_pdf(doc, buffer):
+    """Generate Affidavit of Fact PDF"""
+    pdf_doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=60,
+        leftMargin=60,
+        topMargin=50,
+        bottomMargin=50
+    )
+    
+    styles = getSampleStyleSheet()
+    
+    title_style = ParagraphStyle(
+        'CustomTitle', parent=styles['Heading1'], fontSize=16, alignment=TA_CENTER,
+        spaceAfter=20, fontName='Times-Bold'
+    )
+    heading_style = ParagraphStyle(
+        'CustomHeading', parent=styles['Heading2'], fontSize=12, spaceAfter=10,
+        spaceBefore=15, fontName='Times-Bold'
+    )
+    body_style = ParagraphStyle(
+        'CustomBody', parent=styles['Normal'], fontSize=10, alignment=TA_JUSTIFY,
+        spaceAfter=10, fontName='Times-Roman', leading=14
+    )
+    numbered_style = ParagraphStyle(
+        'NumberedStyle', parent=body_style, leftIndent=30, spaceAfter=8
+    )
+    
+    elements = []
+    
+    current_date = datetime.now().strftime('%B %d, %Y')
+    grantor = doc.get('grantor_name', '[AFFIANT NAME]')
+    trust_name = doc.get('trust_name', '[TRUST NAME]')
+    
+    elements.append(Paragraph("AFFIDAVIT OF FACT", title_style))
+    elements.append(Spacer(1, 0.2*inch))
+    
+    elements.append(Paragraph("AFFIANT DECLARATION", heading_style))
+    elements.append(Paragraph(
+        f"""I, {grantor}, being of lawful age and being duly sworn, do hereby depose and state 
+the following facts under oath and under penalty of perjury:""",
+        body_style
+    ))
+    
+    elements.append(Paragraph("STATEMENT OF FACTS", heading_style))
+    
+    # Standard facts
+    facts = [
+        f"I am the Grantor/Settlor of {trust_name}.",
+        f"I have established {trust_name} for lawful purposes in accordance with the principles of equity.",
+        "I have the legal capacity and authority to create this Trust and execute this Affidavit.",
+        "The Trust was created with proper consideration and in good faith.",
+        "All transfers to the Trust were made voluntarily and without fraud or coercion.",
+        "I affirm that the Trust is being administered according to its terms and the Maxims of Equity."
+    ]
+    
+    for i, fact in enumerate(facts, 1):
+        elements.append(Paragraph(f"{i}. {fact}", numbered_style))
+    
+    # Property facts if provided
+    if doc.get('property_description'):
+        elements.append(Paragraph("PROPERTY FACTS", heading_style))
+        elements.append(Paragraph(
+            f"7. The following property has been transferred to the Trust: {doc.get('property_description')}",
+            numbered_style
+        ))
+        elements.append(Paragraph(
+            "8. I affirm that I had full legal authority to transfer said property to the Trust.",
+            numbered_style
+        ))
+    
+    # Trust purpose facts
+    if doc.get('trust_purpose'):
+        elements.append(Paragraph("PURPOSE FACTS", heading_style))
+        elements.append(Paragraph(
+            f"The purpose of the Trust is: {doc.get('trust_purpose')}",
+            body_style
+        ))
+    
+    # Additional statements
+    if doc.get('additional_terms'):
+        elements.append(Paragraph("ADDITIONAL FACTS", heading_style))
+        elements.append(Paragraph(doc.get('additional_terms'), body_style))
+    
+    # Attestation
+    elements.append(Paragraph("ATTESTATION", heading_style))
+    elements.append(Paragraph(
+        """I declare under penalty of perjury under the laws of the jurisdiction in which this 
+Affidavit is executed that the foregoing is true and correct to the best of my knowledge and belief. 
+Further affiant sayeth not.""",
+        body_style
+    ))
+    
+    # Signature
+    elements.append(Spacer(1, 0.4*inch))
+    elements.append(Paragraph(
+        f"""Executed on this {current_date}.""",
+        body_style
+    ))
+    
+    elements.append(Spacer(1, 0.4*inch))
+    elements.append(Paragraph("_" * 45, body_style))
+    elements.append(Paragraph(f"{grantor}", body_style))
+    elements.append(Paragraph("Affiant", body_style))
+    
+    elements.append(Spacer(1, 0.3*inch))
+    elements.append(Paragraph("JURAT", heading_style))
+    elements.append(Paragraph(
+        f"""STATE OF _________________
+COUNTY OF ________________
+
+Subscribed and sworn to (or affirmed) before me on this _____ day of _____________, 20___, 
+by {grantor}, proved to me on the basis of satisfactory evidence to be the person who appeared 
+before me.""",
+        body_style
+    ))
+    
+    elements.append(Spacer(1, 0.3*inch))
+    elements.append(Paragraph("_" * 45, body_style))
+    elements.append(Paragraph("Notary Public", body_style))
+    elements.append(Paragraph("My Commission Expires: _____________", body_style))
+    elements.append(Paragraph("(SEAL)", body_style))
+    
+    pdf_doc.build(elements)
+
+
 @api_router.get("/trusts/{document_id}/pdf")
 async def download_trust_pdf(document_id: str, user: User = Depends(get_current_user)):
     """Generate and download PDF for a trust document"""
@@ -379,166 +1074,23 @@ async def download_trust_pdf(document_id: str, user: User = Depends(get_current_
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
     
-    # Generate PDF
+    # Generate PDF based on document type
     buffer = BytesIO()
-    pdf_doc = SimpleDocTemplate(
-        buffer,
-        pagesize=letter,
-        rightMargin=72,
-        leftMargin=72,
-        topMargin=72,
-        bottomMargin=72
-    )
-    
-    # Styles
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=18,
-        alignment=TA_CENTER,
-        spaceAfter=30,
-        fontName='Times-Bold'
-    )
-    heading_style = ParagraphStyle(
-        'CustomHeading',
-        parent=styles['Heading2'],
-        fontSize=14,
-        spaceAfter=12,
-        fontName='Times-Bold'
-    )
-    body_style = ParagraphStyle(
-        'CustomBody',
-        parent=styles['Normal'],
-        fontSize=11,
-        alignment=TA_JUSTIFY,
-        spaceAfter=12,
-        fontName='Times-Roman',
-        leading=14
-    )
-    
-    elements = []
-    
-    # Title
-    elements.append(Paragraph(doc.get('title', 'TRUST DOCUMENT'), title_style))
-    elements.append(Spacer(1, 0.3*inch))
-    
-    # Document type specific content
     doc_type = doc.get('document_type', '')
     
     if doc_type == 'declaration_of_trust':
-        elements.append(Paragraph("DECLARATION OF TRUST", heading_style))
-        elements.append(Paragraph(
-            f"This Declaration of Trust is made on {datetime.now().strftime('%B %d, %Y')}.",
-            body_style
-        ))
-        
+        generate_declaration_of_trust_pdf(doc, buffer)
     elif doc_type == 'trust_transfer_grant_deed':
-        elements.append(Paragraph("TRUST TRANSFER GRANT DEED", heading_style))
-        elements.append(Paragraph(
-            "This Trust Transfer Grant Deed (TTGD) is executed to transfer property into trust.",
-            body_style
-        ))
-        
+        generate_trust_transfer_grant_deed_pdf(doc, buffer)
     elif doc_type == 'notice_of_intent':
-        elements.append(Paragraph("NOTICE OF INTENT TO PRESERVE INTEREST", heading_style))
-        elements.append(Paragraph(
-            "This Notice serves to preserve all equitable interests in the property described herein.",
-            body_style
-        ))
-        
+        generate_notice_of_intent_pdf(doc, buffer)
     elif doc_type == 'affidavit_of_fact':
-        elements.append(Paragraph("AFFIDAVIT OF FACT", heading_style))
-        elements.append(Paragraph(
-            "I, the undersigned, being duly sworn, do hereby state the following facts:",
-            body_style
-        ))
+        generate_affidavit_of_fact_pdf(doc, buffer)
+    else:
+        # Default generic format
+        generate_declaration_of_trust_pdf(doc, buffer)
     
-    elements.append(Spacer(1, 0.3*inch))
-    
-    # Parties section
-    elements.append(Paragraph("PARTIES TO THIS DOCUMENT", heading_style))
-    
-    # Grantor
-    elements.append(Paragraph("<b>GRANTOR (Settlor):</b>", body_style))
-    elements.append(Paragraph(f"Name: {doc.get('grantor_name', '_'*40)}", body_style))
-    elements.append(Paragraph(f"Address: {doc.get('grantor_address', '_'*40)}", body_style))
-    elements.append(Spacer(1, 0.2*inch))
-    
-    # Trustee
-    elements.append(Paragraph("<b>TRUSTEE:</b>", body_style))
-    elements.append(Paragraph(f"Name: {doc.get('trustee_name', '_'*40)}", body_style))
-    elements.append(Paragraph(f"Address: {doc.get('trustee_address', '_'*40)}", body_style))
-    elements.append(Spacer(1, 0.2*inch))
-    
-    # Beneficiary
-    elements.append(Paragraph("<b>BENEFICIARY:</b>", body_style))
-    elements.append(Paragraph(f"Name: {doc.get('beneficiary_name', '_'*40)}", body_style))
-    elements.append(Paragraph(f"Address: {doc.get('beneficiary_address', '_'*40)}", body_style))
-    elements.append(Spacer(1, 0.3*inch))
-    
-    # Trust Details
-    if doc.get('trust_name'):
-        elements.append(Paragraph("TRUST DETAILS", heading_style))
-        elements.append(Paragraph(f"<b>Trust Name:</b> {doc.get('trust_name')}", body_style))
-        
-    if doc.get('trust_purpose'):
-        elements.append(Paragraph(f"<b>Purpose:</b> {doc.get('trust_purpose')}", body_style))
-    
-    if doc.get('property_description'):
-        elements.append(Spacer(1, 0.2*inch))
-        elements.append(Paragraph("PROPERTY DESCRIPTION", heading_style))
-        elements.append(Paragraph(doc.get('property_description'), body_style))
-    
-    if doc.get('additional_terms'):
-        elements.append(Spacer(1, 0.2*inch))
-        elements.append(Paragraph("ADDITIONAL TERMS AND CONDITIONS", heading_style))
-        elements.append(Paragraph(doc.get('additional_terms'), body_style))
-    
-    # Equity principles section
-    elements.append(Spacer(1, 0.3*inch))
-    elements.append(Paragraph("EQUITABLE PRINCIPLES", heading_style))
-    elements.append(Paragraph(
-        "This trust is established under the principles of pure equity, recognizing that:",
-        body_style
-    ))
-    elements.append(Paragraph(
-        "• Equity regards as done that which ought to be done",
-        body_style
-    ))
-    elements.append(Paragraph(
-        "• Equity looks to the intent rather than to the form",
-        body_style
-    ))
-    elements.append(Paragraph(
-        "• Equity will not suffer a wrong to be without a remedy",
-        body_style
-    ))
-    elements.append(Paragraph(
-        "• The beneficiary is the true owner in equity",
-        body_style
-    ))
-    
-    # Signature block
-    elements.append(Spacer(1, 0.5*inch))
-    elements.append(Paragraph("SIGNATURES", heading_style))
-    elements.append(Spacer(1, 0.3*inch))
-    
-    elements.append(Paragraph("_" * 50, body_style))
-    elements.append(Paragraph("Grantor Signature / Date", body_style))
-    elements.append(Spacer(1, 0.3*inch))
-    
-    elements.append(Paragraph("_" * 50, body_style))
-    elements.append(Paragraph("Trustee Signature / Date", body_style))
-    elements.append(Spacer(1, 0.3*inch))
-    
-    elements.append(Paragraph("_" * 50, body_style))
-    elements.append(Paragraph("Witness Signature / Date", body_style))
-    
-    # Build PDF
-    pdf_doc.build(elements)
     buffer.seek(0)
-    
     filename = f"{doc.get('title', 'trust_document').replace(' ', '_')}.pdf"
     
     return StreamingResponse(
