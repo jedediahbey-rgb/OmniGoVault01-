@@ -436,7 +436,7 @@ const PortfolioPage = ({ user, logout }) => {
                         <SelectTrigger className="bg-[#0B1221] border-white/10 text-[#F8FAFC]">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#111827] border-white/10">
+                        <SelectContent className="bg-[#111827] border-white/10 z-[100]" position="popper" sideOffset={4}>
                           <SelectItem value="real_property">Real Property</SelectItem>
                           <SelectItem value="personal_property">Personal Property</SelectItem>
                           <SelectItem value="financial_account">Financial Account</SelectItem>
