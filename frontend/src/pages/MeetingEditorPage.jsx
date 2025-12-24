@@ -272,7 +272,14 @@ export default function MeetingEditorPage({ user }) {
       toast.success('Changes saved');
     } catch (error) {
       console.error('Failed to save:', error);
-      toast.error(error.response?.data?.error?.message || 'Failed to save changes');
+      // Handle 409 Conflict (meeting locked)
+      if (error.response?.status === 409) {
+        toast.error('This meeting is finalized and cannot be edited. Use "Amend" to create a new revision.');
+        // Refetch to get the locked status
+        await refetchMeeting();
+      } else {
+        toast.error(error.response?.data?.error?.message || 'Failed to save changes');
+      }
     } finally {
       setSaving(false);
     }
