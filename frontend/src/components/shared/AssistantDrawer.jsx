@@ -3,8 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { marked } from 'marked';
 import {
-  Robot, X, PaperPlaneTilt, Sparkle, BookOpen, FileText, CheckSquare,
-  List, Copy, RefreshCw, CaretDown, Loader2
+  BookOpen,
+  CaretDown,
+  CheckSquare,
+  Copy,
+  FileText,
+  List,
+  Loader2,
+  PaperPlaneTilt,
+  RefreshCw,
+  Robot,
+  Sparkle,
+  X
 } from '@phosphor-icons/react';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';

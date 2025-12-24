@@ -2,15 +2,15 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { marked } from 'marked';
-import { 
-  Robot, 
-  PaperPlaneTilt, 
-  User,
-  Sparkle,
+import {
   BookOpen,
-  FileText,
   Copy,
-  RefreshCw
+  FileText,
+  PaperPlaneTilt,
+  RefreshCw,
+  Robot,
+  Sparkle,
+  User
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';

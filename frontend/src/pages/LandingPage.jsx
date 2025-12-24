@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Shield, 
-  BookOpen, 
-  Sparkle, 
-  FolderSimple, 
-  Robot, 
+import {
   ArrowRight,
-  Scales,
+  BookOpen,
   FileText,
+  FolderSimple,
+  Robot,
+  Scales,
+  Shield,
+  Sparkle,
   Users
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';

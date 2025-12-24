@@ -2,9 +2,21 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import { 
-  FolderSimple, FileText, Briefcase, Bell, Plus, ArrowRight, BookOpen,
-  Sparkle, Clock, PencilSimple, Trash, DotsThreeVertical, MagnifyingGlass, Robot
+import {
+  ArrowRight,
+  Bell,
+  BookOpen,
+  Briefcase,
+  Clock,
+  DotsThreeVertical,
+  FileText,
+  FolderSimple,
+  MagnifyingGlass,
+  PencilSimple,
+  Plus,
+  Robot,
+  Sparkle,
+  Trash
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import StatCard from '../components/shared/StatCard';

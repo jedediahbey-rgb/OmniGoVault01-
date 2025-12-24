@@ -1,25 +1,25 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { 
-  BookOpen, 
-  CaretRight, 
-  CheckCircle, 
+import {
+  ArrowCounterClockwise,
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Bookmark,
+  BookmarkCheck,
+  Brain,
+  CaretRight,
+  Check,
+  CheckCircle,
   Circle,
-  Play,
   FileText,
-  Users,
+  Play,
   Scales,
   Scroll,
   Trophy,
-  Brain,
-  Bookmark,
-  BookmarkCheck,
-  ArrowRight,
-  ArrowLeft,
-  Check,
-  X,
-  ArrowCounterClockwise
+  Users,
+  X
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';

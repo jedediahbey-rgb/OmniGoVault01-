@@ -2,8 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MagnifyingGlass, FileText, BookOpen, Sparkle, FolderSimple, Robot,
-  Plus, Settings, Home, BookText, ArrowRight
+  ArrowRight,
+  BookOpen,
+  BookText,
+  FileText,
+  FolderSimple,
+  Home,
+  MagnifyingGlass,
+  Plus,
+  Robot,
+  Settings,
+  Sparkle
 } from '@phosphor-icons/react';
 import { Input } from '../ui/input';
 

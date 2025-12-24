@@ -5,33 +5,33 @@ import axios from 'axios';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { 
-  FloppyDisk, 
-  Download, 
+import {
+  AlertCircle,
+  ArrowClockwise,
+  ArrowCounterClockwise,
   ArrowLeft,
-  TextB,
-  TextItalic,
-  List,
-  ListOrdered,
+  Check,
+  CheckCircle,
+  Clock,
+  Download,
+  Eye,
+  FileSearch,
+  FileText,
+  FloppyDisk,
+  Hash,
   Heading1,
   Heading2,
-  ArrowCounterClockwise,
-  ArrowClockwise,
-  FileText,
-  Clock,
-  Check,
+  List,
+  ListOrdered,
+  Loader2,
   Lock,
-  Unlock,
-  Eye,
+  MagicWand,
   PencilSimple,
-  CheckCircle,
-  AlertCircle,
-  Hash,
   Printer,
   Sparkle,
-  MagicWand,
-  FileSearch,
-  Loader2
+  TextB,
+  TextItalic,
+  Unlock
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';

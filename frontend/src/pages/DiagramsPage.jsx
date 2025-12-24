@@ -10,12 +10,12 @@ import ReactFlow, {
   MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { 
-  GitBranch, 
-  Users, 
-  FileText, 
+import {
   ArrowRight,
+  FileText,
+  GitBranch,
   Info,
+  Users,
   X
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';

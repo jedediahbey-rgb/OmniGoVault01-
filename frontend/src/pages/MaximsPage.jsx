@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { 
-  Sparkle, 
-  MagnifyingGlass, 
-  BookOpen, 
-  CaretDown,
-  CaretUp,
-  Funnel,
-  ArrowRight,
+import {
+  ArrowCounterClockwise,
   ArrowLeft,
+  ArrowRight,
+  BookOpen,
   Bookmark,
   Brain,
-  ArrowCounterClockwise,
+  CaretDown,
+  CaretUp,
   Check,
-  X,
   Clock,
   Flame,
-  Trophy
+  Funnel,
+  MagnifyingGlass,
+  Sparkle,
+  Trophy,
+  X
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';

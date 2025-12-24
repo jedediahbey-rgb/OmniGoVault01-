@@ -3,9 +3,21 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import {
-  FolderSimple, FileText, Users, Briefcase,
-  Plus, ArrowLeft, PencilSimple, Trash, CaretRight,
-  CurrencyDollar, Hash, Lock, Funnel, ArrowUpRight, ArrowDownRight
+  ArrowDownRight,
+  ArrowLeft,
+  ArrowUpRight,
+  Briefcase,
+  CaretRight,
+  CurrencyDollar,
+  FileText,
+  FolderSimple,
+  Funnel,
+  Hash,
+  Lock,
+  PencilSimple,
+  Plus,
+  Trash,
+  Users
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';

@@ -2,27 +2,27 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { 
-  FolderSimple, 
-  FileText, 
-  Plus, 
-  MagnifyingGlass,
-  Folder,
-  Tag,
+import {
+  Archive,
+  ArrowCounterClockwise,
+  CaretRight,
+  Check,
   Clock,
   DotsThreeVertical,
-  Trash,
   Download,
-  CaretRight,
-  SquaresFour,
+  FileText,
+  Folder,
+  FolderSimple,
+  Funnel,
   List,
+  MagnifyingGlass,
   Package,
-  ArrowCounterClockwise,
-  X,
-  Check,
-  Archive,
+  Plus,
+  SquaresFour,
   Star,
-  Funnel
+  Tag,
+  Trash,
+  X
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';

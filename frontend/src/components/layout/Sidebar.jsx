@@ -2,16 +2,16 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen,
-  Sparkle,
   BookText,
-  FolderSimple,
-  FileText,
-  Robot,
-  SignOut,
-  Home,
   CaretRight,
-  Shield,
+  FileText,
+  FolderSimple,
   GitBranch,
+  Home,
+  Robot,
+  Shield,
+  SignOut,
+  Sparkle,
   X
 } from '@phosphor-icons/react';
 import { cn } from '../../lib/utils';

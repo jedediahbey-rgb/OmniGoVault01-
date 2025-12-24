@@ -2,18 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import { 
-  FileText, 
-  Scroll, 
-  CheckCircle, 
-  Bell, 
-  Package,
-  Stamp,
-  Scales,
+import {
   ArrowRight,
+  Bell,
+  CheckCircle,
+  FileText,
+  Loader2,
+  Package,
   Plus,
+  Scales,
+  Scroll,
   Sparkle,
-  Loader2
+  Stamp
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';

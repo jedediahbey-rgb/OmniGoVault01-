@@ -1,4 +1,6 @@
-import { Warning } from '@phosphor-icons/react';
+import {
+  Warning
+} from '@phosphor-icons/react';
 
 export default function Disclaimer({ variant = 'banner', className = '' }) {
   if (variant === 'banner') {

@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  BookText, 
-  MagnifyingGlass, 
-  ArrowRight, 
-  BookOpen, 
-  Sparkle, 
-  FileText,
-  Link2,
+import {
+  ArrowRight,
+  BookOpen,
+  BookText,
   CaretDown,
   CaretUp,
+  FileText,
   Funnel,
+  Link2,
+  MagnifyingGlass,
+  Sparkle,
   X
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
