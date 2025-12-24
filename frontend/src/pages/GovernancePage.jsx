@@ -325,6 +325,29 @@ export default function GovernancePage({ user }) {
     }
   };
 
+  const fetchInsurancePolicies = async () => {
+    if (!selectedPortfolio) return;
+    setInsuranceLoading(true);
+    try {
+      const res = await axios.get(`${API}/governance/insurance-policies`, {
+        params: { portfolio_id: selectedPortfolio }
+      });
+      const data = res.data;
+      if (data.ok && data.items) {
+        setInsurancePolicies(data.items);
+      } else if (Array.isArray(data)) {
+        setInsurancePolicies(data);
+      } else {
+        setInsurancePolicies([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch insurance policies:', error);
+      setInsurancePolicies([]);
+    } finally {
+      setInsuranceLoading(false);
+    }
+  };
+
   const fetchParties = async () => {
     if (!selectedPortfolio) return;
     try {
