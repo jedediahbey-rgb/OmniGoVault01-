@@ -52,6 +52,7 @@ const iconMap = {
 
 export default function TemplatesPage({ user }) {
   const navigate = useNavigate();
+  const titleInputRef = useRef(null);
   const [templates, setTemplates] = useState([]);
   const [portfolios, setPortfolios] = useState([]);
   const [loading, setLoading] = useState(true);
