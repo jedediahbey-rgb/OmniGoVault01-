@@ -86,7 +86,7 @@ export default function MainLayout({ children, user, onLogout }) {
             animate={pageTransition.animate}
             exit={pageTransition.exit}
             transition={pageTransition.transition}
-            className="h-full min-w-0 w-full max-w-full overflow-y-auto"
+            className="h-full min-w-0 w-full max-w-full overflow-y-auto overflow-x-hidden"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {children}
