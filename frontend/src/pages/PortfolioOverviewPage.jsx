@@ -854,7 +854,7 @@ export default function PortfolioOverviewPage({ user }) {
               </div>
               <div className="min-w-0 overflow-hidden">
                 <p className="text-white/40 text-xs uppercase">Balance</p>
-                <CurrencyDisplay value={ledger.summary?.balance} variant="gold" size="sm" />
+                <CurrencyDisplay value={ledger.summary?.balance} variant="auto" size="sm" />
               </div>
             </div>
 
