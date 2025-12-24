@@ -314,7 +314,12 @@ export default function VaultPage({ user, initialView }) {
         {/* Trash Section */}
         <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-6 mb-2">System</p>
         <button
-          onClick={() => { setSelectedPortfolio(null); setShowTrash(true); setSidebarOpen(false); }}
+          onClick={() => { 
+            setSelectedPortfolio(null); 
+            setShowTrash(true); 
+            setSidebarOpen(false);
+            navigate('/vault/trash');
+          }}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
             showTrash
               ? 'bg-red-500/10 text-red-400 border border-red-500/20' 
