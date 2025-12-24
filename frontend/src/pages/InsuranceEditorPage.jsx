@@ -283,7 +283,10 @@ export default function InsuranceEditorPage({ user }) {
     setFinalizing(true);
     try {
       await axios.post(`${API}/governance/insurance-policies/${policyId}/finalize`, {});
-      await refetchPolicy();
+      // Refetch policy data
+      const res = await axios.get(`${API}/governance/insurance-policies/${policyId}`);
+      const data = res.data;
+      setPolicy(data.item || data);
       setShowFinalizeConfirm(false);
       toast.success('Insurance policy finalized and locked');
     } catch (error) {
