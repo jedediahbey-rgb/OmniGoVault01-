@@ -279,6 +279,12 @@ class Document(BaseModel):
     is_locked: bool = False  # True when finalized - prevents editing
     locked_at: Optional[datetime] = None
     locked_by: Optional[str] = None
+    # Amendment fields
+    is_amendment: bool = False  # True if this document amends another
+    amends_document_id: Optional[str] = None  # ID of the document being amended
+    amendment_number: int = 0  # Sequential amendment number (0 = original)
+    is_controlling: bool = True  # True if this is the current controlling version (for governing docs)
+    amended_by_id: Optional[str] = None  # ID of the document that supersedes this one
     tags: List[str] = []
     folder: str = "/"
     is_deleted: bool = False  # Soft delete for trash/recycle bin
