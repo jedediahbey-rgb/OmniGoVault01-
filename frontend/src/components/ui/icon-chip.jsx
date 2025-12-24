@@ -101,14 +101,14 @@ export function CurrencyDisplay({
   return (
     <span 
       className={cn(
-        'block font-heading font-mono tabular-nums',
-        'whitespace-nowrap overflow-hidden text-ellipsis',
+        'inline-flex max-w-full font-heading tabular-nums',
+        'overflow-hidden',
         colorVariants[variant],
         sizeVariants[size],
         className
       )}
     >
-      {formatted}
+      <span className="min-w-0 truncate">{formatted}</span>
     </span>
   );
 }
