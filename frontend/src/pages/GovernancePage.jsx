@@ -388,6 +388,29 @@ export default function GovernancePage({ user }) {
     }
   };
 
+  const fetchCompensationEntries = async () => {
+    if (!selectedPortfolio) return;
+    setCompensationLoading(true);
+    try {
+      const res = await axios.get(`${API}/governance/compensation`, {
+        params: { portfolio_id: selectedPortfolio }
+      });
+      const data = res.data;
+      if (data.ok && data.items) {
+        setCompensationEntries(data.items);
+      } else if (Array.isArray(data)) {
+        setCompensationEntries(data);
+      } else {
+        setCompensationEntries([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch compensation entries:', error);
+      setCompensationEntries([]);
+    } finally {
+      setCompensationLoading(false);
+    }
+  };
+
   const fetchParties = async () => {
     if (!selectedPortfolio) return;
     try {
