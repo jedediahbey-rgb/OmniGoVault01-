@@ -3301,7 +3301,9 @@ async def health_check():
 app.include_router(api_router)
 
 # Initialize and include Governance routes
-from backend.routes.governance import router as governance_router, init_governance_routes
+import sys
+sys.path.insert(0, str(ROOT_DIR))
+from routes.governance import router as governance_router, init_governance_routes
 init_governance_routes(db, get_current_user, generate_subject_rm_id)
 app.include_router(governance_router)
 
