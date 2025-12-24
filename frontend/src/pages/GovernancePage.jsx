@@ -508,7 +508,7 @@ export default function GovernancePage({ user }) {
 
       {/* New Meeting Dialog */}
       <Dialog open={showNewMeeting} onOpenChange={setShowNewMeeting}>
-        <DialogContent className="bg-vault-dark border-vault-gold/30 text-white max-w-md">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
               <Newspaper className="w-5 h-5" />
@@ -526,7 +526,7 @@ export default function GovernancePage({ user }) {
                 value={newMeeting.title}
                 onChange={(e) => setNewMeeting(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Q4 2024 Regular Meeting"
-                className="bg-vault-navy border-vault-gold/20 text-white"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
               />
             </div>
             
@@ -536,10 +536,10 @@ export default function GovernancePage({ user }) {
                 value={newMeeting.meeting_type} 
                 onValueChange={(v) => setNewMeeting(prev => ({ ...prev, meeting_type: v }))}
               >
-                <SelectTrigger className="bg-vault-navy border-vault-gold/20 text-white">
+                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-vault-dark border-vault-gold/30">
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                   <SelectItem value="regular" className="text-white hover:bg-vault-gold/20">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-blue-400" />
@@ -568,7 +568,7 @@ export default function GovernancePage({ user }) {
                 type="datetime-local"
                 value={newMeeting.date_time}
                 onChange={(e) => setNewMeeting(prev => ({ ...prev, date_time: e.target.value }))}
-                className="bg-vault-navy border-vault-gold/20 text-white"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
               />
             </div>
             
@@ -578,7 +578,7 @@ export default function GovernancePage({ user }) {
                 value={newMeeting.location}
                 onChange={(e) => setNewMeeting(prev => ({ ...prev, location: e.target.value }))}
                 placeholder="e.g., Conference Room A or Zoom"
-                className="bg-vault-navy border-vault-gold/20 text-white"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
               />
             </div>
             
@@ -588,7 +588,7 @@ export default function GovernancePage({ user }) {
                 value={newMeeting.called_by}
                 onChange={(e) => setNewMeeting(prev => ({ ...prev, called_by: e.target.value }))}
                 placeholder="Name of person who called the meeting"
-                className="bg-vault-navy border-vault-gold/20 text-white"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
               />
             </div>
           </div>
