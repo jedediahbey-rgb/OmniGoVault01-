@@ -224,7 +224,7 @@ const HomePage = () => {
             <Link to="/vault" data-testid="cta-vault" className="w-full sm:w-auto">
               <Button className="w-full sm:w-auto bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-8 sm:px-10 py-3 sm:py-4 rounded-sm shadow-[0_0_20px_rgba(198,168,124,0.3)]">
                 Create Your Vault
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <ArrowRight className="w-4 h-4 ml-2" weight="bold" />
               </Button>
             </Link>
           </div>
