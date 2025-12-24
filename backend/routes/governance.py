@@ -3439,6 +3439,77 @@ async def finalize_compensation(compensation_id: str, data: dict, request: Reque
         return error_response("FINALIZE_ERROR", "Failed to finalize compensation", status_code=500)
 
 
+@router.post("/compensation/{compensation_id}/amend")
+async def create_compensation_amendment(compensation_id: str, data: dict, request: Request):
+    """Create an amendment to a finalized compensation entry"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        original = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id, "user_id": user.user_id}
+        )
+        
+        if not original:
+            return error_response("NOT_FOUND", "Compensation entry not found", status_code=404)
+        
+        if not original.get("locked"):
+            return error_response("NOT_FINALIZED", "Cannot amend an unlocked entry. Edit it directly instead.")
+        
+        amendment_count = await db.compensation_entries.count_documents({
+            "parent_compensation_id": compensation_id,
+            "user_id": user.user_id
+        })
+        
+        new_revision = original.get("revision", 1) + amendment_count + 1
+        
+        rm_id = ""
+        try:
+            rm_id, _, _, _ = await generate_subject_rm_id(
+                original.get("portfolio_id"), user.user_id, "24", "Compensation Amendment"
+            )
+        except Exception as e:
+            print(f"Warning: Could not generate RM-ID: {e}")
+        
+        new_id = f"comp_{uuid.uuid4().hex[:12]}"
+        
+        amendment = {
+            "compensation_id": new_id,
+            "portfolio_id": original.get("portfolio_id"),
+            "trust_id": original.get("trust_id"),
+            "user_id": user.user_id,
+            "title": f"{original.get('title', '')} (Amendment v{new_revision})",
+            "compensation_type": original.get("compensation_type", "annual_fee"),
+            "recipient_name": original.get("recipient_name", ""),
+            "recipient_role": original.get("recipient_role", "trustee"),
+            "amount": original.get("amount", 0),
+            "currency": original.get("currency", "USD"),
+            "fiscal_year": original.get("fiscal_year", ""),
+            "rm_id": rm_id,
+            "revision": new_revision,
+            "parent_compensation_id": compensation_id,
+            "is_amendment": True,
+            "status": "draft",
+            "locked": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "deleted_at": None
+        }
+        
+        await db.compensation_entries.insert_one(amendment)
+        
+        await db.compensation_entries.update_one(
+            {"compensation_id": compensation_id},
+            {"$set": {"amended_by_id": new_id}}
+        )
+        
+        return success_message("Amendment created", {"item": amendment})
+    except Exception as e:
+        print(f"Error creating amendment: {e}")
+        return error_response("AMEND_ERROR", "Failed to create amendment", status_code=500)
+
 
 # ============ GOVERNANCE TRASH ============
 
