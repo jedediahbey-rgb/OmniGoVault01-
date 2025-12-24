@@ -141,6 +141,23 @@ export default function PortfolioOverviewPage({ user }) {
     }
   };
 
+  const updateTrustDate = async () => {
+    if (!trustProfile?.profile_id) {
+      toast.error('No trust profile to update');
+      return;
+    }
+    try {
+      await axios.put(`${API}/trust-profiles/${trustProfile.profile_id}`, {
+        creation_date: editTrustDate
+      });
+      setTrustProfile({ ...trustProfile, creation_date: editTrustDate });
+      setShowTrustDateDialog(false);
+      toast.success('Date established updated');
+    } catch (error) {
+      toast.error('Failed to update date');
+    }
+  };
+
   const deletePortfolio = async () => {
     if (!confirm('Are you sure? This will delete all documents and data in this portfolio.')) return;
     try {
