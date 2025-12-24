@@ -204,7 +204,7 @@ export default function LandingPage() {
               viewport={{ once: true }}
               className="glass-panel p-6 sm:p-12 rounded-2xl"
             >
-              <Scale className="w-12 h-12 sm:w-16 sm:h-16 text-vault-gold mx-auto mb-4 sm:mb-6" />
+              <Scales className="w-12 h-12 sm:w-16 sm:h-16 text-vault-gold mx-auto mb-4 sm:mb-6" weight="duotone" />
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading text-white mb-3 sm:mb-4">
                 Begin Your Journey in Equity
               </h2>
