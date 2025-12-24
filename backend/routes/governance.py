@@ -2413,6 +2413,79 @@ async def finalize_dispute(dispute_id: str, data: dict, request: Request):
         return error_response("FINALIZE_ERROR", "Failed to finalize dispute", status_code=500)
 
 
+@router.post("/disputes/{dispute_id}/amend")
+async def create_dispute_amendment(dispute_id: str, data: dict, request: Request):
+    """Create an amendment to a finalized dispute"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        original = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not original:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        if not original.get("locked"):
+            return error_response("NOT_FINALIZED", "Cannot amend an unlocked dispute. Edit it directly instead.")
+        
+        amendment_count = await db.disputes.count_documents({
+            "parent_dispute_id": dispute_id,
+            "user_id": user.user_id
+        })
+        
+        new_revision = original.get("revision", 1) + amendment_count + 1
+        
+        rm_id = ""
+        try:
+            rm_id, _, _, _ = await generate_subject_rm_id(
+                original.get("portfolio_id"), user.user_id, "22", "Dispute Amendment"
+            )
+        except Exception as e:
+            print(f"Warning: Could not generate RM-ID: {e}")
+        
+        new_id = f"disp_{uuid.uuid4().hex[:12]}"
+        
+        amendment = {
+            "dispute_id": new_id,
+            "portfolio_id": original.get("portfolio_id"),
+            "trust_id": original.get("trust_id"),
+            "user_id": user.user_id,
+            "title": f"{original.get('title', '')} (Amendment v{new_revision})",
+            "dispute_type": original.get("dispute_type", "beneficiary"),
+            "description": original.get("description", ""),
+            "amount_claimed": original.get("amount_claimed", 0),
+            "currency": original.get("currency", "USD"),
+            "parties": original.get("parties", []),
+            "events": [],
+            "rm_id": rm_id,
+            "revision": new_revision,
+            "parent_dispute_id": dispute_id,
+            "is_amendment": True,
+            "status": "open",
+            "priority": original.get("priority", "medium"),
+            "locked": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "deleted_at": None
+        }
+        
+        await db.disputes.insert_one(amendment)
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": {"amended_by_id": new_id}}
+        )
+        
+        return success_message("Amendment created", {"item": normalize_dispute(amendment)})
+    except Exception as e:
+        print(f"Error creating amendment: {e}")
+        return error_response("AMEND_ERROR", "Failed to create amendment", status_code=500)
+
+
 # ============ INSURANCE POLICIES (Stub with Empty State) ============
 
 @router.get("/insurance-policies")
