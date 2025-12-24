@@ -74,6 +74,7 @@ const statusConfig = {
   in_progress: { label: 'In Progress', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30', icon: Clock },
   mediation: { label: 'Mediation', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30', icon: Users },
   litigation: { label: 'Litigation', color: 'bg-red-500/30 text-red-400 border-red-400/30', icon: Gavel },
+  finalized: { label: 'Finalized', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30', icon: Lock },
   settled: { label: 'Settled', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30', icon: CheckCircle },
   closed: { label: 'Closed', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30', icon: Check },
   appealed: { label: 'Appealed', color: 'bg-orange-500/30 text-orange-400 border-orange-400/30', icon: Warning },
