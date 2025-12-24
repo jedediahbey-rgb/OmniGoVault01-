@@ -3,10 +3,12 @@ import { cn } from '../../lib/utils';
 import IconChip from '../ui/icon-chip';
 
 export default function StatCard({ 
+  title,
   label, 
   value, 
   icon: Icon, 
   trend,
+  subtitle,
   className,
   variant = 'default' 
 }) {
@@ -17,6 +19,7 @@ export default function StatCard({
   };
 
   const iconVariant = variant === 'gold' ? 'gold' : variant === 'blue' ? 'blue' : 'default';
+  const displayLabel = title || label;
 
   return (
     <motion.div
@@ -29,11 +32,14 @@ export default function StatCard({
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 overflow-hidden">
           <p className="text-xs uppercase tracking-widest text-white/40 mb-2">
-            {label}
+            {displayLabel}
           </p>
-          <p className="text-2xl sm:text-3xl font-heading text-white tabular-nums">{value}</p>
+          <p className="text-2xl sm:text-3xl font-heading text-white tabular-nums truncate">{value}</p>
+          {subtitle && (
+            <p className="text-xs text-white/40 mt-1">{subtitle}</p>
+          )}
           {trend && (
             <p className={cn(
               'text-xs mt-2',
@@ -45,7 +51,7 @@ export default function StatCard({
         </div>
         {Icon && (
           <IconChip variant={iconVariant} size="md">
-            <Icon />
+            <Icon weight="duotone" />
           </IconChip>
         )}
       </div>
