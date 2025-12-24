@@ -213,7 +213,7 @@ export default function LandingPage() {
                 assistance—all grounded in centuries of equitable jurisprudence.
               </p>
               <Button onClick={handleLogin} className="btn-primary text-sm sm:text-lg px-8 sm:px-10 py-3 sm:py-4 w-full sm:w-auto">
-                Enter the Vault <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                Enter the Vault <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" weight="bold" />
               </Button>
             </motion.div>
           </div>
