@@ -415,99 +415,132 @@ export default function DistributionEditorPage({ user }) {
       <motion.div variants={fadeInUp} className="mb-6">
         <GlassCard className="p-4 sm:p-6 overflow-hidden">
           <div className="flex flex-col gap-4">
-            {/* Top row - Icon, badges, status */}
-            <div className="flex items-start gap-3 sm:gap-4">
-              <div className={`p-3 sm:p-4 rounded-xl ${typeConfig.bg} shrink-0`}>
-                <TypeIcon className={`w-6 h-6 sm:w-8 sm:h-8 ${typeConfig.color}`} />
-              </div>
-              
-              {editingHeader && isDraft ? (
-                <div className="flex-1 min-w-0 space-y-4">
-                  <Input
-                    value={editedHeader.title}
-                    onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
-                    className="text-lg sm:text-2xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
-                  />
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    <div>
-                      <label className="text-xs text-vault-muted">Total Amount</label>
-                      <Input
-                        type="number"
-                        value={editedHeader.total_amount}
-                        onChange={(e) => setEditedHeader(prev => ({ ...prev, total_amount: e.target.value }))}
-                        className="bg-[#05080F] border-vault-gold/20 text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs text-vault-muted">Currency</label>
-                      <Select 
-                        value={editedHeader.currency} 
-                        onValueChange={(v) => setEditedHeader(prev => ({ ...prev, currency: v }))}
-                      >
-                        <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-[#0B1221] border-vault-gold/30">
-                          <SelectItem value="USD">USD</SelectItem>
-                          <SelectItem value="EUR">EUR</SelectItem>
-                          <SelectItem value="GBP">GBP</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleSaveHeader}
-                      disabled={saving}
-                      className="bg-vault-gold text-vault-dark"
-                    >
-                      {saving ? 'Saving...' : 'Save'}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setEditingHeader(false)}
-                      className="border-vault-gold/30"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <Badge className={`${status.color} border`}>
-                      <StatusIcon className="w-3 h-3 mr-1" />
-                      {status.label}
-                    </Badge>
-                    {isLocked && (
-                      <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                        <Lock className="w-3 h-3 mr-1" />
-                        Locked
-                      </Badge>
-                    )}
-                    <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 hidden sm:flex">
-                      {typeConfig.label}
-                    </Badge>
-                  </div>
-                  <h1 className="text-xl sm:text-2xl font-heading text-white mt-2 break-words">{distribution.title}</h1>
-                  {distribution.rm_id && (
-                    <span className="text-xs sm:text-sm font-mono text-vault-muted break-all">
-                      {distribution.rm_id}
-                    </span>
-                  )}
-                  <div className="text-2xl sm:text-3xl font-heading text-emerald-400 mt-2">
-                    {formatCurrency(distribution.total_amount, distribution.currency)}
-                  </div>
-                  <div className="text-sm text-vault-muted">
-                    {distribution.asset_type || 'cash'} • {distribution.recipients?.length || 0} recipients
-                  </div>
-                </div>
+            {/* Status badges */}
+            <div className="flex items-center gap-2 flex-wrap mb-3">
+              <Badge className={`${status.color} border`}>
+                <StatusIcon className="w-3 h-3 mr-1" />
+                {status.label}
+              </Badge>
+              <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20">
+                {typeConfig.label}
+              </Badge>
+              {isLocked && (
+                <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
+                  <Lock className="w-3 h-3 mr-1" />
+                  Locked
+                </Badge>
               )}
             </div>
             
-            {/* Actions - stacked on mobile */}
-            <div className="flex flex-wrap items-center gap-2">
-              {isDraft && (
+            {editingHeader && isDraft ? (
+              <div className="space-y-4">
+                <Input
+                  value={editedHeader.title}
+                  onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
+                  className="text-xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-vault-muted">Total Amount</label>
+                    <Input
+                      type="number"
+                      value={editedHeader.total_amount}
+                      onChange={(e) => setEditedHeader(prev => ({ ...prev, total_amount: e.target.value }))}
+                      className="bg-[#05080F] border-vault-gold/20 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-vault-muted">Currency</label>
+                    <Select 
+                      value={editedHeader.currency} 
+                      onValueChange={(v) => setEditedHeader(prev => ({ ...prev, currency: v }))}
+                    >
+                      <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#0B1221] border-vault-gold/30">
+                        <SelectItem value="USD">USD</SelectItem>
+                        <SelectItem value="EUR">EUR</SelectItem>
+                        <SelectItem value="GBP">GBP</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={handleSaveHeader} disabled={saving} className="bg-vault-gold text-vault-dark">
+                    {saving ? 'Saving...' : 'Save'}
+                  </Button>
+                  <Button variant="outline" onClick={() => setEditingHeader(false)} className="border-vault-gold/30">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Title and details */}
+                <h1 className="text-xl sm:text-2xl font-heading text-white mb-2">{distribution.title}</h1>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-vault-muted mb-2">
+                  {distribution.rm_id && <span className="font-mono text-vault-gold">{distribution.rm_id}</span>}
+                  <span>{distribution.recipients?.length || 0} recipients</span>
+                </div>
+                <div className="text-xl sm:text-2xl font-heading text-emerald-400 mb-4">
+                  {formatCurrency(distribution.total_amount, distribution.currency)}
+                </div>
+                
+                {/* Action buttons */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {isDraft && (
+                    <Button variant="outline" size="sm" onClick={() => setEditingHeader(true)} className="border-vault-gold/30 text-white">
+                      <PencilSimple className="w-4 h-4 mr-2" />
+                      Edit
+                    </Button>
+                  )}
+                  
+                  {!isLocked && (
+                    <Button variant="outline" size="sm" onClick={() => setShowFinalizeConfirm(true)} className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10">
+                      <Lock className="w-4 h-4 mr-2" />
+                      Finalize
+                    </Button>
+                  )}
+                  
+                  {isLocked && (
+                    <Button variant="outline" size="sm" onClick={handleAmend} className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
+                      <PlusCircle className="w-4 h-4 mr-2" />
+                      Amend
+                    </Button>
+                  )}
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="border-vault-gold/30">
+                        <DotsThreeVertical className="w-5 h-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                      <DropdownMenuItem className="text-vault-muted hover:bg-vault-gold/20">
+                        <Download className="w-4 h-4 mr-2" />
+                        Export PDF
+                      </DropdownMenuItem>
+                      {isDraft && (
+                        <>
+                          <DropdownMenuSeparator className="bg-vault-gold/20" />
+                          <DropdownMenuItem 
+                            onClick={() => setShowDeleteConfirm(true)} 
+                            className="text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                          >
+                            <Trash className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </>
+            )}
+          </div>
+        </GlassCard>
+      </motion.div>
                 <>
                   <Button
                     variant="outline"
