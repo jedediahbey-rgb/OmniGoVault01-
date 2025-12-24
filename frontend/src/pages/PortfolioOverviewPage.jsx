@@ -1201,7 +1201,6 @@ export default function PortfolioOverviewPage({ user }) {
                     <SelectItem value="real_property">Real Property</SelectItem>
                     <SelectItem value="personal_property">Personal Property</SelectItem>
                     <SelectItem value="financial_account">Financial Account</SelectItem>
-                    <SelectItem value="vehicle">Vehicle</SelectItem>
                     <SelectItem value="securities">Securities</SelectItem>
                     <SelectItem value="intellectual_property">Intellectual Property</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
