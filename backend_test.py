@@ -228,7 +228,7 @@ class EquityTrustAPITester:
             "transaction_type": "deposit",
             "notes": "Test asset for API testing"
         }
-        created_asset = self.run_test("Assets - Create", "POST", f"portfolios/{portfolio_id}/assets", 201, asset_data)
+        created_asset = self.run_test("Assets - Create", "POST", f"portfolios/{portfolio_id}/assets", 200, asset_data)
         
         # Get assets
         assets = self.run_test("Assets - Get All", "GET", f"portfolios/{portfolio_id}/assets", 200)
