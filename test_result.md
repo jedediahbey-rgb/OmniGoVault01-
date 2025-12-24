@@ -2,52 +2,74 @@
 
 ## Current Testing Session
 - Session Date: 2024-12-24
-- Testing Focus: P0 Mobile Dropdown Bug Fix, Trash View, Error Toast
+- Testing Focus: Governance Module - Meeting Minutes MVP
 
 ## Features to Test
 
-### P0 Issue #1: Mobile Dropdown Auto-Collapse in Template Studio (FIXED)
-**Fix Applied:** Implemented robust controlled Select with Fix A + Fix C pattern:
-- Added `portfolioSelectOpen` state for controlled dropdown
-- Added `titleInputRef` to blur keyboard before opening dropdown  
-- `onPointerDown` handler opens dropdown with `setPortfolioSelectOpen(true)` (never toggle)
-- Added `onPointerDownOutside` and `onInteractOutside` handlers to SelectContent
-- Dialog's `onOpenChange` prevents closing when dropdown is open
+### P0: Governance Meeting Minutes Module (NEW FEATURE)
+**Implementation:**
+- Backend: `/app/backend/routes/governance.py` - Full CRUD for meetings
+- Backend Models: `/app/backend/models/governance.py` - Meeting, Attendee, AgendaItem, Motion, Attestation models
+- Frontend: `/app/frontend/src/pages/GovernancePage.jsx` - Governance hub with meetings list
+- Frontend: `/app/frontend/src/pages/MeetingEditorPage.jsx` - Meeting editor with full functionality
 
-**Test Steps:**
+**Backend API Endpoints:**
+- POST /api/governance/meetings - Create meeting
+- GET /api/governance/meetings - List meetings
+- GET /api/governance/meetings/{id} - Get meeting
+- PUT /api/governance/meetings/{id} - Update meeting
+- DELETE /api/governance/meetings/{id} - Delete meeting (draft only)
+- POST /api/governance/meetings/{id}/agenda - Add agenda item
+- PUT /api/governance/meetings/{id}/agenda/{item_id} - Update agenda item
+- DELETE /api/governance/meetings/{id}/agenda/{item_id} - Delete agenda item
+- POST /api/governance/meetings/{id}/finalize - Finalize & lock meeting
+- POST /api/governance/meetings/{id}/attest - Add attestation
+- POST /api/governance/meetings/{id}/amend - Create amendment
+- GET /api/governance/meetings/{id}/verify - Verify hash integrity
+
+**Test Steps for Frontend:**
 1. Login via Google Auth
-2. Navigate to `/templates` (Template Studio)
-3. Click on any template card (e.g., "Declaration of Trust")
-4. In the "Create Document" dialog, first type in the Document Title input
-5. Then tap/click on the "Portfolio (Optional)" dropdown
-6. **EXPECTED**: Dropdown opens and stays open, allowing user to select a portfolio
-7. Select a portfolio or "No Portfolio"
-8. **EXPECTED**: Selection is made and dropdown closes properly
+2. Navigate to `/vault/governance`
+3. Select a portfolio from dropdown
+4. Click "New Meeting" button
+5. Fill in meeting details (title, type, date, location)
+6. Click "Create Meeting"
+7. **EXPECTED**: Navigate to meeting editor page
+8. Add attendees (name, role, present status)
+9. Add agenda items
+10. Add motions to agenda items
+11. Change motion status
+12. Click "Finalize Minutes"
+13. **EXPECTED**: Meeting is locked, hash is generated
+14. Add attestation
+15. **EXPECTED**: Attestation appears with signature
+16. Try to create amendment
+17. **EXPECTED**: New meeting is created referencing original
 
-### P0 Issue #2: Trash View Empty & Redirect on Refresh
-**Test Steps:**
-1. Navigate to `/vault/documents`
-2. Create a test document if needed
-3. Delete the document (move to trash)
-4. Navigate to `/vault/trash`
-5. **EXPECTED**: Trashed documents should be visible
-6. Refresh the page (F5)
-7. **EXPECTED**: Should remain on `/vault/trash`, not redirect to `/vault/documents`
-
-### P1 Issue #3: "Failed to load portfolio" Toast 
-**Test Steps:**
-1. Navigate to a portfolio overview page
-2. Click the "Docs" tab
-3. Click on any document to navigate to the editor
-4. **EXPECTED**: No erroneous "Failed to load portfolio" toast should appear
+**Test Steps for Backend:**
+1. Create meeting via POST /api/governance/meetings
+2. Update meeting via PUT /api/governance/meetings/{id}
+3. Add agenda item via POST /api/governance/meetings/{id}/agenda
+4. Finalize meeting via POST /api/governance/meetings/{id}/finalize
+5. Verify hash via GET /api/governance/meetings/{id}/verify
+6. Add attestation via POST /api/governance/meetings/{id}/attest
+7. Create amendment via POST /api/governance/meetings/{id}/amend
 
 ## Code Files Modified This Session
-- `/app/frontend/src/pages/TemplatesPage.jsx` - Fixed mobile dropdown with controlled Select pattern
+- `/app/backend/server.py` - Added governance router, new subject categories
+- `/app/backend/routes/governance.py` - NEW FILE - Governance API routes
+- `/app/backend/models/governance.py` - NEW FILE - Governance data models
+- `/app/frontend/src/App.js` - Added governance routes
+- `/app/frontend/src/pages/GovernancePage.jsx` - NEW FILE - Governance hub page
+- `/app/frontend/src/pages/MeetingEditorPage.jsx` - NEW FILE - Meeting editor page
+- `/app/frontend/src/components/layout/Sidebar.jsx` - Added Governance nav item
 
 ## Testing Scope
-- Frontend testing via Playwright with mobile viewport (375px)
+- Backend testing via API calls
+- Frontend testing via Playwright with authenticated session
 - Requires Emergent-managed Google Auth for login
 
 ## Incorporate User Feedback
-- Mobile dropdown should open and STAY OPEN when tapping after focusing on Document Title input
-- Trash view must persist on page refresh at /vault/trash URL
+- Meeting Minutes is the foundation module for Governance
+- Tamper-evident hash chain is critical for trust governance
+- Attestation workflow must be smooth for trustees
