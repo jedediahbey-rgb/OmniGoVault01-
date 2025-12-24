@@ -118,7 +118,7 @@ const HomePage = () => {
               <Link to="/vault" data-testid="hero-vault" className="w-full sm:w-auto">
                 <Button variant="outline" className="w-full sm:w-auto border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 font-sans font-semibold uppercase tracking-wider text-xs px-6 sm:px-8 py-3 rounded-sm">
                   Create Portfolio
-                  <Shield className="w-4 h-4 ml-2" />
+                  <Shield className="w-4 h-4 ml-2" weight="duotone" />
                 </Button>
               </Link>
             </div>
