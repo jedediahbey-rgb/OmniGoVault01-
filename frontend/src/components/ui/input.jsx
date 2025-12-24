@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-const Input = React.forwardRef(({ className, type, ...props }, ref) => {
+const Input = React.forwardRef(({ className, type, onFocus, ...props }, ref) => {
   return (
     <input
       type={type}
@@ -11,6 +11,19 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
         className
       )}
       ref={ref}
+      onFocus={(e) => {
+        // Close any open select dropdowns first by clicking away
+        const openSelect = document.querySelector('[data-radix-select-content]');
+        if (openSelect) {
+          // Blur to close dropdown first, then refocus after a tick
+          e.target.blur();
+          setTimeout(() => {
+            e.target.focus();
+          }, 50);
+          return;
+        }
+        if (onFocus) onFocus(e);
+      }}
       {...props} />
   );
 })
