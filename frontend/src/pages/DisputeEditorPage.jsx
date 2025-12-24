@@ -154,6 +154,13 @@ export default function DisputeEditorPage({ user }) {
     const abortController = new AbortController();
 
     const fetchDispute = async () => {
+      if (!disputeId) {
+        if (isMounted) {
+          setLoading(false);
+        }
+        return;
+      }
+      
       try {
         const res = await axios.get(`${API}/governance/disputes/${disputeId}`, {
           signal: abortController.signal
@@ -181,11 +188,13 @@ export default function DisputeEditorPage({ user }) {
           next_hearing_date: dispData.next_hearing_date?.slice(0, 10) || '',
         });
       } catch (error) {
-        if (error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
+        // Silently ignore aborted requests (happens on navigation)
+        if (error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED' || !isMounted) {
           return;
         }
         console.error('Failed to fetch dispute:', error);
-        if (isMounted) {
+        // Only show error and navigate if still mounted AND not a cancellation
+        if (isMounted && error?.response?.status !== 0) {
           toast.error('Failed to load dispute details');
           navigate('/vault/governance?tab=disputes');
         }
