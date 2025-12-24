@@ -498,7 +498,12 @@ export default function PortfolioOverviewPage({ user }) {
         />
         <StatCard
           title="Trust Balance"
-          value={formatCurrency(ledger.summary?.balance || 0)}
+          value={
+            <>
+              <span className="sm:hidden">{formatCurrencyCompact(ledger.summary?.balance || 0)}</span>
+              <span className="hidden sm:inline">{formatCurrency(ledger.summary?.balance || 0)}</span>
+            </>
+          }
           icon={CurrencyDollar}
           subtitle="Total res value"
         />
