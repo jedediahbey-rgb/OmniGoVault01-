@@ -388,17 +388,19 @@ export default function GovernancePage({ user }) {
                   const typeConfig = meetingTypeConfig[meeting.meeting_type] || meetingTypeConfig.regular;
                   const TypeIcon = typeConfig.icon;
                   const status = statusConfig[meeting.status] || statusConfig.draft;
+                  // Use meeting.id or meeting.meeting_id (backend now provides both)
+                  const meetingId = meeting.id || meeting.meeting_id;
                   
                   return (
                     <motion.div
-                      key={meeting.meeting_id}
+                      key={meetingId}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
                       <GlassCard 
                         className="p-4 hover:border-vault-gold/40 transition-all cursor-pointer group"
-                        onClick={() => navigate(`/vault/governance/meetings/${meeting.meeting_id}`)}
+                        onClick={() => navigate(`/vault/governance/meetings/${meetingId}`)}
                       >
                         <div className="flex items-start gap-4">
                           {/* Type Icon */}
@@ -422,9 +424,15 @@ export default function GovernancePage({ user }) {
                                   <Badge className={`text-xs ${status.color} border`}>
                                     {status.label}
                                   </Badge>
+                                  {/* Show locked badge for finalized meetings */}
+                                  {meeting.locked && (
+                                    <Badge className="text-xs bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
+                                      🔒 Locked
+                                    </Badge>
+                                  )}
                                   {meeting.is_amendment && (
                                     <Badge className="text-xs bg-purple-500/20 text-purple-400 border border-purple-400/30">
-                                      Amendment #{meeting.amendment_number}
+                                      v{meeting.revision || meeting.amendment_number + 1}
                                     </Badge>
                                   )}
                                 </div>
