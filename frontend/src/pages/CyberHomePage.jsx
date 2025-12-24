@@ -573,23 +573,48 @@ export default function CyberHomePage() {
             >
               <motion.div variants={fadeInUp} className="flex items-center justify-between mb-6">
                 <div>
-                  <IconChip icon={Pulse} label="Live Feed" variant="green" />
+                  <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
                   <h2 className="mt-4 text-2xl font-bold text-white">Signal Console</h2>
                   <p className="text-slate-400">Real-time governance activity</p>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className={`border-white/10 ${demoMode ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'text-slate-400'}`}
-                  onClick={() => setDemoMode(!demoMode)}
-                >
-                  {demoMode ? 'Demo Active' : 'Load Demo'}
-                </Button>
+                <div className="flex items-center gap-2">
+                  {!demoMode && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-slate-400 hover:text-white"
+                      onClick={fetchLiveSignals}
+                      disabled={signalsLoading}
+                    >
+                      <ClockCounterClockwise className={`w-4 h-4 ${signalsLoading ? 'animate-spin' : ''}`} />
+                    </Button>
+                  )}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className={`border-white/10 ${demoMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}
+                    onClick={() => {
+                      if (demoMode && liveSignals.length > 0) {
+                        setDemoMode(false);
+                      } else {
+                        setDemoMode(true);
+                      }
+                    }}
+                  >
+                    {demoMode ? 'Demo Active' : 'Live Data'}
+                  </Button>
+                </div>
               </motion.div>
               
               <motion.div variants={fadeInUp}>
                 <HoloCard className="p-4">
-                  <SignalFeed signals={DEMO_SIGNALS} />
+                  {signalsLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  ) : (
+                    <SignalFeed signals={demoMode ? DEMO_SIGNALS : (liveSignals.length > 0 ? liveSignals : DEMO_SIGNALS)} />
+                  )}
                 </HoloCard>
               </motion.div>
             </motion.div>
