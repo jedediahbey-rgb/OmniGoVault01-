@@ -138,6 +138,22 @@ export default function GovernancePage({ user }) {
   });
   const [creatingDistribution, setCreatingDistribution] = useState(false);
 
+  // Disputes State
+  const [disputes, setDisputes] = useState([]);
+  const [disputesLoading, setDisputesLoading] = useState(false);
+  const [showNewDispute, setShowNewDispute] = useState(false);
+  const [newDispute, setNewDispute] = useState({
+    title: '',
+    dispute_type: 'beneficiary',
+    description: '',
+    amount_claimed: '',
+    currency: 'USD',
+    priority: 'medium',
+    case_number: '',
+    jurisdiction: '',
+  });
+  const [creatingDispute, setCreatingDispute] = useState(false);
+
   useEffect(() => {
     fetchPortfolios();
   }, []);
@@ -147,6 +163,7 @@ export default function GovernancePage({ user }) {
       fetchMeetings();
       fetchParties();
       fetchDistributions();
+      fetchDisputes();
     }
   }, [selectedPortfolio]);
 
