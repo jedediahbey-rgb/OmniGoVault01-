@@ -11,6 +11,7 @@ import {
   FileText,
   Gavel,
   Gear,
+  Key,
   Lightning,
   Lock,
   MagnifyingGlass,
