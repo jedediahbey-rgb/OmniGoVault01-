@@ -118,10 +118,6 @@ export default function MeetingEditorPage({ user }) {
   const navigate = useNavigate();
   const { meetingId } = useParams();
   
-  // Refs for dialog containers (for Select portal)
-  const addAttendeeDialogRef = useRef(null);
-  const attestDialogRef = useRef(null);
-  
   const [meeting, setMeeting] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
