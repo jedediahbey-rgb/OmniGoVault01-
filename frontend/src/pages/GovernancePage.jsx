@@ -105,6 +105,21 @@ export default function GovernancePage({ user }) {
   });
   const [creating, setCreating] = useState(false);
 
+  // Distributions State
+  const [distributions, setDistributions] = useState([]);
+  const [distributionsLoading, setDistributionsLoading] = useState(false);
+  const [showNewDistribution, setShowNewDistribution] = useState(false);
+  const [newDistribution, setNewDistribution] = useState({
+    title: '',
+    distribution_type: 'regular',
+    description: '',
+    total_amount: '',
+    currency: 'USD',
+    asset_type: 'cash',
+    scheduled_date: new Date().toISOString().slice(0, 10),
+  });
+  const [creatingDistribution, setCreatingDistribution] = useState(false);
+
   useEffect(() => {
     fetchPortfolios();
   }, []);
@@ -113,6 +128,7 @@ export default function GovernancePage({ user }) {
     if (selectedPortfolio) {
       fetchMeetings();
       fetchParties();
+      fetchDistributions();
     }
   }, [selectedPortfolio]);
 
