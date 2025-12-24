@@ -157,12 +157,16 @@ export default function InsuranceEditorPage({ user }) {
           }
         }
       } catch (error) {
+        // Silently ignore aborted requests (happens on navigation)
         if (!isMounted || error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED' || abortController.signal.aborted) {
           return;
         }
         console.error('Failed to fetch insurance policy:', error);
-        toast.error('Failed to load insurance policy');
-        navigate('/vault/governance?tab=insurance');
+        // Only show error if still mounted and not a cancellation
+        if (isMounted && error?.response?.status !== 0) {
+          toast.error('Failed to load insurance policy');
+          navigate('/vault/governance?tab=insurance');
+        }
       } finally {
         if (isMounted) {
           setLoading(false);
