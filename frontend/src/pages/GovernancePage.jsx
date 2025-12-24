@@ -246,13 +246,13 @@ export default function GovernancePage({ user }) {
       {/* Portfolio Selector & Actions */}
       <motion.div variants={fadeInUp} className="mb-6">
         <GlassCard className="p-4">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between min-w-0">
             {/* Portfolio Selector */}
-            <div className="flex items-center gap-4 w-full md:w-auto">
-              <div className="flex-1 md:flex-none md:min-w-[250px]">
+            <div className="flex items-center gap-4 w-full md:w-auto min-w-0">
+              <div className="flex-1 md:flex-none md:w-[250px] min-w-0">
                 <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
                   <SelectTrigger className="bg-vault-dark/50 border-vault-gold/20 text-white">
-                    <SelectValue placeholder="Select Portfolio" />
+                    <SelectValue placeholder="Select Portfolio" className="truncate" />
                   </SelectTrigger>
                   <SelectContent className="bg-vault-dark border-vault-gold/30">
                     {portfolios.map(p => (
@@ -261,7 +261,7 @@ export default function GovernancePage({ user }) {
                         value={p.portfolio_id}
                         className="text-white hover:bg-vault-gold/20"
                       >
-                        {p.name}
+                        <span className="truncate">{p.name}</span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -269,16 +269,16 @@ export default function GovernancePage({ user }) {
               </div>
               
               {selectedPortfolioData && (
-                <div className="hidden md:flex items-center gap-2 text-vault-muted text-sm">
-                  <House className="w-4 h-4" />
-                  <span>Portfolio: {selectedPortfolioData.name}</span>
+                <div className="hidden md:flex items-center gap-2 text-vault-muted text-sm min-w-0">
+                  <House className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Portfolio: {selectedPortfolioData.name}</span>
                 </div>
               )}
             </div>
 
             {/* Search & New Button */}
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <div className="relative flex-1 md:w-64">
+            <div className="flex items-center gap-3 w-full md:w-auto min-w-0">
+              <div className="relative flex-1 md:w-64 min-w-0">
                 <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-vault-muted" />
                 <Input
                   placeholder="Search meetings..."
@@ -289,7 +289,7 @@ export default function GovernancePage({ user }) {
               </div>
               <Button
                 onClick={() => setShowNewMeeting(true)}
-                className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold whitespace-nowrap"
+                className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold whitespace-nowrap shrink-0"
                 disabled={!selectedPortfolio}
               >
                 <Plus className="w-4 h-4 mr-2" />
