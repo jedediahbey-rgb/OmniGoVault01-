@@ -173,7 +173,7 @@ const AppRouter = ({ auth }) => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={<CyberHomePage />} />
       <Route path="/login" element={<LoginPage />} />
       
       {/* Public Educational Routes - No auth required for learning */}
