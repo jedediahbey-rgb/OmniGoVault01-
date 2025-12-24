@@ -501,7 +501,7 @@ export default function InsuranceEditorPage({ user }) {
                   </Button>
                 )}
                 
-                {isLocked && (
+                {isLocked && !policy.amended_by_id && (
                   <Button
                     variant="outline"
                     size="sm"
