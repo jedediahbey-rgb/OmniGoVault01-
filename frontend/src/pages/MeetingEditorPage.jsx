@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import {
   ArrowLeft,
-  Calendar,
+  CalendarBlank,
   CaretDown,
   CaretRight,
   CaretUp,
