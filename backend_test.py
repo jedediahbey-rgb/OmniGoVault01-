@@ -497,7 +497,24 @@ class EquityTrustAPITester:
         if executed:
             print("   ✅ Distribution executed successfully")
         
-        # Test 8: Try to update locked distribution (should return 409)
+        # Test 8: Test Distribution Amend endpoint (BUG FIX TEST)
+        amend_data = {
+            "reason": "Testing distribution amendment functionality"
+        }
+        amendment = self.run_test("Distributions - Create Amendment", "POST", f"governance/distributions/{distribution_id}/amend", 200, amend_data)
+        if amendment:
+            print("   ✅ Distribution amendment created successfully")
+            # Check if amendment has distribution_id
+            amendment_id = None
+            if isinstance(amendment, dict):
+                if 'item' in amendment:
+                    amendment_id = amendment['item'].get('distribution_id')
+                else:
+                    amendment_id = amendment.get('distribution_id')
+            if amendment_id:
+                print(f"   ✅ Amendment ID: {amendment_id}")
+        
+        # Test 9: Try to update locked distribution (should return 409)
         locked_update = {
             "title": "This should fail - distribution is locked"
         }
@@ -516,7 +533,7 @@ class EquityTrustAPITester:
         except Exception as e:
             self.log_test("Distributions - Update Locked (409 test)", False, str(e))
         
-        # Test 9: Create another distribution for delete test
+        # Test 10: Create another distribution for delete test
         delete_test_data = {
             "portfolio_id": portfolio_id,
             "title": "Distribution for Delete Test",
@@ -535,7 +552,7 @@ class EquityTrustAPITester:
                     delete_dist_id = delete_dist.get('distribution_id')
             
             if delete_dist_id:
-                # Test 10: Soft delete distribution (only works for draft status)
+                # Test 11: Soft delete distribution (only works for draft status)
                 deleted = self.run_test("Distributions - Soft Delete", "DELETE", f"governance/distributions/{delete_dist_id}", 200)
                 if deleted:
                     print("   ✅ Distribution soft deleted successfully")
