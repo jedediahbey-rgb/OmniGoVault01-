@@ -330,7 +330,7 @@ export default function DocumentEditorPage({ user }) {
         editor.setEditable(false);
       }
       setShowFinalizeDialog(false);
-      toast.success('Document saved and finalized');
+      // No toast - the FINALIZED badge provides clear visual confirmation
     } catch (error) {
       console.error('Failed to finalize document:', error);
       toast.error('Failed to finalize document');
