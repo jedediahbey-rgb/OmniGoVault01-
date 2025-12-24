@@ -112,7 +112,7 @@ const HomePage = () => {
               <Link to="/knowledge" data-testid="hero-learn" className="w-full sm:w-auto">
                 <Button className="w-full sm:w-auto bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-6 sm:px-8 py-3 rounded-sm shadow-[0_0_20px_rgba(198,168,124,0.3)]">
                   Start Learning
-                  <BookOpen className="w-4 h-4 ml-2" />
+                  <BookOpen className="w-4 h-4 ml-2" weight="duotone" />
                 </Button>
               </Link>
               <Link to="/vault" data-testid="hero-vault" className="w-full sm:w-auto">
