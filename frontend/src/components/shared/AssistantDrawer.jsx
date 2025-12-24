@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { marked } from 'marked';
 import {
+  ArrowsClockwise,
   BookOpen,
   CaretDown,
   CheckSquare,
@@ -11,7 +12,6 @@ import {
   List,
   Loader2,
   PaperPlaneTilt,
-  RefreshCw,
   Robot,
   Sparkle,
   X
@@ -132,7 +132,7 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
             <div className="flex items-center gap-2">
               {messages.length > 0 && (
                 <button onClick={resetChat} className="p-2 text-white/40 hover:text-white rounded-lg hover:bg-white/5">
-                  <RefreshCw className="w-4 h-4" />
+                  <ArrowsClockwise className="w-4 h-4" />
                 </button>
               )}
               <button onClick={onClose} className="p-2 text-white/40 hover:text-white rounded-lg hover:bg-white/5">

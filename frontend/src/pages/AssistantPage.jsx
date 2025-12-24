@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import { marked } from 'marked';
 import {
+  ArrowsClockwise,
   BookOpen,
   Copy,
   FileText,
   PaperPlaneTilt,
-  RefreshCw,
   Robot,
   Sparkle,
   User
@@ -116,7 +116,7 @@ export default function AssistantPage({ user }) {
         actions={
           messages.length > 0 && (
             <Button onClick={resetChat} variant="outline" className="btn-secondary">
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <ArrowsClockwise className="w-4 h-4 mr-2" />
               New Chat
             </Button>
           )
