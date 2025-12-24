@@ -85,9 +85,6 @@ export default function GovernancePage({ user }) {
   const [searchParams] = useSearchParams();
   const portfolioIdParam = searchParams.get('portfolio');
   
-  // Ref for dialog container (for Select portal)
-  const newMeetingDialogRef = useRef(null);
-  
   const [activeTab, setActiveTab] = useState('meetings');
   const [meetings, setMeetings] = useState([]);
   const [portfolios, setPortfolios] = useState([]);
