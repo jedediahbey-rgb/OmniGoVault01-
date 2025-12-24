@@ -2479,15 +2479,16 @@ async def add_premium_payment(policy_id: str, data: dict, request: Request):
         return error_response("ADD_ERROR", "Failed to record premium payment", status_code=500)
 
 
-# ============ TRUSTEE COMPENSATION (Stub with Empty State) ============
+# ============ TRUSTEE COMPENSATION ============
 
 @router.get("/compensation")
 async def get_compensation(
     request: Request,
     portfolio_id: Optional[str] = None,
     trust_id: Optional[str] = None,
+    status: Optional[str] = None,
     sort_by: str = "created_at",
-    sort_dir: str = "asc",
+    sort_dir: str = "desc",
     limit: int = 100,
     offset: int = 0
 ):
@@ -2497,35 +2498,110 @@ async def get_compensation(
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return success_list(
-        items=[],
-        total=0,
-        sort_by=sort_by,
-        sort_dir=sort_dir,
-        empty_state=EMPTY_STATES["compensation"]
-    )
+    try:
+        query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        if trust_id:
+            query["trust_id"] = trust_id
+        if status:
+            query["status"] = status
+        
+        sort_direction = -1 if sort_dir == "desc" else 1
+        
+        entries = await db.compensation_entries.find(query, {"_id": 0}).sort(
+            sort_by, sort_direction
+        ).skip(offset).limit(limit).to_list(limit)
+        
+        total = await db.compensation_entries.count_documents(query)
+        
+        if total == 0:
+            return success_list(
+                items=[],
+                total=0,
+                sort_by=sort_by,
+                sort_dir=sort_dir,
+                empty_state=EMPTY_STATES["compensation"]
+            )
+        
+        return success_list(
+            items=entries,
+            total=total,
+            sort_by=sort_by,
+            sort_dir=sort_dir
+        )
+    except Exception as e:
+        print(f"Error fetching compensation: {e}")
+        return error_response("DB_ERROR", "Failed to fetch compensation entries", status_code=500)
 
 
 @router.get("/compensation/summary")
 async def get_compensation_summary(
     request: Request,
     portfolio_id: Optional[str] = None,
-    trust_id: Optional[str] = None
+    trust_id: Optional[str] = None,
+    fiscal_year: Optional[str] = None
 ):
-    """Get compensation summary with reasonableness meter"""
+    """Get compensation summary with reasonableness metrics"""
     try:
         user = await get_current_user(request)
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return success_item({
-        "has_data": False,
-        "total_compensation": 0,
-        "hours_logged": 0,
-        "reasonableness_score": None,
-        "entries": [],
-        "empty_state": EMPTY_STATES["compensation"]
-    })
+    try:
+        query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        if trust_id:
+            query["trust_id"] = trust_id
+        if fiscal_year:
+            query["fiscal_year"] = fiscal_year
+        
+        entries = await db.compensation_entries.find(query, {"_id": 0}).to_list(1000)
+        
+        if not entries:
+            return success_item({
+                "has_data": False,
+                "total_compensation": 0,
+                "total_hours": 0,
+                "entry_count": 0,
+                "by_recipient": [],
+                "by_type": [],
+                "empty_state": EMPTY_STATES["compensation"]
+            })
+        
+        total_compensation = sum(e.get("amount", 0) for e in entries)
+        total_hours = sum(e.get("hours_worked", 0) for e in entries)
+        
+        # Group by recipient
+        by_recipient = {}
+        for e in entries:
+            name = e.get("recipient_name", "Unknown")
+            if name not in by_recipient:
+                by_recipient[name] = {"name": name, "role": e.get("recipient_role", ""), "total": 0, "count": 0}
+            by_recipient[name]["total"] += e.get("amount", 0)
+            by_recipient[name]["count"] += 1
+        
+        # Group by type
+        by_type = {}
+        for e in entries:
+            comp_type = e.get("compensation_type", "other")
+            if comp_type not in by_type:
+                by_type[comp_type] = {"type": comp_type, "total": 0, "count": 0}
+            by_type[comp_type]["total"] += e.get("amount", 0)
+            by_type[comp_type]["count"] += 1
+        
+        return success_item({
+            "has_data": True,
+            "total_compensation": total_compensation,
+            "total_hours": total_hours,
+            "entry_count": len(entries),
+            "by_recipient": list(by_recipient.values()),
+            "by_type": list(by_type.values())
+        })
+    except Exception as e:
+        print(f"Error fetching compensation summary: {e}")
+        return error_response("DB_ERROR", "Failed to fetch summary", status_code=500)
 
 
 @router.post("/compensation")
@@ -2536,7 +2612,296 @@ async def create_compensation_entry(data: dict, request: Request):
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return error_response("NOT_IMPLEMENTED", "Compensation entry creation coming soon")
+    if not data.get("portfolio_id"):
+        return error_response("MISSING_PORTFOLIO", "Portfolio ID is required")
+    if not data.get("title"):
+        return error_response("MISSING_TITLE", "Title is required")
+    if not data.get("recipient_name"):
+        return error_response("MISSING_RECIPIENT", "Recipient name is required")
+    
+    try:
+        # Generate RM-ID (code 24 for Compensation)
+        rm_id = ""
+        try:
+            rm_id, _, _, _ = await generate_subject_rm_id(
+                data.get("portfolio_id"), user.user_id, "24", "Compensation"
+            )
+        except Exception as e:
+            print(f"Warning: Could not generate RM-ID: {e}")
+        
+        from models.governance import CompensationEntry
+        
+        entry = CompensationEntry(
+            portfolio_id=data.get("portfolio_id"),
+            trust_id=data.get("trust_id"),
+            user_id=user.user_id,
+            rm_id=rm_id,
+            recipient_party_id=data.get("recipient_party_id"),
+            recipient_name=data.get("recipient_name"),
+            recipient_role=data.get("recipient_role", "trustee"),
+            title=data.get("title"),
+            compensation_type=data.get("compensation_type", "annual_fee"),
+            description=data.get("description", ""),
+            amount=float(data.get("amount", 0)),
+            currency=data.get("currency", "USD"),
+            payment_method=data.get("payment_method", ""),
+            period_start=data.get("period_start"),
+            period_end=data.get("period_end"),
+            fiscal_year=data.get("fiscal_year"),
+            basis_of_calculation=data.get("basis_of_calculation", ""),
+            comparable_fees=data.get("comparable_fees", ""),
+            trust_assets_value=float(data.get("trust_assets_value", 0)),
+            fee_percentage=float(data.get("fee_percentage", 0)),
+            hours_worked=float(data.get("hours_worked", 0)),
+            hourly_rate=float(data.get("hourly_rate", 0)),
+            authorized_meeting_id=data.get("authorized_meeting_id"),
+            authorization_notes=data.get("authorization_notes", ""),
+            notes=data.get("notes", "")
+        )
+        
+        doc = entry.model_dump()
+        doc["created_at"] = doc["created_at"].isoformat()
+        doc["updated_at"] = doc["updated_at"].isoformat()
+        
+        await db.compensation_entries.insert_one(doc)
+        
+        return success_item({k: v for k, v in doc.items() if k != "_id"})
+    except Exception as e:
+        print(f"Error creating compensation: {e}")
+        return error_response("CREATE_ERROR", "Failed to create compensation entry", status_code=500)
+
+
+@router.get("/compensation/{compensation_id}")
+async def get_compensation_entry(compensation_id: str, request: Request):
+    """Get a single compensation entry"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        entry = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id, "user_id": user.user_id},
+            {"_id": 0}
+        )
+        
+        if not entry:
+            return error_response("NOT_FOUND", "Compensation entry not found", status_code=404)
+        
+        return success_item(entry)
+    except Exception as e:
+        print(f"Error fetching compensation: {e}")
+        return error_response("DB_ERROR", "Failed to fetch entry", status_code=500)
+
+
+@router.put("/compensation/{compensation_id}")
+async def update_compensation_entry(compensation_id: str, data: dict, request: Request):
+    """Update a compensation entry"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        entry = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id, "user_id": user.user_id}
+        )
+        
+        if not entry:
+            return error_response("NOT_FOUND", "Compensation entry not found", status_code=404)
+        
+        if entry.get("locked"):
+            return error_response("LOCKED", "Cannot update a locked entry", status_code=409)
+        
+        # Update fields
+        update_fields = {}
+        allowed_fields = [
+            "title", "compensation_type", "description", "amount", "currency",
+            "payment_method", "period_start", "period_end", "fiscal_year",
+            "basis_of_calculation", "comparable_fees", "trust_assets_value",
+            "fee_percentage", "hours_worked", "hourly_rate", "recipient_name",
+            "recipient_role", "recipient_party_id", "notes"
+        ]
+        
+        for field in allowed_fields:
+            if field in data:
+                update_fields[field] = data[field]
+        
+        if update_fields:
+            update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+            await db.compensation_entries.update_one(
+                {"compensation_id": compensation_id},
+                {"$set": update_fields}
+            )
+        
+        updated = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id}, {"_id": 0}
+        )
+        return success_item(updated)
+    except Exception as e:
+        print(f"Error updating compensation: {e}")
+        return error_response("UPDATE_ERROR", "Failed to update entry", status_code=500)
+
+
+@router.delete("/compensation/{compensation_id}")
+async def delete_compensation_entry(compensation_id: str, request: Request):
+    """Soft delete a compensation entry"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        entry = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id, "user_id": user.user_id}
+        )
+        
+        if not entry:
+            return error_response("NOT_FOUND", "Compensation entry not found", status_code=404)
+        
+        if entry.get("locked"):
+            return error_response("LOCKED", "Cannot delete a locked entry", status_code=409)
+        
+        await db.compensation_entries.update_one(
+            {"compensation_id": compensation_id},
+            {"$set": {"deleted_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        return success_message("Compensation entry deleted")
+    except Exception as e:
+        print(f"Error deleting compensation: {e}")
+        return error_response("DELETE_ERROR", "Failed to delete entry", status_code=500)
+
+
+@router.post("/compensation/{compensation_id}/submit")
+async def submit_compensation(compensation_id: str, request: Request):
+    """Submit compensation for approval"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        entry = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id, "user_id": user.user_id}
+        )
+        
+        if not entry:
+            return error_response("NOT_FOUND", "Compensation entry not found", status_code=404)
+        
+        if entry.get("status") != "draft":
+            return error_response("INVALID_STATUS", "Only draft entries can be submitted", status_code=400)
+        
+        await db.compensation_entries.update_one(
+            {"compensation_id": compensation_id},
+            {"$set": {
+                "status": "pending_approval",
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        updated = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id}, {"_id": 0}
+        )
+        return success_item(updated)
+    except Exception as e:
+        print(f"Error submitting compensation: {e}")
+        return error_response("SUBMIT_ERROR", "Failed to submit entry", status_code=500)
+
+
+@router.post("/compensation/{compensation_id}/approve")
+async def approve_compensation(compensation_id: str, data: dict, request: Request):
+    """Add approval to compensation entry"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        entry = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id, "user_id": user.user_id}
+        )
+        
+        if not entry:
+            return error_response("NOT_FOUND", "Compensation entry not found", status_code=404)
+        
+        from models.governance import CompensationApproval
+        
+        approval = CompensationApproval(
+            approver_party_id=data.get("approver_party_id"),
+            approver_name=data.get("approver_name", user.name),
+            approver_role=data.get("approver_role", "trustee"),
+            status="approved",
+            approved_at=datetime.now(timezone.utc).isoformat(),
+            notes=data.get("notes", "")
+        )
+        
+        approvals = entry.get("approvals", [])
+        approvals.append(approval.model_dump())
+        
+        # Check if we have enough approvals
+        new_status = entry.get("status")
+        if len(approvals) >= entry.get("approval_threshold", 1):
+            new_status = "approved"
+        
+        await db.compensation_entries.update_one(
+            {"compensation_id": compensation_id},
+            {"$set": {
+                "approvals": approvals,
+                "status": new_status,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        updated = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id}, {"_id": 0}
+        )
+        return success_item(updated)
+    except Exception as e:
+        print(f"Error approving compensation: {e}")
+        return error_response("APPROVE_ERROR", "Failed to approve entry", status_code=500)
+
+
+@router.post("/compensation/{compensation_id}/pay")
+async def mark_compensation_paid(compensation_id: str, data: dict, request: Request):
+    """Mark compensation as paid"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        entry = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id, "user_id": user.user_id}
+        )
+        
+        if not entry:
+            return error_response("NOT_FOUND", "Compensation entry not found", status_code=404)
+        
+        if entry.get("status") != "approved":
+            return error_response("INVALID_STATUS", "Only approved entries can be marked as paid", status_code=400)
+        
+        await db.compensation_entries.update_one(
+            {"compensation_id": compensation_id},
+            {"$set": {
+                "status": "paid",
+                "locked": True,
+                "locked_at": datetime.now(timezone.utc).isoformat(),
+                "paid_at": datetime.now(timezone.utc).isoformat(),
+                "payment_method": data.get("payment_method", entry.get("payment_method", "")),
+                "payment_reference": data.get("payment_reference", ""),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        updated = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id}, {"_id": 0}
+        )
+        return success_item(updated)
+    except Exception as e:
+        print(f"Error marking compensation paid: {e}")
+        return error_response("PAY_ERROR", "Failed to mark as paid", status_code=500)
+
 
 
 # ============ GOVERNANCE TRASH ============
