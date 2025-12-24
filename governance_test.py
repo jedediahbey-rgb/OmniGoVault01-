@@ -316,8 +316,9 @@ class GovernanceFeatureTester:
         
         response = self.run_test("Get Meeting Versions", "GET", f"governance/meetings/{self.meeting_id}/versions", 200)
         
-        if response and 'items' in response:
-            versions = response['items']
+        if response:
+            # Handle envelope format: { ok: true, items: [...] }
+            versions = response.get('items', response if isinstance(response, list) else [])
             
             has_versions = len(versions) >= 2  # Original + amendment
             sorted_by_revision = True
@@ -338,6 +339,8 @@ class GovernanceFeatureTester:
                 for i, version in enumerate(versions):
                     print(f"      v{version.get('revision', 'unknown')}: {version.get('title', 'Unknown')[:50]}...")
                 return True
+            elif len(versions) == 1:
+                print(f"   ⚠️ Only found 1 version (expected 2+ after amendment)")
         
         return False
 
