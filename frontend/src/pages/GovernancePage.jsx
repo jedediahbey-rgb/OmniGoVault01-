@@ -906,12 +906,163 @@ export default function GovernancePage({ user }) {
             )}
           </TabsContent>
 
-          <TabsContent value="disputes">
-            <GlassCard className="p-12 text-center">
-              <Scales className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
-              <h3 className="text-xl font-heading text-white mb-2">Coming Soon</h3>
-              <p className="text-vault-muted">Dispute tracking and case management</p>
-            </GlassCard>
+          {/* Disputes Tab */}
+          <TabsContent value="disputes" className="mt-0">
+            {disputesLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : !selectedPortfolio ? (
+              <GlassCard className="p-8 sm:p-12 text-center">
+                <House className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
+                <h3 className="text-lg sm:text-xl font-heading text-white mb-2">Select a Portfolio</h3>
+                <p className="text-sm sm:text-base text-vault-muted">Choose a portfolio to view its disputes</p>
+              </GlassCard>
+            ) : filteredDisputes.length === 0 ? (
+              <GlassCard className="p-8 sm:p-12 text-center">
+                <Scales className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
+                <h3 className="text-lg sm:text-xl font-heading text-white mb-2">No Disputes</h3>
+                <p className="text-sm sm:text-base text-vault-muted mb-6">Track litigation, claims, and dispute resolutions</p>
+                <Button
+                  onClick={() => setShowNewDispute(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Record Dispute
+                </Button>
+              </GlassCard>
+            ) : (
+              <div className="space-y-4">
+                {/* New Dispute Button */}
+                <div className="flex justify-end mb-4">
+                  <Button
+                    onClick={() => setShowNewDispute(true)}
+                    className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    New Dispute
+                  </Button>
+                </div>
+                
+                {filteredDisputes.map((dispute, index) => {
+                  const typeConfig = disputeTypeConfig[dispute.dispute_type] || disputeTypeConfig.beneficiary;
+                  const TypeIcon = typeConfig.icon;
+                  const status = disputeStatusConfig[dispute.status] || disputeStatusConfig.open;
+                  const priority = priorityConfig[dispute.priority] || priorityConfig.medium;
+                  const disputeId = dispute.id || dispute.dispute_id;
+                  
+                  return (
+                    <motion.div
+                      key={disputeId}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <GlassCard 
+                        className="p-4 hover:border-vault-gold/40 transition-all cursor-pointer group"
+                        onClick={() => navigate(`/vault/governance/disputes/${disputeId}`)}
+                      >
+                        <div className="flex items-start gap-4">
+                          {/* Type Icon */}
+                          <div className={`p-3 rounded-xl ${typeConfig.bg}`}>
+                            <TypeIcon className={`w-6 h-6 ${typeConfig.color}`} />
+                          </div>
+                          
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <h3 className="text-lg font-heading text-white group-hover:text-vault-gold transition-colors">
+                                  {dispute.title}
+                                </h3>
+                                <div className="flex flex-wrap items-center gap-2 mt-1">
+                                  {dispute.rm_id && (
+                                    <span className="text-xs font-mono text-vault-muted bg-vault-dark/50 px-2 py-0.5 rounded">
+                                      {dispute.rm_id}
+                                    </span>
+                                  )}
+                                  <Badge className={`text-xs ${status.color} border`}>
+                                    {status.label}
+                                  </Badge>
+                                  <Badge className={`text-xs ${priority.color} border`}>
+                                    {priority.label}
+                                  </Badge>
+                                  {dispute.locked && (
+                                    <Badge className="text-xs bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
+                                      🔒 Closed
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Amount */}
+                              {dispute.amount_claimed > 0 && (
+                                <div className="text-right">
+                                  <div className="text-xl font-heading text-red-400">
+                                    {formatCurrency(dispute.amount_claimed, dispute.currency)}
+                                  </div>
+                                  <div className="text-xs text-vault-muted">
+                                    Amount Claimed
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Details Row */}
+                            <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-vault-muted">
+                              {dispute.case_number && (
+                                <div className="flex items-center gap-1">
+                                  <FileText className="w-4 h-4" />
+                                  <span>Case: {dispute.case_number}</span>
+                                </div>
+                              )}
+                              {dispute.jurisdiction && (
+                                <div className="flex items-center gap-1">
+                                  <Gavel className="w-4 h-4" />
+                                  <span>{dispute.jurisdiction}</span>
+                                </div>
+                              )}
+                              {dispute.next_deadline && (
+                                <div className="flex items-center gap-1 text-amber-400">
+                                  <Clock className="w-4 h-4" />
+                                  <span>Deadline: {new Date(dispute.next_deadline).toLocaleDateString()}</span>
+                                </div>
+                              )}
+                              {dispute.parties?.length > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <Users className="w-4 h-4" />
+                                  <span>{dispute.parties.length} parties</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Actions */}
+                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {dispute.status === 'open' && !dispute.locked && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (window.confirm('Delete this dispute?')) {
+                                    handleDeleteDispute(disputeId);
+                                  }
+                                }}
+                              >
+                                <Trash className="w-4 h-4" />
+                              </Button>
+                            )}
+                            <CaretRight className="w-5 h-5 text-vault-muted" />
+                          </div>
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="insurance">
