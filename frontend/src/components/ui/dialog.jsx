@@ -4,19 +4,13 @@ import { X } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 
-// Custom Dialog that prevents closing on outside interactions
-const Dialog = ({ onOpenChange, ...props }) => {
-  // Wrap onOpenChange to only allow explicit close actions
-  const handleOpenChange = React.useCallback((open) => {
-    // Only allow closing via explicit user action (X button or escape)
-    // The close will be triggered by DialogPrimitive.Close or escape key
-    if (onOpenChange) {
-      onOpenChange(open);
-    }
-  }, [onOpenChange]);
+// Track if a select is currently open
+let selectOpenCount = 0;
 
-  return <DialogPrimitive.Root onOpenChange={handleOpenChange} {...props} />;
-};
+export const registerSelectOpen = () => { selectOpenCount++; };
+export const registerSelectClose = () => { selectOpenCount = Math.max(0, selectOpenCount - 1); };
+
+const Dialog = DialogPrimitive.Root
 
 const DialogTrigger = DialogPrimitive.Trigger
 
@@ -24,51 +18,66 @@ const DialogPortal = DialogPrimitive.Portal
 
 const DialogClose = DialogPrimitive.Close
 
-const DialogOverlay = React.forwardRef(({ className, onClick, ...props }, ref) => (
+const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
       "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
-    // Prevent click on overlay from doing anything
-    onClick={(e) => e.stopPropagation()}
     {...props} />
 ))
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
-const DialogContent = React.forwardRef(({ className, children, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed left-1/2 top-[10dvh] z-50 grid w-[95%] max-w-lg -translate-x-1/2 max-h-[85dvh] overflow-y-auto gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
-        className
-      )}
-      // Block ALL outside interactions from closing the dialog
-      onPointerDownOutside={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-      onInteractOutside={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-      onFocusOutside={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-      {...props}>
-      {children}
-      <DialogPrimitive.Close
-        className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-        <X className="h-4 w-4" weight="duotone" />
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
-    </DialogPrimitive.Content>
-  </DialogPortal>
-))
+const DialogContent = React.forwardRef(({ className, children, onPointerDownOutside, onInteractOutside, ...props }, ref) => {
+  // Track pointer down to distinguish between click-outside and focus changes
+  const isPointerDownRef = React.useRef(false);
+  
+  return (
+    <DialogPortal>
+      <DialogOverlay 
+        onPointerDown={() => { isPointerDownRef.current = true; }}
+        onPointerUp={() => { setTimeout(() => { isPointerDownRef.current = false; }, 100); }}
+      />
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(
+          "fixed left-1/2 top-[10dvh] z-50 grid w-[95%] max-w-lg -translate-x-1/2 max-h-[85dvh] overflow-y-auto gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
+          className
+        )}
+        onOpenAutoFocus={(e) => {
+          // Prevent auto-focus to avoid keyboard issues on mobile
+          e.preventDefault();
+        }}
+        onPointerDownOutside={(e) => {
+          // ALWAYS prevent - user must use X button
+          e.preventDefault();
+          if (onPointerDownOutside) onPointerDownOutside(e);
+        }}
+        onInteractOutside={(e) => {
+          // ALWAYS prevent - user must use X button
+          e.preventDefault();
+          if (onInteractOutside) onInteractOutside(e);
+        }}
+        onFocusOutside={(e) => {
+          // Prevent focus outside from closing
+          e.preventDefault();
+        }}
+        onCloseAutoFocus={(e) => {
+          // Prevent auto-focus on close
+          e.preventDefault();
+        }}
+        {...props}>
+        {children}
+        <DialogPrimitive.Close
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <X className="h-4 w-4" weight="duotone" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  );
+})
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 const DialogHeader = ({
