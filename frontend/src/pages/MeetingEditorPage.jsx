@@ -241,17 +241,21 @@ export default function MeetingEditorPage({ user }) {
     
     try {
       const res = await axios.get(`${API}/governance/meetings/${meetingId}`);
-      setMeeting(res.data);
+      // Handle new envelope format: { ok: true, item: {...} }
+      const data = res.data;
+      const meetingData = data.item || data; // Support both envelope and direct format
+      
+      setMeeting(meetingData);
       setEditedHeader({
-        title: res.data.title,
-        meeting_type: res.data.meeting_type,
-        date_time: res.data.date_time?.slice(0, 16) || '',
-        location: res.data.location || '',
-        called_by: res.data.called_by || '',
+        title: meetingData.title,
+        meeting_type: meetingData.meeting_type,
+        date_time: meetingData.date_time?.slice(0, 16) || '',
+        location: meetingData.location || '',
+        called_by: meetingData.called_by || '',
       });
       
       const expanded = {};
-      (res.data.agenda_items || []).forEach(item => {
+      (meetingData.agenda_items || []).forEach(item => {
         expanded[item.item_id] = true;
       });
       setExpandedItems(expanded);
