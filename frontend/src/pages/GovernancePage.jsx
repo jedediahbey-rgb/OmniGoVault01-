@@ -728,7 +728,6 @@ export default function GovernancePage({ user }) {
               <TabsTrigger 
                 value="insurance" 
                 className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
-                disabled
               >
                 <ShieldCheck className="w-4 h-4 mr-2 shrink-0" />
                 <span className="hidden sm:inline">Insurance</span><span className="sm:hidden">Ins.</span>
