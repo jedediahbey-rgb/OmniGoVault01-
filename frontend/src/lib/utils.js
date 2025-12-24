@@ -61,11 +61,21 @@ export function formatCurrencyCompact(value, fallback = '-') {
 
 /**
  * Format dates consistently
+ * Handles timezone issues by parsing date-only strings as local time
  */
 export function formatDate(dateStr, fallback = '-') {
   if (!dateStr) return fallback;
   try {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    let date;
+    // If it's a date-only string (YYYY-MM-DD), parse as local time to avoid timezone shift
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      date = new Date(year, month - 1, day); // month is 0-indexed
+    } else {
+      date = new Date(dateStr);
+    }
+    
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
