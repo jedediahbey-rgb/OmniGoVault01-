@@ -1044,7 +1044,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Amendment Dialog */}
       <Dialog open={showAmend} onOpenChange={setShowAmend}>
-        <DialogContent className="bg-vault-dark border-vault-gold/30 text-white max-w-md">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-purple-400 flex items-center gap-2">
               <FileText className="w-5 h-5" />
@@ -1061,7 +1061,7 @@ export default function MeetingEditorPage({ user }) {
               value={amendReason}
               onChange={(e) => setAmendReason(e.target.value)}
               placeholder="Describe what needs to be corrected..."
-              className="bg-vault-navy border-vault-gold/20 text-white min-h-[100px]"
+              className="bg-[#05080F] border-vault-gold/20 text-white min-h-[100px]"
             />
           </div>
           <DialogFooter>
