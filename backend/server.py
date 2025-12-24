@@ -948,7 +948,7 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
     
     # Check documents
     docs = await db.documents.find(
-        {"portfolio_id": portfolio_id, "user_id": user_id, "subject_code": cat_code, "is_trashed": {"$ne": True}},
+        {"portfolio_id": portfolio_id, "user_id": user_id, "subject_code": cat_code, "is_deleted": {"$ne": True}},
         {"sequence_number": 1}
     ).to_list(1000)
     for doc in docs:
