@@ -536,6 +536,7 @@ export default function GovernancePage({ user }) {
             <div>
               <label className="text-sm text-vault-muted mb-1 block">Meeting Title *</label>
               <Input
+                ref={meetingTitleInputRef}
                 value={newMeeting.title}
                 onChange={(e) => setNewMeeting(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Q4 2024 Regular Meeting"
@@ -549,7 +550,10 @@ export default function GovernancePage({ user }) {
                 value={newMeeting.meeting_type} 
                 onValueChange={(v) => setNewMeeting(prev => ({ ...prev, meeting_type: v }))}
               >
-                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                <SelectTrigger 
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                  onPointerDown={handleSelectPointerDown(meetingTitleInputRef)}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
