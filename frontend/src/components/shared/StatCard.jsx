@@ -33,7 +33,7 @@ export default function StatCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1 overflow-hidden">
-          <p className="text-xs uppercase tracking-widest text-white/40 mb-2">
+          <p className="text-xs uppercase tracking-widest text-white/40 mb-2 whitespace-nowrap">
             {displayLabel}
           </p>
           <p className="text-2xl sm:text-3xl font-heading text-white tabular-nums truncate">{value}</p>
