@@ -415,7 +415,7 @@ export default function MeetingEditorPage({ user }) {
       setAttestation({ party_name: '', party_role: 'trustee', signature_data: '' });
       toast.success('Attestation added');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to add attestation');
+      toast.error(error.response?.data?.error?.message || 'Failed to add attestation');
     }
   };
 
