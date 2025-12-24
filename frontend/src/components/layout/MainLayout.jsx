@@ -2,11 +2,52 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import {
-  List,
+  Vault,
   X
 } from '@phosphor-icons/react';
 import Sidebar from './Sidebar';
 import { pageTransition } from '../../lib/motion';
+
+// Futuristic Vault Toggle Button
+const VaultToggle = ({ isOpen, onClick }) => (
+  <button
+    onClick={onClick}
+    className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#C6A87C]/20 to-transparent border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-all duration-300 group"
+    aria-label={isOpen ? "Close menu" : "Open menu"}
+  >
+    {/* Glow effect */}
+    <div className="absolute inset-0 rounded-xl bg-[#C6A87C]/10 opacity-0 group-hover:opacity-100 blur-sm transition-opacity" />
+    
+    {/* Animated icon */}
+    <motion.div
+      animate={{ 
+        rotate: isOpen ? 180 : 0,
+        scale: isOpen ? 0.9 : 1
+      }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="relative z-10"
+    >
+      <Vault 
+        className={`w-5 h-5 transition-colors duration-300 ${isOpen ? 'text-[#C6A87C]' : 'text-[#C6A87C]/70 group-hover:text-[#C6A87C]'}`}
+        weight={isOpen ? "fill" : "duotone"}
+      />
+    </motion.div>
+    
+    {/* Scan line animation */}
+    <motion.div
+      className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none"
+      initial={false}
+    >
+      <motion.div
+        className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C6A87C]/50 to-transparent"
+        animate={{ 
+          top: isOpen ? ['0%', '100%'] : ['100%', '0%']
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      />
+    </motion.div>
+  </button>
+);
 
 export default function MainLayout({ children, user, onLogout }) {
   const location = useLocation();
