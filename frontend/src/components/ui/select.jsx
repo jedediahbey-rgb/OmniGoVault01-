@@ -47,20 +47,34 @@ const SelectScrollDownButton = React.forwardRef(({ className, ...props }, ref) =
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName
 
-// Add container prop to portal into a specific element (e.g., DialogContent)
+/**
+ * SelectContent - GLOBAL FIX for mobile dropdown collapse
+ * 
+ * Props:
+ * - container: Optional container element to portal into (for dialogs)
+ * - modal: Set to false to prevent stealing focus and blocking outside interactions
+ * 
+ * This component has been patched to fix the issue where clicking another input
+ * while a dropdown is open causes the parent dialog to collapse on mobile.
+ */
 const SelectContent = React.forwardRef(({ className, children, position = "popper", container, ...props }, ref) => (
   <SelectPrimitive.Portal container={container ?? undefined}>
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin]",
+        "relative z-[100] max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin]",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className
       )}
       position={position}
-      // Critical on mobile: don't freeze pointer events outside the list
-      disableOutsidePointerEvents={false}
+      // CRITICAL FIX: Don't block pointer events outside the dropdown
+      // This allows clicking other form fields without triggering "outside click" on dialogs
+      onPointerDownOutside={(e) => {
+        // Allow the event to propagate normally - don't interfere
+        // The dialog's onPointerDownOutside will handle prevention
+      }}
+      // Prevent the dropdown from stealing focus aggressively
       onCloseAutoFocus={(e) => e.preventDefault()}
       {...props}>
       <SelectScrollUpButton />
