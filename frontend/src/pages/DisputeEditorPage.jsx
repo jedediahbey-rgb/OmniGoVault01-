@@ -603,21 +603,37 @@ export default function DisputeEditorPage({ user }) {
             ) : (
               <div className="space-y-3">
                 {dispute.parties.map((party, idx) => (
-                  <div key={party.party_id || idx} className="p-3 bg-vault-dark/30 rounded-lg border border-vault-gold/10">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-vault-gold/20 flex items-center justify-center">
-                        <User className="w-4 h-4 text-vault-gold" />
+                  <div key={party.party_id || idx} className="p-3 bg-vault-dark/30 rounded-lg border border-vault-gold/10 group">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-vault-gold/20 flex items-center justify-center shrink-0">
+                          <User className="w-4 h-4 text-vault-gold" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-medium text-white truncate">{party.name}</div>
+                          <div className="text-xs text-vault-muted capitalize">{party.role}</div>
+                          {party.represented_by && (
+                            <div className="text-xs text-vault-muted truncate">
+                              Rep: {party.represented_by}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-medium text-white">{party.name}</div>
-                        <div className="text-xs text-vault-muted capitalize">{party.role}</div>
-                      </div>
+                      {isOpen && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 hover:bg-red-500/10 shrink-0"
+                          onClick={() => {
+                            if (window.confirm(`Remove ${party.name} from this dispute?`)) {
+                              handleDeleteParty(party.party_id);
+                            }
+                          }}
+                        >
+                          <Trash className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
-                    {party.represented_by && (
-                      <div className="mt-2 text-xs text-vault-muted">
-                        Rep: {party.represented_by}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
