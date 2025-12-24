@@ -349,6 +349,18 @@ export default function DistributionEditorPage({ user }) {
     }
   };
 
+  const handleAmend = async () => {
+    try {
+      const res = await axios.post(`${API}/governance/distributions/${distributionId}/amend`, {});
+      const data = res.data;
+      const amendmentData = data.item || data;
+      toast.success('Amendment created');
+      navigate(`/vault/governance/distributions/${amendmentData.distribution_id}`);
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to create amendment');
+    }
+  };
+
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
