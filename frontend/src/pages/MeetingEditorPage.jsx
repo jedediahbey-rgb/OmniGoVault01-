@@ -69,7 +69,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // Meeting type config
 const meetingTypeConfig = {
-  regular: { icon: Calendar, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Regular Meeting' },
+  regular: { icon: CalendarBlank, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Regular Meeting' },
   special: { icon: Gavel, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Special Meeting' },
   emergency: { icon: Warning, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Emergency Meeting' },
 };
