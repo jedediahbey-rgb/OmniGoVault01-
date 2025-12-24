@@ -373,7 +373,7 @@ export default function PortfolioOverviewPage({ user }) {
     setEditingAsset(null);
     setNewAssetDescription('');
     setNewAssetType('real_property');
-    setNewAssetSubjectCode('00');
+    setNewAssetSubjectCode('10'); // Reset to 10 for assets
     setNewAssetValue('');
     setNewAssetNotes('');
     setAssetTransactionType('deposit');
@@ -382,7 +382,7 @@ export default function PortfolioOverviewPage({ user }) {
   const resetLedgerForm = () => {
     setEditingLedger(null);
     setLedgerEntryType('deposit');
-    setLedgerSubjectCode('00');
+    setLedgerSubjectCode('10'); // Reset to 10 for manual ledger entries
     setLedgerDescription('');
     setLedgerValue('');
     setLedgerNotes('');
