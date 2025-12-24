@@ -571,18 +571,18 @@ export default function CyberHomePage() {
               viewport={{ once: true, margin: '-100px' }}
               variants={staggerContainer}
             >
-              <motion.div variants={fadeInUp} className="flex items-center justify-between mb-6">
+              <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
                   <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
-                  <h2 className="mt-4 text-2xl font-bold text-white">Signal Console</h2>
-                  <p className="text-slate-400">Real-time governance activity</p>
+                  <h2 className="mt-4 text-xl sm:text-2xl font-bold text-white">Signal Console</h2>
+                  <p className="text-sm sm:text-base text-slate-400">Real-time governance activity</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   {!demoMode && (
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-slate-400 hover:text-white"
+                      className="text-slate-400 hover:text-white p-2"
                       onClick={fetchLiveSignals}
                       disabled={signalsLoading}
                     >
@@ -592,7 +592,7 @@ export default function CyberHomePage() {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className={`border-white/10 ${demoMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}
+                    className={`border-white/10 text-xs sm:text-sm whitespace-nowrap ${demoMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}
                     onClick={() => {
                       if (demoMode && liveSignals.length > 0) {
                         setDemoMode(false);
@@ -601,13 +601,13 @@ export default function CyberHomePage() {
                       }
                     }}
                   >
-                    {demoMode ? 'Demo Active' : 'Live Data'}
+                    {demoMode ? 'Demo' : 'Live'}
                   </Button>
                 </div>
               </motion.div>
               
               <motion.div variants={fadeInUp}>
-                <HoloCard className="p-4">
+                <HoloCard className="p-3 sm:p-4">
                   {signalsLoading ? (
                     <div className="flex items-center justify-center py-8">
                       <div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" />
