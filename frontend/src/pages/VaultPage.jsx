@@ -278,7 +278,7 @@ export default function VaultPage({ user, initialView }) {
       
       <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
         <button
-          onClick={() => { setSelectedPortfolio(null); setShowTrash(false); setSidebarOpen(false); }}
+          onClick={() => { setSelectedPortfolio(null); setShowTrash(false); setSidebarOpen(false); navigate('/vault/documents'); }}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
             !selectedPortfolio && !showTrash
               ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
