@@ -50,7 +50,7 @@ import { humanizeSlug } from '../lib/utils';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-export default function VaultPage({ user }) {
+export default function VaultPage({ user, initialView }) {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
   const [trashedDocuments, setTrashedDocuments] = useState([]);
@@ -60,7 +60,7 @@ export default function VaultPage({ user }) {
   const [selectedPortfolio, setSelectedPortfolio] = useState(null);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
-  const [showTrash, setShowTrash] = useState(false);
+  const [showTrash, setShowTrash] = useState(initialView === 'trash');
   const [showNewPortfolio, setShowNewPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
   
