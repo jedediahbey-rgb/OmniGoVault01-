@@ -432,7 +432,7 @@ export default function MeetingEditorPage({ user }) {
                   <Input
                     value={editedHeader.title}
                     onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
-                    className="text-2xl font-heading bg-vault-navy border-vault-gold/20 text-white"
+                    className="text-2xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
                     placeholder="Meeting Title"
                   />
                 </div>
@@ -445,13 +445,13 @@ export default function MeetingEditorPage({ user }) {
                     value={editedHeader.meeting_type} 
                     onValueChange={(v) => setEditedHeader(prev => ({ ...prev, meeting_type: v }))}
                   >
-                    <SelectTrigger className="bg-vault-navy border-vault-gold/20 text-white">
+                    <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-vault-dark border-vault-gold/30">
-                      <SelectItem value="regular" className="text-white">Regular</SelectItem>
-                      <SelectItem value="special" className="text-white">Special</SelectItem>
-                      <SelectItem value="emergency" className="text-white">Emergency</SelectItem>
+                    <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                      <SelectItem value="regular" className="text-white hover:bg-vault-gold/20">Regular</SelectItem>
+                      <SelectItem value="special" className="text-white hover:bg-vault-gold/20">Special</SelectItem>
+                      <SelectItem value="emergency" className="text-white hover:bg-vault-gold/20">Emergency</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -461,7 +461,7 @@ export default function MeetingEditorPage({ user }) {
                     type="datetime-local"
                     value={editedHeader.date_time}
                     onChange={(e) => setEditedHeader(prev => ({ ...prev, date_time: e.target.value }))}
-                    className="bg-vault-navy border-vault-gold/20 text-white"
+                    className="bg-[#05080F] border-vault-gold/20 text-white"
                   />
                 </div>
                 <div>
@@ -470,7 +470,7 @@ export default function MeetingEditorPage({ user }) {
                     value={editedHeader.location}
                     onChange={(e) => setEditedHeader(prev => ({ ...prev, location: e.target.value }))}
                     placeholder="Location or Zoom link"
-                    className="bg-vault-navy border-vault-gold/20 text-white"
+                    className="bg-[#05080F] border-vault-gold/20 text-white"
                   />
                 </div>
                 <div>
@@ -479,7 +479,7 @@ export default function MeetingEditorPage({ user }) {
                     value={editedHeader.called_by}
                     onChange={(e) => setEditedHeader(prev => ({ ...prev, called_by: e.target.value }))}
                     placeholder="Who called this meeting"
-                    className="bg-vault-navy border-vault-gold/20 text-white"
+                    className="bg-[#05080F] border-vault-gold/20 text-white"
                   />
                 </div>
               </div>
