@@ -3001,3 +3001,179 @@ async def get_governance_status(request: Request):
         },
         "empty_states": EMPTY_STATES
     })
+
+
+# ============ ACTIVITY FEED ============
+
+@router.get("/activity-feed")
+async def get_activity_feed(
+    request: Request,
+    portfolio_id: Optional[str] = None,
+    limit: int = 10
+):
+    """Get recent activity across all governance modules for the Signal Feed"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        activities = []
+        base_query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            base_query["portfolio_id"] = portfolio_id
+        
+        # Fetch recent meetings
+        meetings = await db.meetings.find(
+            base_query, {"_id": 0, "meeting_id": 1, "title": 1, "rm_id": 1, "status": 1, "created_at": 1, "updated_at": 1}
+        ).sort("updated_at", -1).limit(limit).to_list(limit)
+        
+        for m in meetings:
+            status_msg = "Meeting Finalized" if m.get("status") == "finalized" else "Meeting Created"
+            activities.append({
+                "id": m.get("meeting_id"),
+                "type": "meeting",
+                "message": status_msg,
+                "detail": f"RM-ID {m.get('rm_id', 'N/A')}",
+                "timestamp": m.get("updated_at") or m.get("created_at"),
+                "rm_id": m.get("rm_id")
+            })
+        
+        # Fetch recent distributions
+        distributions = await db.distributions.find(
+            base_query, {"_id": 0, "distribution_id": 1, "title": 1, "rm_id": 1, "status": 1, "amount": 1, "created_at": 1, "updated_at": 1}
+        ).sort("updated_at", -1).limit(limit).to_list(limit)
+        
+        for d in distributions:
+            status_msgs = {
+                "draft": "Distribution Drafted",
+                "pending": "Distribution Pending",
+                "approved": "Distribution Approved",
+                "paid": "Distribution Paid"
+            }
+            msg = status_msgs.get(d.get("status"), "Distribution Logged")
+            activities.append({
+                "id": d.get("distribution_id"),
+                "type": "distribution",
+                "message": msg,
+                "detail": f"${d.get('amount', 0):,.0f} • {d.get('rm_id', 'N/A')}",
+                "timestamp": d.get("updated_at") or d.get("created_at"),
+                "rm_id": d.get("rm_id")
+            })
+        
+        # Fetch recent disputes
+        disputes = await db.disputes.find(
+            base_query, {"_id": 0, "dispute_id": 1, "title": 1, "rm_id": 1, "status": 1, "created_at": 1, "updated_at": 1}
+        ).sort("updated_at", -1).limit(limit).to_list(limit)
+        
+        for dp in disputes:
+            status_msgs = {
+                "open": "Dispute Opened",
+                "in_progress": "Dispute In Progress",
+                "resolved": "Dispute Resolved",
+                "closed": "Dispute Closed"
+            }
+            msg = status_msgs.get(dp.get("status"), "Dispute Updated")
+            activities.append({
+                "id": dp.get("dispute_id"),
+                "type": "dispute",
+                "message": msg,
+                "detail": f"{dp.get('title', 'Unknown')} • {dp.get('rm_id', 'N/A')}",
+                "timestamp": dp.get("updated_at") or dp.get("created_at"),
+                "rm_id": dp.get("rm_id")
+            })
+        
+        # Fetch recent insurance policies
+        insurance = await db.insurance_policies.find(
+            base_query, {"_id": 0, "policy_id": 1, "title": 1, "rm_id": 1, "status": 1, "death_benefit": 1, "created_at": 1, "updated_at": 1}
+        ).sort("updated_at", -1).limit(limit).to_list(limit)
+        
+        for ins in insurance:
+            status_msgs = {
+                "active": "Policy Active",
+                "pending": "Policy Pending",
+                "lapsed": "Policy Lapsed",
+                "claimed": "Policy Claimed"
+            }
+            msg = status_msgs.get(ins.get("status"), "Insurance Updated")
+            benefit = ins.get("death_benefit", 0)
+            activities.append({
+                "id": ins.get("policy_id"),
+                "type": "insurance",
+                "message": msg,
+                "detail": f"Benefit ${benefit:,.0f} • {ins.get('rm_id', 'N/A')}",
+                "timestamp": ins.get("updated_at") or ins.get("created_at"),
+                "rm_id": ins.get("rm_id")
+            })
+        
+        # Fetch recent compensation entries
+        compensation = await db.compensation_entries.find(
+            base_query, {"_id": 0, "compensation_id": 1, "title": 1, "rm_id": 1, "status": 1, "amount": 1, "recipient_name": 1, "created_at": 1, "updated_at": 1}
+        ).sort("updated_at", -1).limit(limit).to_list(limit)
+        
+        for comp in compensation:
+            status_msgs = {
+                "draft": "Compensation Drafted",
+                "pending_approval": "Compensation Pending",
+                "approved": "Compensation Approved",
+                "paid": "Compensation Paid"
+            }
+            msg = status_msgs.get(comp.get("status"), "Compensation Logged")
+            activities.append({
+                "id": comp.get("compensation_id"),
+                "type": "compensation",
+                "message": msg,
+                "detail": f"${comp.get('amount', 0):,.0f} to {comp.get('recipient_name', 'Unknown')}",
+                "timestamp": comp.get("updated_at") or comp.get("created_at"),
+                "rm_id": comp.get("rm_id")
+            })
+        
+        # Sort all activities by timestamp (most recent first)
+        def parse_timestamp(item):
+            ts = item.get("timestamp", "")
+            if not ts:
+                return datetime.min
+            try:
+                if isinstance(ts, str):
+                    return datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                return ts
+            except:
+                return datetime.min
+        
+        activities.sort(key=parse_timestamp, reverse=True)
+        
+        # Format timestamps as relative time
+        now = datetime.now(timezone.utc)
+        for activity in activities:
+            ts = activity.get("timestamp")
+            if ts:
+                try:
+                    if isinstance(ts, str):
+                        ts = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                    delta = now - ts
+                    if delta.total_seconds() < 60:
+                        activity["time"] = "Just now"
+                    elif delta.total_seconds() < 3600:
+                        mins = int(delta.total_seconds() / 60)
+                        activity["time"] = f"{mins}m ago"
+                    elif delta.total_seconds() < 86400:
+                        hours = int(delta.total_seconds() / 3600)
+                        activity["time"] = f"{hours}h ago"
+                    else:
+                        days = int(delta.total_seconds() / 86400)
+                        activity["time"] = f"{days}d ago"
+                except:
+                    activity["time"] = "Unknown"
+            else:
+                activity["time"] = "Unknown"
+        
+        return success_list(
+            items=activities[:limit],
+            total=len(activities)
+        )
+        
+    except Exception as e:
+        print(f"Error fetching activity feed: {e}")
+        import traceback
+        traceback.print_exc()
+        return error_response("DB_ERROR", "Failed to fetch activity feed", status_code=500)
