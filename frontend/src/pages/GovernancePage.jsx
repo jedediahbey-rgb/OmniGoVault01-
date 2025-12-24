@@ -1349,6 +1349,158 @@ export default function GovernancePage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* New Dispute Dialog */}
+      <Dialog open={showNewDispute} onOpenChange={setShowNewDispute}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
+              <Scales className="w-6 h-6" />
+              Record Dispute
+            </DialogTitle>
+            <DialogDescription className="text-vault-muted">
+              Track a dispute, claim, or litigation matter
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Dispute Title *</label>
+              <Input
+                placeholder="e.g., Smith v. Trust - Beneficiary Distribution Claim"
+                value={newDispute.title}
+                onChange={(e) => setNewDispute(prev => ({ ...prev, title: e.target.value }))}
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Dispute Type</label>
+                <Select 
+                  value={newDispute.dispute_type} 
+                  onValueChange={(v) => setNewDispute(prev => ({ ...prev, dispute_type: v }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <SelectItem value="beneficiary" className="text-white hover:bg-vault-gold/20">Beneficiary</SelectItem>
+                    <SelectItem value="trustee" className="text-white hover:bg-vault-gold/20">Trustee</SelectItem>
+                    <SelectItem value="third_party" className="text-white hover:bg-vault-gold/20">Third Party</SelectItem>
+                    <SelectItem value="tax" className="text-white hover:bg-vault-gold/20">Tax</SelectItem>
+                    <SelectItem value="regulatory" className="text-white hover:bg-vault-gold/20">Regulatory</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Priority</label>
+                <Select 
+                  value={newDispute.priority} 
+                  onValueChange={(v) => setNewDispute(prev => ({ ...prev, priority: v }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <SelectItem value="low" className="text-white hover:bg-vault-gold/20">Low</SelectItem>
+                    <SelectItem value="medium" className="text-white hover:bg-vault-gold/20">Medium</SelectItem>
+                    <SelectItem value="high" className="text-white hover:bg-vault-gold/20">High</SelectItem>
+                    <SelectItem value="critical" className="text-white hover:bg-vault-gold/20">Critical</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Amount Claimed</label>
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  value={newDispute.amount_claimed}
+                  onChange={(e) => setNewDispute(prev => ({ ...prev, amount_claimed: e.target.value }))}
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Currency</label>
+                <Select 
+                  value={newDispute.currency} 
+                  onValueChange={(v) => setNewDispute(prev => ({ ...prev, currency: v }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <SelectItem value="USD" className="text-white hover:bg-vault-gold/20">USD</SelectItem>
+                    <SelectItem value="EUR" className="text-white hover:bg-vault-gold/20">EUR</SelectItem>
+                    <SelectItem value="GBP" className="text-white hover:bg-vault-gold/20">GBP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Case Number</label>
+                <Input
+                  placeholder="e.g., 2024-CV-12345"
+                  value={newDispute.case_number}
+                  onChange={(e) => setNewDispute(prev => ({ ...prev, case_number: e.target.value }))}
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Jurisdiction</label>
+                <Input
+                  placeholder="e.g., Superior Court, CA"
+                  value={newDispute.jurisdiction}
+                  onChange={(e) => setNewDispute(prev => ({ ...prev, jurisdiction: e.target.value }))}
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Description</label>
+              <Textarea
+                placeholder="Brief description of the dispute..."
+                value={newDispute.description}
+                onChange={(e) => setNewDispute(prev => ({ ...prev, description: e.target.value }))}
+                className="bg-[#05080F] border-vault-gold/20 text-white min-h-[80px]"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowNewDispute(false)}
+              className="border-vault-gold/30 text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateDispute}
+              disabled={creatingDispute || !newDispute.title.trim()}
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+            >
+              {creatingDispute ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-vault-dark border-t-transparent rounded-full animate-spin mr-2" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Record Dispute
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
