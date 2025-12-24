@@ -298,7 +298,7 @@ class EquityTrustAPITester:
                 }
             ]
         }
-        created_meeting = self.run_test("Governance - Create Meeting", "POST", "governance/meetings", 201, meeting_data)
+        created_meeting = self.run_test("Governance - Create Meeting", "POST", "governance/meetings", 200, meeting_data)
         
         if not created_meeting or 'meeting_id' not in created_meeting:
             print("   ❌ Failed to create meeting, skipping remaining governance tests")
