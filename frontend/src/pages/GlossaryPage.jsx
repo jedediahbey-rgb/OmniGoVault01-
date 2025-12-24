@@ -739,7 +739,7 @@ export default function GlossaryPage({ user }) {
         <div className="relative flex-1">
           <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" weight="duotone" />
           <Input
-            placeholder="MagnifyingGlass terms..."
+            placeholder="Search terms..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-white/5 border-white/10 focus:border-vault-gold"
