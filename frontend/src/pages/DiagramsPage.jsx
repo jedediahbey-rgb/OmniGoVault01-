@@ -259,7 +259,10 @@ const equityLawEdges = [
     target: 'equity',
     label: 'Supplements',
     style: { stroke: '#A855F7', strokeDasharray: '5,5' },
-    labelStyle: { fill: '#A855F7', fontSize: 12 },
+    labelStyle: { fill: '#A855F7', fontSize: 12, fontWeight: 600 },
+    labelBgStyle: { fill: '#0F172A', fillOpacity: 0.95 },
+    labelBgPadding: [8, 4],
+    labelBgBorderRadius: 4,
     markerEnd: { type: MarkerType.ArrowClosed, color: '#A855F7' },
   },
 ];
