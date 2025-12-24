@@ -210,26 +210,26 @@ const TrustHealthCard = () => {
   ];
   
   return (
-    <HoloCard className="p-6">
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-white mb-1">Trust Health</h3>
-          <p className="text-sm text-slate-400">Overall governance score</p>
+    <HoloCard className="p-4 sm:p-6">
+      <div className="flex items-start justify-between gap-2 mb-4 sm:mb-6">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-base sm:text-lg font-semibold text-white mb-1">Trust Health</h3>
+          <p className="text-xs sm:text-sm text-slate-400">Overall governance score</p>
         </div>
         <IconChip icon={Pulse} label="Live" variant="green" />
       </div>
       
       {/* Score */}
-      <div className="flex items-end gap-4 mb-6">
-        <div className="text-5xl font-bold text-[#C6A87C]">{score}</div>
-        <div className="pb-2">
-          <span className="text-sm text-emerald-400">+3</span>
-          <span className="text-xs text-slate-500 ml-1">this week</span>
+      <div className="flex items-end gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="text-4xl sm:text-5xl font-bold text-[#C6A87C]">{score}</div>
+        <div className="pb-1 sm:pb-2">
+          <span className="text-xs sm:text-sm text-emerald-400">+3</span>
+          <span className="text-[10px] sm:text-xs text-slate-500 ml-1">this week</span>
         </div>
       </div>
       
       {/* Mini trend */}
-      <div className="h-12 mb-6 flex items-end gap-1">
+      <div className="h-10 sm:h-12 mb-4 sm:mb-6 flex items-end gap-1">
         {[65, 70, 68, 75, 80, 85, 87].map((val, i) => (
           <div
             key={i}
@@ -241,23 +241,23 @@ const TrustHealthCard = () => {
       
       {/* Next Actions */}
       <div className="space-y-2 mb-4">
-        <p className="text-xs text-slate-500 uppercase tracking-wider">Next Actions</p>
+        <p className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">Next Actions</p>
         {nextActions.map((action, i) => (
-          <div key={i} className="flex items-center gap-2 text-sm">
-            <div className={`w-1.5 h-1.5 rounded-full ${
+          <div key={i} className="flex items-center gap-2 text-xs sm:text-sm">
+            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
               action.priority === 'high' ? 'bg-red-400' :
               action.priority === 'medium' ? 'bg-amber-400' : 'bg-slate-400'
             }`} />
-            <span className="text-slate-300">{action.task}</span>
+            <span className="text-slate-300 truncate">{action.task}</span>
           </div>
         ))}
       </div>
       
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" className="flex-1 border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10">
-          View Dashboard
+        <Button variant="outline" size="sm" className="flex-1 border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 text-xs sm:text-sm">
+          Dashboard
         </Button>
-        <Button variant="outline" size="sm" className="border-white/10 text-slate-400 hover:bg-white/5">
+        <Button variant="outline" size="sm" className="border-white/10 text-slate-400 hover:bg-white/5 text-xs sm:text-sm">
           Digest
         </Button>
       </div>
