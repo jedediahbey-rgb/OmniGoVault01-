@@ -393,9 +393,11 @@ export default function DistributionEditorPage({ user }) {
 
   const typeConfig = distributionTypeConfig[distribution.distribution_type] || distributionTypeConfig.regular;
   const TypeIcon = typeConfig.icon;
-  const status = statusConfig[distribution.status] || statusConfig.draft;
-  const StatusIcon = status.icon;
   const isLocked = distribution.locked === true || distribution.locked_at !== null;
+  // If locked, show "Finalized" status
+  const effectiveStatus = isLocked ? 'finalized' : distribution.status;
+  const status = statusConfig[effectiveStatus] || statusConfig.draft;
+  const StatusIcon = status.icon;
   const isDraft = distribution.status === 'draft' && !isLocked;
   const isPendingApproval = distribution.status === 'pending_approval';
   const isApproved = distribution.status === 'approved';
@@ -438,12 +440,6 @@ export default function DistributionEditorPage({ user }) {
               <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20">
                 {typeConfig.label}
               </Badge>
-              {isLocked && (
-                <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                  <Lock className="w-3 h-3 mr-1" />
-                  Locked
-                </Badge>
-              )}
             </div>
             
             {editingHeader && isDraft ? (
