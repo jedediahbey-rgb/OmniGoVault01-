@@ -272,6 +272,28 @@ const AppRouter = ({ auth }) => {
         }
       />
       
+      {/* Governance Routes */}
+      <Route
+        path="/vault/governance"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <GovernancePage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/vault/governance/meetings/:meetingId"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <MeetingEditorPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
