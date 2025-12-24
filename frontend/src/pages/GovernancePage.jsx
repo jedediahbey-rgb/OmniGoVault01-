@@ -1571,6 +1571,7 @@ export default function GovernancePage({ user }) {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
+                      onClick={() => navigate(`/vault/governance/compensation/${compId}`)}
                     >
                       <GlassCard className="p-4 hover:border-vault-gold/40 transition-colors cursor-pointer group">
                         <div className="flex items-start justify-between gap-4">
