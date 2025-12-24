@@ -145,7 +145,7 @@ const RelationshipsPage = () => {
                   </div>
 
                   {/* Content */}
-                  <div className="p-8">
+                  <div className="p-4 sm:p-8 min-w-0 max-w-full">
                     {/* Explanation */}
                     <p className="font-sans text-slate-300 mb-8 leading-relaxed text-center max-w-2xl mx-auto">
                       {selectedRelationship.explanation}

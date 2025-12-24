@@ -837,7 +837,7 @@ export default function VaultPage({ user }) {
                     )}
                   </div>
                   <FileText className="w-4 h-4 text-white/40" weight="duotone" />
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="text-white text-sm">{doc.title}</p>
                     <p className="text-white/40 text-xs">{humanizeSlug(doc.document_type)}</p>
                   </div>

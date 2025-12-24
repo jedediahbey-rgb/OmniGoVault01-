@@ -831,7 +831,7 @@ export default function LearnPage({ user }) {
     
     if (!quiz) {
       return (
-        <div className="p-8">
+        <div className="p-4 sm:p-8 min-w-0 max-w-full">
           <button
             onClick={() => setShowQuiz(false)}
             className="flex items-center gap-2 text-vault-gold mb-6 hover:underline"
@@ -848,7 +848,7 @@ export default function LearnPage({ user }) {
     }
 
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-8 min-w-0 max-w-full">
         <button
           onClick={() => { setShowQuiz(false); resetQuiz(); }}
           className="flex items-center gap-2 text-vault-gold mb-6 hover:underline"
@@ -955,7 +955,7 @@ export default function LearnPage({ user }) {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8 min-w-0 max-w-full">
       <PageHeader
         icon={BookOpen}
         title="Learn"
@@ -1033,7 +1033,7 @@ export default function LearnPage({ user }) {
             <div className="w-14 h-14 rounded-xl bg-vault-gold/10 flex items-center justify-center">
               <selectedModule.icon className="w-7 h-7 text-vault-gold" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <h2 className="text-2xl font-heading text-white">{selectedModule.title}</h2>
               <p className="text-white/50">{selectedModule.description}</p>
             </div>
@@ -1069,7 +1069,7 @@ export default function LearnPage({ user }) {
                       <span className="text-vault-gold font-mono">{idx + 1}</span>
                     )}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <h4 className="text-white font-medium">{lesson.title}</h4>
                     <p className="text-white/40 text-sm">{lesson.keyPoints.length} key concepts</p>
                   </div>
@@ -1190,7 +1190,7 @@ export default function LearnPage({ user }) {
                   Previous Lesson
                 </Button>
               )}
-              <div className="flex-1" />
+              <div className="flex-1 min-w-0" />
               {selectedModule.lessons.indexOf(selectedLesson) < selectedModule.lessons.length - 1 && (
                 <Button
                   onClick={() => {
