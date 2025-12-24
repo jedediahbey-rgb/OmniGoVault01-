@@ -1496,6 +1496,7 @@ async def get_documents(portfolio_id: Optional[str] = None, include_deleted: boo
 async def get_deleted_documents(user: User = Depends(get_current_user)):
     """Get documents in trash"""
     docs = await db.documents.find({"user_id": user.user_id, "is_deleted": True}, {"_id": 0}).sort("deleted_at", -1).to_list(100)
+    print(f"[TRASH] User {user.user_id} - Found {len(docs)} trashed documents")
     return docs
 
 
