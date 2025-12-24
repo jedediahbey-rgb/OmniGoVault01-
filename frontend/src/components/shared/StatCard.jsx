@@ -64,7 +64,7 @@ export default function StatCard({
       {/* Desktop: Original side-by-side layout */}
       <div className="hidden sm:flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-xs uppercase tracking-widest text-white/40 mb-2">
+          <p className="text-xs uppercase tracking-widest text-white/40 mb-2 leading-none">
             {displayLabel}
           </p>
           <p className="text-3xl font-heading text-white tabular-nums truncate">{value}</p>
@@ -81,9 +81,11 @@ export default function StatCard({
           )}
         </div>
         {Icon && (
-          <IconChip variant={iconVariant} size="md">
-            <Icon weight="duotone" />
-          </IconChip>
+          <div className="shrink-0">
+            <IconChip variant={iconVariant} size="md">
+              <Icon weight="duotone" />
+            </IconChip>
+          </div>
         )}
       </div>
     </motion.div>
