@@ -1514,7 +1514,17 @@ async def execute_distribution(distribution_id: str, data: dict, request: Reques
         return error_response("EXECUTE_ERROR", "Failed to execute distribution", status_code=500)
 
 
-# ============ DISPUTES (Stub with Empty State) ============
+# ============ DISPUTES ============
+
+def normalize_dispute(dispute: dict) -> dict:
+    """Normalize dispute data for API responses"""
+    if not dispute:
+        return dispute
+    dispute["id"] = dispute.get("dispute_id", "")
+    if "locked" not in dispute:
+        dispute["locked"] = dispute.get("status") in ("settled", "closed")
+    return dispute
+
 
 @router.get("/disputes")
 async def get_disputes(
@@ -1522,6 +1532,7 @@ async def get_disputes(
     portfolio_id: Optional[str] = None,
     trust_id: Optional[str] = None,
     status: Optional[str] = None,
+    priority: Optional[str] = None,
     sort_by: str = "created_at",
     sort_dir: str = "asc",
     limit: int = 100,
@@ -1533,13 +1544,37 @@ async def get_disputes(
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return success_list(
-        items=[],
-        total=0,
-        sort_by=sort_by,
-        sort_dir=sort_dir,
-        empty_state=EMPTY_STATES["disputes"]
-    )
+    try:
+        query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        if trust_id:
+            query["trust_id"] = trust_id
+        if status:
+            query["status"] = status
+        if priority:
+            query["priority"] = priority
+        
+        sort_direction = 1 if sort_dir == "asc" else -1
+        
+        disputes = await db.disputes.find(query, {"_id": 0}).sort(
+            sort_by, sort_direction
+        ).skip(offset).limit(limit).to_list(limit)
+        
+        total = await db.disputes.count_documents(query)
+        
+        disputes = [normalize_dispute(d) for d in disputes]
+        
+        return success_list(
+            items=disputes,
+            total=total,
+            sort_by=sort_by,
+            sort_dir=sort_dir,
+            empty_state=EMPTY_STATES["disputes"] if not disputes else None
+        )
+    except Exception as e:
+        print(f"Error fetching disputes: {e}")
+        return error_response("DB_ERROR", "Failed to fetch disputes", status_code=500)
 
 
 @router.get("/disputes/board")
@@ -1554,17 +1589,117 @@ async def get_disputes_board(
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return success_item({
-        "has_data": False,
-        "columns": [
-            {"id": "open", "title": "Open", "cards": []},
-            {"id": "review", "title": "Under Review", "cards": []},
-            {"id": "mediation", "title": "Mediation", "cards": []},
-            {"id": "resolved", "title": "Resolved", "cards": []},
-            {"id": "archived", "title": "Archived", "cards": []}
-        ],
-        "empty_state": EMPTY_STATES["disputes"]
-    })
+    try:
+        query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        if trust_id:
+            query["trust_id"] = trust_id
+        
+        disputes = await db.disputes.find(query, {"_id": 0}).to_list(1000)
+        
+        if not disputes:
+            return success_item({
+                "has_data": False,
+                "columns": [
+                    {"id": "open", "title": "Open", "cards": []},
+                    {"id": "in_progress", "title": "In Progress", "cards": []},
+                    {"id": "mediation", "title": "Mediation", "cards": []},
+                    {"id": "litigation", "title": "Litigation", "cards": []},
+                    {"id": "settled", "title": "Settled", "cards": []},
+                    {"id": "closed", "title": "Closed", "cards": []}
+                ],
+                "empty_state": EMPTY_STATES["disputes"]
+            })
+        
+        # Group by status
+        columns = {
+            "open": {"id": "open", "title": "Open", "cards": []},
+            "in_progress": {"id": "in_progress", "title": "In Progress", "cards": []},
+            "mediation": {"id": "mediation", "title": "Mediation", "cards": []},
+            "litigation": {"id": "litigation", "title": "Litigation", "cards": []},
+            "settled": {"id": "settled", "title": "Settled", "cards": []},
+            "closed": {"id": "closed", "title": "Closed", "cards": []},
+            "appealed": {"id": "appealed", "title": "Appealed", "cards": []}
+        }
+        
+        for d in disputes:
+            status = d.get("status", "open")
+            if status in columns:
+                columns[status]["cards"].append(normalize_dispute(d))
+        
+        return success_item({
+            "has_data": True,
+            "columns": list(columns.values())
+        })
+    except Exception as e:
+        print(f"Error fetching disputes board: {e}")
+        return error_response("DB_ERROR", "Failed to fetch disputes board", status_code=500)
+
+
+@router.get("/disputes/summary")
+async def get_disputes_summary(
+    request: Request,
+    portfolio_id: Optional[str] = None,
+    trust_id: Optional[str] = None
+):
+    """Get aggregated disputes summary"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        if trust_id:
+            query["trust_id"] = trust_id
+        
+        disputes = await db.disputes.find(query, {"_id": 0}).to_list(1000)
+        
+        if not disputes:
+            return success_item({
+                "has_data": False,
+                "total_disputes": 0,
+                "open_disputes": 0,
+                "total_exposure": 0,
+                "by_status": {},
+                "by_priority": {},
+                "by_type": {},
+                "empty_state": EMPTY_STATES["disputes"]
+            })
+        
+        # Calculate summary
+        total_exposure = sum(d.get("estimated_exposure", 0) or d.get("amount_claimed", 0) for d in disputes)
+        open_disputes = len([d for d in disputes if d.get("status") not in ("settled", "closed")])
+        
+        by_status = {}
+        by_priority = {}
+        by_type = {}
+        
+        for d in disputes:
+            status = d.get("status", "open")
+            by_status[status] = by_status.get(status, 0) + 1
+            
+            priority = d.get("priority", "medium")
+            by_priority[priority] = by_priority.get(priority, 0) + 1
+            
+            dtype = d.get("dispute_type", "beneficiary")
+            by_type[dtype] = by_type.get(dtype, 0) + 1
+        
+        return success_item({
+            "has_data": True,
+            "total_disputes": len(disputes),
+            "open_disputes": open_disputes,
+            "total_exposure": total_exposure,
+            "by_status": by_status,
+            "by_priority": by_priority,
+            "by_type": by_type
+        })
+    except Exception as e:
+        print(f"Error fetching disputes summary: {e}")
+        return error_response("DB_ERROR", "Failed to fetch summary", status_code=500)
 
 
 @router.post("/disputes")
@@ -1575,7 +1710,303 @@ async def create_dispute(data: dict, request: Request):
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return error_response("NOT_IMPLEMENTED", "Dispute creation coming soon")
+    if not data.get("portfolio_id"):
+        return error_response("MISSING_PORTFOLIO", "Portfolio ID is required")
+    if not data.get("title"):
+        return error_response("MISSING_TITLE", "Dispute title is required")
+    
+    try:
+        # Generate RM-ID
+        rm_id = ""
+        try:
+            rm_id, _, _, _ = await generate_subject_rm_id(
+                data.get("portfolio_id"), user.user_id, "22", "Dispute"
+            )
+        except Exception as e:
+            print(f"Warning: Could not generate RM-ID: {e}")
+        
+        from models.governance import Dispute
+        
+        dispute = Dispute(
+            portfolio_id=data.get("portfolio_id"),
+            trust_id=data.get("trust_id"),
+            user_id=user.user_id,
+            title=data.get("title"),
+            dispute_type=data.get("dispute_type", "beneficiary"),
+            description=data.get("description", ""),
+            rm_id=rm_id,
+            case_number=data.get("case_number", ""),
+            jurisdiction=data.get("jurisdiction", ""),
+            filing_date=data.get("filing_date"),
+            amount_claimed=data.get("amount_claimed", 0),
+            currency=data.get("currency", "USD"),
+            estimated_exposure=data.get("estimated_exposure", 0),
+            priority=data.get("priority", "medium"),
+            primary_counsel=data.get("primary_counsel", ""),
+            counsel_firm=data.get("counsel_firm", ""),
+            next_deadline=data.get("next_deadline"),
+            next_hearing_date=data.get("next_hearing_date")
+        )
+        
+        doc = dispute.model_dump()
+        doc["created_at"] = doc["created_at"].isoformat()
+        doc["updated_at"] = doc["updated_at"].isoformat()
+        
+        await db.disputes.insert_one(doc)
+        
+        return success_item({k: v for k, v in doc.items() if k != "_id"})
+    except Exception as e:
+        print(f"Error creating dispute: {e}")
+        return error_response("CREATE_ERROR", f"Failed to create dispute: {str(e)}", status_code=500)
+
+
+@router.get("/disputes/{dispute_id}")
+async def get_dispute(dispute_id: str, request: Request):
+    """Get a single dispute"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id},
+            {"_id": 0}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        return success_item(normalize_dispute(dispute))
+    except Exception as e:
+        print(f"Error fetching dispute: {e}")
+        return error_response("DB_ERROR", "Failed to fetch dispute", status_code=500)
+
+
+@router.put("/disputes/{dispute_id}")
+async def update_dispute(dispute_id: str, data: dict, request: Request):
+    """Update a dispute (only if not settled/closed)"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        # Check if locked
+        is_locked = dispute.get("locked", False) or dispute.get("status") in ("settled", "closed")
+        if is_locked:
+            return error_response(
+                "DISPUTE_LOCKED",
+                "Dispute is closed and cannot be edited.",
+                status_code=409
+            )
+        
+        # Build update
+        update_fields = {}
+        allowed_fields = [
+            "title", "dispute_type", "description", "case_number", "jurisdiction",
+            "filing_date", "amount_claimed", "currency", "estimated_exposure",
+            "priority", "status", "parties", "events", "primary_counsel",
+            "counsel_firm", "counsel_contact", "next_deadline", "next_hearing_date",
+            "statute_of_limitations", "related_document_ids", "related_meeting_ids"
+        ]
+        
+        for field in allowed_fields:
+            if field in data:
+                update_fields[field] = data[field]
+        
+        update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": update_fields}
+        )
+        
+        updated = await db.disputes.find_one({"dispute_id": dispute_id}, {"_id": 0})
+        return success_item(normalize_dispute(updated))
+    except Exception as e:
+        print(f"Error updating dispute: {e}")
+        return error_response("UPDATE_ERROR", "Failed to update dispute", status_code=500)
+
+
+@router.delete("/disputes/{dispute_id}")
+async def delete_dispute(dispute_id: str, request: Request):
+    """Soft delete a dispute"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        # Can only delete open disputes
+        if dispute.get("status") not in ("open", "in_progress"):
+            return error_response("CANNOT_DELETE", "Only open disputes can be deleted")
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": {"deleted_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        return success_message("Dispute deleted")
+    except Exception as e:
+        print(f"Error deleting dispute: {e}")
+        return error_response("DELETE_ERROR", "Failed to delete dispute", status_code=500)
+
+
+@router.post("/disputes/{dispute_id}/events")
+async def add_dispute_event(dispute_id: str, data: dict, request: Request):
+    """Add a timeline event to a dispute"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        from models.governance import DisputeEvent
+        
+        event = DisputeEvent(
+            event_type=data.get("event_type", "filing"),
+            title=data.get("title", ""),
+            description=data.get("description", ""),
+            event_date=data.get("event_date", datetime.now(timezone.utc).isoformat()),
+            documents=data.get("documents", []),
+            created_by=data.get("created_by", ""),
+            created_at=datetime.now(timezone.utc).isoformat()
+        ).model_dump()
+        
+        events = dispute.get("events", [])
+        events.append(event)
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": {
+                "events": events,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        updated = await db.disputes.find_one({"dispute_id": dispute_id}, {"_id": 0})
+        return success_message("Event added", {"item": normalize_dispute(updated)})
+    except Exception as e:
+        print(f"Error adding event: {e}")
+        return error_response("EVENT_ERROR", "Failed to add event", status_code=500)
+
+
+@router.post("/disputes/{dispute_id}/parties")
+async def add_dispute_party(dispute_id: str, data: dict, request: Request):
+    """Add a party to a dispute"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        from models.governance import DisputeParty
+        
+        party = DisputeParty(
+            name=data.get("name", ""),
+            role=data.get("role", "claimant"),
+            contact_info=data.get("contact_info", ""),
+            represented_by=data.get("represented_by", ""),
+            notes=data.get("notes", "")
+        ).model_dump()
+        
+        parties = dispute.get("parties", [])
+        parties.append(party)
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": {
+                "parties": parties,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        updated = await db.disputes.find_one({"dispute_id": dispute_id}, {"_id": 0})
+        return success_message("Party added", {"item": normalize_dispute(updated)})
+    except Exception as e:
+        print(f"Error adding party: {e}")
+        return error_response("PARTY_ERROR", "Failed to add party", status_code=500)
+
+
+@router.post("/disputes/{dispute_id}/resolve")
+async def resolve_dispute(dispute_id: str, data: dict, request: Request):
+    """Resolve/close a dispute"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        if dispute.get("status") in ("settled", "closed"):
+            return error_response("ALREADY_RESOLVED", "Dispute is already resolved")
+        
+        from models.governance import DisputeResolution
+        
+        resolution = DisputeResolution(
+            resolution_type=data.get("resolution_type", "settlement"),
+            resolution_date=datetime.now(timezone.utc).isoformat(),
+            summary=data.get("summary", ""),
+            terms=data.get("terms", ""),
+            monetary_award=data.get("monetary_award", 0),
+            currency=data.get("currency", dispute.get("currency", "USD")),
+            in_favor_of=data.get("in_favor_of", ""),
+            documents=data.get("documents", [])
+        ).model_dump()
+        
+        new_status = "settled" if data.get("resolution_type") == "settlement" else "closed"
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": {
+                "resolution": resolution,
+                "status": new_status,
+                "locked": True,
+                "locked_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        updated = await db.disputes.find_one({"dispute_id": dispute_id}, {"_id": 0})
+        return success_message("Dispute resolved", {"item": normalize_dispute(updated)})
+    except Exception as e:
+        print(f"Error resolving dispute: {e}")
+        return error_response("RESOLVE_ERROR", "Failed to resolve dispute", status_code=500)
 
 
 # ============ INSURANCE POLICIES (Stub with Empty State) ============
