@@ -443,7 +443,7 @@ async def create_amendment(meeting_id: str, data: dict, request: Request = None)
     except Exception as e:
         print(f"Warning: Could not generate RM-ID: {e}")
     
-    from backend.models.governance import Meeting
+    from models.governance import Meeting
     
     # Create amendment meeting based on original
     amendment = Meeting(
