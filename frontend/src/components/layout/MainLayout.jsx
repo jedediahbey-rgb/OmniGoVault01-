@@ -81,17 +81,14 @@ export default function MainLayout({ children, user, onLogout }) {
       />
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-vault-void/95 backdrop-blur-xl border-b border-white/10 px-4 py-3">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-vault-void/95 backdrop-blur-xl border-b border-white/10 px-4 py-2">
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            aria-label="Open menu"
-          >
-            <List className="w-5 h-5" weight="duotone" />
-          </button>
+          <VaultToggle 
+            isOpen={sidebarOpen} 
+            onClick={() => setSidebarOpen(!sidebarOpen)} 
+          />
           <span className="font-heading text-lg text-white">Equity Trust</span>
-          <div className="w-9" /> {/* Spacer for centering */}
+          <div className="w-10" /> {/* Spacer for centering */}
         </div>
       </header>
 
