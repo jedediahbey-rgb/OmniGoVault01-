@@ -630,13 +630,151 @@ export default function GovernancePage({ user }) {
             )}
           </TabsContent>
 
-          {/* Placeholder tabs for future modules */}
-          <TabsContent value="distributions">
-            <GlassCard className="p-12 text-center">
-              <HandCoins className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
-              <h3 className="text-xl font-heading text-white mb-2">Coming Soon</h3>
-              <p className="text-vault-muted">Distribution visualization with interactive charts</p>
-            </GlassCard>
+          {/* Distributions Tab */}
+          <TabsContent value="distributions" className="mt-0">
+            {distributionsLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : !selectedPortfolio ? (
+              <GlassCard className="p-8 sm:p-12 text-center">
+                <House className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
+                <h3 className="text-lg sm:text-xl font-heading text-white mb-2">Select a Portfolio</h3>
+                <p className="text-sm sm:text-base text-vault-muted">Choose a portfolio to view its distributions</p>
+              </GlassCard>
+            ) : filteredDistributions.length === 0 ? (
+              <GlassCard className="p-8 sm:p-12 text-center">
+                <HandCoins className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
+                <h3 className="text-lg sm:text-xl font-heading text-white mb-2">No Distributions Yet</h3>
+                <p className="text-sm sm:text-base text-vault-muted mb-6">Track beneficiary distributions, payout history, and approvals</p>
+                <Button
+                  onClick={() => setShowNewDistribution(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Distribution
+                </Button>
+              </GlassCard>
+            ) : (
+              <div className="space-y-4">
+                {/* New Distribution Button */}
+                <div className="flex justify-end mb-4">
+                  <Button
+                    onClick={() => setShowNewDistribution(true)}
+                    className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    New Distribution
+                  </Button>
+                </div>
+                
+                {filteredDistributions.map((distribution, index) => {
+                  const typeConfig = distributionTypeConfig[distribution.distribution_type] || distributionTypeConfig.regular;
+                  const TypeIcon = typeConfig.icon;
+                  const status = distributionStatusConfig[distribution.status] || distributionStatusConfig.draft;
+                  const distributionId = distribution.id || distribution.distribution_id;
+                  
+                  return (
+                    <motion.div
+                      key={distributionId}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <GlassCard 
+                        className="p-4 hover:border-vault-gold/40 transition-all cursor-pointer group"
+                        onClick={() => navigate(`/vault/governance/distributions/${distributionId}`)}
+                      >
+                        <div className="flex items-start gap-4">
+                          {/* Type Icon */}
+                          <div className={`p-3 rounded-xl ${typeConfig.bg}`}>
+                            <TypeIcon className={`w-6 h-6 ${typeConfig.color}`} />
+                          </div>
+                          
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <h3 className="text-lg font-heading text-white group-hover:text-vault-gold transition-colors">
+                                  {distribution.title}
+                                </h3>
+                                <div className="flex flex-wrap items-center gap-2 mt-1">
+                                  {distribution.rm_id && (
+                                    <span className="text-xs font-mono text-vault-muted bg-vault-dark/50 px-2 py-0.5 rounded">
+                                      {distribution.rm_id}
+                                    </span>
+                                  )}
+                                  <Badge className={`text-xs ${status.color} border`}>
+                                    {status.label}
+                                  </Badge>
+                                  {distribution.locked && (
+                                    <Badge className="text-xs bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
+                                      🔒 Locked
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Amount */}
+                              <div className="text-right">
+                                <div className="text-xl font-heading text-emerald-400">
+                                  {formatCurrency(distribution.total_amount, distribution.currency)}
+                                </div>
+                                <div className="text-xs text-vault-muted">
+                                  {distribution.asset_type || 'Cash'}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Details Row */}
+                            <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-vault-muted">
+                              {distribution.scheduled_date && (
+                                <div className="flex items-center gap-1">
+                                  <Calendar className="w-4 h-4" />
+                                  <span>{new Date(distribution.scheduled_date).toLocaleDateString()}</span>
+                                </div>
+                              )}
+                              {distribution.recipients?.length > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <Users className="w-4 h-4" />
+                                  <span>{distribution.recipients.length} recipient{distribution.recipients.length !== 1 ? 's' : ''}</span>
+                                </div>
+                              )}
+                              {distribution.requires_approval && (
+                                <div className="flex items-center gap-1">
+                                  <CheckCircle className="w-4 h-4" />
+                                  <span>{distribution.approvals?.length || 0}/{distribution.approval_threshold || 1} approvals</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Actions */}
+                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {distribution.status === 'draft' && !distribution.locked && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (window.confirm('Delete this draft distribution?')) {
+                                    handleDeleteDistribution(distributionId);
+                                  }
+                                }}
+                              >
+                                <Trash className="w-4 h-4" />
+                              </Button>
+                            )}
+                            <CaretRight className="w-5 h-5 text-vault-muted" />
+                          </div>
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="disputes">
