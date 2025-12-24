@@ -1107,7 +1107,9 @@ export default function GovernancePage({ user }) {
                 {filteredDistributions.map((distribution, index) => {
                   const typeConfig = distributionTypeConfig[distribution.distribution_type] || distributionTypeConfig.regular;
                   const TypeIcon = typeConfig.icon;
-                  const status = distributionStatusConfig[distribution.status] || distributionStatusConfig.draft;
+                  // If locked, always show "Finalized" status regardless of stored status
+                  const effectiveStatus = distribution.locked ? 'finalized' : distribution.status;
+                  const status = distributionStatusConfig[effectiveStatus] || distributionStatusConfig.draft;
                   const distributionId = distribution.id || distribution.distribution_id;
                   
                   return (
@@ -1143,11 +1145,6 @@ export default function GovernancePage({ user }) {
                                   <Badge className={`text-xs ${status.color} border`}>
                                     {status.label}
                                   </Badge>
-                                  {distribution.locked && (
-                                    <Badge className="text-xs bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                                      🔒 Locked
-                                    </Badge>
-                                  )}
                                 </div>
                               </div>
                               
