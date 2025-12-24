@@ -1196,11 +1196,129 @@ export default function GovernancePage({ user }) {
           </TabsContent>
 
           <TabsContent value="insurance">
-            <GlassCard className="p-12 text-center">
-              <ShieldCheck className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
-              <h3 className="text-xl font-heading text-white mb-2">Coming Soon</h3>
-              <p className="text-vault-muted">Life insurance policy management</p>
-            </GlassCard>
+            {insuranceLoading ? (
+              <GlassCard className="p-12 text-center">
+                <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <p className="text-vault-muted mt-4">Loading insurance policies...</p>
+              </GlassCard>
+            ) : filteredInsurance.length === 0 ? (
+              <GlassCard className="p-12 text-center">
+                <ShieldCheck className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
+                <h3 className="text-xl font-heading text-white mb-2">No Insurance Policies</h3>
+                <p className="text-vault-muted mb-6">Track life insurance policies owned by or for the trust</p>
+                <Button 
+                  onClick={() => setShowNewInsurance(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Insurance Policy
+                </Button>
+              </GlassCard>
+            ) : (
+              <div className="space-y-3">
+                {filteredInsurance.map((policy, idx) => {
+                  const policyId = policy.policy_id || policy.id;
+                  const typeConfig = insuranceTypeConfig[policy.policy_type] || insuranceTypeConfig.whole_life;
+                  const TypeIcon = typeConfig.icon;
+                  const statusConf = insuranceStatusConfig[policy.status] || insuranceStatusConfig.active;
+                  
+                  return (
+                    <motion.div
+                      key={policyId}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                    >
+                      <GlassCard 
+                        className="p-4 cursor-pointer hover:border-vault-gold/50 transition-all group"
+                        onClick={() => navigate(`/vault/governance/insurance/${policyId}`)}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className={`p-2 rounded-lg ${typeConfig.bg} shrink-0`}>
+                              <TypeIcon className={`w-5 h-5 ${typeConfig.color}`} weight="duotone" />
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <Badge className={`${statusConf.color} border text-xs`}>
+                                  {statusConf.label}
+                                </Badge>
+                                <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
+                                  {typeConfig.label}
+                                </Badge>
+                              </div>
+                              
+                              <h3 className="text-white font-medium truncate">{policy.title}</h3>
+                              
+                              {policy.rm_id && (
+                                <span className="text-xs font-mono text-vault-muted">{policy.rm_id}</span>
+                              )}
+                              
+                              {/* Death Benefit */}
+                              {policy.death_benefit > 0 && (
+                                <div className="text-lg font-heading text-emerald-400 mt-1">
+                                  {formatCurrency(policy.death_benefit, policy.currency)}
+                                  <span className="text-xs text-vault-muted ml-2">death benefit</span>
+                                </div>
+                              )}
+                              
+                              {/* Details Row */}
+                              <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-vault-muted">
+                                {policy.carrier_name && (
+                                  <div className="flex items-center gap-1">
+                                    <House className="w-4 h-4" />
+                                    <span>{policy.carrier_name}</span>
+                                  </div>
+                                )}
+                                {policy.policy_number && (
+                                  <div className="flex items-center gap-1">
+                                    <FileText className="w-4 h-4" />
+                                    <span>#{policy.policy_number}</span>
+                                  </div>
+                                )}
+                                {policy.insured_name && (
+                                  <div className="flex items-center gap-1">
+                                    <Users className="w-4 h-4" />
+                                    <span>Insured: {policy.insured_name}</span>
+                                  </div>
+                                )}
+                                {policy.premium_amount > 0 && (
+                                  <div className="flex items-center gap-1">
+                                    <CurrencyDollar className="w-4 h-4" />
+                                    <span>{formatCurrency(policy.premium_amount)} / {policy.premium_frequency}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Actions */}
+                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {policy.status === 'active' && !policy.locked && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (window.confirm('Delete this insurance policy?')) {
+                                    handleDeleteInsurance(policyId);
+                                  }
+                                }}
+                              >
+                                <Trash className="w-4 h-4" />
+                              </Button>
+                            )}
+                            <CaretRight className="w-5 h-5 text-vault-muted" />
+                          </div>
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </motion.div>
