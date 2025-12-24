@@ -303,6 +303,16 @@ export default function DisputeEditorPage({ user }) {
     }
   };
 
+  const handleDeleteParty = async (partyId) => {
+    try {
+      await axios.delete(`${API}/governance/disputes/${disputeId}/parties/${partyId}`);
+      await refetchDispute();
+      toast.success('Party removed');
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to remove party');
+    }
+  };
+
   const handleAddEvent = async () => {
     if (!newEvent.title.trim()) {
       toast.error('Please enter event title');
@@ -322,6 +332,16 @@ export default function DisputeEditorPage({ user }) {
       toast.success('Event added');
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to add event');
+    }
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      await axios.delete(`${API}/governance/disputes/${disputeId}/events/${eventId}`);
+      await refetchDispute();
+      toast.success('Event removed');
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to remove event');
     }
   };
 
