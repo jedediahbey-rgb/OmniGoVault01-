@@ -479,7 +479,11 @@ export default function MeetingEditorPage({ user }) {
       <motion.div variants={fadeInUp} className="mb-4">
         <Button
           variant="ghost"
-          onClick={() => navigate('/vault/governance')}
+          onClick={() => {
+            // Navigate with portfolio context to prevent unnecessary fetches
+            const portfolioId = meeting?.portfolio_id;
+            navigate(portfolioId ? `/vault/governance?portfolio=${portfolioId}` : '/vault/governance');
+          }}
           className="text-vault-muted hover:text-white"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
