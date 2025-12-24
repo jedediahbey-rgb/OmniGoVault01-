@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class EquityTrustAPITester:
-    def __init__(self, base_url="https://omnigovault.preview.emergentagent.com"):
+    def __init__(self, base_url="https://docvault-84.preview.emergentagent.com"):
         self.base_url = base_url
         self.session_token = None
         self.user_id = None
