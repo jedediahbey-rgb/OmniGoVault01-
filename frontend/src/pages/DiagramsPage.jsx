@@ -17,7 +17,7 @@ import {
   ArrowRight,
   Info,
   X
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';

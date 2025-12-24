@@ -6,14 +6,14 @@ import {
   Search, 
   ArrowRight, 
   BookOpen, 
-  Sparkles, 
+  Sparkle, 
   FileText,
   Link2,
-  ChevronDown,
-  ChevronUp,
+  CaretDown,
+  CaretUp,
   Filter,
   X
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Input } from '../components/ui/input';
@@ -654,7 +654,7 @@ export default function GlossaryPage({ user }) {
               {selectedTerm.relatedMaxims && selectedTerm.relatedMaxims.length > 0 && (
                 <div>
                   <h4 className="text-vault-gold uppercase tracking-wider text-sm mb-3 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkle className="w-4 h-4" />
                     Related Maxims
                   </h4>
                   <div className="space-y-2">

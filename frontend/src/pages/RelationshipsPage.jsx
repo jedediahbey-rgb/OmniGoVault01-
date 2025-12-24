@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Scale, ChevronRight, FileText, ArrowLeftRight, Users } from "lucide-react";
+import { Scales, CaretRight, FileText, ArrowLeftRight, Users } from "@phosphor-icons/react";
 import { Button } from "../components/ui/button";
 import axios from "axios";
 
@@ -43,7 +43,7 @@ const RelationshipsPage = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3">
               <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-                <Scale className="w-5 h-5 text-[#C6A87C]" />
+                <Scales className="w-5 h-5 text-[#C6A87C]" />
               </div>
               <span className="font-serif text-2xl font-semibold text-[#F8FAFC] tracking-tight">
                 Equity Trust Portfolio
@@ -69,7 +69,7 @@ const RelationshipsPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2 text-slate-400 text-sm mb-6">
             <Link to="/" className="hover:text-[#C6A87C]">Home</Link>
-            <ChevronRight className="w-4 h-4" />
+            <CaretRight className="w-4 h-4" />
             <span className="text-[#C6A87C]">Duty ↔ Right Relationships</span>
           </div>
           <h1 className="font-serif text-5xl text-[#F8FAFC] mb-4" data-testid="relationships-title">

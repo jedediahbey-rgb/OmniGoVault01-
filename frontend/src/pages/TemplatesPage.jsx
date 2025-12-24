@@ -9,12 +9,12 @@ import {
   Bell, 
   Package,
   Stamp,
-  Scale,
+  Scales,
   ArrowRight,
   Plus,
-  Sparkles,
+  Sparkle,
   Loader2
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
@@ -47,7 +47,7 @@ const iconMap = {
   bell: Bell,
   package: Package,
   stamp: Stamp,
-  scale: Scale
+  scale: Scales
 };
 
 export default function TemplatesPage({ user }) {
@@ -629,7 +629,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
               disabled={!selectedPortfolio || selectedPortfolio === '__none__'}
               className="btn-secondary"
             >
-              <Sparkles className="w-4 h-4 mr-2" />
+              <Sparkle className="w-4 h-4 mr-2" />
               Generate with AI
             </Button>
             <Button onClick={createDocument} disabled={creating} className="btn-primary">
@@ -644,7 +644,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
         <DialogContent className="bg-vault-navy border-white/10 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-vault-gold" />
+              <Sparkle className="w-5 h-5 text-vault-gold" />
               Generate Document with AI
             </DialogTitle>
             <DialogDescription className="text-white/60">
@@ -686,7 +686,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 mr-2" />
+                  <Sparkle className="w-4 h-4 mr-2" />
                   Generate Document
                 </>
               )}

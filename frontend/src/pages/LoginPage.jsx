@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Shield, ArrowLeft } from 'lucide-react';
+import { Shield, ArrowLeft } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { fadeInUp } from '../lib/motion';
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Scale, BookOpen, ChevronRight, Search, FileText, ExternalLink } from "lucide-react";
+import { Scales, BookOpen, CaretRight, Search, FileText, ArrowSquareOut } from "@phosphor-icons/react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import axios from "axios";
@@ -46,7 +46,7 @@ const KnowledgePage = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3" data-testid="logo-link">
               <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-                <Scale className="w-5 h-5 text-[#C6A87C]" />
+                <Scales className="w-5 h-5 text-[#C6A87C]" />
               </div>
               <span className="font-serif text-2xl font-semibold text-[#F8FAFC] tracking-tight">
                 Equity Trust Portfolio
@@ -72,7 +72,7 @@ const KnowledgePage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2 text-slate-400 text-sm mb-6">
             <Link to="/" className="hover:text-[#C6A87C]">Home</Link>
-            <ChevronRight className="w-4 h-4" />
+            <CaretRight className="w-4 h-4" />
             <span className="text-[#C6A87C]">Knowledge Base</span>
           </div>
           <div className="flex items-start justify-between gap-8">
@@ -151,7 +151,7 @@ const KnowledgePage = () => {
                       className="inline-flex items-center gap-2 text-[#C6A87C] font-sans text-sm font-medium"
                     >
                       Ask Assistant About This
-                      <ExternalLink className="w-3 h-3" />
+                      <ArrowSquareOut className="w-3 h-3" />
                     </Link>
                   </div>
                 </div>
@@ -183,7 +183,7 @@ const KnowledgePage = () => {
             <Link to="/sources">
               <Button variant="outline" className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10">
                 Source Library
-                <ChevronRight className="w-4 h-4 ml-2" />
+                <CaretRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
           </div>

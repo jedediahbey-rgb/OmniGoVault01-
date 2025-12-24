@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { 
   BookOpen, 
-  ChevronRight, 
+  CaretRight, 
   CheckCircle, 
   Circle,
   Play,
   FileText,
   Users,
-  Scale,
+  Scales,
   Scroll,
   Trophy,
   Brain,
@@ -20,7 +20,7 @@ import {
   Check,
   X,
   RotateCcw
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
@@ -230,7 +230,7 @@ const learningModules = [
     id: 'foundations',
     title: 'Foundations of Equity',
     description: 'Understand the origins and principles of equity jurisprudence',
-    icon: Scale,
+    icon: Scales,
     duration: '45 min',
     lessons: [
       {
@@ -1083,7 +1083,7 @@ export default function LearnPage({ user }) {
                         {quizScore ? `${quizScore}%` : 'Quiz'}
                       </div>
                     )}
-                    <ChevronRight className="w-5 h-5 text-white/30" />
+                    <CaretRight className="w-5 h-5 text-white/30" />
                   </div>
                 </GlassCard>
               );

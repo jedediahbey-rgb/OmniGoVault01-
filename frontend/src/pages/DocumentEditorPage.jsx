@@ -23,16 +23,16 @@ import {
   Lock,
   Unlock,
   Eye,
-  Edit3,
+  PencilSimple,
   CheckCircle,
   AlertCircle,
   Hash,
   Printer,
-  Sparkles,
-  Wand2,
+  Sparkle,
+  MagicWand,
   FileSearch,
   Loader2
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
@@ -505,7 +505,7 @@ export default function DocumentEditorPage({ user }) {
                 viewMode === 'edit' ? 'bg-vault-gold/20 text-vault-gold' : 'text-white/50 hover:text-white'
               }`}
             >
-              <Edit3 className="w-4 h-4" /> Edit
+              <PencilSimple className="w-4 h-4" /> Edit
             </button>
             <button
               onClick={() => setViewMode('preview')}
@@ -541,7 +541,7 @@ export default function DocumentEditorPage({ user }) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="hidden sm:flex btn-secondary">
-                    <Sparkles className="w-4 h-4 mr-2" />
+                    <Sparkle className="w-4 h-4 mr-2" />
                     AI Tools
                   </Button>
                 </DropdownMenuTrigger>
@@ -550,7 +550,7 @@ export default function DocumentEditorPage({ user }) {
                     onClick={() => setShowAiUpdateDialog(true)}
                     className="text-white hover:bg-white/10 cursor-pointer"
                   >
-                    <Wand2 className="w-4 h-4 mr-2" />
+                    <MagicWand className="w-4 h-4 mr-2" />
                     Update with AI
                   </DropdownMenuItem>
                   <DropdownMenuItem 
@@ -680,7 +680,7 @@ export default function DocumentEditorPage({ user }) {
         <DialogContent className="bg-vault-navy border-white/10 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <Wand2 className="w-5 h-5 text-vault-gold" />
+              <MagicWand className="w-5 h-5 text-vault-gold" />
               Update with AI
             </DialogTitle>
             <DialogDescription className="text-white/60">
@@ -710,7 +710,7 @@ export default function DocumentEditorPage({ user }) {
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 mr-2" />
+                  <Sparkle className="w-4 h-4 mr-2" />
                   Apply Changes
                 </>
               )}

@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { 
-  Sparkles, 
+  Sparkle, 
   Search, 
   BookOpen, 
-  ChevronDown,
-  ChevronUp,
+  CaretDown,
+  CaretUp,
   Filter,
   ArrowRight,
   ArrowLeft,
@@ -18,7 +18,7 @@ import {
   Clock,
   Flame,
   Trophy
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
@@ -649,7 +649,7 @@ export default function MaximsPage({ user }) {
   return (
     <div className="p-8">
       <PageHeader
-        icon={Sparkles}
+        icon={Sparkle}
         title="Maxims of Equity"
         subtitle="The foundational principles governing equitable jurisprudence"
         actions={
@@ -779,9 +779,9 @@ export default function MaximsPage({ user }) {
                     />
                   </div>
                   {expandedId === maxim.id ? (
-                    <ChevronUp className="w-5 h-5 text-vault-gold" />
+                    <CaretUp className="w-5 h-5 text-vault-gold" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-white/30" />
+                    <CaretDown className="w-5 h-5 text-white/30" />
                   )}
                 </div>
 
@@ -832,7 +832,7 @@ export default function MaximsPage({ user }) {
 
       {filteredMaxims.length === 0 && (
         <div className="text-center py-16">
-          <Sparkles className="w-12 h-12 text-white/10 mx-auto mb-4" />
+          <Sparkle className="w-12 h-12 text-white/10 mx-auto mb-4" />
           <p className="text-white/40">No maxims match your search</p>
         </div>
       )}

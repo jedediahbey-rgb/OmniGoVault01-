@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import {
-  ArrowLeft, Save, Mail, FileText, Plus, Upload, Clock, HelpCircle
-} from 'lucide-react';
+  ArrowLeft, Save, Mail, FileText, Plus, Upload, Clock, Question
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
@@ -385,7 +385,7 @@ export default function TrustProfilePage({ user }) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <HelpCircle className="w-3 h-3 text-white/30" />
+                        <Question className="w-3 h-3 text-white/30" />
                       </TooltipTrigger>
                       <TooltipContent className="bg-vault-navy border-white/10 max-w-xs">
                         <p className="text-sm">Enter the registered mail sticker number from your physical sticker/receipt (e.g., RF 123 456 789 US). This becomes the base for all sub-record IDs.</p>
@@ -484,7 +484,7 @@ export default function TrustProfilePage({ user }) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <HelpCircle className="w-3 h-3 text-white/30" />
+                        <Question className="w-3 h-3 text-white/30" />
                       </TooltipTrigger>
                       <TooltipContent className="bg-vault-navy border-white/10 max-w-xs">
                         <p className="text-sm">Domestic vs Foreign trust classification depends on the court test and control test under IRC §7701(a)(30). This is fact-dependent—consult qualified tax counsel.</p>

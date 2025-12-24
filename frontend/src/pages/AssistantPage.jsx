@@ -3,15 +3,15 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import { marked } from 'marked';
 import { 
-  Bot, 
+  Robot, 
   Send, 
   User,
-  Sparkles,
+  Sparkle,
   BookOpen,
   FileText,
   Copy,
   RefreshCw
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
@@ -110,7 +110,7 @@ export default function AssistantPage({ user }) {
   return (
     <div className="h-[calc(100vh-2rem)] flex flex-col p-8">
       <PageHeader
-        icon={Bot}
+        icon={Robot}
         title="AI Assistant"
         subtitle="Your guide to equity and trust law—grounded in source materials"
         actions={
@@ -135,7 +135,7 @@ export default function AssistantPage({ user }) {
                   className="h-full flex flex-col items-center justify-center text-center"
                 >
                   <div className="w-20 h-20 rounded-2xl bg-vault-gold/10 flex items-center justify-center mb-6">
-                    <Sparkles className="w-10 h-10 text-vault-gold" />
+                    <Sparkle className="w-10 h-10 text-vault-gold" />
                   </div>
                   <h3 className="text-2xl font-heading text-white mb-3">
                     Equity Trust Assistant
@@ -178,9 +178,9 @@ export default function AssistantPage({ user }) {
                       {message.role === 'user' ? (
                         <User className="w-5 h-5 text-vault-blue" />
                       ) : message.isError ? (
-                        <AlertTriangle className="w-5 h-5 text-red-400" />
+                        <Warning className="w-5 h-5 text-red-400" />
                       ) : (
-                        <Bot className="w-5 h-5 text-vault-gold" />
+                        <Robot className="w-5 h-5 text-vault-gold" />
                       )}
                     </div>
                     
@@ -228,7 +228,7 @@ export default function AssistantPage({ user }) {
                   className="flex gap-4"
                 >
                   <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center">
-                    <Bot className="w-5 h-5 text-vault-gold" />
+                    <Robot className="w-5 h-5 text-vault-gold" />
                   </div>
                   <div className="flex items-center gap-2 text-white/40">
                     <div className="w-2 h-2 bg-vault-gold rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />

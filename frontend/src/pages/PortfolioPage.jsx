@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { 
-  Scale, Plus, FileText, ArrowLeft, User, LogOut, Briefcase,
-  Wallet, Bell, Clock, CheckCircle, Trash2, Download, Edit,
-  ChevronRight, Calendar
-} from "lucide-react";
+  Scales, Plus, FileText, ArrowLeft, User, LogOut, Briefcase,
+  Wallet, Bell, Clock, CheckCircle, Trash, Download, Edit,
+  CaretRight, Calendar
+} from "@phosphor-icons/react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
@@ -169,7 +169,7 @@ const PortfolioPage = ({ user, logout }) => {
       <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0F172A] border-r border-white/5 p-6 flex flex-col z-40">
         <Link to="/" className="flex items-center gap-3 mb-10">
           <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-            <Scale className="w-5 h-5 text-[#C6A87C]" />
+            <Scales className="w-5 h-5 text-[#C6A87C]" />
           </div>
           <span className="font-serif text-xl font-semibold text-[#F8FAFC] tracking-tight">
             Portfolio Vault
@@ -243,7 +243,7 @@ const PortfolioPage = ({ user, logout }) => {
         <div className="mb-8">
           <div className="flex items-center gap-2 text-slate-400 text-sm mb-4">
             <Link to="/vault" className="hover:text-[#C6A87C]">Dashboard</Link>
-            <ChevronRight className="w-4 h-4" />
+            <CaretRight className="w-4 h-4" />
             <span className="text-[#C6A87C]">{portfolio?.name}</span>
           </div>
           <h1 className="font-serif text-3xl text-[#F8FAFC]" data-testid="portfolio-title">
@@ -505,7 +505,7 @@ const PortfolioPage = ({ user, logout }) => {
                       {asset.value && <span className="ml-4 text-slate-400">Value: {asset.value}</span>}
                     </div>
                     <Button variant="ghost" size="sm" onClick={() => handleDeleteAsset(asset.asset_id)} className="text-slate-500 hover:text-red-500">
-                      <Trash2 className="w-4 h-4" />
+                      <Trash className="w-4 h-4" />
                     </Button>
                   </div>
                 ))}
@@ -712,7 +712,7 @@ const PortfolioPage = ({ user, logout }) => {
                       <span className={`px-2 py-1 text-xs rounded-sm ${doc.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-[#C6A87C]/10 text-[#C6A87C]'}`}>
                         {doc.status}
                       </span>
-                      <ChevronRight className="w-4 h-4 text-slate-500" />
+                      <CaretRight className="w-4 h-4 text-slate-500" />
                     </div>
                   </div>
                 ))}

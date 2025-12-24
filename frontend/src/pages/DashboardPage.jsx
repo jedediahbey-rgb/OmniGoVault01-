@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { 
-  FolderArchive, FileText, Briefcase, Bell, Plus, ArrowRight, BookOpen,
-  Sparkles, Clock, Edit2, Trash2, MoreVertical, Search, Bot
-} from 'lucide-react';
+  FolderSimple, FileText, Briefcase, Bell, Plus, ArrowRight, BookOpen,
+  Sparkle, Clock, PencilSimple, Trash, DotsThreeVertical, Search, Robot
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import StatCard from '../components/shared/StatCard';
 import GlassCard from '../components/shared/GlassCard';
@@ -119,7 +119,7 @@ export default function DashboardPage({ user }) {
     { icon: Plus, label: 'New Portfolio', action: () => setShowNewPortfolio(true), color: 'gold' },
     { icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'blue' },
     { icon: BookOpen, label: 'Start Learning', action: () => navigate('/learn'), color: 'default' },
-    { icon: Bot, label: 'Ask Assistant', action: () => navigate('/assistant'), color: 'gold', hint: 'Ctrl+J' },
+    { icon: Robot, label: 'Ask Assistant', action: () => navigate('/assistant'), color: 'gold', hint: 'Ctrl+J' },
   ];
 
   if (loading) {
@@ -153,7 +153,7 @@ export default function DashboardPage({ user }) {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
       >
         <motion.div variants={fadeInUp}>
-          <StatCard label="Portfolios" value={portfolios.length} icon={FolderArchive} variant="gold" />
+          <StatCard label="Portfolios" value={portfolios.length} icon={FolderSimple} variant="gold" />
         </motion.div>
         <motion.div variants={fadeInUp}>
           <StatCard label="Documents" value={stats?.documents || 0} icon={FileText} variant="default" />
@@ -231,7 +231,7 @@ export default function DashboardPage({ user }) {
                     className="flex items-center gap-4 p-4 rounded-lg border border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5 cursor-pointer transition-all group"
                   >
                     <div className="w-12 h-12 rounded-lg bg-vault-gold/10 flex items-center justify-center">
-                      <FolderArchive className="w-6 h-6 text-vault-gold" />
+                      <FolderSimple className="w-6 h-6 text-vault-gold" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-medium truncate">{portfolio.name}</p>
@@ -249,7 +249,7 @@ export default function DashboardPage({ user }) {
                             onClick={e => e.stopPropagation()}
                             className="p-1.5 text-white/30 hover:text-white hover:bg-white/10 rounded"
                           >
-                            <MoreVertical className="w-4 h-4" />
+                            <DotsThreeVertical className="w-4 h-4" />
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-vault-navy border-white/10">
@@ -257,13 +257,13 @@ export default function DashboardPage({ user }) {
                             onClick={(e) => openEditDialog(portfolio, e)}
                             className="text-white/70 hover:text-white focus:text-white"
                           >
-                            <Edit2 className="w-4 h-4 mr-2" /> Edit
+                            <PencilSimple className="w-4 h-4 mr-2" /> Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={(e) => { e.stopPropagation(); deletePortfolio(portfolio); }}
                             className="text-red-400 hover:text-red-300 focus:text-red-300"
                           >
-                            <Trash2 className="w-4 h-4 mr-2" /> Delete
+                            <Trash className="w-4 h-4 mr-2" /> Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -274,7 +274,7 @@ export default function DashboardPage({ user }) {
               </div>
             ) : (
               <div className="text-center py-12">
-                <FolderArchive className="w-16 h-16 text-white/10 mx-auto mb-4" />
+                <FolderSimple className="w-16 h-16 text-white/10 mx-auto mb-4" />
                 <p className="text-white/40 mb-4">No portfolios yet</p>
                 <Button onClick={() => setShowNewPortfolio(true)} className="btn-primary">
                   <Plus className="w-4 h-4 mr-2" /> Create Your First Portfolio
@@ -310,7 +310,7 @@ export default function DashboardPage({ user }) {
                 className="p-4 rounded-lg bg-vault-blue/5 border border-vault-blue/20 hover:border-vault-blue/40 cursor-pointer transition-all"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <Sparkles className="w-5 h-5 text-vault-blue" />
+                  <Sparkle className="w-5 h-5 text-vault-blue" />
                   <span className="text-white">Maxims of Equity</span>
                 </div>
                 <p className="text-white/40 text-sm">20+ principles • Study mode</p>

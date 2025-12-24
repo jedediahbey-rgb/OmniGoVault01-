@@ -3,17 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { 
-  FolderArchive, 
+  FolderSimple, 
   FileText, 
   Plus, 
   Search,
   Folder,
   Tag,
   Clock,
-  MoreVertical,
-  Trash2,
+  DotsThreeVertical,
+  Trash,
   Download,
-  ChevronRight,
+  CaretRight,
   Grid,
   List,
   Package,
@@ -25,7 +25,7 @@ import {
   StarOff,
   Filter,
   Menu
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
@@ -286,7 +286,7 @@ export default function VaultPage({ user }) {
               : 'text-white/60 hover:bg-white/5'
           }`}
         >
-          <FolderArchive className="w-4 h-4" />
+          <FolderSimple className="w-4 h-4" />
           <span className="text-sm">All Documents</span>
           <span className="ml-auto text-xs opacity-60">{documents.length}</span>
         </button>
@@ -322,7 +322,7 @@ export default function VaultPage({ user }) {
               : 'text-white/40 hover:bg-white/5'
           }`}
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash className="w-4 h-4" />
           <span className="text-sm">Trash</span>
           {trashedDocuments.length > 0 && (
             <span className="ml-auto text-xs opacity-60">{trashedDocuments.length}</span>
@@ -479,12 +479,12 @@ export default function VaultPage({ user }) {
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
           {showTrash ? (
             <div className="flex items-center gap-2 text-red-400 text-sm mb-4">
-              <Trash2 className="w-4 h-4" />
+              <Trash className="w-4 h-4" />
               <span>Trash - Documents will be permanently deleted after 30 days</span>
             </div>
           ) : selectedPortfolio && (
             <div className="flex items-center gap-2 text-white/40 text-sm mb-4">
-              <FolderArchive className="w-4 h-4" />
+              <FolderSimple className="w-4 h-4" />
               <span>{selectedPortfolio.name}</span>
             </div>
           )}
@@ -524,7 +524,7 @@ export default function VaultPage({ user }) {
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <button className="p-1 text-white/30 hover:text-white" onClick={(e) => e.stopPropagation()}>
-                                  <MoreVertical className="w-4 h-4" />
+                                  <DotsThreeVertical className="w-4 h-4" />
                                 </button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="bg-vault-navy border-white/10">
@@ -553,7 +553,7 @@ export default function VaultPage({ user }) {
                                   onClick={(e) => { e.stopPropagation(); trashDocument(doc.document_id); }}
                                   className="text-red-400 hover:text-red-300 focus:text-red-300"
                                 >
-                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  <Trash className="w-4 h-4 mr-2" />
                                   Move to Trash
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -562,7 +562,7 @@ export default function VaultPage({ user }) {
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <button className="p-1 text-white/30 hover:text-white" onClick={(e) => e.stopPropagation()}>
-                                  <MoreVertical className="w-4 h-4" />
+                                  <DotsThreeVertical className="w-4 h-4" />
                                 </button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="bg-vault-navy border-white/10">
@@ -577,7 +577,7 @@ export default function VaultPage({ user }) {
                                   onClick={(e) => { e.stopPropagation(); permanentlyDelete(doc.document_id); }}
                                   className="text-red-400 hover:text-red-300 focus:text-red-300"
                                 >
-                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  <Trash className="w-4 h-4 mr-2" />
                                   Delete Forever
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -635,7 +635,7 @@ export default function VaultPage({ user }) {
                             </span>
                           )}
                         </div>
-                        <ChevronRight className="w-4 h-4 text-white/20 shrink-0 mt-0.5" />
+                        <CaretRight className="w-4 h-4 text-white/20 shrink-0 mt-0.5" />
                       </div>
                     )}
                   </motion.div>
@@ -758,7 +758,7 @@ export default function VaultPage({ user }) {
                     variant="outline"
                     className="w-full border-red-500/50 text-red-400 hover:bg-red-500/20"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
+                    <Trash className="w-4 h-4 mr-2" />
                     Delete Forever
                   </Button>
                 </>

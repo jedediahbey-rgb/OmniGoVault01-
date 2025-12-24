@@ -3,10 +3,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import {
-  FolderArchive, FileText, Users, Briefcase,
-  Plus, ArrowLeft, Edit2, Trash2, ChevronRight,
+  FolderSimple, FileText, Users, Briefcase,
+  Plus, ArrowLeft, PencilSimple, Trash, CaretRight,
   DollarSign, Hash, Lock, Filter, ArrowUpRight, ArrowDownRight
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import StatCard from '../components/shared/StatCard';
@@ -411,7 +411,7 @@ export default function PortfolioOverviewPage({ user }) {
       </button>
 
       <PageHeader
-        icon={FolderArchive}
+        icon={FolderSimple}
         title={portfolio?.name}
         subtitle={portfolio?.description || 'Portfolio workspace'}
         actions={
@@ -425,7 +425,7 @@ export default function PortfolioOverviewPage({ user }) {
               }}
               className="btn-secondary"
             >
-              <Edit2 className="w-4 h-4 mr-2" />
+              <PencilSimple className="w-4 h-4 mr-2" />
               Edit
             </Button>
             <Button
@@ -433,7 +433,7 @@ export default function PortfolioOverviewPage({ user }) {
               onClick={deletePortfolio}
               className="border-red-500/30 text-red-400 hover:bg-red-500/10"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash className="w-4 h-4" />
             </Button>
           </div>
         }
@@ -691,7 +691,7 @@ export default function PortfolioOverviewPage({ user }) {
                     }`}>
                       {doc.is_locked ? 'Finalized' : doc.status}
                     </span>
-                    <ChevronRight className="w-4 h-4 text-white/30" />
+                    <CaretRight className="w-4 h-4 text-white/30" />
                   </div>
                 </Link>
               ))}
@@ -756,10 +756,10 @@ export default function PortfolioOverviewPage({ user }) {
                       <td className="py-3 px-2 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button onClick={() => openEditAsset(asset)} className="text-white/40 hover:text-white p-1">
-                            <Edit2 className="w-4 h-4" />
+                            <PencilSimple className="w-4 h-4" />
                           </button>
                           <button onClick={() => setDeleteAssetId(asset.asset_id)} className="text-red-400 hover:text-red-300 p-1">
-                            <Trash2 className="w-4 h-4" />
+                            <Trash className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -780,10 +780,10 @@ export default function PortfolioOverviewPage({ user }) {
                     </div>
                     <div className="flex items-center gap-1 ml-2">
                       <button onClick={() => openEditAsset(asset)} className="text-white/40 hover:text-white p-1">
-                        <Edit2 className="w-4 h-4" />
+                        <PencilSimple className="w-4 h-4" />
                       </button>
                       <button onClick={() => setDeleteAssetId(asset.asset_id)} className="text-red-400 hover:text-red-300 p-1">
-                        <Trash2 className="w-4 h-4" />
+                        <Trash className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -917,7 +917,7 @@ export default function PortfolioOverviewPage({ user }) {
                             className="text-white/40 hover:text-white p-1"
                             title="Edit entry"
                           >
-                            <Edit2 className="w-4 h-4" />
+                            <PencilSimple className="w-4 h-4" />
                           </button>
                           {!entry.asset_id && (
                             <button
@@ -925,7 +925,7 @@ export default function PortfolioOverviewPage({ user }) {
                               className="text-red-400 hover:text-red-300 p-1"
                               title="Delete entry"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash className="w-4 h-4" />
                             </button>
                           )}
                         </div>
@@ -968,14 +968,14 @@ export default function PortfolioOverviewPage({ user }) {
                         className="text-white/40 hover:text-white p-2"
                         title="Edit party"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <PencilSimple className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setDeletePartyId(party.party_id)}
                         className="text-red-400 hover:text-red-300 p-2"
                         title="Delete party"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
