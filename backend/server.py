@@ -1724,6 +1724,256 @@ async def restore_document_from_trash(document_id: str, user: User = Depends(get
     return {"message": "Document restored"}
 
 
+# Amendment Request Model
+class AmendmentRequest(BaseModel):
+    title: Optional[str] = None  # Optional new title, defaults to "Amendment to [original title]"
+    notes: Optional[str] = None  # Optional notes about the amendment
+
+
+@api_router.post("/documents/{document_id}/amend")
+async def create_amendment(document_id: str, request: AmendmentRequest = None, user: User = Depends(get_current_user)):
+    """
+    Create an amendment to a document.
+    - For governing documents (subject code 09), only the controlling document can be amended
+    - Amendment gets next sequential RM-ID (e.g., 6.001 -> 6.002)
+    - Original document is marked as superseded
+    - User must have authority to amend (be a party with appropriate role)
+    """
+    # Get the original document
+    original = await db.documents.find_one(
+        {"document_id": document_id, "user_id": user.user_id, "is_deleted": {"$ne": True}},
+        {"_id": 0}
+    )
+    if not original:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Check if document is finalized (only finalized docs can be amended)
+    if not original.get("is_locked"):
+        raise HTTPException(status_code=400, detail="Only finalized documents can be amended. Please finalize the document first.")
+    
+    # Check authority to amend - user must be associated with the portfolio
+    portfolio_id = original.get("portfolio_id")
+    if portfolio_id:
+        # Check if user has a party role that allows amendments (grantor, trustee, or settlor)
+        parties = await db.parties.find(
+            {"portfolio_id": portfolio_id, "user_id": user.user_id}
+        ).to_list(100)
+        
+        authorized_roles = ["grantor", "trustee", "settlor", "co_trustee", "successor_trustee"]
+        user_has_authority = any(
+            p.get("role", "").lower() in authorized_roles 
+            for p in parties
+        )
+        
+        # Also allow if user owns the portfolio
+        portfolio = await db.portfolios.find_one({"portfolio_id": portfolio_id, "user_id": user.user_id})
+        if not portfolio and not user_has_authority:
+            raise HTTPException(
+                status_code=403, 
+                detail="You do not have authority to amend this document. Only grantors, trustees, or settlors can create amendments."
+            )
+    
+    # Extract subject code from sub_record_id (e.g., "RF123-09.001" -> "09")
+    sub_record_id = original.get("sub_record_id", "")
+    rm_id_parts = sub_record_id.rsplit("-", 1)
+    if len(rm_id_parts) != 2:
+        raise HTTPException(status_code=400, detail="Invalid document RM-ID format")
+    
+    base_rm_id = rm_id_parts[0]
+    subject_seq = rm_id_parts[1]  # e.g., "09.001"
+    
+    if "." not in subject_seq:
+        raise HTTPException(status_code=400, detail="Invalid document sequence format")
+    
+    subject_code = subject_seq.split(".")[0]  # e.g., "09"
+    
+    # For governing documents (09), check if this is the controlling document
+    if subject_code == "09" and not original.get("is_controlling", True):
+        raise HTTPException(
+            status_code=400, 
+            detail="This document has been superseded. You can only amend the current controlling document."
+        )
+    
+    # Find the highest sequence number for this subject code in this portfolio
+    existing_docs = await db.documents.find(
+        {
+            "portfolio_id": portfolio_id,
+            "user_id": user.user_id,
+            "sub_record_id": {"$regex": f"^{re.escape(base_rm_id)}-{subject_code}\\."},
+            "is_deleted": {"$ne": True}
+        },
+        {"sub_record_id": 1}
+    ).to_list(1000)
+    
+    max_seq = 0
+    for doc in existing_docs:
+        doc_sub_id = doc.get("sub_record_id", "")
+        try:
+            seq_str = doc_sub_id.rsplit(".", 1)[1]
+            seq_num = int(seq_str)
+            max_seq = max(max_seq, seq_num)
+        except (IndexError, ValueError):
+            continue
+    
+    # Generate next sequence number
+    next_seq = max_seq + 1
+    new_sub_record_id = f"{base_rm_id}-{subject_code}.{next_seq:03d}"
+    
+    # Create amendment title
+    amendment_title = f"Amendment #{next_seq - 1} to {original['title']}" if not (request and request.title) else request.title
+    if request and request.title:
+        amendment_title = request.title
+    
+    # Create the amendment document
+    amendment = Document(
+        portfolio_id=portfolio_id,
+        trust_profile_id=original.get("trust_profile_id"),
+        user_id=user.user_id,
+        template_id=original.get("template_id"),
+        title=amendment_title,
+        document_type=original.get("document_type", "custom"),
+        content=generate_amendment_content(original, next_seq, request.notes if request else None),
+        rm_id=original.get("rm_id", ""),
+        sub_record_id=new_sub_record_id,
+        status="draft",
+        is_locked=False,
+        is_amendment=True,
+        amends_document_id=document_id,
+        amendment_number=next_seq - 1,  # Amendment #1 is sequence .002
+        is_controlling=True,
+        tags=original.get("tags", []) + ["amendment"],
+        folder=original.get("folder", "/")
+    )
+    
+    amendment_dict = amendment.model_dump()
+    amendment_dict['created_at'] = amendment_dict['created_at'].isoformat()
+    amendment_dict['updated_at'] = amendment_dict['updated_at'].isoformat()
+    
+    # Insert the amendment
+    await db.documents.insert_one(amendment_dict)
+    
+    # Mark the original document as superseded (no longer controlling)
+    await db.documents.update_one(
+        {"document_id": document_id},
+        {"$set": {
+            "is_controlling": False,
+            "amended_by_id": amendment.document_id,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {
+        "message": f"Amendment created successfully",
+        "document_id": amendment.document_id,
+        "rm_id": new_sub_record_id,
+        "amendment_number": next_seq - 1,
+        "amends": document_id
+    }
+
+
+@api_router.get("/documents/{document_id}/amendments")
+async def get_document_amendments(document_id: str, user: User = Depends(get_current_user)):
+    """Get all amendments in the chain for a document (includes original and all amendments)"""
+    # Get the original document
+    doc = await db.documents.find_one(
+        {"document_id": document_id, "user_id": user.user_id},
+        {"_id": 0}
+    )
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Find the root document (if this is an amendment, find the original)
+    root_id = document_id
+    if doc.get("is_amendment") and doc.get("amends_document_id"):
+        root_id = doc.get("amends_document_id")
+        # Keep traversing up if needed
+        while True:
+            parent = await db.documents.find_one(
+                {"document_id": root_id, "user_id": user.user_id},
+                {"_id": 0, "is_amendment": 1, "amends_document_id": 1}
+            )
+            if not parent or not parent.get("is_amendment"):
+                break
+            root_id = parent.get("amends_document_id", root_id)
+    
+    # Get the root document
+    root_doc = await db.documents.find_one(
+        {"document_id": root_id, "user_id": user.user_id, "is_deleted": {"$ne": True}},
+        {"_id": 0}
+    )
+    
+    # Get all documents that amend this chain
+    all_docs = [root_doc] if root_doc else []
+    
+    # Find all amendments
+    amendments = await db.documents.find(
+        {
+            "amends_document_id": root_id,
+            "user_id": user.user_id,
+            "is_deleted": {"$ne": True}
+        },
+        {"_id": 0}
+    ).sort("amendment_number", 1).to_list(100)
+    
+    all_docs.extend(amendments)
+    
+    # Find controlling document
+    controlling = next((d for d in all_docs if d.get("is_controlling")), all_docs[0] if all_docs else None)
+    
+    return {
+        "root_document_id": root_id,
+        "controlling_document_id": controlling.get("document_id") if controlling else None,
+        "total_amendments": len(amendments),
+        "documents": all_docs
+    }
+
+
+def generate_amendment_content(original: dict, seq_num: int, notes: str = None) -> str:
+    """Generate initial content for an amendment document"""
+    original_title = original.get("title", "Original Document")
+    original_rm_id = original.get("sub_record_id", original.get("rm_id", ""))
+    amendment_num = seq_num - 1
+    
+    content = f"""<h1 style="text-align: center;">AMENDMENT NO. {amendment_num}</h1>
+<p style="text-align: center;"><em>To {original_title}</em></p>
+<p style="text-align: center;">Original Document: <strong>{original_rm_id}</strong></p>
+
+<hr/>
+
+<h2>RECITALS</h2>
+<p>WHEREAS, the undersigned executed that certain <strong>{original_title}</strong> identified as <strong>{original_rm_id}</strong> (the "Original Document"); and</p>
+
+<p>WHEREAS, the undersigned desires to amend certain provisions of the Original Document as set forth herein; and</p>
+
+<p>WHEREAS, the undersigned has the power and authority to make such amendments pursuant to the terms of the Original Document and applicable law;</p>
+
+<p>NOW, THEREFORE, the Original Document is hereby amended as follows:</p>
+
+<h2>AMENDMENTS</h2>
+<p><strong>1.</strong> [Describe the specific amendments here]</p>
+
+<p><strong>2.</strong> [Additional amendments as needed]</p>
+
+{f'<h2>NOTES</h2><p>{notes}</p>' if notes else ''}
+
+<h2>RATIFICATION</h2>
+<p>Except as specifically amended hereby, all terms), conditions, and provisions of the Original Document shall remain in full force and effect and are hereby ratified and confirmed.</p>
+
+<h2>EFFECTIVE DATE</h2>
+<p>This Amendment shall be effective as of the date of execution below.</p>
+
+<h2>EXECUTION</h2>
+<p>IN WITNESS WHEREOF, the undersigned has executed this Amendment on this <strong>[DATE]</strong>.</p>
+
+<p style="margin-top: 40px;">_________________________<br/><strong>[NAME]</strong>, [CAPACITY]</p>
+
+<p style="margin-top: 30px;"><strong>Signed in the presence of:</strong></p>
+<p>_________________________<br/>Private Witness 1, Without Prejudice</p>
+<p>_________________________<br/>Private Witness 2, Without Prejudice</p>
+"""
+    return content
+
+
 @api_router.post("/documents/{document_id}/duplicate")
 async def duplicate_document(document_id: str, user: User = Depends(get_current_user)):
     """Duplicate a document"""
