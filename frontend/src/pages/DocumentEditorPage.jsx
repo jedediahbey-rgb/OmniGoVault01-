@@ -20,8 +20,6 @@ import {
   FileText,
   FloppyDisk,
   Hash,
-  Heading1,
-  Heading2,
   List,
   ListOrdered,
   Lock,
@@ -30,6 +28,8 @@ import {
   Printer,
   Sparkle,
   TextB,
+  TextHOne,
+  TextHTwo,
   TextItalic,
   Unlock
 } from '@phosphor-icons/react';
@@ -95,7 +95,7 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled}
         title="Heading 1"
       >
-        <Heading1 className="w-4 h-4" />
+        <TextHOne className="w-4 h-4" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -103,7 +103,7 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled}
         title="Heading 2"
       >
-        <Heading2 className="w-4 h-4" />
+        <TextHTwo className="w-4 h-4" />
       </ToolbarButton>
 
       <div className="w-px h-6 bg-white/10 mx-2" />
