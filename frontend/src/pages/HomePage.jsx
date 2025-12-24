@@ -1,32 +1,41 @@
 import { Link } from "react-router-dom";
-import { Scale, BookOpen, Shield, MessageSquare, FileText, Users, ArrowRight, Sparkles } from "lucide-react";
+import { 
+  BookOpen, 
+  Scale, 
+  Shield, 
+  ChatCircle, 
+  FileText, 
+  Users, 
+  ArrowRight, 
+  Sparkle 
+} from "@phosphor-icons/react";
 import { Button } from "../components/ui/button";
 
 const HomePage = () => {
   const features = [
     {
-      icon: <BookOpen className="w-8 h-8" />,
+      icon: <BookOpen className="w-8 h-8" weight="duotone" />,
       title: "Knowledge Base",
       description: "Structured learning from authoritative sources on equity jurisprudence, maxims, and trust law.",
       link: "/knowledge",
       cta: "Explore Topics"
     },
     {
-      icon: <Scale className="w-8 h-8" />,
+      icon: <Scale className="w-8 h-8" weight="duotone" />,
       title: "Maxims of Equity",
       description: "Discover the foundational principles that govern equitable jurisprudence with citations.",
       link: "/maxims",
       cta: "View Maxims"
     },
     {
-      icon: <Shield className="w-8 h-8" />,
+      icon: <Shield className="w-8 h-8" weight="duotone" />,
       title: "Portfolio Vault",
       description: "Secure workspace to create, store, and manage your trust documents with version history.",
       link: "/vault",
       cta: "Open Vault"
     },
     {
-      icon: <MessageSquare className="w-8 h-8" />,
+      icon: <ChatCircle className="w-8 h-8" weight="duotone" />,
       title: "AI Assistant",
       description: "Ask questions about equity trusts with answers grounded in source documents and citations.",
       link: "/assistant",
