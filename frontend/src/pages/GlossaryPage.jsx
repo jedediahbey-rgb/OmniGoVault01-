@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight,
   BookOpen,
-  BookOpen,
   CaretDown,
   CaretUp,
   FileText,
