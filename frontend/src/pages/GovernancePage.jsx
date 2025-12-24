@@ -56,9 +56,9 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // Meeting type icons and colors
 const meetingTypeConfig = {
-  regular: { icon: Calendar, color: 'text-blue-400', bg: 'bg-blue-500/20' },
-  special: { icon: Gavel, color: 'text-amber-400', bg: 'bg-amber-500/20' },
-  emergency: { icon: Warning, color: 'text-red-400', bg: 'bg-red-500/20' },
+  regular: { icon: Calendar, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Regular Meeting' },
+  special: { icon: Gavel, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Special Meeting' },
+  emergency: { icon: Warning, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Emergency Meeting' },
 };
 
 // Meeting status badges
@@ -67,6 +67,24 @@ const statusConfig = {
   finalized: { label: 'Finalized', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30' },
   attested: { label: 'Attested', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   amended: { label: 'Amended', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
+};
+
+// Distribution type icons and colors
+const distributionTypeConfig = {
+  regular: { icon: HandCoins, color: 'text-emerald-400', bg: 'bg-emerald-500/20', label: 'Regular Distribution' },
+  special: { icon: Gavel, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Special Distribution' },
+  final: { icon: CheckCircle, color: 'text-vault-gold', bg: 'bg-vault-gold/20', label: 'Final Distribution' },
+  emergency: { icon: Warning, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Emergency Distribution' },
+};
+
+// Distribution status badges
+const distributionStatusConfig = {
+  draft: { label: 'Draft', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' },
+  pending_approval: { label: 'Pending Approval', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30' },
+  approved: { label: 'Approved', color: 'bg-blue-500/30 text-blue-400 border-blue-400/30' },
+  in_progress: { label: 'In Progress', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
+  completed: { label: 'Completed', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
+  cancelled: { label: 'Cancelled', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
 };
 
 // Role badge colors
