@@ -371,7 +371,7 @@ export default function MeetingEditorPage({ user }) {
       const res = await axios.post(`${API}/governance/meetings/${meetingId}/finalize`, {
         finalized_by_name: finalizeBy
       });
-      await fetchMeeting();
+      await refetchMeeting();
       setShowFinalize(false);
       toast.success('Meeting minutes finalized');
     } catch (error) {
@@ -387,7 +387,7 @@ export default function MeetingEditorPage({ user }) {
     
     try {
       await axios.post(`${API}/governance/meetings/${meetingId}/attest`, attestation);
-      await fetchMeeting();
+      await refetchMeeting();
       setShowAttest(false);
       setAttestation({ party_name: '', party_role: 'trustee', signature_data: '' });
       toast.success('Attestation added');
