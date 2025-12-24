@@ -636,25 +636,6 @@ export default function MeetingEditorPage({ user }) {
               </div>
               
               <div className="flex items-center gap-2 shrink-0">
-                {/* Read-only indicator for finalized meetings */}
-                {isLocked && (
-                  <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30 gap-1">
-                    <Lock className="w-3 h-3" />
-                    Read-Only
-                  </Badge>
-                )}
-                
-                {isDraft && (
-                  <Button
-                    variant="outline"
-                    onClick={() => setEditingHeader(true)}
-                    className="border-vault-gold/30 text-white"
-                  >
-                    <PencilSimple className="w-4 h-4 mr-2" />
-                    Edit
-                  </Button>
-                )}
-                
                 {/* Amend button - prominent for finalized meetings */}
                 {isFinalized && !meeting.amended_by_id && (
                   <Button
@@ -674,13 +655,23 @@ export default function MeetingEditorPage({ user }) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                     {isDraft && (
-                      <DropdownMenuItem 
-                        className="text-vault-gold hover:bg-vault-gold/20"
-                        onClick={() => setShowFinalize(true)}
-                      >
-                        <Lock className="w-4 h-4 mr-2" />
-                        Finalize Minutes
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem 
+                          onClick={() => setEditingHeader(true)} 
+                          className="text-white hover:bg-vault-gold/20"
+                        >
+                          <PencilSimple className="w-4 h-4 mr-2" />
+                          Edit Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          className="text-vault-gold hover:bg-vault-gold/20"
+                          onClick={() => setShowFinalize(true)}
+                        >
+                          <Lock className="w-4 h-4 mr-2" />
+                          Finalize Minutes
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-vault-gold/20" />
+                      </>
                     )}
                     {isFinalized && (
                       <>
@@ -700,9 +691,9 @@ export default function MeetingEditorPage({ user }) {
                             Create Amendment
                           </DropdownMenuItem>
                         )}
+                        <DropdownMenuSeparator className="bg-vault-gold/20" />
                       </>
                     )}
-                    <DropdownMenuSeparator className="bg-vault-gold/20" />
                     <DropdownMenuItem className="text-vault-muted hover:bg-vault-gold/20">
                       <Download className="w-4 h-4 mr-2" />
                       Export PDF
