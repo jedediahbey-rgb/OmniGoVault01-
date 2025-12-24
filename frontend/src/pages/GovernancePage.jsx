@@ -943,7 +943,9 @@ export default function GovernancePage({ user }) {
                 {filteredMeetings.map((meeting, index) => {
                   const typeConfig = meetingTypeConfig[meeting.meeting_type] || meetingTypeConfig.regular;
                   const TypeIcon = typeConfig.icon;
-                  const status = statusConfig[meeting.status] || statusConfig.draft;
+                  // If locked, show "finalized" status instead of draft
+                  const effectiveStatus = meeting.locked ? 'finalized' : meeting.status;
+                  const status = statusConfig[effectiveStatus] || statusConfig.draft;
                   // Use meeting.id or meeting.meeting_id (backend now provides both)
                   const meetingId = meeting.id || meeting.meeting_id;
                   
@@ -980,12 +982,6 @@ export default function GovernancePage({ user }) {
                                   <Badge className={`text-xs ${status.color} border`}>
                                     {status.label}
                                   </Badge>
-                                  {/* Show locked badge for finalized meetings */}
-                                  {meeting.locked && (
-                                    <Badge className="text-xs bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                                      🔒 Locked
-                                    </Badge>
-                                  )}
                                   {meeting.is_amendment && (
                                     <Badge className="text-xs bg-purple-500/20 text-purple-400 border border-purple-400/30">
                                       v{meeting.revision || meeting.amendment_number + 1}
