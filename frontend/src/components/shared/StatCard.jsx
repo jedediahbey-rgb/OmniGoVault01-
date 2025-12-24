@@ -26,17 +26,44 @@ export default function StatCard({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       className={cn(
-        'rounded-xl border backdrop-blur-sm p-4 sm:p-5 overflow-hidden',
+        'rounded-xl border backdrop-blur-sm p-4 sm:p-5',
         variants[variant],
         className
       )}
     >
-      <div className="flex items-start justify-between gap-2 sm:gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest text-white/40 mb-2">
+      {/* Mobile: Icon on top-right, text below */}
+      <div className="sm:hidden">
+        <div className="flex items-start justify-between mb-2">
+          <p className="text-[10px] uppercase tracking-normal text-white/40">
             {displayLabel}
           </p>
-          <p className="text-2xl sm:text-3xl font-heading text-white tabular-nums truncate">{value}</p>
+          {Icon && (
+            <IconChip variant={iconVariant} size="sm">
+              <Icon weight="duotone" />
+            </IconChip>
+          )}
+        </div>
+        <p className="text-2xl font-heading text-white tabular-nums">{value}</p>
+        {subtitle && (
+          <p className="text-xs text-white/40 mt-1">{subtitle}</p>
+        )}
+        {trend && (
+          <p className={cn(
+            'text-xs mt-2',
+            trend > 0 ? 'text-green-400' : 'text-red-400'
+          )}>
+            {trend > 0 ? '+' : ''}{trend}% from last month
+          </p>
+        )}
+      </div>
+      
+      {/* Desktop: Original side-by-side layout */}
+      <div className="hidden sm:flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs uppercase tracking-widest text-white/40 mb-2">
+            {displayLabel}
+          </p>
+          <p className="text-3xl font-heading text-white tabular-nums truncate">{value}</p>
           {subtitle && (
             <p className="text-xs text-white/40 mt-1">{subtitle}</p>
           )}
