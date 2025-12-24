@@ -864,7 +864,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Add Attendee Dialog */}
       <Dialog open={showAddAttendee} onOpenChange={setShowAddAttendee}>
-        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
+        <DialogContent ref={addAttendeeDialogRef} className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-vault-gold">Add Attendee</DialogTitle>
           </DialogHeader>
@@ -872,7 +872,6 @@ export default function MeetingEditorPage({ user }) {
             <div>
               <label className="text-sm text-vault-muted mb-1 block">Name</label>
               <Input
-                ref={attendeeNameInputRef}
                 value={newAttendee.name}
                 onChange={(e) => setNewAttendee(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="Attendee name"
@@ -885,13 +884,13 @@ export default function MeetingEditorPage({ user }) {
                 value={newAttendee.role} 
                 onValueChange={(v) => setNewAttendee(prev => ({ ...prev, role: v }))}
               >
-                <SelectTrigger 
-                  className="bg-[#05080F] border-vault-gold/20 text-white"
-                  onPointerDown={handleSelectPointerDown(attendeeNameInputRef)}
-                >
+                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                <SelectContent 
+                  container={addAttendeeDialogRef.current}
+                  className="bg-[#0B1221] border-vault-gold/30 z-[100]"
+                >
                   {roleOptions.map(r => (
                     <SelectItem key={r.value} value={r.value} className="text-white hover:bg-vault-gold/20">
                       {r.label}
