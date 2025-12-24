@@ -452,13 +452,6 @@ export default function CyberHomePage() {
                   Vault
                 </Button>
               </Link>
-              
-              <Link to="/login">
-                <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 text-xs sm:text-sm px-2 sm:px-4">
-                  <SignIn className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Sign In</span>
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
