@@ -518,7 +518,7 @@ export default function DistributionEditorPage({ user }) {
                     <DotsThreeVertical className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-vault-dark border-vault-gold/30">
+                <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                   <DropdownMenuItem className="text-vault-muted hover:bg-vault-gold/20">
                     <Download className="w-4 h-4 mr-2" />
                     Export PDF
