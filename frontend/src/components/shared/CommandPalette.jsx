@@ -7,7 +7,7 @@ import {
   BookText,
   FileText,
   FolderSimple,
-  Home,
+  House,
   MagnifyingGlass,
   Plus,
   Robot,
@@ -17,7 +17,7 @@ import {
 import { Input } from '../ui/input';
 
 const commands = [
-  { id: 'dashboard', name: 'Go to Dashboard', icon: Home, action: '/vault', type: 'nav' },
+  { id: 'dashboard', name: 'Go to Dashboard', icon: House, action: '/vault', type: 'nav' },
   { id: 'learn', name: 'Go to Learn', icon: BookOpen, action: '/learn', type: 'nav' },
   { id: 'maxims', name: 'Go to Maxims', icon: Sparkle, action: '/maxims', type: 'nav' },
   { id: 'glossary', name: 'Go to Glossary', icon: BookText, action: '/glossary', type: 'nav' },

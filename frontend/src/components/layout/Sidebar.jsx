@@ -7,7 +7,7 @@ import {
   FileText,
   FolderSimple,
   GitBranch,
-  Home,
+  House,
   Robot,
   Shield,
   SignOut,
@@ -17,7 +17,7 @@ import {
 import { cn } from '../../lib/utils';
 
 const navItems = [
-  { name: 'Dashboard', href: '/vault', icon: Home, section: 'main' },
+  { name: 'Dashboard', href: '/vault', icon: House, section: 'main' },
   { name: 'Learn', href: '/learn', icon: BookOpen, section: 'knowledge' },
   { name: 'Maxims', href: '/maxims', icon: Sparkle, section: 'knowledge' },
   { name: 'Glossary', href: '/glossary', icon: BookText, section: 'knowledge' },
