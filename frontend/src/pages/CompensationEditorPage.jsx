@@ -52,7 +52,7 @@ import {
 } from '../components/ui/dropdown-menu';
 import { toast } from 'sonner';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
