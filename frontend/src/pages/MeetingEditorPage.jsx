@@ -272,7 +272,7 @@ export default function MeetingEditorPage({ user }) {
       toast.success('Changes saved');
     } catch (error) {
       console.error('Failed to save:', error);
-      toast.error(error.response?.data?.detail || 'Failed to save changes');
+      toast.error(error.response?.data?.error?.message || 'Failed to save changes');
     } finally {
       setSaving(false);
     }
@@ -398,7 +398,7 @@ export default function MeetingEditorPage({ user }) {
       setShowFinalize(false);
       toast.success('Meeting minutes finalized');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to finalize');
+      toast.error(error.response?.data?.error?.message || 'Failed to finalize');
     }
   };
 
