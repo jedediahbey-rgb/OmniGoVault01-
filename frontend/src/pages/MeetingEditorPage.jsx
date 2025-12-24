@@ -787,7 +787,7 @@ export default function MeetingEditorPage({ user }) {
                         </p>
                         {att.signature_data && (
                           <p className="text-sm text-emerald-400 mt-1 italic">
-                            "{att.signature_data}"
+                            &ldquo;{att.signature_data}&rdquo;
                           </p>
                         )}
                       </div>
