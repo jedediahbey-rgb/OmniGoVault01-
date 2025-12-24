@@ -827,6 +827,9 @@ class EquityTrustAPITester:
         self.test_parties(portfolio_id)
         meeting_id = self.test_governance(portfolio_id)
         distribution_id = self.test_distributions(portfolio_id)
+        dispute_id = self.test_disputes(portfolio_id)
+        insurance_id = self.test_insurance(portfolio_id)
+        compensation_id = self.test_compensation(portfolio_id)
         
         # Print summary
         print("\n" + "=" * 50)
