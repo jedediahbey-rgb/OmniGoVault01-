@@ -6,7 +6,6 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import {
-  AlertCircle,
   ArrowClockwise,
   ArrowCounterClockwise,
   ArrowLeft,
@@ -31,7 +30,8 @@ import {
   TextB,
   TextHOne,
   TextHTwo,
-  TextItalic
+  TextItalic,
+  WarningCircle
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -631,7 +631,7 @@ export default function DocumentEditorPage({ user }) {
           <div className="py-4">
             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                <WarningCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <p className="text-yellow-400 font-medium mb-1">Before finalizing:</p>
                   <ul className="text-white/60 space-y-1 list-disc list-inside">
