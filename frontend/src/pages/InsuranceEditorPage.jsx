@@ -258,6 +258,20 @@ export default function InsuranceEditorPage({ user }) {
     }
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await axios.delete(`${API}/governance/insurance-policies/${policyId}`);
+      toast.success('Insurance policy deleted successfully');
+      navigate('/vault/governance?tab=insurance');
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to delete policy');
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
