@@ -71,6 +71,15 @@ export default function TemplatesPage({ user }) {
   const [aiInstructions, setAiInstructions] = useState('');
   const [aiGenerating, setAiGenerating] = useState(false);
 
+  // Handler to open portfolio dropdown on pointerdown (prevents blur/outside race on mobile)
+  const handlePortfolioPointerDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Let the keyboard dismiss without triggering a close race
+    requestAnimationFrame(() => titleInputRef.current?.blur());
+    setPortfolioOpen(true); // Always open, don't toggle
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
