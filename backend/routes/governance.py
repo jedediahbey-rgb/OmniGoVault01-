@@ -2879,6 +2879,79 @@ async def finalize_insurance_policy(policy_id: str, data: dict, request: Request
         return error_response("FINALIZE_ERROR", "Failed to finalize policy", status_code=500)
 
 
+@router.post("/insurance-policies/{policy_id}/amend")
+async def create_insurance_amendment(policy_id: str, data: dict, request: Request):
+    """Create an amendment to a finalized insurance policy"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        original = await db.insurance_policies.find_one(
+            {"policy_id": policy_id, "user_id": user.user_id}
+        )
+        
+        if not original:
+            return error_response("NOT_FOUND", "Insurance policy not found", status_code=404)
+        
+        if not original.get("locked"):
+            return error_response("NOT_FINALIZED", "Cannot amend an unlocked policy. Edit it directly instead.")
+        
+        amendment_count = await db.insurance_policies.count_documents({
+            "parent_policy_id": policy_id,
+            "user_id": user.user_id
+        })
+        
+        new_revision = original.get("revision", 1) + amendment_count + 1
+        
+        rm_id = ""
+        try:
+            rm_id, _, _, _ = await generate_subject_rm_id(
+                original.get("portfolio_id"), user.user_id, "23", "Insurance Amendment"
+            )
+        except Exception as e:
+            print(f"Warning: Could not generate RM-ID: {e}")
+        
+        new_id = f"ins_{uuid.uuid4().hex[:12]}"
+        
+        amendment = {
+            "policy_id": new_id,
+            "portfolio_id": original.get("portfolio_id"),
+            "trust_id": original.get("trust_id"),
+            "user_id": user.user_id,
+            "title": f"{original.get('title', '')} (Amendment v{new_revision})",
+            "policy_type": original.get("policy_type", "whole_life"),
+            "policy_number": original.get("policy_number", ""),
+            "carrier_name": original.get("carrier_name", ""),
+            "death_benefit": original.get("death_benefit", 0),
+            "cash_value": original.get("cash_value", 0),
+            "premium_amount": original.get("premium_amount", 0),
+            "beneficiaries": original.get("beneficiaries", []),
+            "rm_id": rm_id,
+            "revision": new_revision,
+            "parent_policy_id": policy_id,
+            "is_amendment": True,
+            "status": "active",
+            "locked": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "deleted_at": None
+        }
+        
+        await db.insurance_policies.insert_one(amendment)
+        
+        await db.insurance_policies.update_one(
+            {"policy_id": policy_id},
+            {"$set": {"amended_by_id": new_id}}
+        )
+        
+        return success_message("Amendment created", {"item": amendment})
+    except Exception as e:
+        print(f"Error creating amendment: {e}")
+        return error_response("AMEND_ERROR", "Failed to create amendment", status_code=500)
+
+
 # ============ TRUSTEE COMPENSATION ============
 
 @router.get("/compensation")
