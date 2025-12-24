@@ -448,9 +448,8 @@ export default function CyberHomePage() {
               </button>
               
               <Link to="/login">
-                <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold text-xs sm:text-sm px-3 sm:px-4">
-                  <Vault className="w-4 h-4 sm:mr-2" weight="duotone" />
-                  <span className="hidden sm:inline">Enter Vault</span>
+                <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 text-xs sm:text-sm px-3 sm:px-4">
+                  Vault
                 </Button>
               </Link>
               
