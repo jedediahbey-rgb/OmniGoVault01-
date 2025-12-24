@@ -3159,6 +3159,69 @@ async def mark_compensation_paid(compensation_id: str, data: dict, request: Requ
         return error_response("PAY_ERROR", "Failed to mark as paid", status_code=500)
 
 
+@router.post("/compensation/{compensation_id}/finalize")
+async def finalize_compensation(compensation_id: str, data: dict, request: Request):
+    """Finalize a compensation entry - locks it permanently"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        entry = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id, "user_id": user.user_id}
+        )
+        
+        if not entry:
+            return error_response("NOT_FOUND", "Compensation entry not found", status_code=404)
+        
+        if entry.get("locked"):
+            return error_response("ALREADY_FINALIZED", "Compensation already finalized")
+        
+        finalized_at = datetime.now(timezone.utc).isoformat()
+        finalized_by = data.get("finalized_by", user.name if hasattr(user, 'name') else "Unknown")
+        
+        await db.compensation_entries.update_one(
+            {"compensation_id": compensation_id},
+            {"$set": {
+                "status": "finalized",
+                "locked": True,
+                "locked_at": finalized_at,
+                "finalized_at": finalized_at,
+                "finalized_by": finalized_by,
+                "updated_at": finalized_at
+            }}
+        )
+        
+        # Create ledger entry
+        if entry.get("rm_id"):
+            try:
+                await create_governance_ledger_entry(
+                    portfolio_id=entry.get("portfolio_id"),
+                    user_id=user.user_id,
+                    governance_type="compensation",
+                    governance_id=compensation_id,
+                    rm_id=entry.get("rm_id"),
+                    title=entry.get("title", "Compensation"),
+                    description=f"Finalized on {finalized_at[:10]} - {entry.get('recipient_name', '')}",
+                    value=entry.get("amount"),
+                    entry_type="compensation",
+                    balance_effect="debit",
+                    subject_code="24",
+                    subject_name="Compensation"
+                )
+            except Exception as le_err:
+                print(f"Warning: Could not create ledger entry: {le_err}")
+        
+        updated = await db.compensation_entries.find_one(
+            {"compensation_id": compensation_id}, {"_id": 0}
+        )
+        return success_item(updated)
+    except Exception as e:
+        print(f"Error finalizing compensation: {e}")
+        return error_response("FINALIZE_ERROR", "Failed to finalize compensation", status_code=500)
+
+
 
 # ============ GOVERNANCE TRASH ============
 
