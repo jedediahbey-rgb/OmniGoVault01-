@@ -305,6 +305,16 @@ const AppRouter = ({ auth }) => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/vault/governance/disputes/:disputeId"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <DisputeEditorPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
       
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
