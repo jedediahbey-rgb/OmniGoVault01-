@@ -450,7 +450,7 @@ export default function CompensationEditorPage({ user }) {
                     </Button>
                   )}
                   
-                  {isLocked && (
+                  {isLocked && !compensation.amended_by_id && (
                     <Button onClick={handleAmend} variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
                       <PlusCircle className="w-4 h-4 mr-2" />
                       Amend
