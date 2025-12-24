@@ -294,6 +294,16 @@ const AppRouter = ({ auth }) => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/vault/governance/distributions/:distributionId"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <DistributionEditorPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
       
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
