@@ -586,23 +586,18 @@ export default function MeetingEditorPage({ user }) {
             </div>
           ) : (
             // View mode
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+            <div className="flex flex-col gap-4">
+              {/* Header content */}
               <div className="flex items-start gap-4">
                 <div className={`p-4 rounded-xl ${typeConfig.bg} shrink-0`}>
                   <TypeIcon className={`w-8 h-8 ${typeConfig.color}`} />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <Badge className={`${status.color} border`}>
                       <StatusIcon className="w-3 h-3 mr-1" />
                       {status.label}
                     </Badge>
-                    {isLocked && (
-                      <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                        <Lock className="w-3 h-3 mr-1" />
-                        Locked
-                      </Badge>
-                    )}
                     {meeting.is_amendment && (
                       <Badge className="bg-purple-500/20 text-purple-400 border border-purple-400/30">
                         v{meeting.revision || meeting.amendment_number + 1}
@@ -612,12 +607,12 @@ export default function MeetingEditorPage({ user }) {
                       {typeConfig.label}
                     </Badge>
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-heading text-white mb-2">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-heading text-white mb-2 break-words">
                     {meeting.title}
                   </h1>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-vault-muted">
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-vault-muted">
                     {meeting.rm_id && (
-                      <span className="font-mono bg-vault-dark/50 px-2 py-0.5 rounded">
+                      <span className="font-mono bg-vault-dark/50 px-2 py-0.5 rounded text-xs">
                         {meeting.rm_id}
                       </span>
                     )}
@@ -628,18 +623,17 @@ export default function MeetingEditorPage({ user }) {
                     {meeting.location && (
                       <span>📍 {meeting.location}</span>
                     )}
-                    {meeting.called_by && (
-                      <span>Called by: {meeting.called_by}</span>
-                    )}
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-2 shrink-0">
+              {/* Action buttons - properly aligned */}
+              <div className="flex items-center gap-2 justify-end">
                 {/* Amend button - prominent for finalized meetings */}
                 {isFinalized && !meeting.amended_by_id && (
                   <Button
                     onClick={() => setShowAmend(true)}
+                    size="sm"
                     className="bg-purple-600 hover:bg-purple-500 text-white"
                   >
                     <FileText className="w-4 h-4 mr-2" />
