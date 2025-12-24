@@ -34,22 +34,55 @@ def init_governance_routes(database, auth_func, rmid_func):
 
 # ============ RESPONSE HELPERS ============
 
+def normalize_meeting(meeting: dict) -> dict:
+    """Normalize meeting data for API responses.
+    - Adds `id` field (alias for meeting_id) for frontend compatibility
+    - Ensures `locked` boolean is present
+    - Ensures `revision` is present
+    """
+    if not meeting:
+        return meeting
+    
+    # Add id field as alias for meeting_id
+    meeting["id"] = meeting.get("meeting_id", "")
+    
+    # Ensure locked field is present (derived from status if not set)
+    if "locked" not in meeting:
+        meeting["locked"] = meeting.get("status") in ("finalized", "attested", "amended")
+    
+    # Ensure revision field is present
+    if "revision" not in meeting:
+        meeting["revision"] = 1 if not meeting.get("is_amendment") else (meeting.get("amendment_number", 0) + 1)
+    
+    # Ensure parent_meeting_id is set from amends_meeting_id for compatibility
+    if "parent_meeting_id" not in meeting and meeting.get("amends_meeting_id"):
+        meeting["parent_meeting_id"] = meeting.get("amends_meeting_id")
+    
+    return meeting
+
+
 def success_list(items: list, total: int = None, sort_by: str = "created_at", sort_dir: str = "asc", empty_state: dict = None):
     """Standard list response envelope"""
+    # Normalize all meeting items
+    normalized_items = [normalize_meeting(item) if isinstance(item, dict) and "meeting_id" in item else item for item in items]
+    
     response = {
         "ok": True,
-        "items": items,
-        "count": len(items),
-        "total": total if total is not None else len(items),
+        "items": normalized_items,
+        "count": len(normalized_items),
+        "total": total if total is not None else len(normalized_items),
         "sort": {"by": sort_by, "dir": sort_dir}
     }
-    if not items and empty_state:
+    if not normalized_items and empty_state:
         response["empty_state"] = empty_state
     return response
 
 
 def success_item(item: dict):
     """Standard detail response envelope"""
+    # Normalize meeting item if it has meeting_id
+    if isinstance(item, dict) and "meeting_id" in item:
+        item = normalize_meeting(item)
     return {"ok": True, "item": item}
 
 
@@ -57,6 +90,9 @@ def success_message(message: str, data: dict = None):
     """Standard success response with message"""
     response = {"ok": True, "message": message}
     if data:
+        # Normalize meeting item if present in data
+        if "item" in data and isinstance(data["item"], dict) and "meeting_id" in data["item"]:
+            data["item"] = normalize_meeting(data["item"])
         response.update(data)
     return response
 
