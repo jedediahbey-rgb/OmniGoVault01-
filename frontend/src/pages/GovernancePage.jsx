@@ -175,6 +175,29 @@ export default function GovernancePage({ user }) {
     }
   };
 
+  const fetchDistributions = async () => {
+    if (!selectedPortfolio) return;
+    setDistributionsLoading(true);
+    try {
+      const res = await axios.get(`${API}/governance/distributions`, {
+        params: { portfolio_id: selectedPortfolio }
+      });
+      const data = res.data;
+      if (data.ok && data.items) {
+        setDistributions(data.items);
+      } else if (Array.isArray(data)) {
+        setDistributions(data);
+      } else {
+        setDistributions([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch distributions:', error);
+      setDistributions([]);
+    } finally {
+      setDistributionsLoading(false);
+    }
+  };
+
   const fetchParties = async () => {
     if (!selectedPortfolio) return;
     try {
