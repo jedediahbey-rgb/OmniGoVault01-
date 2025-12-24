@@ -665,9 +665,9 @@ export default function DisputeEditorPage({ user }) {
             ) : (
               <div className="space-y-3">
                 {dispute.events.sort((a, b) => new Date(b.event_date) - new Date(a.event_date)).map((event, idx) => (
-                  <div key={event.event_id || idx} className="p-3 bg-vault-dark/30 rounded-lg border border-vault-gold/10">
-                    <div className="flex items-start justify-between">
-                      <div>
+                  <div key={event.event_id || idx} className="p-3 bg-vault-dark/30 rounded-lg border border-vault-gold/10 group">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
                         <Badge className="text-xs bg-vault-gold/20 text-vault-gold border-vault-gold/30 mb-1">
                           {event.event_type}
                         </Badge>
@@ -675,10 +675,24 @@ export default function DisputeEditorPage({ user }) {
                         {event.description && (
                           <div className="text-sm text-vault-muted mt-1">{event.description}</div>
                         )}
+                        <div className="text-xs text-vault-muted mt-1">
+                          {new Date(event.event_date).toLocaleDateString()}
+                        </div>
                       </div>
-                      <div className="text-xs text-vault-muted shrink-0">
-                        {new Date(event.event_date).toLocaleDateString()}
-                      </div>
+                      {isOpen && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 hover:bg-red-500/10 shrink-0"
+                          onClick={() => {
+                            if (window.confirm(`Delete event "${event.title}"?`)) {
+                              handleDeleteEvent(event.event_id);
+                            }
+                          }}
+                        >
+                          <Trash className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
