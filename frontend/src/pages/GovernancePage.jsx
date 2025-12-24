@@ -236,7 +236,7 @@ export default function GovernancePage({ user }) {
         <PageHeader
           title="Governance"
           subtitle="Trust meeting minutes, distributions, and compliance"
-          icon={<Gavel className="w-8 h-8" />}
+          icon={Gavel}
         />
       </motion.div>
 
