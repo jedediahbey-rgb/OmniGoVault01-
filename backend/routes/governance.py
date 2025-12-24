@@ -2279,6 +2279,69 @@ async def resolve_dispute(dispute_id: str, data: dict, request: Request):
         return error_response("RESOLVE_ERROR", "Failed to resolve dispute", status_code=500)
 
 
+@router.post("/disputes/{dispute_id}/finalize")
+async def finalize_dispute(dispute_id: str, data: dict, request: Request):
+    """Finalize a dispute - locks it permanently"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        if dispute.get("locked"):
+            return error_response("ALREADY_FINALIZED", "Dispute already finalized")
+        
+        finalized_at = datetime.now(timezone.utc).isoformat()
+        finalized_by = data.get("finalized_by", user.name if hasattr(user, 'name') else "Unknown")
+        
+        new_status = "closed" if dispute.get("status") not in ("settled", "closed") else dispute.get("status")
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": {
+                "status": new_status,
+                "locked": True,
+                "locked_at": finalized_at,
+                "finalized_at": finalized_at,
+                "finalized_by": finalized_by,
+                "updated_at": finalized_at
+            }}
+        )
+        
+        # Create ledger entry
+        if dispute.get("rm_id"):
+            try:
+                await create_governance_ledger_entry(
+                    portfolio_id=dispute.get("portfolio_id"),
+                    user_id=user.user_id,
+                    governance_type="dispute",
+                    governance_id=dispute_id,
+                    rm_id=dispute.get("rm_id"),
+                    title=dispute.get("title", "Dispute"),
+                    description=f"Finalized on {finalized_at[:10]}",
+                    value=dispute.get("amount_claimed"),
+                    entry_type="dispute",
+                    balance_effect="neutral",
+                    subject_code="22",
+                    subject_name="Dispute"
+                )
+            except Exception as le_err:
+                print(f"Warning: Could not create ledger entry: {le_err}")
+        
+        updated = await db.disputes.find_one({"dispute_id": dispute_id}, {"_id": 0})
+        return success_message("Dispute finalized", {"item": normalize_dispute(updated)})
+    except Exception as e:
+        print(f"Error finalizing dispute: {e}")
+        return error_response("FINALIZE_ERROR", "Failed to finalize dispute", status_code=500)
+
+
 # ============ INSURANCE POLICIES (Stub with Empty State) ============
 
 @router.get("/insurance-policies")
