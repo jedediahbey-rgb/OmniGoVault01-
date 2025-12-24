@@ -1,0 +1,792 @@
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+import {
+  ArrowLeft,
+  Calendar,
+  CaretDown,
+  Check,
+  CurrencyDollar,
+  DotsThreeVertical,
+  Download,
+  FileText,
+  House,
+  Lock,
+  PencilSimple,
+  Plus,
+  ShieldCheck,
+  Timer,
+  Trash,
+  User,
+  Users,
+  X
+} from '@phosphor-icons/react';
+import PageHeader from '../components/shared/PageHeader';
+import GlassCard from '../components/shared/GlassCard';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Badge } from '../components/ui/badge';
+import { Textarea } from '../components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '../components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
+import { staggerContainer, fadeInUp } from '../lib/motion';
+import { toast } from 'sonner';
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Insurance type config
+const insuranceTypeConfig = {
+  whole_life: { icon: ShieldCheck, color: 'text-emerald-400', bg: 'bg-emerald-500/20', label: 'Whole Life' },
+  term: { icon: Timer, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Term Life' },
+  universal: { icon: CurrencyDollar, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Universal Life' },
+  variable: { icon: House, color: 'text-purple-400', bg: 'bg-purple-500/20', label: 'Variable Life' },
+  group: { icon: Users, color: 'text-cyan-400', bg: 'bg-cyan-500/20', label: 'Group Life' },
+};
+
+// Status config
+const statusConfig = {
+  active: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30', icon: Check },
+  lapsed: { label: 'Lapsed', color: 'bg-red-500/30 text-red-400 border-red-400/30', icon: X },
+  paid_up: { label: 'Paid Up', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30', icon: Check },
+  surrendered: { label: 'Surrendered', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30', icon: X },
+  claimed: { label: 'Claimed', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30', icon: Check },
+  expired: { label: 'Expired', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30', icon: X },
+};
+
+export default function InsuranceEditorPage({ user }) {
+  const { policyId } = useParams();
+  const navigate = useNavigate();
+  
+  const [policy, setPolicy] = useState(null);
+  const [parties, setParties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  
+  // Edit states
+  const [editingHeader, setEditingHeader] = useState(false);
+  const [editedHeader, setEditedHeader] = useState({});
+  
+  // Dialogs
+  const [showAddBeneficiary, setShowAddBeneficiary] = useState(false);
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  
+  // New beneficiary
+  const [newBeneficiary, setNewBeneficiary] = useState({
+    name: '',
+    relationship: '',
+    percentage: '',
+    beneficiary_type: 'primary',
+    notes: ''
+  });
+  
+  // New payment
+  const [newPayment, setNewPayment] = useState({
+    payment_date: new Date().toISOString().slice(0, 10),
+    amount: '',
+    payment_method: 'check',
+    confirmation_number: '',
+    notes: ''
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    const abortController = new AbortController();
+
+    const fetchPolicy = async () => {
+      try {
+        const res = await axios.get(`${API}/governance/insurance-policies/${policyId}`, {
+          signal: abortController.signal
+        });
+        
+        if (!isMounted) return;
+        
+        const data = res.data;
+        const policyData = data.item || data;
+        
+        setPolicy(policyData);
+        setEditedHeader({
+          title: policyData.title,
+          policy_type: policyData.policy_type,
+          policy_number: policyData.policy_number || '',
+          carrier_name: policyData.carrier_name || '',
+          insured_name: policyData.insured_name || '',
+          death_benefit: policyData.death_benefit || 0,
+          cash_value: policyData.cash_value || 0,
+          currency: policyData.currency || 'USD',
+          premium_amount: policyData.premium_amount || 0,
+          premium_frequency: policyData.premium_frequency || 'monthly',
+          effective_date: policyData.effective_date?.slice(0, 10) || '',
+          notes: policyData.notes || '',
+        });
+        
+        // Fetch parties for beneficiary selection
+        if (policyData.portfolio_id && isMounted) {
+          try {
+            const partiesRes = await axios.get(`${API}/portfolios/${policyData.portfolio_id}/parties`, {
+              signal: abortController.signal
+            });
+            if (isMounted) {
+              setParties(partiesRes.data || []);
+            }
+          } catch (partiesError) {
+            if (partiesError?.name === 'CanceledError') return;
+            console.warn('Failed to fetch parties:', partiesError);
+          }
+        }
+      } catch (error) {
+        if (!isMounted || error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED' || abortController.signal.aborted) {
+          return;
+        }
+        console.error('Failed to fetch insurance policy:', error);
+        toast.error('Failed to load insurance policy');
+        navigate('/vault/governance?tab=insurance');
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    if (policyId) {
+      fetchPolicy();
+    }
+    
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, [policyId, navigate]);
+
+  const handleSaveHeader = async () => {
+    setSaving(true);
+    try {
+      await axios.put(`${API}/governance/insurance-policies/${policyId}`, editedHeader);
+      
+      setPolicy(prev => ({ ...prev, ...editedHeader }));
+      setEditingHeader(false);
+      toast.success('Policy updated');
+    } catch (error) {
+      console.error('Failed to save:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to save changes');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddBeneficiary = async () => {
+    if (!newBeneficiary.name.trim()) {
+      toast.error('Please enter beneficiary name');
+      return;
+    }
+    
+    setSaving(true);
+    try {
+      const res = await axios.post(`${API}/governance/insurance-policies/${policyId}/beneficiaries`, {
+        ...newBeneficiary,
+        percentage: parseFloat(newBeneficiary.percentage) || 0,
+      });
+      
+      setPolicy(res.data.item);
+      setShowAddBeneficiary(false);
+      setNewBeneficiary({
+        name: '',
+        relationship: '',
+        percentage: '',
+        beneficiary_type: 'primary',
+        notes: ''
+      });
+      toast.success('Beneficiary added');
+    } catch (error) {
+      console.error('Failed to add beneficiary:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to add beneficiary');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddPayment = async () => {
+    if (!newPayment.amount) {
+      toast.error('Please enter payment amount');
+      return;
+    }
+    
+    setSaving(true);
+    try {
+      const res = await axios.post(`${API}/governance/insurance-policies/${policyId}/premium-payments`, {
+        ...newPayment,
+        amount: parseFloat(newPayment.amount) || 0,
+        currency: policy.currency || 'USD',
+      });
+      
+      setPolicy(res.data.item);
+      setShowAddPayment(false);
+      setNewPayment({
+        payment_date: new Date().toISOString().slice(0, 10),
+        amount: '',
+        payment_method: 'check',
+        confirmation_number: '',
+        notes: ''
+      });
+      toast.success('Payment recorded');
+    } catch (error) {
+      console.error('Failed to add payment:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to record payment');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const formatCurrency = (amount, currency = 'USD') => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount || 0);
+  };
+
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen p-4 md:p-6 lg:p-8 w-full max-w-full overflow-x-hidden"
+      >
+        <div className="flex items-center justify-center py-20">
+          <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
+        </div>
+      </motion.div>
+    );
+  }
+
+  if (!policy) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen p-4 md:p-6 lg:p-8"
+      >
+        <GlassCard className="p-12 text-center">
+          <ShieldCheck className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
+          <h3 className="text-xl font-heading text-white mb-2">Policy Not Found</h3>
+          <p className="text-vault-muted mb-6">The insurance policy you're looking for doesn't exist.</p>
+          <Link to="/vault/governance?tab=insurance">
+            <Button className="bg-vault-gold text-vault-dark">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Insurance
+            </Button>
+          </Link>
+        </GlassCard>
+      </motion.div>
+    );
+  }
+
+  const typeConfig = insuranceTypeConfig[policy.policy_type] || insuranceTypeConfig.whole_life;
+  const TypeIcon = typeConfig.icon;
+  const status = statusConfig[policy.status] || statusConfig.active;
+  const StatusIcon = status.icon;
+  const isLocked = policy.locked;
+
+  return (
+    <motion.div
+      variants={staggerContainer}
+      initial="hidden"
+      animate="show"
+      className="min-h-screen p-4 md:p-6 lg:p-8 w-full max-w-full overflow-x-hidden"
+    >
+      {/* Back Navigation */}
+      <motion.div variants={fadeInUp} className="mb-6">
+        <div className="flex items-center gap-4">
+          <Link to="/vault/governance?tab=insurance">
+            <Button variant="ghost" size="sm" className="text-vault-muted hover:text-white">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Insurance
+            </Button>
+          </Link>
+        </div>
+        <PageHeader 
+          title="Insurance Policy Details"
+          subtitle="View and manage life insurance policy"
+          icon={ShieldCheck}
+        />
+      </motion.div>
+
+      {/* Policy Header Card */}
+      <motion.div variants={fadeInUp} className="mb-6">
+        <GlassCard className="p-4 sm:p-6 overflow-hidden">
+          <div className="flex flex-col gap-4">
+            {/* Top row - Icon, badges, status */}
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className={`p-3 sm:p-4 rounded-xl ${typeConfig.bg} shrink-0`}>
+                <TypeIcon className={`w-6 h-6 sm:w-8 sm:h-8 ${typeConfig.color}`} />
+              </div>
+              
+              {editingHeader && !isLocked ? (
+                <div className="flex-1 min-w-0 space-y-4">
+                  <Input
+                    value={editedHeader.title}
+                    onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
+                    className="text-lg sm:text-2xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-vault-muted">Death Benefit</label>
+                      <Input
+                        type="number"
+                        value={editedHeader.death_benefit}
+                        onChange={(e) => setEditedHeader(prev => ({ ...prev, death_benefit: e.target.value }))}
+                        className="bg-[#05080F] border-vault-gold/20 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-vault-muted">Cash Value</label>
+                      <Input
+                        type="number"
+                        value={editedHeader.cash_value}
+                        onChange={(e) => setEditedHeader(prev => ({ ...prev, cash_value: e.target.value }))}
+                        className="bg-[#05080F] border-vault-gold/20 text-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-vault-muted">Premium</label>
+                      <Input
+                        type="number"
+                        value={editedHeader.premium_amount}
+                        onChange={(e) => setEditedHeader(prev => ({ ...prev, premium_amount: e.target.value }))}
+                        className="bg-[#05080F] border-vault-gold/20 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-vault-muted">Carrier</label>
+                      <Input
+                        value={editedHeader.carrier_name}
+                        onChange={(e) => setEditedHeader(prev => ({ ...prev, carrier_name: e.target.value }))}
+                        className="bg-[#05080F] border-vault-gold/20 text-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleSaveHeader}
+                      disabled={saving}
+                      className="bg-vault-gold text-vault-dark"
+                    >
+                      {saving ? 'Saving...' : 'Save'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setEditingHeader(false)}
+                      className="border-vault-gold/30"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <Badge className={`${status.color} border`}>
+                      <StatusIcon className="w-3 h-3 mr-1" />
+                      {status.label}
+                    </Badge>
+                    {isLocked && (
+                      <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
+                        <Lock className="w-3 h-3 mr-1" />
+                        Locked
+                      </Badge>
+                    )}
+                    <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 hidden sm:flex">
+                      {typeConfig.label}
+                    </Badge>
+                  </div>
+                  <h1 className="text-xl sm:text-2xl font-heading text-white mt-2 break-words">{policy.title}</h1>
+                  {policy.rm_id && (
+                    <span className="text-xs sm:text-sm font-mono text-vault-muted break-all">
+                      {policy.rm_id}
+                    </span>
+                  )}
+                  <div className="text-2xl sm:text-3xl font-heading text-emerald-400 mt-2">
+                    {formatCurrency(policy.death_benefit, policy.currency)}
+                    <span className="text-sm text-vault-muted ml-2">death benefit</span>
+                  </div>
+                  <div className="text-sm text-vault-muted mt-1">
+                    {policy.carrier_name || 'No carrier'} • Policy #{policy.policy_number || 'N/A'}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Actions */}
+            {!isLocked && !editingHeader && (
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingHeader(true)}
+                  className="border-vault-gold/30 text-white"
+                >
+                  <PencilSimple className="w-4 h-4 mr-2" />
+                  Edit
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="border-vault-gold/30">
+                      <DotsThreeVertical className="w-5 h-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <DropdownMenuItem className="text-vault-muted hover:bg-vault-gold/20">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export PDF
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
+          </div>
+        </GlassCard>
+      </motion.div>
+
+      {/* Policy Details */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Coverage Info */}
+        <motion.div variants={fadeInUp}>
+          <GlassCard className="p-6">
+            <h3 className="text-lg font-heading text-white mb-4 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-vault-gold" />
+              Coverage Details
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-vault-muted">Death Benefit</span>
+                <span className="text-white font-semibold">{formatCurrency(policy.death_benefit, policy.currency)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-vault-muted">Cash Value</span>
+                <span className="text-white">{formatCurrency(policy.cash_value, policy.currency)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-vault-muted">Loan Balance</span>
+                <span className="text-white">{formatCurrency(policy.loan_balance, policy.currency)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-vault-muted">Insured</span>
+                <span className="text-white">{policy.insured_name || 'Not specified'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-vault-muted">Effective Date</span>
+                <span className="text-white">{policy.effective_date ? new Date(policy.effective_date).toLocaleDateString() : 'N/A'}</span>
+              </div>
+            </div>
+          </GlassCard>
+        </motion.div>
+
+        {/* Premium Info */}
+        <motion.div variants={fadeInUp}>
+          <GlassCard className="p-6">
+            <h3 className="text-lg font-heading text-white mb-4 flex items-center gap-2">
+              <CurrencyDollar className="w-5 h-5 text-vault-gold" />
+              Premium Information
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="text-vault-muted">Premium Amount</span>
+                <span className="text-white font-semibold">{formatCurrency(policy.premium_amount, policy.currency)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-vault-muted">Frequency</span>
+                <span className="text-white capitalize">{policy.premium_frequency || 'Monthly'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-vault-muted">Due Date</span>
+                <span className="text-white">{policy.premium_due_date || 'Not set'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-vault-muted">Payments Recorded</span>
+                <span className="text-white">{policy.premium_payments?.length || 0}</span>
+              </div>
+            </div>
+          </GlassCard>
+        </motion.div>
+      </div>
+
+      {/* Beneficiaries */}
+      <motion.div variants={fadeInUp} className="mb-6">
+        <GlassCard className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-heading text-white flex items-center gap-2">
+              <Users className="w-5 h-5 text-vault-gold" />
+              Beneficiaries
+            </h3>
+            {!isLocked && (
+              <Button
+                size="sm"
+                onClick={() => setShowAddBeneficiary(true)}
+                className="bg-vault-gold/20 text-vault-gold hover:bg-vault-gold/30"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add
+              </Button>
+            )}
+          </div>
+          
+          {policy.beneficiaries?.length > 0 ? (
+            <div className="space-y-3">
+              {policy.beneficiaries.map((ben, idx) => (
+                <div key={ben.beneficiary_id || idx} className="flex items-center justify-between p-3 bg-vault-dark/30 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-vault-gold/20 flex items-center justify-center">
+                      <User className="w-5 h-5 text-vault-gold" />
+                    </div>
+                    <div>
+                      <p className="text-white font-medium">{ben.name}</p>
+                      <p className="text-xs text-vault-muted">{ben.relationship || 'Beneficiary'} • {ben.beneficiary_type}</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-400/30">
+                    {ben.percentage}%
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-vault-muted text-center py-8">No beneficiaries added yet</p>
+          )}
+        </GlassCard>
+      </motion.div>
+
+      {/* Premium Payments */}
+      <motion.div variants={fadeInUp} className="mb-6">
+        <GlassCard className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-heading text-white flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-vault-gold" />
+              Premium Payments
+            </h3>
+            {!isLocked && (
+              <Button
+                size="sm"
+                onClick={() => setShowAddPayment(true)}
+                className="bg-vault-gold/20 text-vault-gold hover:bg-vault-gold/30"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Record Payment
+              </Button>
+            )}
+          </div>
+          
+          {policy.premium_payments?.length > 0 ? (
+            <div className="space-y-3">
+              {policy.premium_payments.map((payment, idx) => (
+                <div key={payment.payment_id || idx} className="flex items-center justify-between p-3 bg-vault-dark/30 rounded-lg">
+                  <div>
+                    <p className="text-white">{new Date(payment.payment_date).toLocaleDateString()}</p>
+                    <p className="text-xs text-vault-muted">{payment.payment_method} • {payment.confirmation_number || 'No ref'}</p>
+                  </div>
+                  <span className="text-emerald-400 font-semibold">
+                    {formatCurrency(payment.amount, payment.currency || policy.currency)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-vault-muted text-center py-8">No payments recorded yet</p>
+          )}
+        </GlassCard>
+      </motion.div>
+
+      {/* Add Beneficiary Dialog */}
+      <Dialog open={showAddBeneficiary} onOpenChange={setShowAddBeneficiary}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-heading text-vault-gold">Add Beneficiary</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Name *</label>
+              {parties.length > 0 ? (
+                <Select 
+                  value={newBeneficiary.name} 
+                  onValueChange={(v) => {
+                    const party = parties.find(p => p.name === v);
+                    setNewBeneficiary(prev => ({ 
+                      ...prev, 
+                      name: v,
+                      relationship: party?.role || prev.relationship
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue placeholder="Select beneficiary..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    {parties
+                      .filter((party, index, self) => index === self.findIndex(p => p.name === party.name))
+                      .map(party => (
+                        <SelectItem key={party.party_id || party.name} value={party.name}>
+                          {party.name} ({party.role || 'party'})
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  value={newBeneficiary.name}
+                  onChange={(e) => setNewBeneficiary(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Beneficiary name"
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              )}
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Percentage</label>
+                <Input
+                  type="number"
+                  value={newBeneficiary.percentage}
+                  onChange={(e) => setNewBeneficiary(prev => ({ ...prev, percentage: e.target.value }))}
+                  placeholder="e.g., 50"
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Type</label>
+                <Select 
+                  value={newBeneficiary.beneficiary_type} 
+                  onValueChange={(v) => setNewBeneficiary(prev => ({ ...prev, beneficiary_type: v }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <SelectItem value="primary">Primary</SelectItem>
+                    <SelectItem value="contingent">Contingent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Relationship</label>
+              <Input
+                value={newBeneficiary.relationship}
+                onChange={(e) => setNewBeneficiary(prev => ({ ...prev, relationship: e.target.value }))}
+                placeholder="e.g., Spouse, Child, Trust"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddBeneficiary(false)} className="border-vault-gold/30">
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddBeneficiary} 
+              disabled={!newBeneficiary.name.trim() || saving} 
+              className="bg-vault-gold text-vault-dark"
+            >
+              Add Beneficiary
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Payment Dialog */}
+      <Dialog open={showAddPayment} onOpenChange={setShowAddPayment}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-heading text-vault-gold">Record Premium Payment</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Date *</label>
+                <Input
+                  type="date"
+                  value={newPayment.payment_date}
+                  onChange={(e) => setNewPayment(prev => ({ ...prev, payment_date: e.target.value }))}
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Amount *</label>
+                <Input
+                  type="number"
+                  value={newPayment.amount}
+                  onChange={(e) => setNewPayment(prev => ({ ...prev, amount: e.target.value }))}
+                  placeholder="0.00"
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Payment Method</label>
+              <Select 
+                value={newPayment.payment_method} 
+                onValueChange={(v) => setNewPayment(prev => ({ ...prev, payment_method: v }))}
+              >
+                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                  <SelectItem value="check">Check</SelectItem>
+                  <SelectItem value="ach">ACH</SelectItem>
+                  <SelectItem value="wire">Wire Transfer</SelectItem>
+                  <SelectItem value="auto_draft">Auto Draft</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Confirmation #</label>
+              <Input
+                value={newPayment.confirmation_number}
+                onChange={(e) => setNewPayment(prev => ({ ...prev, confirmation_number: e.target.value }))}
+                placeholder="Optional"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddPayment(false)} className="border-vault-gold/30">
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddPayment} 
+              disabled={!newPayment.amount || saving} 
+              className="bg-vault-gold text-vault-dark"
+            >
+              Record Payment
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </motion.div>
+  );
+}
