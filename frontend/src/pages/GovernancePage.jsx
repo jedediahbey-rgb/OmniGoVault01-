@@ -261,9 +261,69 @@ export default function GovernancePage({ user }) {
     }
   };
 
+  // Distribution handlers
+  const handleCreateDistribution = async () => {
+    if (!newDistribution.title.trim()) {
+      toast.error('Please enter a distribution title');
+      return;
+    }
+    if (!selectedPortfolio) {
+      toast.error('Please select a portfolio');
+      return;
+    }
+    
+    setCreatingDistribution(true);
+    try {
+      const res = await axios.post(`${API}/governance/distributions`, {
+        ...newDistribution,
+        portfolio_id: selectedPortfolio,
+        total_amount: parseFloat(newDistribution.total_amount) || 0,
+      });
+      
+      const data = res.data;
+      const distData = data.item || data;
+      
+      toast.success('Distribution created');
+      setShowNewDistribution(false);
+      setNewDistribution({
+        title: '',
+        distribution_type: 'regular',
+        description: '',
+        total_amount: '',
+        currency: 'USD',
+        asset_type: 'cash',
+        scheduled_date: new Date().toISOString().slice(0, 10),
+      });
+      
+      // Navigate to the distribution editor
+      navigate(`/vault/governance/distributions/${distData.distribution_id}`);
+    } catch (error) {
+      console.error('Failed to create distribution:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to create distribution');
+    } finally {
+      setCreatingDistribution(false);
+    }
+  };
+
+  const handleDeleteDistribution = async (distributionId) => {
+    try {
+      await axios.delete(`${API}/governance/distributions/${distributionId}`);
+      toast.success('Distribution deleted');
+      fetchDistributions();
+    } catch (error) {
+      console.error('Failed to delete distribution:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to delete distribution');
+    }
+  };
+
   const filteredMeetings = meetings.filter(m => 
     m.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.rm_id?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredDistributions = distributions.filter(d => 
+    d.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    d.rm_id?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const formatDate = (dateStr) => {
