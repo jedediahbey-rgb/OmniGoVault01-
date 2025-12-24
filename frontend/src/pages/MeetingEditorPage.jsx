@@ -874,7 +874,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Add Agenda Item Dialog */}
       <Dialog open={showAddAgenda} onOpenChange={setShowAddAgenda}>
-        <DialogContent className="bg-vault-dark border-vault-gold/30 text-white max-w-md">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-vault-gold">Add Agenda Item</DialogTitle>
           </DialogHeader>
@@ -885,7 +885,7 @@ export default function MeetingEditorPage({ user }) {
                 value={newAgenda.title}
                 onChange={(e) => setNewAgenda(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Review of Q4 Financial Statements"
-                className="bg-vault-navy border-vault-gold/20 text-white"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
               />
             </div>
             <div>
@@ -894,7 +894,7 @@ export default function MeetingEditorPage({ user }) {
                 value={newAgenda.discussion_summary}
                 onChange={(e) => setNewAgenda(prev => ({ ...prev, discussion_summary: e.target.value }))}
                 placeholder="Summary of discussion..."
-                className="bg-vault-navy border-vault-gold/20 text-white min-h-[100px]"
+                className="bg-[#05080F] border-vault-gold/20 text-white min-h-[100px]"
               />
             </div>
           </div>
@@ -911,7 +911,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Add Motion Dialog */}
       <Dialog open={showAddMotion} onOpenChange={setShowAddMotion}>
-        <DialogContent className="bg-vault-dark border-vault-gold/30 text-white max-w-md">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-vault-gold">Add Motion</DialogTitle>
           </DialogHeader>
@@ -922,7 +922,7 @@ export default function MeetingEditorPage({ user }) {
                 value={newMotion.text}
                 onChange={(e) => setNewMotion(prev => ({ ...prev, text: e.target.value }))}
                 placeholder="Motion to approve..."
-                className="bg-vault-navy border-vault-gold/20 text-white min-h-[100px]"
+                className="bg-[#05080F] border-vault-gold/20 text-white min-h-[100px]"
               />
             </div>
             <div>
@@ -931,7 +931,7 @@ export default function MeetingEditorPage({ user }) {
                 value={newMotion.proposed_by_name}
                 onChange={(e) => setNewMotion(prev => ({ ...prev, proposed_by_name: e.target.value }))}
                 placeholder="Name of proposer"
-                className="bg-vault-navy border-vault-gold/20 text-white"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
               />
             </div>
           </div>
