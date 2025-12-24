@@ -1621,6 +1621,67 @@ async def execute_distribution(distribution_id: str, data: dict, request: Reques
         return error_response("EXECUTE_ERROR", "Failed to execute distribution", status_code=500)
 
 
+@router.post("/distributions/{distribution_id}/finalize")
+async def finalize_distribution(distribution_id: str, data: dict, request: Request):
+    """Finalize a distribution - locks it and creates ledger entry"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        distribution = await db.distributions.find_one(
+            {"distribution_id": distribution_id, "user_id": user.user_id}
+        )
+        
+        if not distribution:
+            return error_response("NOT_FOUND", "Distribution not found", status_code=404)
+        
+        if distribution.get("locked"):
+            return error_response("ALREADY_FINALIZED", "Distribution already finalized")
+        
+        finalized_at = datetime.now(timezone.utc).isoformat()
+        finalized_by = data.get("finalized_by", user.name if hasattr(user, 'name') else "Unknown")
+        
+        await db.distributions.update_one(
+            {"distribution_id": distribution_id},
+            {"$set": {
+                "status": "finalized",
+                "locked": True,
+                "locked_at": finalized_at,
+                "finalized_at": finalized_at,
+                "finalized_by": finalized_by,
+                "updated_at": finalized_at
+            }}
+        )
+        
+        # Create ledger entry
+        if distribution.get("rm_id"):
+            try:
+                await create_governance_ledger_entry(
+                    portfolio_id=distribution.get("portfolio_id"),
+                    user_id=user.user_id,
+                    governance_type="distribution",
+                    governance_id=distribution_id,
+                    rm_id=distribution.get("rm_id"),
+                    title=distribution.get("title", "Distribution"),
+                    description=f"Finalized on {finalized_at[:10]}",
+                    value=distribution.get("total_amount"),
+                    entry_type="distribution",
+                    balance_effect="debit",
+                    subject_code="21",
+                    subject_name="Distribution"
+                )
+            except Exception as le_err:
+                print(f"Warning: Could not create ledger entry: {le_err}")
+        
+        updated = await db.distributions.find_one({"distribution_id": distribution_id}, {"_id": 0})
+        return success_message("Distribution finalized", {"item": normalize_distribution(updated)})
+    except Exception as e:
+        print(f"Error finalizing distribution: {e}")
+        return error_response("FINALIZE_ERROR", "Failed to finalize distribution", status_code=500)
+
+
 # ============ DISPUTES ============
 
 def normalize_dispute(dispute: dict) -> dict:
