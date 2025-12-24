@@ -745,7 +745,9 @@ async def add_attestation(meeting_id: str, data: dict, request: Request):
 
 @router.post("/meetings/{meeting_id}/amend")
 async def create_amendment(meeting_id: str, data: dict, request: Request):
-    """Create an amendment to a finalized meeting"""
+    """Create an amendment to a finalized meeting.
+    Clones the finalized meeting into a new draft revision.
+    """
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -760,12 +762,20 @@ async def create_amendment(meeting_id: str, data: dict, request: Request):
             return error_response("NOT_FOUND", "Meeting not found", status_code=404)
         
         if original.get("status") == "draft":
-            return error_response("NOT_FINALIZED", "Cannot amend a draft meeting")
+            return error_response("NOT_FINALIZED", "Cannot amend a draft meeting. Edit it directly instead.")
         
+        # Count existing amendments to this meeting
         amendment_count = await db.meetings.count_documents({
-            "amends_meeting_id": meeting_id,
+            "$or": [
+                {"amends_meeting_id": meeting_id},
+                {"parent_meeting_id": meeting_id}
+            ],
             "user_id": user.user_id
         })
+        
+        # Calculate new revision number
+        original_revision = original.get("revision", 1)
+        new_revision = original_revision + amendment_count + 1
         
         rm_id = ""
         try:
@@ -777,20 +787,26 @@ async def create_amendment(meeting_id: str, data: dict, request: Request):
         
         from models.governance import Meeting
         
+        # Create amendment as new draft revision
         amendment = Meeting(
             portfolio_id=original.get("portfolio_id"),
             trust_id=original.get("trust_id"),
             user_id=user.user_id,
-            title=f"Amendment #{amendment_count + 1} to: {original.get('title', '')}",
+            title=f"{original.get('title', '')} (Amendment v{new_revision})",
             meeting_type=original.get("meeting_type", "regular"),
             date_time=datetime.now(timezone.utc).isoformat(),
             location=original.get("location", ""),
             called_by=original.get("called_by", ""),
             rm_id=rm_id,
+            # New revision fields
+            revision=new_revision,
+            parent_meeting_id=meeting_id,
+            # Legacy fields for compatibility
             is_amendment=True,
             amends_meeting_id=meeting_id,
             amendment_number=amendment_count + 1,
             prior_hash=original.get("finalized_hash", ""),
+            # Clone content from original
             attendees=original.get("attendees", []),
             agenda_items=original.get("agenda_items", []),
             visibility=original.get("visibility", "trustee_only")
@@ -800,9 +816,12 @@ async def create_amendment(meeting_id: str, data: dict, request: Request):
         doc["created_at"] = doc["created_at"].isoformat()
         doc["updated_at"] = doc["updated_at"].isoformat()
         doc["deleted_at"] = None
+        doc["locked"] = False  # New amendment is unlocked/draft
+        doc["locked_at"] = None
         
         await db.meetings.insert_one(doc)
         
+        # Update original to point to the amendment
         await db.meetings.update_one(
             {"meeting_id": meeting_id},
             {"$set": {
