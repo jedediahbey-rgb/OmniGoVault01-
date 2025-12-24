@@ -635,11 +635,73 @@ async def delete_agenda_item(meeting_id: str, item_id: str, request: Request):
         return error_response("DELETE_ERROR", "Failed to delete agenda item", {"error": str(e)}, status_code=500)
 
 
+# ============ LEDGER INTEGRATION HELPER ============
+
+async def create_governance_ledger_entry(
+    portfolio_id: str,
+    user_id: str, 
+    governance_type: str,  # "meeting", "distribution", "dispute", "insurance", "compensation"
+    governance_id: str,
+    rm_id: str,
+    title: str,
+    description: str = "",
+    value: float = None,
+    entry_type: str = "governance_record",
+    balance_effect: str = "credit",
+    subject_code: str = "20",
+    subject_name: str = "Governance"
+):
+    """
+    Create a ledger entry when a governance item is finalized.
+    This ensures all finalized governance items appear on the trust ledger with their RM-ID.
+    
+    Subject codes for governance:
+    - 20: Meeting Minutes
+    - 21: Distributions
+    - 22: Disputes
+    - 23: Insurance
+    - 24: Compensation
+    """
+    import uuid
+    
+    # Parse rm_id to get sequence number if it exists
+    sequence_number = 1
+    if rm_id and "-" in rm_id and "." in rm_id:
+        try:
+            # Format: BASE-CODE.SEQUENCE (e.g., RF123456789US-20.001)
+            seq_part = rm_id.split(".")[-1]
+            sequence_number = int(seq_part)
+        except:
+            pass
+    
+    ledger_doc = {
+        "entry_id": f"ledger_{uuid.uuid4().hex[:12]}",
+        "portfolio_id": portfolio_id,
+        "user_id": user_id,
+        "rm_id": rm_id,
+        "subject_code": subject_code,
+        "subject_name": subject_name,
+        "sequence_number": sequence_number,
+        "entry_type": entry_type,
+        "description": f"[{governance_type.title()}] {title}" + (f" - {description}" if description else ""),
+        "governance_type": governance_type,
+        "governance_id": governance_id,
+        "value": value,
+        "balance_effect": balance_effect,
+        "notes": f"Auto-recorded from finalized {governance_type}",
+        "recorded_date": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.trust_ledger.insert_one(ledger_doc)
+    return {k: v for k, v in ledger_doc.items() if k != "_id"}
+
+
 # ============ FINALIZATION & ATTESTATION ============
 
 @router.post("/meetings/{meeting_id}/finalize")
 async def finalize_meeting(meeting_id: str, data: dict, request: Request):
-    """Finalize meeting minutes - locks content and generates hash"""
+    """Finalize meeting minutes - locks content, generates hash, and creates ledger entry"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -680,10 +742,31 @@ async def finalize_meeting(meeting_id: str, data: dict, request: Request):
             }}
         )
         
+        # Create ledger entry for the finalized meeting
+        ledger_entry = None
+        if meeting.get("rm_id"):
+            try:
+                ledger_entry = await create_governance_ledger_entry(
+                    portfolio_id=meeting.get("portfolio_id"),
+                    user_id=user.user_id,
+                    governance_type="meeting",
+                    governance_id=meeting_id,
+                    rm_id=meeting.get("rm_id"),
+                    title=meeting.get("title", "Untitled Meeting"),
+                    description=f"Finalized by {finalized_by}",
+                    entry_type="meeting_minutes",
+                    balance_effect="credit",
+                    subject_code="20",
+                    subject_name="Meeting Minutes"
+                )
+            except Exception as le_err:
+                print(f"Warning: Could not create ledger entry: {le_err}")
+        
         updated = await db.meetings.find_one({"meeting_id": meeting_id}, {"_id": 0})
         return success_message("Meeting minutes finalized", {
             "finalized_hash": meeting_hash,
-            "item": updated
+            "item": updated,
+            "ledger_entry": ledger_entry
         })
         
     except Exception as e:
