@@ -302,3 +302,113 @@ class DistributionCreate(BaseModel):
     requires_approval: bool = True
     approval_threshold: int = 1
     recipients: List[dict] = []
+
+
+
+# ============ DISPUTES MODELS ============
+
+class DisputeParty(BaseModel):
+    """Party involved in a dispute"""
+    party_id: str = Field(default_factory=lambda: f"dpty_{uuid.uuid4().hex[:8]}")
+    name: str
+    role: str = "claimant"  # claimant, respondent, witness, mediator, arbitrator
+    contact_info: str = ""
+    represented_by: str = ""  # Attorney/representative name
+    notes: str = ""
+
+
+class DisputeEvent(BaseModel):
+    """Timeline event in a dispute"""
+    event_id: str = Field(default_factory=lambda: f"evt_{uuid.uuid4().hex[:8]}")
+    event_type: str = "filing"  # filing, response, hearing, mediation, ruling, appeal, settlement
+    title: str
+    description: str = ""
+    event_date: str
+    documents: List[str] = []  # Document IDs
+    created_by: str = ""
+    created_at: str = ""
+
+
+class DisputeResolution(BaseModel):
+    """Resolution details for a dispute"""
+    resolution_type: str = ""  # settlement, ruling, dismissal, withdrawal, mediation_agreement
+    resolution_date: Optional[str] = None
+    summary: str = ""
+    terms: str = ""
+    monetary_award: float = 0.0
+    currency: str = "USD"
+    in_favor_of: str = ""  # party_id or name
+    documents: List[str] = []
+
+
+class Dispute(BaseModel):
+    """Trust Dispute/Litigation record"""
+    dispute_id: str = Field(default_factory=lambda: f"disp_{uuid.uuid4().hex[:12]}")
+    trust_id: Optional[str] = None
+    portfolio_id: str
+    user_id: str
+    
+    # Dispute details
+    title: str
+    dispute_type: str = "beneficiary"  # beneficiary, trustee, third_party, tax, regulatory
+    description: str = ""
+    
+    # RM-ID for internal recordkeeping
+    rm_id: str = ""
+    
+    # Case information
+    case_number: str = ""  # Court/arbitration case number
+    jurisdiction: str = ""  # Court or arbitration forum
+    filing_date: Optional[str] = None
+    
+    # Financial exposure
+    amount_claimed: float = 0.0
+    currency: str = "USD"
+    estimated_exposure: float = 0.0  # Total potential liability
+    
+    # Parties
+    parties: List[DisputeParty] = []
+    
+    # Timeline
+    events: List[DisputeEvent] = []
+    
+    # Status and workflow
+    status: str = "open"  # open, in_progress, mediation, litigation, settled, closed, appealed
+    priority: str = "medium"  # low, medium, high, critical
+    locked: bool = False
+    locked_at: Optional[str] = None
+    
+    # Resolution
+    resolution: Optional[DisputeResolution] = None
+    
+    # Related documents and meetings
+    related_document_ids: List[str] = []
+    related_meeting_ids: List[str] = []
+    
+    # Legal representation
+    primary_counsel: str = ""
+    counsel_firm: str = ""
+    counsel_contact: str = ""
+    
+    # Key dates
+    next_deadline: Optional[str] = None
+    next_hearing_date: Optional[str] = None
+    statute_of_limitations: Optional[str] = None
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    deleted_at: Optional[str] = None
+
+
+class DisputeCreate(BaseModel):
+    """Create dispute request"""
+    title: str
+    dispute_type: str = "beneficiary"
+    description: str = ""
+    case_number: str = ""
+    jurisdiction: str = ""
+    filing_date: Optional[str] = None
+    amount_claimed: float = 0.0
+    currency: str = "USD"
+    priority: str = "medium"
