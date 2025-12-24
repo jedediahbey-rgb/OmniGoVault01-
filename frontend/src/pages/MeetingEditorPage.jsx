@@ -118,6 +118,10 @@ export default function MeetingEditorPage({ user }) {
   const navigate = useNavigate();
   const { meetingId } = useParams();
   
+  // Refs for mobile dropdown fix
+  const attendeeNameInputRef = useRef(null);
+  const attestationNameInputRef = useRef(null);
+  
   const [meeting, setMeeting] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -149,6 +153,16 @@ export default function MeetingEditorPage({ user }) {
 
   // Expanded agenda items
   const [expandedItems, setExpandedItems] = useState({});
+
+  // Mobile dropdown fix - blur input before opening select
+  const handleSelectPointerDown = (inputRef) => (e) => {
+    if (inputRef?.current && document.activeElement === inputRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      inputRef.current.blur();
+      return;
+    }
+  };
 
   useEffect(() => {
     fetchMeeting();
