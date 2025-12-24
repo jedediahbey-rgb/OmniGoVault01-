@@ -484,7 +484,7 @@ export default function GovernancePage({ user }) {
                           
                           {/* Actions */}
                           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            {meeting.status === 'draft' && (
+                            {meeting.status === 'draft' && !meeting.locked && (
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -492,7 +492,7 @@ export default function GovernancePage({ user }) {
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (window.confirm('Delete this draft meeting?')) {
-                                    handleDeleteMeeting(meeting.meeting_id);
+                                    handleDeleteMeeting(meetingId);
                                   }
                                 }}
                               >
