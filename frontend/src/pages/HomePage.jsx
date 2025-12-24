@@ -21,7 +21,7 @@ const HomePage = () => {
       cta: "Explore Topics"
     },
     {
-      icon: <Scale className="w-8 h-8" weight="duotone" />,
+      icon: <Scales className="w-8 h-8" weight="duotone" />,
       title: "Maxims of Equity",
       description: "Discover the foundational principles that govern equitable jurisprudence with citations.",
       link: "/maxims",
