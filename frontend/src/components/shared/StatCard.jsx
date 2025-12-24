@@ -31,9 +31,9 @@ export default function StatCard({
         className
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1 overflow-hidden">
-          <p className="text-xs uppercase tracking-widest text-white/40 mb-2 whitespace-nowrap">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest text-white/40 mb-2">
             {displayLabel}
           </p>
           <p className="text-2xl sm:text-3xl font-heading text-white tabular-nums truncate">{value}</p>
