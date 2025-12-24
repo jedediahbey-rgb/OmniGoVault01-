@@ -8,7 +8,7 @@ import {
   CaretUp,
   FileText,
   Funnel,
-  Link2,
+  LinkSimple,
   MagnifyingGlass,
   Sparkle,
   X
@@ -629,7 +629,7 @@ export default function GlossaryPage({ user }) {
               {selectedTerm.relatedTerms && selectedTerm.relatedTerms.length > 0 && (
                 <div>
                   <h4 className="text-vault-gold uppercase tracking-wider text-sm mb-3 flex items-center gap-2">
-                    <Link2 className="w-4 h-4" />
+                    <LinkSimple className="w-4 h-4" />
                     Related Terms
                   </h4>
                   <div className="flex flex-wrap gap-2">
