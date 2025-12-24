@@ -1155,10 +1155,11 @@ async def delete_asset(asset_id: str, user: User = Depends(get_current_user)):
 @api_router.get("/portfolios/{portfolio_id}/ledger")
 async def get_trust_ledger(portfolio_id: str, user: User = Depends(get_current_user)):
     """Get trust ledger entries for a portfolio"""
+    # Sort ascending by created_at (oldest first, lowest sequence first)
     entries = await db.trust_ledger.find(
         {"portfolio_id": portfolio_id, "user_id": user.user_id},
         {"_id": 0}
-    ).sort("recorded_date", -1).to_list(200)
+    ).sort("created_at", 1).to_list(200)
     
     # Calculate balance
     total_credit = sum(e.get("value", 0) or 0 for e in entries if e.get("balance_effect") == "credit")
