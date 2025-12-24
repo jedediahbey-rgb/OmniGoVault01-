@@ -152,7 +152,7 @@ const HomePage = () => {
                 <p className="font-sans text-sm text-slate-400 mb-4 sm:mb-6 leading-relaxed">{feature.description}</p>
                 <span className="inline-flex items-center gap-2 text-[#C6A87C] font-sans text-sm font-medium group-hover:gap-3 transition-all">
                   {feature.cta}
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4" weight="bold" />
                 </span>
               </Link>
             ))}
