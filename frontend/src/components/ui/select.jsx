@@ -58,6 +58,7 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
         className
       )}
       position={position}
+      onCloseAutoFocus={(e) => e.preventDefault()}
       {...props}>
       <SelectScrollUpButton />
       <SelectPrimitive.Viewport
