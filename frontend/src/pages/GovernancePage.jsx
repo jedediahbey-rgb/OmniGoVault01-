@@ -303,39 +303,42 @@ export default function GovernancePage({ user }) {
       {/* Tabs for different governance modules */}
       <motion.div variants={fadeInUp}>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-vault-dark/50 border border-vault-gold/20 mb-6">
-            <TabsTrigger 
-              value="meetings" 
-              className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark"
-            >
-              <Newspaper className="w-4 h-4 mr-2" />
-              Meeting Minutes
-            </TabsTrigger>
-            <TabsTrigger 
-              value="distributions" 
-              className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark"
-              disabled
-            >
-              <HandCoins className="w-4 h-4 mr-2" />
-              Distributions
-            </TabsTrigger>
-            <TabsTrigger 
-              value="disputes" 
-              className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark"
-              disabled
-            >
-              <Scales className="w-4 h-4 mr-2" />
-              Disputes
-            </TabsTrigger>
-            <TabsTrigger 
-              value="insurance" 
-              className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark"
-              disabled
-            >
-              <ShieldCheck className="w-4 h-4 mr-2" />
-              Insurance
-            </TabsTrigger>
-          </TabsList>
+          {/* Scrollable tabs on mobile */}
+          <div className="w-full overflow-x-auto overscroll-x-contain -mx-4 px-4 md:mx-0 md:px-0 mb-6">
+            <TabsList className="bg-vault-dark/50 border border-vault-gold/20 w-max md:w-auto">
+              <TabsTrigger 
+                value="meetings" 
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+              >
+                <Newspaper className="w-4 h-4 mr-2 shrink-0" />
+                <span className="hidden sm:inline">Meeting</span> Minutes
+              </TabsTrigger>
+              <TabsTrigger 
+                value="distributions" 
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+                disabled
+              >
+                <HandCoins className="w-4 h-4 mr-2 shrink-0" />
+                <span className="hidden sm:inline">Distributions</span><span className="sm:hidden">Dist.</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="disputes" 
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+                disabled
+              >
+                <Scales className="w-4 h-4 mr-2 shrink-0" />
+                Disputes
+              </TabsTrigger>
+              <TabsTrigger 
+                value="insurance" 
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+                disabled
+              >
+                <ShieldCheck className="w-4 h-4 mr-2 shrink-0" />
+                <span className="hidden sm:inline">Insurance</span><span className="sm:hidden">Ins.</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Meeting Minutes Tab */}
           <TabsContent value="meetings" className="mt-0">
@@ -344,16 +347,16 @@ export default function GovernancePage({ user }) {
                 <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
               </div>
             ) : !selectedPortfolio ? (
-              <GlassCard className="p-12 text-center">
-                <House className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
-                <h3 className="text-xl font-heading text-white mb-2">Select a Portfolio</h3>
-                <p className="text-vault-muted">Choose a portfolio to view its governance records</p>
+              <GlassCard className="p-8 sm:p-12 text-center">
+                <House className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
+                <h3 className="text-lg sm:text-xl font-heading text-white mb-2">Select a Portfolio</h3>
+                <p className="text-sm sm:text-base text-vault-muted">Choose a portfolio to view its governance records</p>
               </GlassCard>
             ) : filteredMeetings.length === 0 ? (
-              <GlassCard className="p-12 text-center">
-                <Newspaper className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
-                <h3 className="text-xl font-heading text-white mb-2">No Meetings Yet</h3>
-                <p className="text-vault-muted mb-6">Create your first meeting minutes to get started</p>
+              <GlassCard className="p-8 sm:p-12 text-center">
+                <Newspaper className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
+                <h3 className="text-lg sm:text-xl font-heading text-white mb-2">No Meetings Yet</h3>
+                <p className="text-sm sm:text-base text-vault-muted mb-6">Create your first meeting minutes to get started</p>
                 <Button
                   onClick={() => setShowNewMeeting(true)}
                   className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
