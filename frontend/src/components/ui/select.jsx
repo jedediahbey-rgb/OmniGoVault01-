@@ -4,8 +4,7 @@ import { Check, CaretDown, CaretUp } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 
-// GLOBAL FIX: Use modal={false} to prevent Select from blocking outside interactions
-// This allows clicking other form fields to close the dropdown WITHOUT closing parent dialogs
+// FIX: modal={false} prevents Select from trapping focus and creating "outside click" issues
 const Select = React.forwardRef(({ modal = false, ...props }, ref) => (
   <SelectPrimitive.Root modal={modal} {...props} />
 ))
@@ -52,14 +51,8 @@ const SelectScrollDownButton = React.forwardRef(({ className, ...props }, ref) =
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName
 
-/**
- * SelectContent - Fixed for mobile dropdown collapse issue
- * 
- * The dropdown will close when clicking outside, but won't trigger dialog close
- * because we use modal={false} on the Select root.
- */
 const SelectContent = React.forwardRef(({ className, children, position = "popper", container, ...props }, ref) => (
-  <SelectPrimitive.Portal container={container ?? undefined}>
+  <SelectPrimitive.Portal container={container}>
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
@@ -69,7 +62,6 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
         className
       )}
       position={position}
-      // Prevent focus from being locked in the dropdown
       onCloseAutoFocus={(e) => e.preventDefault()}
       {...props}>
       <SelectScrollUpButton />
