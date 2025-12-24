@@ -603,9 +603,10 @@ C/o: <strong>[ADDRESS]</strong><br/>
                     <SelectValue placeholder="Select a portfolio" />
                   </SelectTrigger>
                   <SelectContent 
-                    className="bg-vault-navy border-white/10 z-[100]"
+                    className="bg-vault-navy border-white/10 z-[9999]"
                     position="popper"
                     sideOffset={4}
+                    onCloseAutoFocus={(e) => e.preventDefault()}
                   >
                     <SelectItem value="__none__" className="text-white/70">No Portfolio</SelectItem>
                     {portfolios.map(p => (
