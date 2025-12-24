@@ -91,7 +91,9 @@ export default function InsuranceEditorPage({ user }) {
   const [showAddBeneficiary, setShowAddBeneficiary] = useState(false);
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showFinalizeConfirm, setShowFinalizeConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
   
   // New beneficiary
   const [newBeneficiary, setNewBeneficiary] = useState({
