@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Shield, 
   BookOpen, 
-  Sparkles, 
-  FolderArchive, 
-  Bot, 
+  Sparkle, 
+  FolderSimple, 
+  Robot, 
   ArrowRight,
-  Scale,
+  Scales,
   FileText,
   Users
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 
@@ -21,17 +21,17 @@ const features = [
     description: 'Master equity jurisprudence through structured modules and interactive lessons'
   },
   {
-    icon: Sparkles,
+    icon: Sparkle,
     title: 'Maxims',
     description: 'Study the foundational principles that govern equitable relationships'
   },
   {
-    icon: FolderArchive,
+    icon: FolderSimple,
     title: 'Vault',
     description: 'Manage your trust portfolios, documents, and assets in one secure workspace'
   },
   {
-    icon: Bot,
+    icon: Robot,
     title: 'Assistant',
     description: 'AI-powered guidance grounded in trust law and equitable principles'
   }
