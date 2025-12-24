@@ -644,6 +644,67 @@ export default function GovernancePage({ user }) {
     }
   };
 
+  const handleCreateCompensation = async () => {
+    if (!newCompensation.title.trim()) {
+      toast.error('Please enter a title');
+      return;
+    }
+    if (!newCompensation.recipient_name.trim()) {
+      toast.error('Please enter a recipient name');
+      return;
+    }
+    if (!selectedPortfolio) {
+      toast.error('Please select a portfolio');
+      return;
+    }
+    
+    setCreatingCompensation(true);
+    try {
+      const res = await axios.post(`${API}/governance/compensation`, {
+        ...newCompensation,
+        portfolio_id: selectedPortfolio,
+        amount: parseFloat(newCompensation.amount) || 0,
+      });
+      
+      const data = res.data;
+      const compData = data.item || data;
+      
+      toast.success('Compensation entry created');
+      setShowNewCompensation(false);
+      setNewCompensation({
+        title: '',
+        compensation_type: 'annual_fee',
+        recipient_name: '',
+        recipient_role: 'trustee',
+        amount: '',
+        currency: 'USD',
+        period_start: '',
+        period_end: '',
+        fiscal_year: new Date().getFullYear().toString(),
+        basis_of_calculation: '',
+        notes: '',
+      });
+      
+      fetchCompensationEntries();
+    } catch (error) {
+      console.error('Failed to create compensation entry:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to create compensation entry');
+    } finally {
+      setCreatingCompensation(false);
+    }
+  };
+
+  const handleDeleteCompensation = async (compensationId) => {
+    try {
+      await axios.delete(`${API}/governance/compensation/${compensationId}`);
+      toast.success('Compensation entry deleted');
+      fetchCompensationEntries();
+    } catch (error) {
+      console.error('Failed to delete compensation entry:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to delete compensation entry');
+    }
+  };
+
   const filteredMeetings = meetings.filter(m => 
     m.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.rm_id?.toLowerCase().includes(searchTerm.toLowerCase())
