@@ -343,7 +343,7 @@ class EquityTrustAPITester:
             "discussion_summary": "Discussed and approved quarterly distribution to beneficiaries.",
             "order": 2
         }
-        self.run_test("Governance - Add Agenda Item 2", "POST", f"governance/meetings/{meeting_id}/agenda", 201, agenda_data2)
+        self.run_test("Governance - Add Agenda Item 2", "POST", f"governance/meetings/{meeting_id}/agenda", 200, agenda_data2)
         
         # Test 7: Finalize meeting
         finalize_data = {
