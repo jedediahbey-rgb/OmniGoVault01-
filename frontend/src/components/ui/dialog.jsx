@@ -4,7 +4,19 @@ import { X } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 
-const Dialog = DialogPrimitive.Root
+// Custom Dialog that prevents closing on outside interactions
+const Dialog = ({ onOpenChange, ...props }) => {
+  // Wrap onOpenChange to only allow explicit close actions
+  const handleOpenChange = React.useCallback((open) => {
+    // Only allow closing via explicit user action (X button or escape)
+    // The close will be triggered by DialogPrimitive.Close or escape key
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
+  }, [onOpenChange]);
+
+  return <DialogPrimitive.Root onOpenChange={handleOpenChange} {...props} />;
+};
 
 const DialogTrigger = DialogPrimitive.Trigger
 
@@ -12,13 +24,15 @@ const DialogPortal = DialogPrimitive.Portal
 
 const DialogClose = DialogPrimitive.Close
 
-const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
+const DialogOverlay = React.forwardRef(({ className, onClick, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
       "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
+    // Prevent click on overlay from doing anything
+    onClick={(e) => e.stopPropagation()}
     {...props} />
 ))
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
@@ -32,9 +46,10 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
         "fixed left-1/2 top-[10dvh] z-50 grid w-[95%] max-w-lg -translate-x-1/2 max-h-[85dvh] overflow-y-auto gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
         className
       )}
+      // Block ALL outside interactions from closing the dialog
       onPointerDownOutside={(e) => e.preventDefault()}
       onInteractOutside={(e) => e.preventDefault()}
-      onEscapeKeyDown={(e) => {/* Allow escape to close */}}
+      onFocusOutside={(e) => e.preventDefault()}
       {...props}>
       {children}
       <DialogPrimitive.Close
