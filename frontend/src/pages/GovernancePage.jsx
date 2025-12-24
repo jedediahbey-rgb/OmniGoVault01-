@@ -1296,7 +1296,7 @@ export default function GovernancePage({ user }) {
                                   </Badge>
                                   {dispute.locked && (
                                     <Badge className="text-xs bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                                      🔒 Closed
+                                      🔒 Locked
                                     </Badge>
                                   )}
                                 </div>
