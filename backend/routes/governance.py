@@ -1748,7 +1748,9 @@ async def create_distribution_amendment(distribution_id: str, data: dict, reques
             {"$set": {"amended_by_id": new_id, "status": "amended"}}
         )
         
-        return success_message("Amendment created", {"item": normalize_distribution(amendment)})
+        # Remove MongoDB _id field before returning
+        clean_amendment = {k: v for k, v in amendment.items() if k != "_id"}
+        return success_message("Amendment created", {"item": normalize_distribution(clean_amendment)})
     except Exception as e:
         print(f"Error creating amendment: {e}")
         return error_response("AMEND_ERROR", "Failed to create amendment", status_code=500)
