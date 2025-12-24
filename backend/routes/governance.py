@@ -99,7 +99,7 @@ async def create_meeting(data: dict, request: Request = None):
     except Exception as e:
         print(f"Warning: Could not generate RM-ID: {e}")
     
-    from backend.models.governance import Meeting, Attendee
+    from models.governance import Meeting, Attendee
     
     # Parse attendees
     attendees = []
@@ -211,7 +211,7 @@ async def add_agenda_item(meeting_id: str, data: dict, request: Request = None):
     if meeting.get("status") != "draft":
         raise HTTPException(status_code=400, detail="Cannot edit finalized meeting")
     
-    from backend.models.governance import AgendaItem
+    from models.governance import AgendaItem
     
     agenda_items = meeting.get("agenda_items", [])
     order = data.get("order", len(agenda_items) + 1)
@@ -381,7 +381,7 @@ async def add_attestation(meeting_id: str, data: dict, request: Request = None):
     if meeting.get("status") == "draft":
         raise HTTPException(status_code=400, detail="Meeting must be finalized before attestation")
     
-    from backend.models.governance import Attestation
+    from models.governance import Attestation
     
     attestation = Attestation(
         party_id=data.get("party_id"),
@@ -499,7 +499,7 @@ async def add_attachment(meeting_id: str, data: dict, request: Request = None):
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
     
-    from backend.models.governance import MeetingAttachment
+    from models.governance import MeetingAttachment
     
     attachment = MeetingAttachment(
         agenda_item_id=data.get("agenda_item_id"),
