@@ -2066,7 +2066,7 @@ async def add_dispute_party(dispute_id: str, data: dict, request: Request):
 
 @router.post("/disputes/{dispute_id}/resolve")
 async def resolve_dispute(dispute_id: str, data: dict, request: Request):
-    """Resolve/close a dispute"""
+    """Resolve/close a dispute and create ledger entry"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -2109,8 +2109,38 @@ async def resolve_dispute(dispute_id: str, data: dict, request: Request):
             }}
         )
         
+        # Create ledger entry for the resolved dispute
+        ledger_entry = None
+        if dispute.get("rm_id"):
+            try:
+                # Determine balance effect based on resolution
+                monetary_award = data.get("monetary_award", 0)
+                in_favor_of = data.get("in_favor_of", "")
+                # If award is positive and in favor of trust, it's a credit
+                balance_effect = "credit" if monetary_award > 0 and "trust" in in_favor_of.lower() else "debit"
+                
+                ledger_entry = await create_governance_ledger_entry(
+                    portfolio_id=dispute.get("portfolio_id"),
+                    user_id=user.user_id,
+                    governance_type="dispute",
+                    governance_id=dispute_id,
+                    rm_id=dispute.get("rm_id"),
+                    title=dispute.get("title", "Dispute"),
+                    description=f"Resolved: {data.get('resolution_type', 'settlement')} - {data.get('summary', '')[:50]}",
+                    value=monetary_award if monetary_award > 0 else None,
+                    entry_type="dispute_resolution",
+                    balance_effect=balance_effect,
+                    subject_code="22",
+                    subject_name="Dispute"
+                )
+            except Exception as le_err:
+                print(f"Warning: Could not create ledger entry: {le_err}")
+        
         updated = await db.disputes.find_one({"dispute_id": dispute_id}, {"_id": 0})
-        return success_message("Dispute resolved", {"item": normalize_dispute(updated)})
+        return success_message("Dispute resolved", {
+            "item": normalize_dispute(updated),
+            "ledger_entry": ledger_entry
+        })
     except Exception as e:
         print(f"Error resolving dispute: {e}")
         return error_response("RESOLVE_ERROR", "Failed to resolve dispute", status_code=500)
