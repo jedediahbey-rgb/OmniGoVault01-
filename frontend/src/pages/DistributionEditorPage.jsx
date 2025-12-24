@@ -430,7 +430,7 @@ export default function DistributionEditorPage({ user }) {
                   </div>
                 </div>
               ) : (
-                <div>
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <Badge className={`${status.color} border`}>
                       <StatusIcon className="w-3 h-3 mr-1" />
@@ -442,39 +442,33 @@ export default function DistributionEditorPage({ user }) {
                         Locked
                       </Badge>
                     )}
-                    <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20">
+                    <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 hidden sm:flex">
                       {typeConfig.label}
                     </Badge>
                   </div>
-                  <h1 className="text-2xl font-heading text-white mt-2">{distribution.title}</h1>
+                  <h1 className="text-xl sm:text-2xl font-heading text-white mt-2 break-words">{distribution.title}</h1>
                   {distribution.rm_id && (
-                    <span className="text-sm font-mono text-vault-muted">
+                    <span className="text-xs sm:text-sm font-mono text-vault-muted break-all">
                       {distribution.rm_id}
                     </span>
                   )}
-                  <div className="text-3xl font-heading text-emerald-400 mt-2">
+                  <div className="text-2xl sm:text-3xl font-heading text-emerald-400 mt-2">
                     {formatCurrency(distribution.total_amount, distribution.currency)}
                   </div>
                   <div className="text-sm text-vault-muted">
-                    {distribution.asset_type || 'Cash'} • {distribution.recipients?.length || 0} recipients
+                    {distribution.asset_type || 'cash'} • {distribution.recipients?.length || 0} recipients
                   </div>
                 </div>
               )}
             </div>
             
-            {/* Right side - Actions */}
-            <div className="flex items-center gap-2 shrink-0">
-              {isLocked && (
-                <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30 gap-1">
-                  <Lock className="w-3 h-3" />
-                  Read-Only
-                </Badge>
-              )}
-              
+            {/* Actions - stacked on mobile */}
+            <div className="flex flex-wrap items-center gap-2">
               {isDraft && (
                 <>
                   <Button
                     variant="outline"
+                    size="sm"
                     onClick={() => setEditingHeader(true)}
                     className="border-vault-gold/30 text-white"
                   >
@@ -482,6 +476,7 @@ export default function DistributionEditorPage({ user }) {
                     Edit
                   </Button>
                   <Button
+                    size="sm"
                     onClick={() => setShowSubmit(true)}
                     className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
                     disabled={!distribution.recipients?.length}
@@ -494,6 +489,7 @@ export default function DistributionEditorPage({ user }) {
               
               {isPendingApproval && (
                 <Button
+                  size="sm"
                   onClick={() => setShowApprove(true)}
                   className="bg-emerald-600 hover:bg-emerald-500 text-white"
                 >
@@ -504,6 +500,7 @@ export default function DistributionEditorPage({ user }) {
               
               {isApproved && (
                 <Button
+                  size="sm"
                   onClick={() => setShowExecute(true)}
                   className="bg-purple-600 hover:bg-purple-500 text-white"
                 >
@@ -514,7 +511,7 @@ export default function DistributionEditorPage({ user }) {
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="border-vault-gold/30">
+                  <Button variant="outline" size="sm" className="border-vault-gold/30">
                     <DotsThreeVertical className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
