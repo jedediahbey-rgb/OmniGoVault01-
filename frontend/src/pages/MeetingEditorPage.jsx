@@ -216,7 +216,28 @@ export default function MeetingEditorPage({ user }) {
     return () => {
       isMounted = false;
     };
-  }, [meetingId, navigate]);;
+  }, [meetingId, navigate]);
+
+  // Refetch meeting data
+  const refetchMeeting = async () => {
+    try {
+      const res = await axios.get(`${API}/governance/meetings/${meetingId}`);
+      setMeeting(res.data);
+      setEditedHeader({
+        title: res.data.title,
+        meeting_type: res.data.meeting_type,
+        date_time: res.data.date_time?.slice(0, 16) || '',
+        location: res.data.location || '',
+        called_by: res.data.called_by || '',
+      });
+      
+      const expanded = {};
+      (res.data.agenda_items || []).forEach(item => {
+        expanded[item.item_id] = true;
+      });
+      setExpandedItems(expanded);
+    } catch (error) {
+      console.error('Failed to refetch meeting:', error);
     }
   };
 
@@ -224,7 +245,7 @@ export default function MeetingEditorPage({ user }) {
     setSaving(true);
     try {
       await axios.put(`${API}/governance/meetings/${meetingId}`, updates);
-      await fetchMeeting();
+      await refetchMeeting();
       toast.success('Changes saved');
     } catch (error) {
       console.error('Failed to save:', error);
