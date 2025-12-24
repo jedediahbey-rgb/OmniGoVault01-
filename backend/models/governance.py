@@ -102,6 +102,12 @@ class Meeting(BaseModel):
     
     # Status and workflow
     status: str = "draft"  # draft, finalized, attested, amended
+    locked: bool = False  # True when finalized (immutable)
+    locked_at: Optional[str] = None  # When the meeting was locked
+    
+    # Revision tracking for amendments
+    revision: int = 1  # 1 = original, 2+ = amendments
+    parent_meeting_id: Optional[str] = None  # ID of parent meeting (for amendments)
     
     # Attendees
     attendees: List[Attendee] = []
@@ -120,9 +126,9 @@ class Meeting(BaseModel):
     # Attestations
     attestations: List[Attestation] = []
     
-    # Amendment chain (like git history)
+    # Amendment chain (like git history) - legacy fields kept for compatibility
     is_amendment: bool = False
-    amends_meeting_id: Optional[str] = None  # ID of meeting this amends
+    amends_meeting_id: Optional[str] = None  # ID of meeting this amends (same as parent_meeting_id)
     amendment_number: int = 0  # 0 = original, 1 = first amendment, etc.
     amended_by_id: Optional[str] = None  # ID of meeting that supersedes this one
     prior_hash: str = ""  # Hash of the meeting being amended (chain-of-custody)
