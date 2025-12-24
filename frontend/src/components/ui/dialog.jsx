@@ -29,8 +29,8 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        // Mobile-stable: pin near top with dvh sizing to prevent jump when keyboard opens
-        "fixed left-[50%] top-[10dvh] z-50 grid w-[calc(100vw-1.5rem)] max-w-lg translate-x-[-50%] max-h-[85dvh] overflow-y-auto gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
+        // Mobile-stable: use percentage width instead of vw to prevent overflow
+        "fixed left-1/2 top-[10dvh] z-50 grid w-[95%] max-w-lg -translate-x-1/2 max-h-[85dvh] overflow-y-auto gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
         className
       )}
       onPointerDownOutside={(e) => {
