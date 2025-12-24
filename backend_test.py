@@ -263,9 +263,125 @@ class EquityTrustAPITester:
         created_party = self.run_test("Parties - Create", "POST", f"portfolios/{portfolio_id}/parties", 201, party_data)
         
         # Get parties
-        parties = self.run_test("Parties - Get All", "GET", f"parties?portfolio_id={portfolio_id}", 200)
+        parties = self.run_test("Parties - Get All", "GET", f"portfolios/{portfolio_id}/parties", 200)
         if parties:
             print(f"   Found {len(parties)} parties")
+
+    def test_governance(self, portfolio_id):
+        """Test governance module - Meeting Minutes functionality"""
+        if not portfolio_id:
+            print("\n⚠️ Skipping Governance tests - no portfolio ID")
+            return None
+            
+        print("\n📋 Testing Governance Module...")
+        
+        # Test 1: Create a meeting
+        meeting_data = {
+            "portfolio_id": portfolio_id,
+            "title": "Q4 2024 Board Meeting",
+            "meeting_type": "regular",
+            "date_time": "2024-12-15T14:00:00Z",
+            "location": "Conference Room A",
+            "called_by": "John Doe, Trustee",
+            "attendees": [
+                {
+                    "name": "John Doe",
+                    "role": "trustee",
+                    "present": True,
+                    "notes": "Meeting chair"
+                },
+                {
+                    "name": "Jane Smith", 
+                    "role": "co_trustee",
+                    "present": True,
+                    "notes": ""
+                }
+            ]
+        }
+        created_meeting = self.run_test("Governance - Create Meeting", "POST", "governance/meetings", 201, meeting_data)
+        
+        if not created_meeting or 'meeting_id' not in created_meeting:
+            print("   ❌ Failed to create meeting, skipping remaining governance tests")
+            return None
+            
+        meeting_id = created_meeting['meeting_id']
+        print(f"   Created meeting ID: {meeting_id}")
+        
+        # Test 2: Get meetings (with portfolio filter)
+        meetings = self.run_test("Governance - Get Meetings", "GET", f"governance/meetings?portfolio_id={portfolio_id}", 200)
+        if meetings:
+            print(f"   Found {len(meetings)} meetings")
+        
+        # Test 3: Get specific meeting
+        meeting = self.run_test("Governance - Get Meeting", "GET", f"governance/meetings/{meeting_id}", 200)
+        
+        # Test 4: Update meeting (only if draft)
+        update_data = {
+            "title": "Q4 2024 Board Meeting - Updated",
+            "location": "Virtual - Zoom",
+            "attendees": meeting_data["attendees"] + [{
+                "name": "Bob Wilson",
+                "role": "beneficiary", 
+                "present": False,
+                "notes": "Absent - notified"
+            }]
+        }
+        self.run_test("Governance - Update Meeting", "PUT", f"governance/meetings/{meeting_id}", 200, update_data)
+        
+        # Test 5: Add agenda item
+        agenda_data = {
+            "title": "Review Q4 Financial Statements",
+            "discussion_summary": "Reviewed quarterly financial performance and asset valuations.",
+            "order": 1,
+            "notes": "All trustees reviewed documents prior to meeting"
+        }
+        agenda_item = self.run_test("Governance - Add Agenda Item", "POST", f"governance/meetings/{meeting_id}/agenda", 201, agenda_data)
+        
+        # Test 6: Add another agenda item
+        agenda_data2 = {
+            "title": "Distribution Approval",
+            "discussion_summary": "Discussed and approved quarterly distribution to beneficiaries.",
+            "order": 2
+        }
+        self.run_test("Governance - Add Agenda Item 2", "POST", f"governance/meetings/{meeting_id}/agenda", 201, agenda_data2)
+        
+        # Test 7: Finalize meeting
+        finalize_data = {
+            "finalized_by_name": "John Doe"
+        }
+        finalized = self.run_test("Governance - Finalize Meeting", "POST", f"governance/meetings/{meeting_id}/finalize", 200, finalize_data)
+        if finalized and 'finalized_hash' in finalized:
+            print(f"   Meeting finalized with hash: {finalized['finalized_hash'][:16]}...")
+        
+        # Test 8: Verify hash
+        verification = self.run_test("Governance - Verify Hash", "GET", f"governance/meetings/{meeting_id}/verify", 200)
+        if verification and verification.get('verified'):
+            print("   ✅ Meeting hash verification passed")
+        else:
+            print("   ❌ Meeting hash verification failed")
+        
+        # Test 9: Add attestation
+        attestation_data = {
+            "party_name": "John Doe",
+            "party_role": "trustee",
+            "signature_type": "typed",
+            "signature_data": "John Doe"
+        }
+        self.run_test("Governance - Add Attestation", "POST", f"governance/meetings/{meeting_id}/attest", 200, attestation_data)
+        
+        # Test 10: Create amendment
+        amendment_data = {
+            "reason": "Correcting distribution amount in agenda item 2"
+        }
+        amendment = self.run_test("Governance - Create Amendment", "POST", f"governance/meetings/{meeting_id}/amend", 200, amendment_data)
+        if amendment and 'amendment' in amendment:
+            amendment_id = amendment['amendment']['meeting_id']
+            print(f"   Created amendment ID: {amendment_id}")
+            
+            # Test amendment verification
+            self.run_test("Governance - Verify Amendment", "GET", f"governance/meetings/{amendment_id}/verify", 200)
+        
+        return meeting_id
 
     def run_all_tests(self):
         """Run all API tests"""
