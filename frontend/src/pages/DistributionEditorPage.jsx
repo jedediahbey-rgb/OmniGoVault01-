@@ -543,10 +543,31 @@ export default function DistributionEditorPage({ user }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                  {isDraft && (
+                    <>
+                      <DropdownMenuItem onClick={() => setEditingHeader(true)} className="text-white hover:bg-vault-gold/20">
+                        <PencilSimple className="w-4 h-4 mr-2" />
+                        Edit Details
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-vault-gold/20" />
+                    </>
+                  )}
                   <DropdownMenuItem className="text-vault-muted hover:bg-vault-gold/20">
                     <Download className="w-4 h-4 mr-2" />
                     Export PDF
                   </DropdownMenuItem>
+                  {isDraft && (
+                    <>
+                      <DropdownMenuSeparator className="bg-vault-gold/20" />
+                      <DropdownMenuItem 
+                        onClick={() => setShowDeleteConfirm(true)} 
+                        className="text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                      >
+                        <Trash className="w-4 h-4 mr-2" />
+                        Delete Distribution
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
