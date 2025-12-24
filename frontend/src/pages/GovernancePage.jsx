@@ -242,6 +242,25 @@ export default function GovernancePage({ user }) {
   });
   const [creatingInsurance, setCreatingInsurance] = useState(false);
 
+  // Compensation State
+  const [compensationEntries, setCompensationEntries] = useState([]);
+  const [compensationLoading, setCompensationLoading] = useState(false);
+  const [showNewCompensation, setShowNewCompensation] = useState(false);
+  const [newCompensation, setNewCompensation] = useState({
+    title: '',
+    compensation_type: 'annual_fee',
+    recipient_name: '',
+    recipient_role: 'trustee',
+    amount: '',
+    currency: 'USD',
+    period_start: '',
+    period_end: '',
+    fiscal_year: new Date().getFullYear().toString(),
+    basis_of_calculation: '',
+    notes: '',
+  });
+  const [creatingCompensation, setCreatingCompensation] = useState(false);
+
   useEffect(() => {
     fetchPortfolios();
   }, []);
