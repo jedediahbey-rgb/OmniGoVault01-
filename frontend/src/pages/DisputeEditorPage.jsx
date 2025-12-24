@@ -451,12 +451,8 @@ export default function DisputeEditorPage({ user }) {
   const typeConfig = disputeTypeConfig[dispute.dispute_type] || disputeTypeConfig.beneficiary;
   const TypeIcon = typeConfig.icon;
   const isLocked = dispute.locked === true || ['settled', 'closed'].includes(dispute.status);
-  // If locked but status is still open/in_progress, show "finalized"
-  let effectiveStatus = dispute.status;
-  if (dispute.locked && (dispute.status === 'open' || dispute.status === 'in_progress')) {
-    effectiveStatus = 'finalized';
-  }
-  const status = statusConfig[effectiveStatus] || statusConfig.open;
+  // Always show the actual status - never override
+  const status = statusConfig[dispute.status] || statusConfig.open;
   const StatusIcon = status.icon;
   const priority = priorityConfig[dispute.priority] || priorityConfig.medium;
   const isOpen = !isLocked && dispute.status !== 'settled' && dispute.status !== 'closed';
