@@ -1477,6 +1477,31 @@ export default function PortfolioOverviewPage({ user }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Edit Trust Date Dialog */}
+      <Dialog open={showTrustDateDialog} onOpenChange={setShowTrustDateDialog}>
+        <DialogContent className="bg-vault-navy border-white/10 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Date Established</DialogTitle>
+            <DialogDescription className="text-white/60">
+              Update the date when the trust was established.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <label className="text-white/60 text-sm mb-2 block">Date Established</label>
+            <Input
+              type="date"
+              value={editTrustDate}
+              onChange={(e) => setEditTrustDate(e.target.value)}
+              className="bg-white/5 border-white/10 text-white"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowTrustDateDialog(false)}>Cancel</Button>
+            <Button onClick={updateTrustDate} className="btn-primary">Save Date</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
