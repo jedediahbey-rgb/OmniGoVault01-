@@ -243,7 +243,7 @@ DEFAULT_SUBJECT_CATEGORIES = [
     {"code": "08", "name": "Trustee Acceptance", "description": "Trustee acceptance documents"},
     {"code": "09", "name": "Certificate of Trust", "description": "Trust certificates"},
     {"code": "10", "name": "Real Estate", "description": "Real property transactions"},
-    {"code": "11", "name": "Vehicle", "description": "Vehicle titles and loans"},
+    {"code": "11", "name": "Automobile", "description": "Automobile titles and loans"},
     {"code": "12", "name": "Financial Account", "description": "Bank accounts, investments"},
     {"code": "13", "name": "Court Case", "description": "Legal proceedings"},
     {"code": "14", "name": "Contract", "description": "Contracts and agreements"},
