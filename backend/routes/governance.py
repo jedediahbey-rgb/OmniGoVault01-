@@ -2414,6 +2414,47 @@ async def finalize_dispute(dispute_id: str, data: dict, request: Request):
         return error_response("FINALIZE_ERROR", "Failed to finalize dispute", status_code=500)
 
 
+@router.post("/disputes/{dispute_id}/set-outcome")
+async def set_dispute_outcome(dispute_id: str, data: dict, request: Request):
+    """Set the outcome/status of a finalized dispute (settled, closed, mediation, etc.)
+    This allows changing the outcome without creating an amendment.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        new_status = data.get("status")
+        valid_outcomes = ["open", "in_progress", "mediation", "litigation", "settled", "closed", "appealed"]
+        
+        if new_status not in valid_outcomes:
+            return error_response("INVALID_STATUS", f"Status must be one of: {', '.join(valid_outcomes)}")
+        
+        updated_at = datetime.now(timezone.utc).isoformat()
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": {
+                "status": new_status,
+                "updated_at": updated_at
+            }}
+        )
+        
+        updated = await db.disputes.find_one({"dispute_id": dispute_id}, {"_id": 0})
+        return success_message(f"Dispute outcome set to {new_status}", {"item": normalize_dispute(updated)})
+    except Exception as e:
+        print(f"Error setting dispute outcome: {e}")
+        return error_response("OUTCOME_ERROR", "Failed to set dispute outcome", status_code=500)
+
+
 @router.post("/disputes/{dispute_id}/amend")
 async def create_dispute_amendment(dispute_id: str, data: dict, request: Request):
     """Create an amendment to a finalized dispute"""
