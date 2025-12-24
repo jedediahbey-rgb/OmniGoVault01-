@@ -597,6 +597,13 @@ export default function GovernancePage({ user }) {
     d.case_number?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredInsurance = insurancePolicies.filter(p => 
+    p.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.rm_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.policy_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.carrier_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const formatDate = (dateStr) => {
     if (!dateStr) return 'No date';
     const date = new Date(dateStr);
