@@ -90,7 +90,7 @@ const KnowledgePage = () => {
                 <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" weight="duotone" />
                 <Input
                   type="text"
-                  placeholder="MagnifyingGlass topics..."
+                  placeholder="Search topics..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 bg-[#111827] border-white/10 text-[#F8FAFC] placeholder:text-slate-500 focus:border-[#C6A87C]/50 rounded-full"
