@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { marked } from 'marked';
 import {
-  Bot, X, Send, Sparkles, BookOpen, FileText, CheckSquare,
-  List, Copy, RefreshCw, ChevronDown, Loader2
-} from 'lucide-react';
+  Robot, X, Send, Sparkle, BookOpen, FileText, CheckSquare,
+  List, Copy, RefreshCw, CaretDown, Loader2
+} from '@phosphor-icons/react';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { toast } from 'sonner';
@@ -14,7 +14,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const contextActions = [
   { id: 'explain', label: 'Explain this concept', icon: BookOpen },
-  { id: 'maxims', label: 'Find related maxims', icon: Sparkles },
+  { id: 'maxims', label: 'Find related maxims', icon: Sparkle },
   { id: 'checklist', label: 'Generate checklist', icon: CheckSquare },
   { id: 'steps', label: 'Step-by-step guide', icon: List },
   { id: 'draft', label: 'Draft from template', icon: FileText },
@@ -112,7 +112,7 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
           <div className="p-4 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-vault-gold/20 flex items-center justify-center">
-                <Bot className="w-4 h-4 text-vault-gold" />
+                <Robot className="w-4 h-4 text-vault-gold" />
               </div>
               <div>
                 <h3 className="text-white font-medium">AI Assistant</h3>

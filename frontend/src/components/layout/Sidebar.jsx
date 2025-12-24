@@ -2,29 +2,29 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen,
-  Sparkles,
+  Sparkle,
   BookText,
-  FolderArchive,
+  FolderSimple,
   FileText,
-  Bot,
+  Robot,
   LogOut,
   Home,
-  ChevronRight,
+  CaretRight,
   Shield,
   GitBranch,
   X
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import { cn } from '../../lib/utils';
 
 const navItems = [
   { name: 'Dashboard', href: '/vault', icon: Home, section: 'main' },
   { name: 'Learn', href: '/learn', icon: BookOpen, section: 'knowledge' },
-  { name: 'Maxims', href: '/maxims', icon: Sparkles, section: 'knowledge' },
+  { name: 'Maxims', href: '/maxims', icon: Sparkle, section: 'knowledge' },
   { name: 'Glossary', href: '/glossary', icon: BookText, section: 'knowledge' },
   { name: 'Diagrams', href: '/diagrams', icon: GitBranch, section: 'knowledge' },
-  { name: 'Vault', href: '/vault/documents', icon: FolderArchive, section: 'workspace' },
+  { name: 'Vault', href: '/vault/documents', icon: FolderSimple, section: 'workspace' },
   { name: 'Templates', href: '/templates', icon: FileText, section: 'workspace' },
-  { name: 'Assistant', href: '/assistant', icon: Bot, section: 'tools' },
+  { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
 ];
 
 const sections = {
@@ -146,7 +146,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
                       )} />
                       <span className="text-sm font-medium">{item.name}</span>
                       {isActive && (
-                        <ChevronRight className="w-3 h-3 ml-auto text-vault-gold flex-shrink-0" />
+                        <CaretRight className="w-3 h-3 ml-auto text-vault-gold flex-shrink-0" />
                       )}
                     </>
                   )}

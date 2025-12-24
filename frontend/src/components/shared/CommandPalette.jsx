@@ -2,19 +2,19 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Search, FileText, BookOpen, Sparkles, FolderArchive, Bot,
+  Search, FileText, BookOpen, Sparkle, FolderSimple, Robot,
   Plus, Settings, Home, BookText, ArrowRight
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import { Input } from '../ui/input';
 
 const commands = [
   { id: 'dashboard', name: 'Go to Dashboard', icon: Home, action: '/vault', type: 'nav' },
   { id: 'learn', name: 'Go to Learn', icon: BookOpen, action: '/learn', type: 'nav' },
-  { id: 'maxims', name: 'Go to Maxims', icon: Sparkles, action: '/maxims', type: 'nav' },
+  { id: 'maxims', name: 'Go to Maxims', icon: Sparkle, action: '/maxims', type: 'nav' },
   { id: 'glossary', name: 'Go to Glossary', icon: BookText, action: '/glossary', type: 'nav' },
-  { id: 'vault', name: 'Go to Vault', icon: FolderArchive, action: '/vault/documents', type: 'nav' },
+  { id: 'vault', name: 'Go to Vault', icon: FolderSimple, action: '/vault/documents', type: 'nav' },
   { id: 'templates', name: 'Go to Templates', icon: FileText, action: '/templates', type: 'nav' },
-  { id: 'assistant', name: 'Open AI Assistant', icon: Bot, action: '/assistant', type: 'nav' },
+  { id: 'assistant', name: 'Open AI Assistant', icon: Robot, action: '/assistant', type: 'nav' },
   { id: 'new-doc', name: 'Create New Document', icon: Plus, action: '/templates', type: 'action' },
   { id: 'new-portfolio', name: 'Create New Portfolio', icon: Plus, action: 'new-portfolio', type: 'action' },
 ];
