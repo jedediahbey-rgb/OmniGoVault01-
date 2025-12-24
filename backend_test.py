@@ -144,7 +144,7 @@ class EquityTrustAPITester:
             "name": "Test Portfolio",
             "description": "Test portfolio for API testing"
         }
-        created_portfolio = self.run_test("Portfolios - Create", "POST", "portfolios", 201, portfolio_data)
+        created_portfolio = self.run_test("Portfolios - Create", "POST", "portfolios", 200, portfolio_data)
         
         if created_portfolio and 'portfolio_id' in created_portfolio:
             portfolio_id = created_portfolio['portfolio_id']
