@@ -558,7 +558,11 @@ C/o: <strong>[ADDRESS]</strong><br/>
       </motion.div>
 
       {/* Create Document Dialog */}
-      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+      <Dialog open={showCreateDialog} onOpenChange={(open) => {
+        // Only close if the select dropdown is not open
+        if (!open && portfolioSelectOpen) return;
+        setShowCreateDialog(open);
+      }}>
         <DialogContent 
           className="bg-vault-navy border-white/10"
           onOpenAutoFocus={(e) => e.preventDefault()}
@@ -593,6 +597,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
             <div>
               <label className="text-white/60 text-sm mb-2 block">Document Title</label>
               <Input
+                ref={titleInputRef}
                 placeholder="Enter document title"
                 value={documentTitle}
                 onChange={(e) => setDocumentTitle(e.target.value)}
@@ -603,8 +608,27 @@ C/o: <strong>[ADDRESS]</strong><br/>
             {portfolios.length > 0 && (
               <div>
                 <label className="text-white/60 text-sm mb-2 block">Portfolio (Optional)</label>
-                <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
-                  <SelectTrigger className="bg-white/5 border-white/10">
+                <Select 
+                  open={portfolioSelectOpen}
+                  onOpenChange={setPortfolioSelectOpen}
+                  value={selectedPortfolio} 
+                  onValueChange={(value) => {
+                    setSelectedPortfolio(value);
+                    setPortfolioSelectOpen(false);
+                  }}
+                >
+                  <SelectTrigger 
+                    className="bg-white/5 border-white/10"
+                    onPointerDown={(e) => {
+                      // Fix A: Force open on pointerdown, prevent blur race
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Blur the title input to dismiss keyboard on mobile
+                      titleInputRef.current?.blur();
+                      // Always set to true (don't toggle)
+                      setPortfolioSelectOpen(true);
+                    }}
+                  >
                     <SelectValue placeholder="Select a portfolio" />
                   </SelectTrigger>
                   <SelectContent 
@@ -612,6 +636,20 @@ C/o: <strong>[ADDRESS]</strong><br/>
                     position="popper"
                     sideOffset={4}
                     onCloseAutoFocus={(e) => e.preventDefault()}
+                    onPointerDownOutside={(e) => {
+                      // Fix C: Keep dropdown open if tapped inside dialog
+                      const target = e.target;
+                      if (target?.closest?.('[role="dialog"]')) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onInteractOutside={(e) => {
+                      // Keep dropdown open if interacting within dialog
+                      const target = e.target;
+                      if (target?.closest?.('[role="dialog"]')) {
+                        e.preventDefault();
+                      }
+                    }}
                   >
                     <SelectItem value="__none__" className="text-white/70">No Portfolio</SelectItem>
                     {portfolios.map(p => (
