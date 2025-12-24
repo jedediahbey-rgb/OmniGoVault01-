@@ -917,8 +917,7 @@ async def get_or_create_subject_category(portfolio_id: str, user_id: str, subjec
 
 async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: str = "00", subject_name: str = "General") -> tuple:
     """Generate RM-ID based on subject category. Returns (full_rm_id, subject_code, sequence_num, subject_name)
-    Uses atomic find_and_modify to prevent race conditions in sequence numbering."""
-    from pymongo import ReturnDocument
+    Finds the lowest available sequence number (reuses gaps from deleted items)."""
     
     # Get trust profile for base RM-ID
     trust_profile = await db.trust_profiles.find_one(
@@ -942,17 +941,50 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
     category = await get_or_create_subject_category(portfolio_id, user_id, subject_code, subject_name)
     cat_code = category.get("code", "00")
     cat_name = category.get("name", "General")
+    category_id = category.get("category_id")
     
-    # Atomically increment and get the CURRENT sequence (before increment)
-    # We use $inc and return the document BEFORE the update to get the sequence we should use
-    updated_category = await db.subject_categories.find_one_and_update(
-        {"category_id": category["category_id"]},
-        {"$inc": {"next_sequence": 1}},
-        return_document=ReturnDocument.BEFORE  # Get the value before increment
-    )
+    # Find all used sequence numbers for this category across documents, assets, and ledger entries
+    used_sequences = set()
     
-    # The sequence to use is from the pre-increment state
-    sequence_num = updated_category.get("next_sequence", 1) if updated_category else 1
+    # Check documents
+    docs = await db.documents.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id, "subject_code": cat_code, "is_trashed": {"$ne": True}},
+        {"sequence_number": 1}
+    ).to_list(1000)
+    for doc in docs:
+        if doc.get("sequence_number"):
+            used_sequences.add(doc["sequence_number"])
+    
+    # Check assets
+    assets = await db.assets.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id, "subject_code": cat_code},
+        {"sequence_number": 1}
+    ).to_list(1000)
+    for asset in assets:
+        if asset.get("sequence_number"):
+            used_sequences.add(asset["sequence_number"])
+    
+    # Check ledger entries (only standalone ones, not linked to assets)
+    ledger_entries = await db.trust_ledger.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id, "subject_code": cat_code, "asset_id": None},
+        {"sequence_number": 1}
+    ).to_list(1000)
+    for entry in ledger_entries:
+        if entry.get("sequence_number"):
+            used_sequences.add(entry["sequence_number"])
+    
+    # Find the lowest available sequence number starting from 1
+    sequence_num = 1
+    while sequence_num in used_sequences:
+        sequence_num += 1
+    
+    # Update the category's next_sequence if needed (for tracking purposes)
+    max_used = max(used_sequences) if used_sequences else 0
+    if max_used >= category.get("next_sequence", 1):
+        await db.subject_categories.update_one(
+            {"category_id": category_id},
+            {"$set": {"next_sequence": max_used + 1}}
+        )
     
     # Format: BASE-CODE.SEQUENCE (e.g., RF123456789US-01.001)
     full_rm_id = f"{base_rm_id}-{cat_code}.{sequence_num:03d}"
