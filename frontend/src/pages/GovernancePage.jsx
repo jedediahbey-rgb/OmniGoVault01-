@@ -679,20 +679,56 @@ export default function GovernancePage({ user }) {
               <div className="relative flex-1 md:w-64 min-w-0">
                 <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-vault-muted" />
                 <Input
-                  placeholder="Search meetings..."
+                  placeholder={`Search ${activeTab}...`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 bg-vault-dark/50 border-vault-gold/20 text-white placeholder:text-vault-muted"
                 />
               </div>
-              <Button
-                onClick={() => setShowNewMeeting(true)}
-                className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold whitespace-nowrap shrink-0"
-                disabled={!selectedPortfolio}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                New Meeting
-              </Button>
+              {activeTab === 'meetings' && (
+                <Button
+                  onClick={() => setShowNewMeeting(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold whitespace-nowrap shrink-0"
+                  disabled={!selectedPortfolio}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">New Meeting</span>
+                  <span className="sm:hidden">New</span>
+                </Button>
+              )}
+              {activeTab === 'distributions' && (
+                <Button
+                  onClick={() => setShowNewDistribution(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold whitespace-nowrap shrink-0"
+                  disabled={!selectedPortfolio}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">New Distribution</span>
+                  <span className="sm:hidden">New</span>
+                </Button>
+              )}
+              {activeTab === 'disputes' && (
+                <Button
+                  onClick={() => setShowNewDispute(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold whitespace-nowrap shrink-0"
+                  disabled={!selectedPortfolio}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">New Dispute</span>
+                  <span className="sm:hidden">New</span>
+                </Button>
+              )}
+              {activeTab === 'insurance' && (
+                <Button
+                  onClick={() => setShowNewInsurance(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold whitespace-nowrap shrink-0"
+                  disabled={!selectedPortfolio}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">New Policy</span>
+                  <span className="sm:hidden">New</span>
+                </Button>
+              )}
             </div>
           </div>
         </GlassCard>
