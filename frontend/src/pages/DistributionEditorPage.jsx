@@ -19,6 +19,7 @@ import {
   Lock,
   PencilSimple,
   Plus,
+  PlusCircle,
   Seal,
   Trash,
   User,
