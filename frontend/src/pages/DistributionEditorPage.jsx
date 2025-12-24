@@ -506,7 +506,7 @@ export default function DistributionEditorPage({ user }) {
                     </Button>
                   )}
                   
-                  {isLocked && (
+                  {isLocked && !distribution.amended_by_id && (
                     <Button variant="outline" size="sm" onClick={handleAmend} className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
                       <PlusCircle className="w-4 h-4 mr-2" />
                       Amend
