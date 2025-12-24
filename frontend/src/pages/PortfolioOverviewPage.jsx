@@ -617,25 +617,21 @@ export default function PortfolioOverviewPage({ user }) {
                       <FileText className="w-4 h-4 text-vault-gold" weight="duotone" />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 overflow-hidden">
                     <p className="text-white line-clamp-2 text-sm">{doc.title}</p>
                     <p className="text-white/40 text-xs mt-0.5">{humanizeSlug(doc.document_type)}</p>
-                    {doc.rm_id && (
-                      <p className="text-vault-gold/60 text-xs font-mono break-words mt-0.5 sm:hidden">
-                        {doc.sub_record_id || doc.rm_id}
-                      </p>
-                    )}
                   </div>
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className={`px-2 py-0.5 rounded text-xs ${
+                  <div className="flex flex-col items-end gap-1 shrink-0 ml-2">
+                    <span className={`px-2 py-0.5 rounded text-[10px] sm:text-xs whitespace-nowrap ${
+                      doc.is_locked ? 'bg-blue-500/20 text-blue-400' :
                       doc.status === 'final' ? 'bg-green-500/20 text-green-400' :
                       doc.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
                       'bg-white/10 text-white/50'
                     }`}>
-                      {doc.status}
+                      {doc.is_locked ? 'Finalized' : doc.status}
                     </span>
                     {doc.rm_id && (
-                      <span className="hidden sm:block text-vault-gold/60 text-xs font-mono">
+                      <span className="text-vault-gold/60 text-[9px] sm:text-xs font-mono truncate max-w-[100px] sm:max-w-[150px]">
                         {doc.sub_record_id || doc.rm_id}
                       </span>
                     )}
