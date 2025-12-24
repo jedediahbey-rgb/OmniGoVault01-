@@ -335,6 +335,20 @@ export default function DisputeEditorPage({ user }) {
     setShowChangeStatus(false);
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await axios.delete(`${API}/governance/disputes/${disputeId}`);
+      toast.success('Dispute deleted successfully');
+      navigate('/vault/governance?tab=disputes');
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to delete dispute');
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
