@@ -18,6 +18,7 @@ import {
   FileMagnifyingGlass,
   FileText,
   FloppyDisk,
+  GitBranch,
   Hash,
   List,
   ListNumbers,
