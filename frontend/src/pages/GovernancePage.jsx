@@ -138,12 +138,25 @@ export default function GovernancePage({ user }) {
     setLoading(true);
     try {
       const res = await axios.get(`${API}/governance/meetings`, {
-        params: { portfolio_id: selectedPortfolio }
+        params: { portfolio_id: selectedPortfolio, sort_by: 'rm_id', sort_dir: 'asc' }
       });
-      setMeetings(res.data || []);
+      // Handle new envelope format: { ok, items, count, total, sort, empty_state }
+      const data = res.data;
+      if (data.ok && data.items) {
+        setMeetings(data.items);
+      } else if (Array.isArray(data)) {
+        // Fallback for old format
+        setMeetings(data);
+      } else {
+        setMeetings([]);
+      }
     } catch (error) {
       console.error('Failed to fetch meetings list:', error);
-      toast.error('Failed to load meetings list');
+      // Only show error if it's not a "no meetings" situation
+      if (error.response?.data?.error?.code !== 'NOT_FOUND') {
+        toast.error('Failed to load meetings list');
+      }
+      setMeetings([]);
     } finally {
       setLoading(false);
     }
