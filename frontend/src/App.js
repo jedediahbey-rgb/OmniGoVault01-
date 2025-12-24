@@ -23,6 +23,7 @@ import PortfolioOverviewPage from './pages/PortfolioOverviewPage';
 import DiagramsPage from './pages/DiagramsPage';
 import GovernancePage from './pages/GovernancePage';
 import MeetingEditorPage from './pages/MeetingEditorPage';
+import DistributionEditorPage from './pages/DistributionEditorPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
