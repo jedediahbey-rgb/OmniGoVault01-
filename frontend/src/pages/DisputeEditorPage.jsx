@@ -494,7 +494,7 @@ export default function DisputeEditorPage({ user }) {
             {isLocked && (
               <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
                 <Lock className="w-3 h-3 mr-1" />
-                Closed
+                Locked
               </Badge>
             )}
           </div>
