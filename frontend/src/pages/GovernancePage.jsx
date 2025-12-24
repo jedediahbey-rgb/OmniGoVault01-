@@ -2223,6 +2223,161 @@ export default function GovernancePage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* New Compensation Dialog */}
+      <Dialog open={showNewCompensation} onOpenChange={setShowNewCompensation}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
+              <CurrencyDollar className="w-5 h-5" />
+              Log Compensation
+            </DialogTitle>
+            <DialogDescription className="text-vault-muted">
+              Record trustee or advisor compensation
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Title *</label>
+              <Input
+                value={newCompensation.title}
+                onChange={(e) => setNewCompensation(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="e.g., Q4 2024 Trustee Fee"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Recipient Name *</label>
+                <Input
+                  value={newCompensation.recipient_name}
+                  onChange={(e) => setNewCompensation(prev => ({ ...prev, recipient_name: e.target.value }))}
+                  placeholder="John Smith"
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Role</label>
+                <Select
+                  value={newCompensation.recipient_role}
+                  onValueChange={(value) => setNewCompensation(prev => ({ ...prev, recipient_role: value }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30">
+                    <SelectItem value="trustee" className="text-white hover:bg-vault-gold/20">Trustee</SelectItem>
+                    <SelectItem value="co_trustee" className="text-white hover:bg-vault-gold/20">Co-Trustee</SelectItem>
+                    <SelectItem value="advisor" className="text-white hover:bg-vault-gold/20">Advisor</SelectItem>
+                    <SelectItem value="counsel" className="text-white hover:bg-vault-gold/20">Counsel</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Type</label>
+                <Select
+                  value={newCompensation.compensation_type}
+                  onValueChange={(value) => setNewCompensation(prev => ({ ...prev, compensation_type: value }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30">
+                    <SelectItem value="annual_fee" className="text-white hover:bg-vault-gold/20">Annual Fee</SelectItem>
+                    <SelectItem value="transaction_fee" className="text-white hover:bg-vault-gold/20">Transaction Fee</SelectItem>
+                    <SelectItem value="hourly" className="text-white hover:bg-vault-gold/20">Hourly</SelectItem>
+                    <SelectItem value="special" className="text-white hover:bg-vault-gold/20">Special</SelectItem>
+                    <SelectItem value="reimbursement" className="text-white hover:bg-vault-gold/20">Reimbursement</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Amount</label>
+                <Input
+                  type="number"
+                  value={newCompensation.amount}
+                  onChange={(e) => setNewCompensation(prev => ({ ...prev, amount: e.target.value }))}
+                  placeholder="0.00"
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Period Start</label>
+                <Input
+                  type="date"
+                  value={newCompensation.period_start}
+                  onChange={(e) => setNewCompensation(prev => ({ ...prev, period_start: e.target.value }))}
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Period End</label>
+                <Input
+                  type="date"
+                  value={newCompensation.period_end}
+                  onChange={(e) => setNewCompensation(prev => ({ ...prev, period_end: e.target.value }))}
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Fiscal Year</label>
+              <Input
+                value={newCompensation.fiscal_year}
+                onChange={(e) => setNewCompensation(prev => ({ ...prev, fiscal_year: e.target.value }))}
+                placeholder="2024"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Basis of Calculation</label>
+              <Textarea
+                value={newCompensation.basis_of_calculation}
+                onChange={(e) => setNewCompensation(prev => ({ ...prev, basis_of_calculation: e.target.value }))}
+                placeholder="e.g., 1% of trust assets under management"
+                className="bg-[#05080F] border-vault-gold/20 text-white min-h-[60px]"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowNewCompensation(false)}
+              className="border-vault-gold/30 text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateCompensation}
+              disabled={creatingCompensation || !newCompensation.title.trim() || !newCompensation.recipient_name.trim()}
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+            >
+              {creatingCompensation ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-vault-dark border-t-transparent rounded-full animate-spin mr-2" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Log Entry
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
