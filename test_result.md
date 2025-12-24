@@ -2,43 +2,52 @@
 
 ## Current Testing Session
 - Session Date: 2024-12-24
-- Testing Focus: Governance Module - Distributions Implementation
+- Testing Focus: Critical Bug Fixes (P0)
 
 ## Features to Test
 
-### P0: Distributions Module - Full CRUD
-**Backend Endpoints:**
-- GET /api/governance/distributions - List distributions
-- GET /api/governance/distributions/summary - Get summary stats
-- POST /api/governance/distributions - Create distribution
-- GET /api/governance/distributions/{id} - Get single distribution
-- PUT /api/governance/distributions/{id} - Update distribution
-- DELETE /api/governance/distributions/{id} - Soft delete distribution
-- POST /api/governance/distributions/{id}/submit - Submit for approval
-- POST /api/governance/distributions/{id}/approve - Add approval
-- POST /api/governance/distributions/{id}/execute - Execute distribution
+### P0: RM-ID Uniqueness Fix
+**Issue**: Distribution and Insurance modules were both getting assigned `30.001` instead of their designated codes (21 and 23)
+**Fix Applied**: Modified `generate_subject_rm_id` in `/app/backend/server.py` to allow governance modules (codes 20-29) to use their designated codes directly without the "skip reserved" logic
 
-**Frontend Pages:**
-- GovernancePage.jsx - Distributions tab with list view
-- DistributionEditorPage.jsx - Full editor with recipients, approvals
+**Expected Results:**
+- Meetings: code 20 (e.g., `XX-20.001`)
+- Distributions: code 21 (e.g., `XX-21.001`)  
+- Disputes: code 22 (e.g., `XX-22.001`)
+- Insurance: code 23 (e.g., `XX-23.001`)
+- Compensation: code 24
+
+**Backend Endpoints:**
+- POST /api/governance/meetings - Create meeting (should get RM-ID with code 20)
+- POST /api/governance/distributions - Create distribution (should get RM-ID with code 21)
+- POST /api/governance/disputes - Create dispute (should get RM-ID with code 22)
+- POST /api/governance/insurance-policies - Create insurance (should get RM-ID with code 23)
+
+### P0: Mobile Dialog Collapse Bug
+**Issue**: Dialog closes when user opens a Select dropdown and then taps another input field on mobile
+**Fix Applied**: Enhanced `dialog.jsx` with `isSelectElement` helper and updated `select.jsx` to track open/close state
 
 **Test Steps:**
-1. Login via Google Auth
-2. Navigate to Governance > Distributions tab
-3. Create a new distribution
-4. Add recipients to the distribution
-5. Submit for approval
-6. Approve the distribution
-7. Execute the distribution
-8. Verify status transitions
+1. Open Governance page (login required)
+2. Click "New Meeting" or similar to open a dialog
+3. Open a Select dropdown (e.g., Meeting Type)
+4. While dropdown is visible, tap a text input field
+5. Verify dialog does NOT close
 
-## Files Modified/Created
-- `/app/backend/models/governance.py` - Added Distribution, DistributionRecipient, DistributionApproval models
-- `/app/backend/routes/governance.py` - Full CRUD endpoints for distributions
-- `/app/frontend/src/pages/GovernancePage.jsx` - Enabled distributions tab, list view
-- `/app/frontend/src/pages/DistributionEditorPage.jsx` - NEW editor page
-- `/app/frontend/src/App.js` - Added distribution route
+### P1: OMNIGOVAULT Homepage Verification
+**Check that homepage has:**
+- Hero section with "OMNIGOVAULT" title
+- "Governance Matrix" section with 5 module cards
+- "Signal Console" with live feed
+- "Trust Health" score card
+- No horizontal scroll on mobile
+
+## Files Modified
+- `/app/backend/server.py` - Fixed RM-ID generation logic for governance codes
+- `/app/frontend/src/components/ui/dialog.jsx` - Enhanced mobile dialog handling
+- `/app/frontend/src/components/ui/select.jsx` - Added open/close state tracking
 
 ## Testing Scope
-- Backend: Full CRUD + workflow endpoints
-- Frontend: List view + editor + dialogs
+- Backend: Governance RM-ID generation for all 4 modules
+- Frontend: Dialog + Select interaction on mobile
+- Frontend: Homepage layout verification
