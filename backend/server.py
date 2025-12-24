@@ -1863,7 +1863,7 @@ async def create_amendment(document_id: str, request: AmendmentRequest = None, u
     )
     
     return {
-        "message": f"Amendment created successfully",
+        "message": "Amendment created successfully",
         "document_id": amendment.document_id,
         "rm_id": new_sub_record_id,
         "amendment_number": next_seq - 1,
