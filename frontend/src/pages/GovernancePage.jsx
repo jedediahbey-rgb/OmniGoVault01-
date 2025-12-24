@@ -788,6 +788,13 @@ export default function GovernancePage({ user }) {
                 <ShieldCheck className="w-4 h-4 mr-2 shrink-0" />
                 <span className="hidden sm:inline">Insurance</span><span className="sm:hidden">Ins.</span>
               </TabsTrigger>
+              <TabsTrigger 
+                value="compensation" 
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+              >
+                <CurrencyDollar className="w-4 h-4 mr-2 shrink-0" />
+                <span className="hidden sm:inline">Compensation</span><span className="sm:hidden">Comp.</span>
+              </TabsTrigger>
             </TabsList>
           </div>
 
