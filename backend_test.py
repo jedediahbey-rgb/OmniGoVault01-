@@ -501,10 +501,20 @@ class EquityTrustAPITester:
         locked_update = {
             "title": "This should fail - distribution is locked"
         }
-        # We expect this to fail with 409 or similar
-        response = self.run_test("Distributions - Update Locked (409 test)", "PUT", f"governance/distributions/{distribution_id}", [409, 400], locked_update)
-        if response is False:  # If it returned 409/400 as expected
-            print("   ✅ Locked distribution update correctly rejected")
+        # We expect this to fail with 409 or similar - use a different method to check
+        try:
+            url = f"{self.base_url}/api/governance/distributions/{distribution_id}"
+            headers = {'Content-Type': 'application/json'}
+            if self.session_token:
+                headers['Authorization'] = f'Bearer {self.session_token}'
+            
+            response = requests.put(url, json=locked_update, headers=headers, timeout=10)
+            if response.status_code == 409:
+                self.log_test("Distributions - Update Locked (409 test)", True, "Correctly returned 409 for locked distribution")
+            else:
+                self.log_test("Distributions - Update Locked (409 test)", False, f"Expected 409, got {response.status_code}")
+        except Exception as e:
+            self.log_test("Distributions - Update Locked (409 test)", False, str(e))
         
         # Test 9: Create another distribution for delete test
         delete_test_data = {
