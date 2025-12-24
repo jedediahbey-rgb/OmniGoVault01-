@@ -83,6 +83,19 @@ export default function PortfolioOverviewPage({ user }) {
   // Filters
   const [ledgerFilter, setLedgerFilter] = useState('all');
   
+  // Filtered subject categories for different contexts
+  // Asset categories: 10-19 (Real Estate, Vehicle, Financial, etc.)
+  const assetCategories = subjectCategories.filter(cat => {
+    const code = parseInt(cat.code, 10);
+    return code >= 10 && code <= 19;
+  });
+  
+  // Ledger categories: 10-19 for manual entries (excluding governance 20-29 and templates 00-09)
+  const ledgerCategories = subjectCategories.filter(cat => {
+    const code = parseInt(cat.code, 10);
+    return code >= 10 && code <= 19;
+  });
+  
   // Party management state
   const [showPartyDialog, setShowPartyDialog] = useState(false);
   const [editingParty, setEditingParty] = useState(null);
