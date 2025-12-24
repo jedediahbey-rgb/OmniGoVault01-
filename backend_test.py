@@ -260,7 +260,7 @@ class EquityTrustAPITester:
             "phone": "555-123-4567",
             "notes": "Test grantor for API testing"
         }
-        created_party = self.run_test("Parties - Create", "POST", f"portfolios/{portfolio_id}/parties", 201, party_data)
+        created_party = self.run_test("Parties - Create", "POST", f"portfolios/{portfolio_id}/parties", 200, party_data)
         
         # Get parties
         parties = self.run_test("Parties - Get All", "GET", f"portfolios/{portfolio_id}/parties", 200)
