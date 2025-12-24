@@ -1014,6 +1014,7 @@ export default function MeetingEditorPage({ user }) {
             <div>
               <label className="text-sm text-vault-muted mb-1 block">Your Name</label>
               <Input
+                ref={attestationNameInputRef}
                 value={attestation.party_name}
                 onChange={(e) => setAttestation(prev => ({ ...prev, party_name: e.target.value }))}
                 placeholder="Full legal name"
@@ -1026,7 +1027,10 @@ export default function MeetingEditorPage({ user }) {
                 value={attestation.party_role} 
                 onValueChange={(v) => setAttestation(prev => ({ ...prev, party_role: v }))}
               >
-                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                <SelectTrigger 
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                  onPointerDown={handleSelectPointerDown(attestationNameInputRef)}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
