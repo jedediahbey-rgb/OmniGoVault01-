@@ -4,11 +4,7 @@ import { Check, CaretDown, CaretUp } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 
-// FIX: modal={false} prevents Select from trapping focus and creating "outside click" issues
-const Select = React.forwardRef(({ modal = false, ...props }, ref) => (
-  <SelectPrimitive.Root modal={modal} {...props} />
-))
-Select.displayName = "Select"
+const Select = SelectPrimitive.Root
 
 const SelectGroup = SelectPrimitive.Group
 
@@ -48,23 +44,19 @@ const SelectScrollDownButton = React.forwardRef(({ className, ...props }, ref) =
     <CaretDown className="h-4 w-4" weight="duotone" />
   </SelectPrimitive.ScrollDownButton>
 ))
-SelectScrollDownButton.displayName =
-  SelectPrimitive.ScrollDownButton.displayName
+SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName
 
-const SelectContent = React.forwardRef(({ className, children, position = "popper", container, ...props }, ref) => {
-  // If container is specified, render inside that container (no portal)
-  // This prevents "outside click" issues when Select is inside a Dialog
-  const Content = (
+const SelectContent = React.forwardRef(({ className, children, position = "popper", ...props }, ref) => (
+  <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-[100] max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin]",
+        "relative z-[200] max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className
       )}
       position={position}
-      onCloseAutoFocus={(e) => e.preventDefault()}
       {...props}>
       <SelectScrollUpButton />
       <SelectPrimitive.Viewport
@@ -74,19 +66,8 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
       </SelectPrimitive.Viewport>
       <SelectScrollDownButton />
     </SelectPrimitive.Content>
-  );
-
-  // Use portal only if no container specified
-  return container ? (
-    <SelectPrimitive.Portal container={container}>
-      {Content}
-    </SelectPrimitive.Portal>
-  ) : (
-    <SelectPrimitive.Portal>
-      {Content}
-    </SelectPrimitive.Portal>
-  );
-})
+  </SelectPrimitive.Portal>
+))
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
 const SelectLabel = React.forwardRef(({ className, ...props }, ref) => (
