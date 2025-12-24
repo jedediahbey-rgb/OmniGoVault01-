@@ -629,11 +629,23 @@ export default function PortfolioOverviewPage({ user }) {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-1 sm:gap-2">
                     <span className="text-white/40 text-sm">Date Established</span>
-                    <span className="text-white min-w-0 break-words sm:text-right">
-                      {trustProfile.creation_date || trustProfile.date_established 
-                        ? formatDate(trustProfile.creation_date || trustProfile.date_established) 
-                        : formatDate(trustProfile.created_at)}
-                    </span>
+                    <div className="flex items-center gap-2 sm:justify-end">
+                      <span className="text-white min-w-0 break-words">
+                        {trustProfile.creation_date || trustProfile.date_established 
+                          ? formatDate(trustProfile.creation_date || trustProfile.date_established) 
+                          : formatDate(trustProfile.created_at)}
+                      </span>
+                      <button
+                        onClick={() => {
+                          setEditTrustDate(trustProfile.creation_date || trustProfile.date_established || '');
+                          setShowTrustDateDialog(true);
+                        }}
+                        className="p-1 text-white/40 hover:text-vault-gold transition-colors"
+                        title="Edit date"
+                      >
+                        <PencilSimple className="w-3.5 h-3.5" weight="duotone" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (
