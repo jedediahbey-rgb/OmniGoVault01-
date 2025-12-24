@@ -1132,6 +1132,9 @@ async def create_asset(data: AssetCreate, user: User = Depends(get_current_user)
         data.portfolio_id, user.user_id, "00", subject_name
     )
     
+    # Parse currency value (handles $, commas, etc.)
+    parsed_value = parse_currency_value(data.value)
+    
     asset = AssetItem(
         portfolio_id=data.portfolio_id,
         user_id=user.user_id,
@@ -1141,7 +1144,7 @@ async def create_asset(data: AssetCreate, user: User = Depends(get_current_user)
         sequence_number=sequence_num,
         asset_type=data.asset_type,
         description=data.description,
-        value=float(data.value) if data.value else None,
+        value=parsed_value,
         notes=data.notes or ""
     )
     doc = asset.model_dump()
