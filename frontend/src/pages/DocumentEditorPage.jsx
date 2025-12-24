@@ -23,6 +23,7 @@ import {
   List,
   ListNumbers,
   Lock,
+  LockOpen,
   MagicWand,
   PencilSimple,
   Printer,
@@ -30,8 +31,7 @@ import {
   TextB,
   TextHOne,
   TextHTwo,
-  TextItalic,
-  Unlock
+  TextItalic
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -523,8 +523,8 @@ export default function DocumentEditorPage({ user }) {
           {document?.is_locked ? (
             <>
               <Button onClick={() => setShowUnlockDialog(true)} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
-                <Unlock className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Unlock</span>
+                <LockOpen className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">LockOpen</span>
               </Button>
               <Button onClick={exportToPDF} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
                 <Download className="w-4 h-4 sm:mr-2" />
@@ -653,13 +653,13 @@ export default function DocumentEditorPage({ user }) {
         </DialogContent>
       </Dialog>
 
-      {/* Unlock Confirmation Dialog */}
+      {/* LockOpen Confirmation Dialog */}
       <Dialog open={showUnlockDialog} onOpenChange={setShowUnlockDialog}>
         <DialogContent className="bg-vault-navy border-white/10">
           <DialogHeader>
             <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <Unlock className="w-5 h-5 text-vault-gold" />
-              Unlock Document
+              <LockOpen className="w-5 h-5 text-vault-gold" />
+              LockOpen Document
             </DialogTitle>
             <DialogDescription className="text-white/60">
               Unlocking this document will allow you to edit it again. The document will return to draft status.
@@ -668,8 +668,8 @@ export default function DocumentEditorPage({ user }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowUnlockDialog(false)}>Cancel</Button>
             <Button onClick={unlockDocument} className="btn-primary">
-              <Unlock className="w-4 h-4 mr-2" />
-              Unlock for Editing
+              <LockOpen className="w-4 h-4 mr-2" />
+              LockOpen for Editing
             </Button>
           </DialogFooter>
         </DialogContent>
