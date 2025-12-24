@@ -67,6 +67,26 @@ import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Dynamic Calendar Icon that shows the day number
+const DynamicCalendarIcon = ({ day, className = "w-8 h-8" }) => {
+  const displayDay = day ? String(day).padStart(2, '0') : '--';
+  return (
+    <div className={`relative ${className} flex items-center justify-center`}>
+      <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+        {/* Outer frame */}
+        <rect x="2" y="3" width="20" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.7" />
+        {/* Top bar */}
+        <rect x="2" y="3" width="20" height="5" rx="2" fill="currentColor" opacity="0.2" />
+        {/* Calendar pins */}
+        <line x1="7" y1="1" x2="7" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="17" y1="1" x2="17" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        {/* Day number */}
+        <text x="12" y="16.5" textAnchor="middle" fill="currentColor" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.9">{displayDay}</text>
+      </svg>
+    </div>
+  );
+};
+
 // Meeting type config
 const meetingTypeConfig = {
   regular: { icon: CalendarBlank, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Regular Meeting' },
