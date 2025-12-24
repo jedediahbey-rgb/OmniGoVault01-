@@ -820,7 +820,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Add Attendee Dialog */}
       <Dialog open={showAddAttendee} onOpenChange={setShowAddAttendee}>
-        <DialogContent className="bg-vault-dark border-vault-gold/30 text-white max-w-sm">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-vault-gold">Add Attendee</DialogTitle>
           </DialogHeader>
@@ -831,7 +831,7 @@ export default function MeetingEditorPage({ user }) {
                 value={newAttendee.name}
                 onChange={(e) => setNewAttendee(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="Attendee name"
-                className="bg-vault-navy border-vault-gold/20 text-white"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
               />
             </div>
             <div>
@@ -840,12 +840,12 @@ export default function MeetingEditorPage({ user }) {
                 value={newAttendee.role} 
                 onValueChange={(v) => setNewAttendee(prev => ({ ...prev, role: v }))}
               >
-                <SelectTrigger className="bg-vault-navy border-vault-gold/20 text-white">
+                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-vault-dark border-vault-gold/30">
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                   {roleOptions.map(r => (
-                    <SelectItem key={r.value} value={r.value} className="text-white">
+                    <SelectItem key={r.value} value={r.value} className="text-white hover:bg-vault-gold/20">
                       {r.label}
                     </SelectItem>
                   ))}
