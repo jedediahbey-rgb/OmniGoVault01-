@@ -898,7 +898,10 @@ async def get_or_create_subject_category(portfolio_id: str, user_id: str, subjec
 
 
 async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: str = "00", subject_name: str = "General") -> tuple:
-    """Generate RM-ID based on subject category. Returns (full_rm_id, subject_code, sequence_num, subject_name)"""
+    """Generate RM-ID based on subject category. Returns (full_rm_id, subject_code, sequence_num, subject_name)
+    Uses atomic find_and_modify to prevent race conditions in sequence numbering."""
+    from pymongo import ReturnDocument
+    
     # Get trust profile for base RM-ID
     trust_profile = await db.trust_profiles.find_one(
         {"portfolio_id": portfolio_id, "user_id": user_id},
@@ -917,17 +920,21 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
         # Generate a placeholder RM-ID
         base_rm_id = f"TEMP{uuid.uuid4().hex[:8].upper()}"
     
-    # Get or create subject category
+    # Get or create subject category (seeds defaults if needed)
     category = await get_or_create_subject_category(portfolio_id, user_id, subject_code, subject_name)
     cat_code = category.get("code", "00")
     cat_name = category.get("name", "General")
-    sequence_num = category.get("next_sequence", 1)
     
-    # Increment the sequence for next use
-    await db.subject_categories.update_one(
+    # Atomically increment and get the CURRENT sequence (before increment)
+    # We use $inc and return the document BEFORE the update to get the sequence we should use
+    updated_category = await db.subject_categories.find_one_and_update(
         {"category_id": category["category_id"]},
-        {"$inc": {"next_sequence": 1}}
+        {"$inc": {"next_sequence": 1}},
+        return_document=ReturnDocument.BEFORE  # Get the value before increment
     )
+    
+    # The sequence to use is from the pre-increment state
+    sequence_num = updated_category.get("next_sequence", 1) if updated_category else 1
     
     # Format: BASE-CODE.SEQUENCE (e.g., RF123456789US-01.001)
     full_rm_id = f"{base_rm_id}-{cat_code}.{sequence_num:03d}"
