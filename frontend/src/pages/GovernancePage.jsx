@@ -202,6 +202,26 @@ export default function GovernancePage({ user }) {
   });
   const [creatingDispute, setCreatingDispute] = useState(false);
 
+  // Insurance State
+  const [insurancePolicies, setInsurancePolicies] = useState([]);
+  const [insuranceLoading, setInsuranceLoading] = useState(false);
+  const [showNewInsurance, setShowNewInsurance] = useState(false);
+  const [newInsurance, setNewInsurance] = useState({
+    title: '',
+    policy_type: 'whole_life',
+    policy_number: '',
+    carrier_name: '',
+    insured_name: '',
+    death_benefit: '',
+    cash_value: '',
+    currency: 'USD',
+    premium_amount: '',
+    premium_frequency: 'monthly',
+    effective_date: '',
+    notes: '',
+  });
+  const [creatingInsurance, setCreatingInsurance] = useState(false);
+
   useEffect(() => {
     fetchPortfolios();
   }, []);
