@@ -1553,7 +1553,7 @@ async def approve_distribution(distribution_id: str, data: dict, request: Reques
 
 @router.post("/distributions/{distribution_id}/execute")
 async def execute_distribution(distribution_id: str, data: dict, request: Request):
-    """Mark distribution as executed/completed"""
+    """Mark distribution as executed/completed and create ledger entry"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -1590,8 +1590,32 @@ async def execute_distribution(distribution_id: str, data: dict, request: Reques
             }}
         )
         
+        # Create ledger entry for the completed distribution (debit - funds leaving trust)
+        ledger_entry = None
+        if distribution.get("rm_id"):
+            try:
+                ledger_entry = await create_governance_ledger_entry(
+                    portfolio_id=distribution.get("portfolio_id"),
+                    user_id=user.user_id,
+                    governance_type="distribution",
+                    governance_id=distribution_id,
+                    rm_id=distribution.get("rm_id"),
+                    title=distribution.get("title", "Distribution"),
+                    description=f"Executed on {execution_date[:10]}",
+                    value=distribution.get("total_amount"),
+                    entry_type="distribution",
+                    balance_effect="debit",  # Distribution removes funds from trust
+                    subject_code="21",
+                    subject_name="Distribution"
+                )
+            except Exception as le_err:
+                print(f"Warning: Could not create ledger entry: {le_err}")
+        
         updated = await db.distributions.find_one({"distribution_id": distribution_id}, {"_id": 0})
-        return success_message("Distribution executed", {"item": normalize_distribution(updated)})
+        return success_message("Distribution executed", {
+            "item": normalize_distribution(updated),
+            "ledger_entry": ledger_entry
+        })
     except Exception as e:
         print(f"Error executing distribution: {e}")
         return error_response("EXECUTE_ERROR", "Failed to execute distribution", status_code=500)
