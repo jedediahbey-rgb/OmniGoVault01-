@@ -436,7 +436,7 @@ export default function CyberHomePage() {
             </div>
             
             {/* Right side */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Command palette hint */}
               <button
                 onClick={() => setShowCommandPalette(true)}
@@ -447,15 +447,15 @@ export default function CyberHomePage() {
                 <kbd className="ml-2 px-1.5 py-0.5 bg-white/5 rounded text-[10px]">⌘K</kbd>
               </button>
               
-              <Link to="/vault">
-                <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold text-sm">
+              <Link to="/login">
+                <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold text-xs sm:text-sm px-3 sm:px-4">
+                  <Vault className="w-4 h-4 sm:mr-2" weight="duotone" />
                   <span className="hidden sm:inline">Enter Vault</span>
-                  <span className="sm:hidden">Vault</span>
                 </Button>
               </Link>
               
-              <Link to="/vault">
-                <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 text-sm">
+              <Link to="/login">
+                <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 text-xs sm:text-sm px-2 sm:px-4">
                   <SignIn className="w-4 h-4 sm:mr-2" />
                   <span className="hidden sm:inline">Sign In</span>
                 </Button>
