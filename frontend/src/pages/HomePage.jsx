@@ -51,7 +51,7 @@ const HomePage = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 sm:gap-3" data-testid="logo-link">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center flex-shrink-0">
-                <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-[#C6A87C]" />
+                <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-[#C6A87C]" weight="duotone" />
               </div>
               <span className="font-serif text-lg sm:text-2xl font-semibold text-[#F8FAFC] tracking-tight truncate">
                 Equity Trust
