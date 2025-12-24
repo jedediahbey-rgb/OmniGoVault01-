@@ -1216,6 +1216,9 @@ async def create_ledger_entry(portfolio_id: str, data: dict, user: User = Depend
     subject_code = data.get("subject_code", "00")
     subject_name = data.get("subject_name", "General")
     
+    # Parse currency value (handles $, commas, etc.)
+    parsed_value = parse_currency_value(data.get("value"))
+    
     # Generate RM-ID using the subject-based system
     rm_id, cat_code, sequence_num, cat_name = await generate_subject_rm_id(
         portfolio_id, user.user_id, subject_code, subject_name
@@ -1232,7 +1235,7 @@ async def create_ledger_entry(portfolio_id: str, data: dict, user: User = Depend
         description=data.get("description", ""),
         asset_id=data.get("asset_id"),
         document_id=data.get("document_id"),
-        value=data.get("value"),
+        value=parsed_value,
         balance_effect=data.get("balance_effect", "credit"),
         notes=data.get("notes", "")
     )
