@@ -297,7 +297,7 @@ export default function MeetingEditorPage({ user }) {
     
     try {
       await axios.post(`${API}/governance/meetings/${meetingId}/agenda`, newAgenda);
-      await fetchMeeting();
+      await refetchMeeting();
       setShowAddAgenda(false);
       setNewAgenda({ title: '', discussion_summary: '' });
       toast.success('Agenda item added');
@@ -309,7 +309,7 @@ export default function MeetingEditorPage({ user }) {
   const handleUpdateAgendaItem = async (itemId, updates) => {
     try {
       await axios.put(`${API}/governance/meetings/${meetingId}/agenda/${itemId}`, updates);
-      await fetchMeeting();
+      await refetchMeeting();
     } catch (error) {
       toast.error('Failed to update agenda item');
     }
@@ -318,7 +318,7 @@ export default function MeetingEditorPage({ user }) {
   const handleDeleteAgendaItem = async (itemId) => {
     try {
       await axios.delete(`${API}/governance/meetings/${meetingId}/agenda/${itemId}`);
-      await fetchMeeting();
+      await refetchMeeting();
       toast.success('Agenda item deleted');
     } catch (error) {
       toast.error('Failed to delete agenda item');
