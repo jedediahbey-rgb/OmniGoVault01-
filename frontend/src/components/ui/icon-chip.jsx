@@ -141,7 +141,7 @@ export function CurrencyDisplay({
       <span 
         className={cn(
           'sm:hidden font-heading tabular-nums',
-          colorVariants[variant],
+          colorVariants[autoVariant],
           sizeVariants[size],
           className
         )}
@@ -152,7 +152,7 @@ export function CurrencyDisplay({
       <span 
         className={cn(
           'hidden sm:inline font-heading tabular-nums',
-          colorVariants[variant],
+          colorVariants[autoVariant],
           sizeVariants[size],
           className
         )}
