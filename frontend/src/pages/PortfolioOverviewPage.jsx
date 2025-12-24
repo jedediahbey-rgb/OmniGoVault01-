@@ -99,10 +99,51 @@ export default function PortfolioOverviewPage({ user }) {
   const [editTrustDate, setEditTrustDate] = useState('');
 
   useEffect(() => {
-    fetchPortfolioData();
+    let isMounted = true;
+    
+    const fetchData = async () => {
+      if (!portfolioId) return;
+      
+      try {
+        const [portfolioRes, trustRes, docsRes, assetsRes, partiesRes, ledgerRes, categoriesRes] = await Promise.all([
+          axios.get(`${API}/portfolios/${portfolioId}`),
+          axios.get(`${API}/portfolios/${portfolioId}/trust-profile`).catch(() => ({ data: null })),
+          axios.get(`${API}/documents?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
+          axios.get(`${API}/portfolios/${portfolioId}/assets`).catch(() => ({ data: [] })),
+          axios.get(`${API}/parties?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
+          axios.get(`${API}/portfolios/${portfolioId}/ledger`).catch(() => ({ data: { entries: [], summary: {} } })),
+          axios.get(`${API}/portfolios/${portfolioId}/subject-categories`).catch(() => ({ data: [] }))
+        ]);
+        
+        if (isMounted) {
+          setPortfolio(portfolioRes.data);
+          setTrustProfile(trustRes.data);
+          setDocuments(docsRes.data || []);
+          setAssets(assetsRes.data || []);
+          setParties(partiesRes.data || []);
+          setLedger(ledgerRes.data || { entries: [], summary: {} });
+          setSubjectCategories(categoriesRes.data || []);
+          setLoading(false);
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error('Portfolio load error:', error);
+          toast.error('Failed to load portfolio');
+          setLoading(false);
+        }
+      }
+    };
+    
+    fetchData();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [portfolioId]);
 
   const fetchPortfolioData = async () => {
+    if (!portfolioId) return;
+    setLoading(true);
     try {
       const [portfolioRes, trustRes, docsRes, assetsRes, partiesRes, ledgerRes, categoriesRes] = await Promise.all([
         axios.get(`${API}/portfolios/${portfolioId}`),
@@ -121,6 +162,7 @@ export default function PortfolioOverviewPage({ user }) {
       setLedger(ledgerRes.data || { entries: [], summary: {} });
       setSubjectCategories(categoriesRes.data || []);
     } catch (error) {
+      console.error('Portfolio refresh error:', error);
       toast.error('Failed to load portfolio');
     } finally {
       setLoading(false);
