@@ -239,7 +239,8 @@ export default function VaultPage({ user }) {
   const filteredDocuments = (showTrash ? trashedDocuments : documents).filter(doc => {
     const matchesSearch = searchTerm === '' || 
       doc.title?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPortfolio = !selectedPortfolio || 
+    // When viewing trash, show ALL trashed docs regardless of portfolio
+    const matchesPortfolio = showTrash || !selectedPortfolio || 
       doc.portfolio_id === selectedPortfolio.portfolio_id;
     return matchesSearch && matchesPortfolio;
   });
