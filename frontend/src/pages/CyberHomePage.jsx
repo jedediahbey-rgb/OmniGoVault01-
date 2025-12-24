@@ -4,9 +4,7 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   ArrowRight,
   BookOpen,
-  Calendar,
   CaretRight,
-  ChartLine,
   CheckCircle,
   Command,
   CurrencyDollar,
@@ -14,6 +12,7 @@ import {
   Gavel,
   Gear,
   Lightning,
+  Lock,
   MagnifyingGlass,
   Notebook,
   Pulse,
@@ -24,7 +23,8 @@ import {
   Timer,
   Users,
   Vault,
-  Warning,
+  Eye,
+  ClockCounterClockwise,
   X
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
@@ -32,19 +32,55 @@ import { Badge } from '../components/ui/badge';
 
 // Demo Data
 const DEMO_SIGNALS = [
-  { id: 1, type: 'meeting', message: 'Meeting Finalized', detail: 'RM-ID RF743916765US-20.001', time: '2m ago', icon: Calendar },
+  { id: 1, type: 'meeting', message: 'Meeting Finalized', detail: 'RM-ID RF743916765US-20.001', time: '2m ago', icon: Notebook },
   { id: 2, type: 'distribution', message: 'Distribution Logged', detail: 'Beneficiary shares updated', time: '5m ago', icon: CurrencyDollar },
   { id: 3, type: 'dispute', message: 'Dispute Opened', detail: 'Evidence attached to case', time: '12m ago', icon: Gavel },
   { id: 4, type: 'insurance', message: 'Premium Due Alert', detail: 'Policy renewal in 30 days', time: '1h ago', icon: ShieldCheck },
   { id: 5, type: 'compensation', message: 'Compensation Approved', detail: 'Q4 trustee payment logged', time: '2h ago', icon: Users },
 ];
 
-const GOVERNANCE_MODULES = [
-  { id: 'meetings', title: 'Meeting Minutes', subtitle: 'Immutable finalization with attestation', icon: Calendar, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-  { id: 'distributions', title: 'Distributions', subtitle: 'Interactive shares & beneficiary tracking', icon: CurrencyDollar, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  { id: 'disputes', title: 'Disputes', subtitle: 'Case board with resolution workflow', icon: Gavel, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-  { id: 'insurance', title: 'Insurance', subtitle: 'Policy vault with premium alerts', icon: ShieldCheck, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-  { id: 'compensation', title: 'Compensation', subtitle: 'Trustee logs & approval workflows', icon: Users, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
+// Governance Matrix Modules
+const MATRIX_MODULES = [
+  { 
+    id: 'meetings', 
+    title: 'Minutes Ledger', 
+    desc: 'Attest meetings, resolutions, and votes with tamper-evident history.',
+    chip: 'Immutable',
+    chipColor: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+    icon: Notebook
+  },
+  { 
+    id: 'distributions', 
+    title: 'Distributions', 
+    desc: 'Visualize shares, allocations, and what-if scenarios in real time.',
+    chip: 'Transparent',
+    chipColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+    icon: CurrencyDollar
+  },
+  { 
+    id: 'disputes', 
+    title: 'Disputes', 
+    desc: 'Track conflicts, evidence, and outcomes with role-based visibility.',
+    chip: 'Controlled',
+    chipColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    icon: Gavel
+  },
+  { 
+    id: 'insurance', 
+    title: 'Policies', 
+    desc: 'Model life insurance, beneficiaries, premiums, and proceeds flow.',
+    chip: 'Automated',
+    chipColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+    icon: ShieldCheck
+  },
+  { 
+    id: 'compensation', 
+    title: 'Compensation', 
+    desc: 'Log trustee time, approvals, and reasonableness with audit trails.',
+    chip: 'Documented',
+    chipColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+    icon: Users
+  },
 ];
 
 const SCENARIOS = [
@@ -55,7 +91,7 @@ const SCENARIOS = [
 ];
 
 const TEMPLATES = [
-  { id: 1, title: 'Meeting Minutes Pack', desc: 'Annual & Special meetings', icon: Calendar },
+  { id: 1, title: 'Meeting Minutes Pack', desc: 'Annual & Special meetings', icon: Notebook },
   { id: 2, title: 'Resolution Pack', desc: 'Trustee resolutions & amendments', icon: FileText },
   { id: 3, title: 'Distribution Receipt', desc: 'Beneficiary payment records', icon: CurrencyDollar },
   { id: 4, title: 'Insurance Summary', desc: 'Policy overview documents', icon: ShieldCheck },
@@ -116,74 +152,6 @@ const IconChip = ({ icon: Icon, label, variant = 'default' }) => {
       {Icon && <Icon className="w-3.5 h-3.5" weight="duotone" />}
       {label}
     </span>
-  );
-};
-
-// Trust Radar component
-const TrustRadar = ({ onSignalClick }) => {
-  const signals = [
-    { id: 'meetings', label: 'Minutes', angle: 0, icon: Calendar },
-    { id: 'distributions', label: 'Distributions', angle: 60, icon: CurrencyDollar },
-    { id: 'disputes', label: 'Disputes', angle: 120, icon: Gavel },
-    { id: 'insurance', label: 'Policies', angle: 180, icon: ShieldCheck },
-    { id: 'compensation', label: 'Compensation', angle: 240, icon: Users },
-    { id: 'templates', label: 'Templates', angle: 300, icon: FileText },
-  ];
-  
-  return (
-    <div className="relative w-64 h-64 md:w-80 md:h-80">
-      {/* Radar circles */}
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
-        <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(198, 168, 124, 0.1)" strokeWidth="1" />
-        <circle cx="100" cy="100" r="60" fill="none" stroke="rgba(198, 168, 124, 0.1)" strokeWidth="1" />
-        <circle cx="100" cy="100" r="30" fill="none" stroke="rgba(198, 168, 124, 0.1)" strokeWidth="1" />
-        
-        {/* Radar sweep */}
-        <motion.line
-          x1="100" y1="100" x2="100" y2="10"
-          stroke="url(#radarGradient)" strokeWidth="2"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-          style={{ transformOrigin: '100px 100px' }}
-        />
-        
-        <defs>
-          <linearGradient id="radarGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#C6A87C" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#C6A87C" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-      </svg>
-      
-      {/* Signal nodes */}
-      {signals.map((signal) => {
-        const radians = (signal.angle - 90) * (Math.PI / 180);
-        const x = 50 + 40 * Math.cos(radians);
-        const y = 50 + 40 * Math.sin(radians);
-        const Icon = signal.icon;
-        
-        return (
-          <motion.button
-            key={signal.id}
-            className="absolute w-10 h-10 -ml-5 -mt-5 bg-[#0B1221] border border-[#C6A87C]/30 rounded-full flex items-center justify-center text-[#C6A87C] hover:bg-[#C6A87C]/20 hover:border-[#C6A87C] transition-all duration-300 group"
-            style={{ left: `${x}%`, top: `${y}%` }}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => onSignalClick && onSignalClick(signal.id)}
-          >
-            <Icon className="w-4 h-4" weight="duotone" />
-            <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              {signal.label}
-            </span>
-          </motion.button>
-        );
-      })}
-      
-      {/* Center node */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-[#0B1221] border-2 border-[#C6A87C] rounded-full flex items-center justify-center">
-        <Vault className="w-6 h-6 text-[#C6A87C]" weight="duotone" />
-      </div>
-    </div>
   );
 };
 
@@ -293,6 +261,76 @@ const TrustHealthCard = () => {
   );
 };
 
+// Governance Matrix Section (replaces Trust Radar)
+const GovernanceMatrixSection = () => {
+  const navigate = useNavigate();
+  
+  return (
+    <section id="matrix" className="py-16 lg:py-24 bg-[#0B1221]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+          variants={staggerContainer}
+        >
+          {/* Header */}
+          <motion.div variants={fadeInUp} className="mb-10">
+            <IconChip icon={Gear} label="Governance Matrix" variant="gold" />
+            <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">
+              The console for trust operations.
+            </h2>
+            <p className="mt-3 text-slate-400 max-w-2xl">
+              Minutes, distributions, disputes, policies, compensation—linked to a living ledger.
+            </p>
+          </motion.div>
+          
+          {/* Module Grid */}
+          <motion.div 
+            variants={fadeInUp}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {MATRIX_MODULES.map((module) => {
+              const Icon = module.icon;
+              return (
+                <HoloCard 
+                  key={module.id} 
+                  className="p-5 cursor-pointer"
+                  onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#C6A87C]/10 flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
+                    </div>
+                    <Badge className={`text-[10px] border ${module.chipColor}`}>
+                      {module.chip}
+                    </Badge>
+                  </div>
+                  <h3 className="text-white font-semibold mb-2">{module.title}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">{module.desc}</p>
+                </HoloCard>
+              );
+            })}
+          </motion.div>
+          
+          {/* CTA Row */}
+          <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap items-center gap-4">
+            <Link to="/vault/governance">
+              <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
+                Open Governance Console
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+            <Link to="/vault/governance?tab=meetings" className="text-sm text-[#C6A87C] hover:text-[#C6A87C]/80 flex items-center gap-1">
+              View a sample ledger <CaretRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
 // Main Homepage Component
 export default function CyberHomePage() {
   const navigate = useNavigate();
@@ -316,13 +354,6 @@ export default function CyberHomePage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
   
-  const scrollToSection = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-  
   return (
     <div className="min-h-screen bg-[#05080F] text-white overflow-x-hidden">
       {/* Scanline overlay */}
@@ -340,8 +371,7 @@ export default function CyberHomePage() {
             {/* Logo */}
             <div className="flex items-center gap-2">
               <Vault className="w-7 h-7 text-[#C6A87C]" weight="duotone" />
-              <span className="text-lg font-semibold text-white">Equity Trust</span>
-              <Badge className="bg-[#C6A87C]/10 text-[#C6A87C] border-[#C6A87C]/30 text-[10px]">VAULT</Badge>
+              <span className="text-lg font-semibold text-white">OMNIGOVAULT</span>
             </div>
             
             {/* Nav Links - Hidden on mobile */}
@@ -367,8 +397,8 @@ export default function CyberHomePage() {
               
               <Link to="/vault">
                 <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold text-sm">
-                  <span className="hidden sm:inline">Explore Demo</span>
-                  <span className="sm:hidden">Demo</span>
+                  <span className="hidden sm:inline">Enter Vault</span>
+                  <span className="sm:hidden">Vault</span>
                 </Button>
               </Link>
               
@@ -388,49 +418,59 @@ export default function CyberHomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left - Content */}
+          <div className="max-w-3xl">
             <motion.div
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
             >
               <motion.div variants={fadeInUp}>
-                <IconChip icon={Lightning} label="Cyber Governance" variant="gold" />
+                <IconChip icon={Vault} label="Trust Matrix" variant="gold" />
               </motion.div>
               
               <motion.h1 
                 variants={fadeInUp}
-                className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight"
+                className="mt-6 text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]"
               >
-                <span className="text-white">Cyber Governance</span>
-                <br />
-                <span className="text-[#C6A87C]">for Trust Records</span>
+                <span className="text-[#C6A87C]">OMNIGOVAULT</span>
               </motion.h1>
+              
+              <motion.h2
+                variants={fadeInUp}
+                className="mt-4 text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light"
+              >
+                A matrix system for trust governance.
+              </motion.h2>
               
               <motion.p 
                 variants={fadeInUp}
-                className="mt-6 text-lg text-slate-400 max-w-xl"
+                className="mt-6 text-base sm:text-lg text-slate-400 max-w-xl leading-relaxed"
               >
-                Minutes. Distributions. Disputes. Policies. Compensation — organized as a verifiable ledger with immutable audit trails.
+                Every decision. Every distribution. Every signature—tracked in a living ledger with immutable audit trails.
               </motion.p>
               
-              <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap gap-4">
+              <motion.div variants={fadeInUp} className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Link to="/vault">
-                  <Button size="lg" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
-                    Explore Demo (No Login)
+                  <Button size="lg" className="w-full sm:w-auto bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
+                    Enter the Vault
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
-                <Link to="/vault">
-                  <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/5">
-                    Start Your Trust Vault
+                <Link to="/vault/governance">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/5">
+                    Open Governance Console
                   </Button>
                 </Link>
               </motion.div>
               
+              {/* Microcopy */}
+              <motion.p variants={fadeInUp} className="mt-4 text-xs text-slate-500 flex items-center gap-2">
+                <ClockCounterClockwise className="w-3.5 h-3.5" />
+                Draft → Finalize → Amend (with traceable history).
+              </motion.p>
+              
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="mt-12 flex gap-8">
+              <motion.div variants={fadeInUp} className="mt-12 flex flex-wrap gap-6 sm:gap-8">
                 {[
                   { value: '500+', label: 'Trusts Managed' },
                   { value: '10k+', label: 'Documents Filed' },
@@ -442,16 +482,6 @@ export default function CyberHomePage() {
                   </div>
                 ))}
               </motion.div>
-            </motion.div>
-            
-            {/* Right - Trust Radar */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex justify-center lg:justify-end"
-            >
-              <TrustRadar onSignalClick={(id) => scrollToSection(id)} />
             </motion.div>
           </div>
         </div>
@@ -468,10 +498,13 @@ export default function CyberHomePage() {
         </motion.div>
       </section>
       
+      {/* ===== GOVERNANCE MATRIX SECTION (replaces Trust Radar) ===== */}
+      <GovernanceMatrixSection />
+      
       {/* ===== SIGNAL FEED SECTION ===== */}
-      <section id="signals" className="py-24 bg-gradient-to-b from-[#05080F] to-[#0B1221]">
+      <section id="signals" className="py-16 lg:py-24 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Signal Feed */}
             <motion.div
               initial="hidden"
@@ -515,72 +548,8 @@ export default function CyberHomePage() {
         </div>
       </section>
       
-      {/* ===== FEATURE GRID ===== */}
-      <section id="features" ref={featuresRef} className="py-24 bg-[#0B1221]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            animate={isInView ? 'visible' : 'hidden'}
-            variants={staggerContainer}
-            className="text-center mb-16"
-          >
-            <motion.div variants={fadeInUp}>
-              <IconChip icon={Gear} label="Governance Modules" variant="gold" />
-            </motion.div>
-            <motion.h2 variants={fadeInUp} className="mt-4 text-3xl font-bold text-white">
-              Complete Trust Governance Suite
-            </motion.h2>
-            <motion.p variants={fadeInUp} className="mt-4 text-slate-400 max-w-2xl mx-auto">
-              Five integrated modules for comprehensive trust administration
-            </motion.p>
-          </motion.div>
-          
-          <motion.div
-            initial="hidden"
-            animate={isInView ? 'visible' : 'hidden'}
-            variants={staggerContainer}
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {GOVERNANCE_MODULES.map((module) => {
-              const Icon = module.icon;
-              return (
-                <motion.div key={module.id} variants={fadeInUp}>
-                  <HoloCard className="p-6 h-full cursor-pointer" onClick={() => navigate(`/vault/governance?tab=${module.id}`)}>
-                    <div className={`w-12 h-12 rounded-xl ${module.bg} flex items-center justify-center mb-4`}>
-                      <Icon className={`w-6 h-6 ${module.color}`} weight="duotone" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{module.title}</h3>
-                    <p className="text-sm text-slate-400 mb-4">{module.subtitle}</p>
-                    <Button variant="ghost" size="sm" className="text-[#C6A87C] hover:bg-[#C6A87C]/10 p-0">
-                      Preview <CaretRight className="w-4 h-4 ml-1" />
-                    </Button>
-                  </HoloCard>
-                </motion.div>
-              );
-            })}
-            
-            {/* Special CTA tile */}
-            <motion.div variants={fadeInUp}>
-              <HoloCard className="p-6 h-full bg-gradient-to-br from-[#C6A87C]/10 to-transparent border-[#C6A87C]/30">
-                <div className="flex flex-col h-full justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Start Your Vault</h3>
-                    <p className="text-sm text-slate-400">Begin organizing your trust governance today</p>
-                  </div>
-                  <Link to="/vault" className="mt-6">
-                    <Button className="w-full bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F]">
-                      Get Started <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                </div>
-              </HoloCard>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-      
       {/* ===== SCENARIOS SECTION ===== */}
-      <section id="scenarios" className="py-24 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
+      <section id="scenarios" className="py-16 lg:py-24 bg-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -588,13 +557,13 @@ export default function CyberHomePage() {
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="text-center mb-12">
+            <motion.div variants={fadeInUp} className="text-center mb-10">
               <IconChip icon={BookOpen} label="Case Studies" variant="gold" />
-              <h2 className="mt-4 text-3xl font-bold text-white">Real-World Scenarios</h2>
-              <p className="mt-4 text-slate-400">See how Equity Trust solves common governance challenges</p>
+              <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">Real-World Scenarios</h2>
+              <p className="mt-3 text-slate-400">See how OMNIGOVAULT solves common governance challenges</p>
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {SCENARIOS.map((scenario) => {
                 const Icon = scenario.icon;
                 return (
@@ -611,7 +580,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== LEARN SECTION ===== */}
-      <section id="learn" className="py-24 bg-[#05080F]">
+      <section id="learn" className="py-16 lg:py-24 bg-gradient-to-b from-[#05080F] to-[#0B1221]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -619,10 +588,10 @@ export default function CyberHomePage() {
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 mb-12">
+            <motion.div variants={fadeInUp} className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-10">
               <div>
                 <IconChip icon={Sparkle} label="Education" variant="gold" />
-                <h2 className="mt-4 text-3xl font-bold text-white">Maxims Explorer</h2>
+                <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">Maxims Explorer</h2>
                 <p className="mt-2 text-slate-400">Master the foundational principles of equity law</p>
               </div>
               <div className="flex items-center gap-4">
@@ -636,7 +605,7 @@ export default function CyberHomePage() {
               </div>
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="grid sm:grid-cols-3 gap-6">
+            <motion.div variants={fadeInUp} className="grid sm:grid-cols-3 gap-4">
               {MAXIMS.map((maxim) => (
                 <HoloCard key={maxim.id} className="p-6 cursor-pointer group" hover>
                   <IconChip label={maxim.category} variant="default" />
@@ -656,7 +625,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== TEMPLATE VAULT SECTION ===== */}
-      <section id="templates" className="py-24 bg-gradient-to-b from-[#05080F] to-[#0B1221]">
+      <section id="templates" className="py-16 lg:py-24 bg-[#0B1221]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -664,13 +633,13 @@ export default function CyberHomePage() {
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="text-center mb-12">
+            <motion.div variants={fadeInUp} className="text-center mb-10">
               <IconChip icon={FileText} label="Templates" variant="gold" />
-              <h2 className="mt-4 text-3xl font-bold text-white">Template Vault</h2>
-              <p className="mt-4 text-slate-400">Professional document templates for every governance need</p>
+              <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">Template Vault</h2>
+              <p className="mt-3 text-slate-400">Professional document templates for every governance need</p>
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {TEMPLATES.map((template) => {
                 const Icon = template.icon;
                 return (
@@ -701,7 +670,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== FINAL CTA ===== */}
-      <section className="py-24 bg-[#0B1221]">
+      <section className="py-16 lg:py-24 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial="hidden"
@@ -712,21 +681,21 @@ export default function CyberHomePage() {
             <motion.div variants={fadeInUp}>
               <Vault className="w-16 h-16 text-[#C6A87C] mx-auto mb-6" weight="duotone" />
             </motion.div>
-            <motion.h2 variants={fadeInUp} className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
               Ready to Transform Your Trust Governance?
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-lg text-slate-400 mb-8">
+            <motion.p variants={fadeInUp} className="text-base sm:text-lg text-slate-400 mb-8">
               Start with our demo or create your secure vault today.
             </motion.p>
-            <motion.div variants={fadeInUp} className="flex flex-wrap justify-center gap-4">
+            <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row justify-center gap-4">
               <Link to="/vault">
-                <Button size="lg" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
-                  Enter Demo Console
+                <Button size="lg" className="w-full sm:w-auto bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
+                  Enter the Vault
                 </Button>
               </Link>
-              <Link to="/vault">
-                <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/5">
-                  Create Your Vault
+              <Link to="/vault/governance">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/5">
+                  Open Governance Console
                 </Button>
               </Link>
             </motion.div>
@@ -740,7 +709,7 @@ export default function CyberHomePage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="flex items-center gap-2">
               <Vault className="w-6 h-6 text-[#C6A87C]" weight="duotone" />
-              <span className="font-semibold text-white">Equity Trust</span>
+              <span className="font-semibold text-white">OMNIGOVAULT</span>
             </div>
             
             <div className="flex flex-wrap gap-6 text-sm text-slate-500">
@@ -753,7 +722,7 @@ export default function CyberHomePage() {
           
           <div className="mt-8 pt-8 border-t border-white/5">
             <p className="text-xs text-slate-600 text-center">
-              Equity Trust Vault is for informational purposes only and does not constitute legal advice. 
+              OMNIGOVAULT is for informational purposes only and does not constitute legal advice. 
               Consult a qualified attorney for legal matters.
             </p>
           </div>
@@ -788,7 +757,7 @@ export default function CyberHomePage() {
                 <kbd className="px-2 py-1 bg-white/5 rounded text-xs text-slate-500">ESC</kbd>
               </div>
               <div className="p-2 max-h-80 overflow-y-auto">
-                {GOVERNANCE_MODULES.map((module) => {
+                {MATRIX_MODULES.map((module) => {
                   const Icon = module.icon;
                   return (
                     <button
@@ -799,7 +768,7 @@ export default function CyberHomePage() {
                         setShowCommandPalette(false);
                       }}
                     >
-                      <Icon className={`w-5 h-5 ${module.color}`} weight="duotone" />
+                      <Icon className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
                       <span className="text-white">{module.title}</span>
                       <span className="text-xs text-slate-500 ml-auto">Module</span>
                     </button>
