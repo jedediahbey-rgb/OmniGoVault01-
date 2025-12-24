@@ -397,10 +397,19 @@ export default function CyberHomePage() {
               </button>
               
               <Link to="/vault">
-                <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold text-sm">
-                  <span className="hidden sm:inline">Enter Vault</span>
-                  <span className="sm:hidden">Vault</span>
-                </Button>
+                <button className="group relative px-4 py-2 overflow-hidden rounded-lg font-semibold text-sm transition-all duration-300">
+                  {/* Animated gradient border */}
+                  <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#C6A87C] via-[#E8D5B7] to-[#C6A87C] opacity-100" />
+                  <span className="absolute inset-[1px] rounded-[7px] bg-[#0B1221] group-hover:bg-[#0B1221]/80 transition-colors" />
+                  {/* Glow effect */}
+                  <span className="absolute inset-0 rounded-lg bg-[#C6A87C]/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {/* Text */}
+                  <span className="relative flex items-center gap-2 text-[#C6A87C] group-hover:text-[#E8D5B7] transition-colors">
+                    <Vault className="w-4 h-4" weight="duotone" />
+                    <span className="hidden sm:inline tracking-wider">CYBER VAULT</span>
+                    <span className="sm:hidden tracking-wider">CV</span>
+                  </span>
+                </button>
               </Link>
               
               <Link to="/vault">
