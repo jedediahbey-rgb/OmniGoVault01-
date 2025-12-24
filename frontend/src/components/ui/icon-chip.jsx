@@ -68,6 +68,7 @@ export default function IconChip({
 /**
  * CurrencyDisplay - Properly formatted currency with compact notation for mobile
  * Uses compact notation (e.g., $50k, $2.2M) when space is limited
+ * Supports 'auto' variant that shows green for positive, red for negative
  */
 export function CurrencyDisplay({ 
   value, 
@@ -76,6 +77,12 @@ export function CurrencyDisplay({
   compact = true, // Use compact notation by default on mobile
   className 
 }) {
+  // Determine auto color based on value
+  const numValue = Number(value) || 0;
+  const autoVariant = variant === 'auto' 
+    ? (numValue < 0 ? 'red' : numValue > 0 ? 'green' : 'default')
+    : variant;
+
   const colorVariants = {
     default: 'text-white',
     gold: 'text-vault-gold',
