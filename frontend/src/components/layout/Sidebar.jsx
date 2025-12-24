@@ -5,6 +5,7 @@ import {
   CaretRight,
   FileText,
   FolderSimple,
+  Gavel,
   GitBranch,
   House,
   Robot,
@@ -22,6 +23,7 @@ const navItems = [
   { name: 'Glossary', href: '/glossary', icon: BookOpen, section: 'knowledge' },
   { name: 'Diagrams', href: '/diagrams', icon: GitBranch, section: 'knowledge' },
   { name: 'Vault', href: '/vault/documents', icon: FolderSimple, section: 'workspace' },
+  { name: 'Governance', href: '/vault/governance', icon: Gavel, section: 'workspace' },
   { name: 'Templates', href: '/templates', icon: FileText, section: 'workspace' },
   { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
 ];
