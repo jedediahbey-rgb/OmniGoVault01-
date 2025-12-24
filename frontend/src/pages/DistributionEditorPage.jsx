@@ -334,6 +334,20 @@ export default function DistributionEditorPage({ user }) {
     }
   };
 
+  const handleFinalize = async () => {
+    setFinalizing(true);
+    try {
+      await axios.post(`${API}/governance/distributions/${distributionId}/finalize`, {});
+      await refetchDistribution();
+      setShowFinalizeConfirm(false);
+      toast.success('Distribution finalized and locked');
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to finalize distribution');
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
