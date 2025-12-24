@@ -295,7 +295,7 @@ export default function VaultPage({ user, initialView }) {
         {portfolios.map(portfolio => (
           <button
             key={portfolio.portfolio_id}
-            onClick={() => { setSelectedPortfolio(portfolio); setShowTrash(false); setSidebarOpen(false); }}
+            onClick={() => { setSelectedPortfolio(portfolio); setShowTrash(false); setSidebarOpen(false); navigate('/vault/documents'); }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
               selectedPortfolio?.portfolio_id === portfolio.portfolio_id
                 ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
