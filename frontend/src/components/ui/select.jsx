@@ -58,13 +58,6 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
         className
       )}
       position={position}
-      onPointerDownOutside={(e) => {
-        // Prevent closing when clicking inside dialog
-        const target = e.target;
-        if (target?.closest?.('[role="dialog"]')) {
-          e.preventDefault();
-        }
-      }}
       {...props}>
       <SelectScrollUpButton />
       <SelectPrimitive.Viewport
