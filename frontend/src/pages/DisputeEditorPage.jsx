@@ -967,19 +967,26 @@ export default function DisputeEditorPage({ user }) {
         </DialogContent>
       </Dialog>
 
-      {/* Change Status Dialog */}
+      {/* Change Status / Set Outcome Dialog */}
       <Dialog open={showChangeStatus} onOpenChange={setShowChangeStatus}>
         <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-xs">
           <DialogHeader>
-            <DialogTitle className="text-xl font-heading text-vault-gold">Change Status</DialogTitle>
+            <DialogTitle className="text-xl font-heading text-vault-gold">
+              {isLocked ? 'Set Outcome' : 'Change Status'}
+            </DialogTitle>
+            {isLocked && (
+              <DialogDescription className="text-vault-muted">
+                Select the outcome for this finalized dispute
+              </DialogDescription>
+            )}
           </DialogHeader>
           <div className="space-y-2 py-4">
-            {['open', 'in_progress', 'mediation', 'litigation', 'appealed'].map(s => (
+            {['open', 'in_progress', 'mediation', 'litigation', 'settled', 'closed', 'appealed'].map(s => (
               <Button
                 key={s}
                 variant="outline"
-                className={`w-full justify-start ${dispute.status === s ? 'border-vault-gold bg-vault-gold/10' : 'border-vault-gold/30'}`}
-                onClick={() => handleChangeStatus(s)}
+                className={`w-full justify-start ${dispute?.status === s ? 'border-vault-gold bg-vault-gold/10' : 'border-vault-gold/30'}`}
+                onClick={() => isLocked ? handleSetOutcome(s) : handleChangeStatus(s)}
               >
                 {statusConfig[s]?.label || s}
               </Button>
