@@ -222,21 +222,20 @@ class GovernanceFeatureTester:
         response = self.run_test("Finalize Meeting", "POST", f"governance/meetings/{self.meeting_id}/finalize", 200, finalize_data)
         
         if response:
-            # Check the response for finalized meeting data
-            if 'item' in response:
-                meeting = response['item']
-                
-                is_locked = meeting.get('locked', False)
-                has_locked_at = 'locked_at' in meeting and meeting['locked_at'] is not None
-                status_finalized = meeting.get('status') == 'finalized'
-                
-                self.log_test("Finalization - Sets locked=true", is_locked, f"locked={is_locked}" if not is_locked else "")
-                self.log_test("Finalization - Sets locked_at", has_locked_at, "locked_at not set" if not has_locked_at else "")
-                self.log_test("Finalization - Sets status=finalized", status_finalized, f"status={meeting.get('status')}" if not status_finalized else "")
-                
-                if is_locked and has_locked_at and status_finalized:
-                    print(f"   ✅ Meeting finalized: locked={is_locked}, locked_at={meeting.get('locked_at')}")
-                    return True
+            # Handle envelope format: { ok: true, message: "...", item: {...} }
+            meeting = response.get('item', response)
+            
+            is_locked = meeting.get('locked', False)
+            has_locked_at = 'locked_at' in meeting and meeting['locked_at'] is not None
+            status_finalized = meeting.get('status') == 'finalized'
+            
+            self.log_test("Finalization - Sets locked=true", is_locked, f"locked={is_locked}" if not is_locked else "")
+            self.log_test("Finalization - Sets locked_at", has_locked_at, "locked_at not set" if not has_locked_at else "")
+            self.log_test("Finalization - Sets status=finalized", status_finalized, f"status={meeting.get('status')}" if not status_finalized else "")
+            
+            if is_locked and has_locked_at and status_finalized:
+                print(f"   ✅ Meeting finalized: locked={is_locked}, locked_at={meeting.get('locked_at')}")
+                return True
         
         return False
 
