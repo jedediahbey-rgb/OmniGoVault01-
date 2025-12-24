@@ -1144,13 +1144,13 @@ function AgendaItemCard({
                   <Input
                     value={editedItem.title}
                     onChange={(e) => setEditedItem(prev => ({ ...prev, title: e.target.value }))}
-                    className="bg-vault-navy border-vault-gold/20 text-white"
+                    className="bg-[#05080F] border-vault-gold/20 text-white"
                     placeholder="Title"
                   />
                   <Textarea
                     value={editedItem.discussion_summary}
                     onChange={(e) => setEditedItem(prev => ({ ...prev, discussion_summary: e.target.value }))}
-                    className="bg-vault-navy border-vault-gold/20 text-white min-h-[100px]"
+                    className="bg-[#05080F] border-vault-gold/20 text-white min-h-[100px]"
                     placeholder="Discussion summary..."
                   />
                   <div className="flex gap-2">
