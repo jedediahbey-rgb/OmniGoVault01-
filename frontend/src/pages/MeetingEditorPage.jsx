@@ -948,7 +948,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Finalize Dialog */}
       <Dialog open={showFinalize} onOpenChange={setShowFinalize}>
-        <DialogContent className="bg-vault-dark border-vault-gold/30 text-white max-w-md">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-vault-gold flex items-center gap-2">
               <Lock className="w-5 h-5" />
@@ -965,7 +965,7 @@ export default function MeetingEditorPage({ user }) {
               value={finalizeBy}
               onChange={(e) => setFinalizeBy(e.target.value)}
               placeholder="Enter your full name"
-              className="bg-vault-navy border-vault-gold/20 text-white"
+              className="bg-[#05080F] border-vault-gold/20 text-white"
             />
           </div>
           <DialogFooter>
@@ -982,7 +982,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Attestation Dialog */}
       <Dialog open={showAttest} onOpenChange={setShowAttest}>
-        <DialogContent className="bg-vault-dark border-vault-gold/30 text-white max-w-md">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-vault-gold flex items-center gap-2">
               <Seal className="w-5 h-5" />
@@ -999,7 +999,7 @@ export default function MeetingEditorPage({ user }) {
                 value={attestation.party_name}
                 onChange={(e) => setAttestation(prev => ({ ...prev, party_name: e.target.value }))}
                 placeholder="Full legal name"
-                className="bg-vault-navy border-vault-gold/20 text-white"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
               />
             </div>
             <div>
@@ -1008,12 +1008,12 @@ export default function MeetingEditorPage({ user }) {
                 value={attestation.party_role} 
                 onValueChange={(v) => setAttestation(prev => ({ ...prev, party_role: v }))}
               >
-                <SelectTrigger className="bg-vault-navy border-vault-gold/20 text-white">
+                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-vault-dark border-vault-gold/30">
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                   {roleOptions.slice(0, 4).map(r => (
-                    <SelectItem key={r.value} value={r.value} className="text-white">
+                    <SelectItem key={r.value} value={r.value} className="text-white hover:bg-vault-gold/20">
                       {r.label}
                     </SelectItem>
                   ))}
@@ -1026,7 +1026,7 @@ export default function MeetingEditorPage({ user }) {
                 value={attestation.signature_data}
                 onChange={(e) => setAttestation(prev => ({ ...prev, signature_data: e.target.value }))}
                 placeholder="Type your full name as signature"
-                className="bg-vault-navy border-vault-gold/20 text-white italic"
+                className="bg-[#05080F] border-vault-gold/20 text-white italic"
               />
             </div>
           </div>
