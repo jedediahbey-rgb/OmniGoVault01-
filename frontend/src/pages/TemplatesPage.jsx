@@ -71,13 +71,15 @@ export default function TemplatesPage({ user }) {
   const [aiInstructions, setAiInstructions] = useState('');
   const [aiGenerating, setAiGenerating] = useState(false);
 
-  // Handler to open portfolio dropdown on pointerdown (prevents blur/outside race on mobile)
+  // Handler to open portfolio dropdown - prevents opening if title input is focused
   const handlePortfolioPointerDown = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Let the keyboard dismiss without triggering a close race
-    requestAnimationFrame(() => titleInputRef.current?.blur());
-    setPortfolioOpen(true); // Always open, don't toggle
+    // If title input is focused, just blur it and don't open dropdown
+    if (document.activeElement === titleInputRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      titleInputRef.current.blur();
+      return; // Don't open - user will tap again
+    }
   };
 
   useEffect(() => {
