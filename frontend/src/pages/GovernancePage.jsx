@@ -116,6 +116,25 @@ const priorityConfig = {
   critical: { label: 'Critical', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
 };
 
+// Insurance policy type icons and colors
+const insuranceTypeConfig = {
+  whole_life: { icon: ShieldCheck, color: 'text-emerald-400', bg: 'bg-emerald-500/20', label: 'Whole Life' },
+  term: { icon: Timer, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Term Life' },
+  universal: { icon: CurrencyDollar, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Universal Life' },
+  variable: { icon: Scales, color: 'text-purple-400', bg: 'bg-purple-500/20', label: 'Variable Life' },
+  group: { icon: Users, color: 'text-cyan-400', bg: 'bg-cyan-500/20', label: 'Group Life' },
+};
+
+// Insurance status badges
+const insuranceStatusConfig = {
+  active: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
+  lapsed: { label: 'Lapsed', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
+  paid_up: { label: 'Paid Up', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30' },
+  surrendered: { label: 'Surrendered', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' },
+  claimed: { label: 'Claimed', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
+  expired: { label: 'Expired', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30' },
+};
+
 // Role badge colors
 const roleColors = {
   trustee: 'bg-vault-gold/20 text-vault-gold border-vault-gold/30',
