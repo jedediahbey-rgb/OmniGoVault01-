@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import {
-  Calendar,
+  CalendarBlank,
   CaretDown,
   CaretRight,
   Check,
@@ -28,6 +28,25 @@ import {
   Warning,
   X
 } from '@phosphor-icons/react';
+
+// Futuristic Date Icon - cyber styled with "00" display
+const CyberDateIcon = ({ className = "w-5 h-5" }) => (
+  <div className={`relative ${className} flex items-center justify-center`}>
+    <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+      {/* Outer frame */}
+      <rect x="2" y="3" width="20" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.7" />
+      {/* Top bar */}
+      <rect x="2" y="3" width="20" height="5" rx="2" fill="currentColor" opacity="0.2" />
+      {/* Calendar pins */}
+      <line x1="7" y1="1" x2="7" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="17" y1="1" x2="17" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      {/* Cyber "00" display */}
+      <text x="12" y="16.5" textAnchor="middle" fill="currentColor" fontSize="7" fontFamily="monospace" fontWeight="bold" opacity="0.9">00</text>
+      {/* Scan line accent */}
+      <line x1="5" y1="11" x2="19" y2="11" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+    </svg>
+  </div>
+);
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
