@@ -16,7 +16,7 @@ import {
   Clock,
   Download,
   Eye,
-  FileSearch,
+  FileMagnifyingGlass,
   FileText,
   FloppyDisk,
   Hash,
@@ -558,7 +558,7 @@ export default function DocumentEditorPage({ user }) {
                     disabled={aiProcessing}
                     className="text-white hover:bg-white/10 cursor-pointer"
                   >
-                    <FileSearch className="w-4 h-4 mr-2" />
+                    <FileMagnifyingGlass className="w-4 h-4 mr-2" />
                     {aiProcessing ? 'Summarizing...' : 'Summarize Document'}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -724,7 +724,7 @@ export default function DocumentEditorPage({ user }) {
         <DialogContent className="bg-vault-navy border-white/10 max-w-xl">
           <DialogHeader>
             <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <FileSearch className="w-5 h-5 text-vault-gold" />
+              <FileMagnifyingGlass className="w-5 h-5 text-vault-gold" />
               Document Summary
             </DialogTitle>
             <DialogDescription className="text-white/60">
