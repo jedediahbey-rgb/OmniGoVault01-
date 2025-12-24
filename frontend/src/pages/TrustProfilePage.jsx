@@ -511,15 +511,15 @@ export default function TrustProfilePage({ user }) {
                 </select>
               </div>
               <div className="md:col-span-2">
-                <Label className="text-white/60">Tax Notes (Educational)</Label>
+                <Label className="text-white/60">Tax Notes</Label>
                 <Textarea
                   value={form.tax_notes}
                   onChange={e => handleChange('tax_notes', e.target.value)}
-                  placeholder="Your educational notes about tax classification..."
+                  placeholder="Your notes about tax classification..."
                   className="mt-1 bg-white/5 border-white/10"
                   rows={3}
                 />
-                <p className="text-white/30 text-xs mt-1">User-entered notes for educational reference only</p>
+                <p className="text-white/30 text-xs mt-1">User-entered notes for reference</p>
               </div>
             </div>
           </GlassCard>
