@@ -4,7 +4,12 @@ import { Check, CaretDown, CaretUp } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 
-const Select = SelectPrimitive.Root
+// GLOBAL FIX: Use modal={false} to prevent Select from blocking outside interactions
+// This allows clicking other form fields to close the dropdown WITHOUT closing parent dialogs
+const Select = React.forwardRef(({ modal = false, ...props }, ref) => (
+  <SelectPrimitive.Root modal={modal} {...props} />
+))
+Select.displayName = "Select"
 
 const SelectGroup = SelectPrimitive.Group
 
@@ -48,14 +53,10 @@ SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName
 
 /**
- * SelectContent - GLOBAL FIX for mobile dropdown collapse
+ * SelectContent - Fixed for mobile dropdown collapse issue
  * 
- * Props:
- * - container: Optional container element to portal into (for dialogs)
- * - modal: Set to false to prevent stealing focus and blocking outside interactions
- * 
- * This component has been patched to fix the issue where clicking another input
- * while a dropdown is open causes the parent dialog to collapse on mobile.
+ * The dropdown will close when clicking outside, but won't trigger dialog close
+ * because we use modal={false} on the Select root.
  */
 const SelectContent = React.forwardRef(({ className, children, position = "popper", container, ...props }, ref) => (
   <SelectPrimitive.Portal container={container ?? undefined}>
@@ -68,13 +69,7 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
         className
       )}
       position={position}
-      // CRITICAL FIX: Don't block pointer events outside the dropdown
-      // This allows clicking other form fields without triggering "outside click" on dialogs
-      onPointerDownOutside={(e) => {
-        // Allow the event to propagate normally - don't interfere
-        // The dialog's onPointerDownOutside will handle prevention
-      }}
-      // Prevent the dropdown from stealing focus aggressively
+      // Prevent focus from being locked in the dropdown
       onCloseAutoFocus={(e) => e.preventDefault()}
       {...props}>
       <SelectScrollUpButton />
