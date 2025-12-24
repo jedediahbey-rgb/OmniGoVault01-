@@ -895,6 +895,57 @@ export default function InsuranceEditorPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Finalize Confirmation Dialog */}
+      <Dialog open={showFinalizeConfirm} onOpenChange={setShowFinalizeConfirm}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
+              <Lock className="w-5 h-5" />
+              Finalize Insurance Policy
+            </DialogTitle>
+            <DialogDescription className="text-vault-muted">
+              Once finalized, this policy record will be permanently locked and cannot be edited.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <div className="p-4 bg-vault-gold/10 border border-vault-gold/30 rounded-lg">
+              <p className="text-sm text-vault-gold">
+                <strong>{policy?.title}</strong> will be locked. Make sure all details are correct before finalizing.
+              </p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowFinalizeConfirm(false)}
+              className="border-vault-gold/30 text-white"
+              disabled={finalizing}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleFinalize}
+              disabled={finalizing}
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+            >
+              {finalizing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-vault-dark border-t-transparent rounded-full animate-spin mr-2" />
+                  Finalizing...
+                </>
+              ) : (
+                <>
+                  <Lock className="w-4 h-4 mr-2" />
+                  Finalize & Lock
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
