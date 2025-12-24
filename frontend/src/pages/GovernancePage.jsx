@@ -1492,6 +1492,135 @@ export default function GovernancePage({ user }) {
               </div>
             )}
           </TabsContent>
+
+          {/* Compensation Tab */}
+          <TabsContent value="compensation" className="mt-0">
+            {compensationLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : !selectedPortfolio ? (
+              <GlassCard className="p-8 sm:p-12 text-center">
+                <House className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
+                <h3 className="text-lg sm:text-xl font-heading text-white mb-2">Select a Portfolio</h3>
+                <p className="text-sm sm:text-base text-vault-muted">Choose a portfolio to view its compensation records</p>
+              </GlassCard>
+            ) : filteredCompensation.length === 0 ? (
+              <GlassCard className="p-8 sm:p-12 text-center">
+                <CurrencyDollar className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
+                <h3 className="text-lg sm:text-xl font-heading text-white mb-2">No Compensation Records</h3>
+                <p className="text-sm sm:text-base text-vault-muted mb-6">Log trustee compensation to maintain reasonableness documentation</p>
+                <Button
+                  onClick={() => setShowNewCompensation(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Log Compensation
+                </Button>
+              </GlassCard>
+            ) : (
+              <div className="space-y-4">
+                {/* Summary Card */}
+                <GlassCard className="p-4 mb-6">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-6">
+                      <div>
+                        <p className="text-xs text-vault-muted uppercase tracking-wider">Total Compensation</p>
+                        <p className="text-2xl font-bold text-vault-gold">
+                          {formatCurrency(filteredCompensation.reduce((sum, c) => sum + (c.amount || 0), 0))}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-vault-muted uppercase tracking-wider">Entries</p>
+                        <p className="text-2xl font-bold text-white">{filteredCompensation.length}</p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => setShowNewCompensation(true)}
+                      className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Log Compensation
+                    </Button>
+                  </div>
+                </GlassCard>
+
+                {filteredCompensation.map((entry, index) => {
+                  const compId = entry.compensation_id;
+                  const statusColors = {
+                    draft: 'bg-slate-500/30 text-slate-300 border-slate-400/30',
+                    pending_approval: 'bg-amber-500/30 text-amber-400 border-amber-400/30',
+                    approved: 'bg-blue-500/30 text-blue-400 border-blue-400/30',
+                    paid: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30',
+                    cancelled: 'bg-red-500/30 text-red-400 border-red-400/30',
+                  };
+                  const typeLabels = {
+                    annual_fee: 'Annual Fee',
+                    transaction_fee: 'Transaction Fee',
+                    hourly: 'Hourly',
+                    special: 'Special',
+                    reimbursement: 'Reimbursement',
+                  };
+                  
+                  return (
+                    <motion.div
+                      key={compId}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <GlassCard className="p-4 hover:border-vault-gold/40 transition-colors cursor-pointer group">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-4 flex-1 min-w-0">
+                            <div className="w-10 h-10 rounded-xl bg-vault-gold/20 flex items-center justify-center shrink-0">
+                              <CurrencyDollar className="w-5 h-5 text-vault-gold" weight="duotone" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <h4 className="font-semibold text-white truncate">{entry.title}</h4>
+                                <Badge className={`text-xs border ${statusColors[entry.status] || statusColors.draft}`}>
+                                  {entry.status?.replace('_', ' ')}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-vault-muted mb-2">
+                                {entry.recipient_name} • {typeLabels[entry.compensation_type] || entry.compensation_type}
+                              </p>
+                              <div className="flex items-center gap-4 text-xs text-vault-muted flex-wrap">
+                                <span className="font-mono text-vault-gold">{entry.rm_id}</span>
+                                <span className="text-lg font-bold text-white">{formatCurrency(entry.amount)}</span>
+                                {entry.fiscal_year && (
+                                  <span>FY {entry.fiscal_year}</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {entry.status === 'draft' && !entry.locked && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (window.confirm('Delete this compensation entry?')) {
+                                    handleDeleteCompensation(compId);
+                                  }
+                                }}
+                              >
+                                <Trash className="w-4 h-4" />
+                              </Button>
+                            )}
+                            <CaretRight className="w-5 h-5 text-vault-muted" />
+                          </div>
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </motion.div>
 
