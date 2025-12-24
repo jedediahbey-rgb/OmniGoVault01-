@@ -2,51 +2,52 @@
 
 ## Current Testing Session
 - Session Date: 2024-12-24
-- Testing Focus: Governance Module - Meeting Minutes MVP - API Envelope Adaptation
+- Testing Focus: Meeting Finalization, Locking, Amendment Flow
 
 ## Features to Test
 
-### P0: Frontend API Adaptation for New Envelope Format
-**What was changed:**
-- `GovernancePage.jsx` - `handleCreateMeeting` now handles `{ ok: true, item: {...} }` response
-- `MeetingEditorPage.jsx` - `fetchMeeting` and `refetchMeeting` now handle `{ ok: true, item: {...} }` response
-- `MeetingEditorPage.jsx` - `handleAmend` now handles the envelope format
-- Error messages now extract from `error.response?.data?.error?.message`
+### P0: Backend Meeting Locking & Amendment
+**Implementation:**
+- `normalize_meeting()` helper adds `id`, `locked`, `revision` fields to all meeting responses
+- PUT /meetings/{id} returns 409 MEETING_LOCKED when trying to edit finalized meeting
+- POST /meetings/{id}/amend creates new draft revision with `parent_meeting_id` and `revision` fields
+- GET /meetings/{id}/versions returns all versions sorted by revision
 
-**Test Steps for Frontend:**
+**Backend API Changes:**
+- All meeting responses include: `id` (alias for meeting_id), `locked` (boolean), `revision` (integer)
+- PUT returns 409 with `MEETING_LOCKED` error code for finalized meetings
+- POST /api/governance/meetings/{id}/amend - Creates amendment with proper revision tracking
+- GET /api/governance/meetings/{id}/versions - Returns version chain
+
+### P1: Frontend Read-Only & Amendment UX
+**Implementation:**
+- Meeting cards show 🔒 Locked badge for finalized meetings
+- Meeting editor shows "Read-Only" badge for locked meetings
+- Prominent "Amend" button for finalized meetings (not already amended)
+- 409 error handling shows clear message about using amend instead
+
+**Test Steps:**
 1. Login via Google Auth
-2. Navigate to `/vault/governance`
-3. Select a portfolio from dropdown
-4. Click "New Meeting" button
-5. Fill in meeting details (title, type, date, location)
-6. Click "Create Meeting"
-7. **EXPECTED**: Navigate to meeting editor page (verifies handleCreateMeeting works)
-8. Verify meeting data is displayed correctly (verifies fetchMeeting works)
-9. Add attendees
-10. Add agenda items
-11. Save changes and verify they persist (verifies refetchMeeting works)
-12. Finalize meeting
-13. Add attestation
-14. Try to create amendment (verifies handleAmend works)
-
-**Backend API Response Formats:**
-- GET /api/governance/meetings → `{ ok, items, count, total, sort }`
-- GET /api/governance/meetings/{id} → `{ ok, item }`
-- POST /api/governance/meetings → `{ ok, item }`
-- PUT /api/governance/meetings/{id} → `{ ok, item }`
-- POST /api/governance/meetings/{id}/finalize → `{ ok, message, finalized_hash, item }`
-- POST /api/governance/meetings/{id}/attest → `{ ok, message, attestation }`
-- POST /api/governance/meetings/{id}/amend → `{ ok, message, item }`
+2. Create a new meeting
+3. Add attendees and agenda items
+4. Finalize the meeting
+5. **EXPECTED**: Meeting shows "Finalized" status and "🔒 Locked" badge
+6. Try to edit - **EXPECTED**: Shows read-only mode, no edit button
+7. Click "Amend" button
+8. **EXPECTED**: New draft revision created with v2 badge
+9. Verify amendment can be edited normally
 
 ## Code Files Modified This Session
-- `/app/frontend/src/pages/GovernancePage.jsx` - Fixed handleCreateMeeting
-- `/app/frontend/src/pages/MeetingEditorPage.jsx` - Fixed fetchMeeting, refetchMeeting, handleAmend, error handling
+- `/app/backend/models/governance.py` - Added locked, locked_at, revision, parent_meeting_id fields
+- `/app/backend/routes/governance.py` - Added normalize_meeting(), updated PUT to return 409, added /versions endpoint
+- `/app/frontend/src/pages/GovernancePage.jsx` - Added locked badge, uses id fallback
+- `/app/frontend/src/pages/MeetingEditorPage.jsx` - Added isLocked logic, read-only badge, prominent Amend button
 
 ## Testing Scope
-- Frontend testing via Playwright with authenticated session
-- Requires Emergent-managed Google Auth for login
+- Backend: Test locked enforcement, amendment creation, versions endpoint
+- Frontend: Test UI for locked meetings, amendment flow
 
 ## Incorporate User Feedback
-- Meeting Minutes is the foundation module for Governance
-- Frontend must properly handle the new standardized API envelope
-- All API call sites have been updated to extract data from envelope
+- Finalized meetings must be immutable (reviewable, not editable)
+- Amend creates a new draft revision linked to finalized record
+- Backend must return stable `id` field and `locked` boolean
