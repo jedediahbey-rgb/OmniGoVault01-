@@ -2202,7 +2202,235 @@ async def create_insurance_policy(data: dict, request: Request):
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return error_response("NOT_IMPLEMENTED", "Insurance policy creation coming soon")
+    try:
+        from models.governance import InsurancePolicy
+        
+        portfolio_id = data.get("portfolio_id")
+        trust_id = data.get("trust_id")
+        
+        if not portfolio_id:
+            return error_response("MISSING_PORTFOLIO", "portfolio_id is required")
+        
+        # Generate RM-ID for the policy (subject code 23 = Insurance)
+        rm_id, subject_code, seq_num, subject_name = await generate_subject_rm_id(
+            portfolio_id, user.user_id, "23", "Insurance"
+        )
+        
+        policy = InsurancePolicy(
+            trust_id=trust_id,
+            portfolio_id=portfolio_id,
+            user_id=user.user_id,
+            title=data.get("title", "Untitled Policy"),
+            policy_number=data.get("policy_number", ""),
+            policy_type=data.get("policy_type", "whole_life"),
+            rm_id=rm_id,
+            carrier_name=data.get("carrier_name", ""),
+            carrier_contact=data.get("carrier_contact", ""),
+            carrier_phone=data.get("carrier_phone", ""),
+            agent_name=data.get("agent_name", ""),
+            agent_contact=data.get("agent_contact", ""),
+            insured_name=data.get("insured_name", ""),
+            insured_dob=data.get("insured_dob"),
+            death_benefit=float(data.get("death_benefit", 0)),
+            cash_value=float(data.get("cash_value", 0)),
+            currency=data.get("currency", "USD"),
+            premium_amount=float(data.get("premium_amount", 0)),
+            premium_frequency=data.get("premium_frequency", "monthly"),
+            premium_due_date=data.get("premium_due_date"),
+            effective_date=data.get("effective_date"),
+            maturity_date=data.get("maturity_date"),
+            expiration_date=data.get("expiration_date"),
+            notes=data.get("notes", ""),
+        )
+        
+        doc = policy.model_dump()
+        doc["created_at"] = datetime.now(timezone.utc).isoformat()
+        doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+        
+        await db.insurance_policies.insert_one(doc)
+        
+        return success_message("Insurance policy created", {"item": {k: v for k, v in doc.items() if k != "_id"}})
+    except Exception as e:
+        print(f"Error creating insurance policy: {e}")
+        return error_response("CREATE_ERROR", "Failed to create insurance policy", status_code=500)
+
+
+@router.get("/insurance-policies/{policy_id}")
+async def get_insurance_policy(policy_id: str, request: Request):
+    """Get a single insurance policy"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        policy = await db.insurance_policies.find_one(
+            {"policy_id": policy_id, "user_id": user.user_id, "deleted_at": None},
+            {"_id": 0}
+        )
+        
+        if not policy:
+            return error_response("NOT_FOUND", "Insurance policy not found", status_code=404)
+        
+        return {"item": policy}
+    except Exception as e:
+        print(f"Error fetching insurance policy: {e}")
+        return error_response("FETCH_ERROR", "Failed to fetch insurance policy", status_code=500)
+
+
+@router.put("/insurance-policies/{policy_id}")
+async def update_insurance_policy(policy_id: str, data: dict, request: Request):
+    """Update an insurance policy"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        policy = await db.insurance_policies.find_one(
+            {"policy_id": policy_id, "user_id": user.user_id}
+        )
+        
+        if not policy:
+            return error_response("NOT_FOUND", "Insurance policy not found", status_code=404)
+        
+        if policy.get("locked"):
+            return error_response("LOCKED", "This policy is locked and cannot be edited", status_code=409)
+        
+        # Define allowed update fields
+        allowed_fields = [
+            "title", "policy_number", "policy_type", "carrier_name", "carrier_contact",
+            "carrier_phone", "carrier_address", "agent_name", "agent_contact",
+            "insured_name", "insured_dob", "insured_ssn_last4", "death_benefit",
+            "cash_value", "currency", "premium_amount", "premium_frequency",
+            "premium_due_date", "effective_date", "maturity_date", "expiration_date",
+            "status", "loan_balance", "loan_interest_rate", "notes"
+        ]
+        
+        update_data = {k: v for k, v in data.items() if k in allowed_fields}
+        update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        
+        await db.insurance_policies.update_one(
+            {"policy_id": policy_id},
+            {"$set": update_data}
+        )
+        
+        updated = await db.insurance_policies.find_one({"policy_id": policy_id}, {"_id": 0})
+        return success_message("Insurance policy updated", {"item": updated})
+    except Exception as e:
+        print(f"Error updating insurance policy: {e}")
+        return error_response("UPDATE_ERROR", "Failed to update insurance policy", status_code=500)
+
+
+@router.delete("/insurance-policies/{policy_id}")
+async def delete_insurance_policy(policy_id: str, request: Request):
+    """Soft delete an insurance policy"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        policy = await db.insurance_policies.find_one(
+            {"policy_id": policy_id, "user_id": user.user_id}
+        )
+        
+        if not policy:
+            return error_response("NOT_FOUND", "Insurance policy not found", status_code=404)
+        
+        await db.insurance_policies.update_one(
+            {"policy_id": policy_id},
+            {"$set": {"deleted_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        return success_message("Insurance policy deleted")
+    except Exception as e:
+        print(f"Error deleting insurance policy: {e}")
+        return error_response("DELETE_ERROR", "Failed to delete insurance policy", status_code=500)
+
+
+@router.post("/insurance-policies/{policy_id}/beneficiaries")
+async def add_insurance_beneficiary(policy_id: str, data: dict, request: Request):
+    """Add a beneficiary to an insurance policy"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        from models.governance import InsuranceBeneficiary
+        
+        policy = await db.insurance_policies.find_one(
+            {"policy_id": policy_id, "user_id": user.user_id}
+        )
+        
+        if not policy:
+            return error_response("NOT_FOUND", "Insurance policy not found", status_code=404)
+        
+        beneficiary = InsuranceBeneficiary(
+            party_id=data.get("party_id"),
+            name=data.get("name", ""),
+            relationship=data.get("relationship", ""),
+            percentage=float(data.get("percentage", 0)),
+            beneficiary_type=data.get("beneficiary_type", "primary"),
+            notes=data.get("notes", "")
+        ).model_dump()
+        
+        await db.insurance_policies.update_one(
+            {"policy_id": policy_id},
+            {
+                "$push": {"beneficiaries": beneficiary},
+                "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+            }
+        )
+        
+        updated = await db.insurance_policies.find_one({"policy_id": policy_id}, {"_id": 0})
+        return success_message("Beneficiary added", {"item": updated})
+    except Exception as e:
+        print(f"Error adding beneficiary: {e}")
+        return error_response("ADD_ERROR", "Failed to add beneficiary", status_code=500)
+
+
+@router.post("/insurance-policies/{policy_id}/premium-payments")
+async def add_premium_payment(policy_id: str, data: dict, request: Request):
+    """Record a premium payment"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        from models.governance import InsurancePremiumPayment
+        
+        policy = await db.insurance_policies.find_one(
+            {"policy_id": policy_id, "user_id": user.user_id}
+        )
+        
+        if not policy:
+            return error_response("NOT_FOUND", "Insurance policy not found", status_code=404)
+        
+        payment = InsurancePremiumPayment(
+            payment_date=data.get("payment_date", datetime.now(timezone.utc).isoformat()[:10]),
+            amount=float(data.get("amount", 0)),
+            currency=data.get("currency", policy.get("currency", "USD")),
+            payment_method=data.get("payment_method", ""),
+            confirmation_number=data.get("confirmation_number", ""),
+            notes=data.get("notes", "")
+        ).model_dump()
+        
+        await db.insurance_policies.update_one(
+            {"policy_id": policy_id},
+            {
+                "$push": {"premium_payments": payment},
+                "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+            }
+        )
+        
+        updated = await db.insurance_policies.find_one({"policy_id": policy_id}, {"_id": 0})
+        return success_message("Premium payment recorded", {"item": updated})
+    except Exception as e:
+        print(f"Error adding premium payment: {e}")
+        return error_response("ADD_ERROR", "Failed to record premium payment", status_code=500)
 
 
 # ============ TRUSTEE COMPENSATION (Stub with Empty State) ============
