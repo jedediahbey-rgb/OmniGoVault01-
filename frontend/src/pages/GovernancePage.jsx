@@ -511,7 +511,7 @@ export default function GovernancePage({ user }) {
 
       {/* New Meeting Dialog */}
       <Dialog open={showNewMeeting} onOpenChange={setShowNewMeeting}>
-        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+        <DialogContent ref={newMeetingDialogRef} className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
               <Newspaper className="w-5 h-5" />
@@ -526,7 +526,6 @@ export default function GovernancePage({ user }) {
             <div>
               <label className="text-sm text-vault-muted mb-1 block">Meeting Title *</label>
               <Input
-                ref={meetingTitleInputRef}
                 value={newMeeting.title}
                 onChange={(e) => setNewMeeting(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Q4 2024 Regular Meeting"
@@ -540,13 +539,13 @@ export default function GovernancePage({ user }) {
                 value={newMeeting.meeting_type} 
                 onValueChange={(v) => setNewMeeting(prev => ({ ...prev, meeting_type: v }))}
               >
-                <SelectTrigger 
-                  className="bg-[#05080F] border-vault-gold/20 text-white"
-                  onPointerDown={handleSelectPointerDown(meetingTitleInputRef)}
-                >
+                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                <SelectContent 
+                  container={newMeetingDialogRef.current}
+                  className="bg-[#0B1221] border-vault-gold/30 z-[100]"
+                >
                   <SelectItem value="regular" className="text-white hover:bg-vault-gold/20">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-blue-400" />
