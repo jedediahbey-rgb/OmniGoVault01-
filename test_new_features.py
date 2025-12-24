@@ -8,7 +8,7 @@ import uuid
 import subprocess
 
 # Get backend URL from frontend .env
-BACKEND_URL = "https://portfolio-vault-5.preview.emergentagent.com"
+BACKEND_URL = "https://trustmatrix.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class NewFeaturesTester:
