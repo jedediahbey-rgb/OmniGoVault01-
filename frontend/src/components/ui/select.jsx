@@ -4,7 +4,11 @@ import { Check, CaretDown, CaretUp } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 
-const Select = SelectPrimitive.Root
+// Use modal={false} so clicking outside closes dropdown without blocking other interactions
+const Select = React.forwardRef((props, ref) => (
+  <SelectPrimitive.Root modal={false} {...props} />
+))
+Select.displayName = "Select"
 
 const SelectGroup = SelectPrimitive.Group
 
