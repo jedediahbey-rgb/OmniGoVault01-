@@ -142,8 +142,8 @@ export default function GovernancePage({ user }) {
       });
       setMeetings(res.data || []);
     } catch (error) {
-      console.error('Failed to fetch meetings:', error);
-      toast.error('Failed to load meetings');
+      console.error('Failed to fetch meetings list:', error);
+      toast.error('Failed to load meetings list');
     } finally {
       setLoading(false);
     }
