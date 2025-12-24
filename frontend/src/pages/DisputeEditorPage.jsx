@@ -125,7 +125,9 @@ export default function DisputeEditorPage({ user }) {
   const [showResolve, setShowResolve] = useState(false);
   const [showChangeStatus, setShowChangeStatus] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showFinalizeConfirm, setShowFinalizeConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
   
   // Forms
   const [newParty, setNewParty] = useState({
