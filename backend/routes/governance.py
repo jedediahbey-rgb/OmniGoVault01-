@@ -2064,6 +2064,78 @@ async def add_dispute_party(dispute_id: str, data: dict, request: Request):
         return error_response("PARTY_ERROR", "Failed to add party", status_code=500)
 
 
+@router.delete("/disputes/{dispute_id}/parties/{party_id}")
+async def delete_dispute_party(dispute_id: str, party_id: str, request: Request):
+    """Remove a party from a dispute"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        if dispute.get("status") in ("settled", "closed"):
+            return error_response("CLOSED", "Cannot modify a closed dispute")
+        
+        parties = dispute.get("parties", [])
+        parties = [p for p in parties if p.get("party_id") != party_id]
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": {
+                "parties": parties,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        return success_message("Party removed")
+    except Exception as e:
+        print(f"Error removing party: {e}")
+        return error_response("PARTY_ERROR", "Failed to remove party", status_code=500)
+
+
+@router.delete("/disputes/{dispute_id}/events/{event_id}")
+async def delete_dispute_event(dispute_id: str, event_id: str, request: Request):
+    """Remove an event from a dispute timeline"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        dispute = await db.disputes.find_one(
+            {"dispute_id": dispute_id, "user_id": user.user_id}
+        )
+        
+        if not dispute:
+            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        
+        if dispute.get("status") in ("settled", "closed"):
+            return error_response("CLOSED", "Cannot modify a closed dispute")
+        
+        events = dispute.get("events", [])
+        events = [e for e in events if e.get("event_id") != event_id]
+        
+        await db.disputes.update_one(
+            {"dispute_id": dispute_id},
+            {"$set": {
+                "events": events,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        return success_message("Event removed")
+    except Exception as e:
+        print(f"Error removing event: {e}")
+        return error_response("EVENT_ERROR", "Failed to remove event", status_code=500)
+
+
 @router.post("/disputes/{dispute_id}/resolve")
 async def resolve_dispute(dispute_id: str, data: dict, request: Request):
     """Resolve/close a dispute and create ledger entry"""
