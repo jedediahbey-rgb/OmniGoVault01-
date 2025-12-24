@@ -1247,13 +1247,8 @@ export default function GovernancePage({ user }) {
                 {filteredDisputes.map((dispute, index) => {
                   const typeConfig = disputeTypeConfig[dispute.dispute_type] || disputeTypeConfig.beneficiary;
                   const TypeIcon = typeConfig.icon;
-                  // For disputes, if locked but status is still "open", show "finalized"
-                  // Otherwise keep the outcome status (settled, closed, etc.)
-                  let effectiveStatus = dispute.status;
-                  if (dispute.locked && (dispute.status === 'open' || dispute.status === 'in_progress')) {
-                    effectiveStatus = 'finalized';
-                  }
-                  const status = disputeStatusConfig[effectiveStatus] || disputeStatusConfig.open;
+                  // Always show the actual status - don't override
+                  const status = disputeStatusConfig[dispute.status] || disputeStatusConfig.open;
                   const priority = priorityConfig[dispute.priority] || priorityConfig.medium;
                   const disputeId = dispute.id || dispute.dispute_id;
                   
