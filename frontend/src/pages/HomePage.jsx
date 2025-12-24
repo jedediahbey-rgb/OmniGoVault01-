@@ -126,7 +126,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Features Grid */}
+      {/* Features SquaresFour */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0F172A]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10 sm:mb-16">

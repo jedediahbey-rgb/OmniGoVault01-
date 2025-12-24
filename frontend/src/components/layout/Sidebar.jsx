@@ -7,7 +7,7 @@ import {
   FolderSimple,
   FileText,
   Robot,
-  LogOut,
+  SignOut,
   Home,
   CaretRight,
   Shield,
@@ -175,7 +175,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
               className="p-2 text-white/40 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors flex-shrink-0"
               title="Sign out"
             >
-              <LogOut className="w-4 h-4" />
+              <SignOut className="w-4 h-4" />
             </button>
           </div>
         ) : (

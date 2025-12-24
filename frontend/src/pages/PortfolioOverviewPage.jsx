@@ -5,7 +5,7 @@ import axios from 'axios';
 import {
   FolderSimple, FileText, Users, Briefcase,
   Plus, ArrowLeft, PencilSimple, Trash, CaretRight,
-  DollarSign, Hash, Lock, Filter, ArrowUpRight, ArrowDownRight
+  CurrencyDollar, Hash, Lock, Funnel, ArrowUpRight, ArrowDownRight
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
@@ -380,7 +380,7 @@ export default function PortfolioOverviewPage({ user }) {
     setPartyNotes('');
   };
 
-  // Filter ledger entries
+  // Funnel ledger entries
   const filteredLedgerEntries = ledger.entries?.filter(entry => {
     if (ledgerFilter === 'all') return true;
     if (ledgerFilter === 'credits') return entry.balance_effect === 'credit';
@@ -487,7 +487,7 @@ export default function PortfolioOverviewPage({ user }) {
         <StatCard
           title="Trust Balance"
           value={formatCurrency(ledger.summary?.balance || 0)}
-          icon={DollarSign}
+          icon={CurrencyDollar}
           subtitle="Total res value"
         />
         <StatCard
@@ -641,7 +641,7 @@ export default function PortfolioOverviewPage({ user }) {
               {/* Balance */}
               <div className="flex flex-col items-center p-3 sm:p-4 bg-vault-gold/10 rounded-lg border border-vault-gold/20 overflow-hidden">
                 <IconChip variant="gold" className="mb-3">
-                  <DollarSign />
+                  <CurrencyDollar />
                 </IconChip>
                 <div className="w-full overflow-hidden text-center">
                   <CurrencyDisplay value={ledger.summary?.balance} variant="gold" />
@@ -837,10 +837,10 @@ export default function PortfolioOverviewPage({ user }) {
 
             {/* Filters */}
             <div className="flex items-center gap-3 mb-4">
-              <Filter className="w-4 h-4 text-white/40" />
+              <Funnel className="w-4 h-4 text-white/40" />
               <Select value={ledgerFilter} onValueChange={setLedgerFilter}>
                 <SelectTrigger className="w-40 bg-white/5 border-white/10">
-                  <SelectValue placeholder="Filter" />
+                  <SelectValue placeholder="Funnel" />
                 </SelectTrigger>
                 <SelectContent className="bg-vault-navy border-white/10">
                   <SelectItem value="all">All Entries</SelectItem>
@@ -1014,7 +1014,7 @@ export default function PortfolioOverviewPage({ user }) {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-            <Button onClick={updatePortfolio} className="btn-primary">Save</Button>
+            <Button onClick={updatePortfolio} className="btn-primary">FloppyDisk</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1139,7 +1139,7 @@ export default function PortfolioOverviewPage({ user }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setShowAssetDialog(false); resetAssetForm(); }}>Cancel</Button>
             <Button onClick={editingAsset ? updateAsset : addAsset} className="btn-primary">
-              {editingAsset ? 'Save Changes' : 'Add Asset'}
+              {editingAsset ? 'FloppyDisk Changes' : 'Add Asset'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1251,7 +1251,7 @@ export default function PortfolioOverviewPage({ user }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setShowLedgerDialog(false); resetLedgerForm(); }}>Cancel</Button>
             <Button onClick={editingLedger ? updateLedgerEntry : addLedgerEntry} className="btn-primary">
-              {editingLedger ? 'Save Changes' : 'Add Entry'}
+              {editingLedger ? 'FloppyDisk Changes' : 'Add Entry'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1398,7 +1398,7 @@ export default function PortfolioOverviewPage({ user }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setShowPartyDialog(false); resetPartyForm(); }}>Cancel</Button>
             <Button onClick={editingParty ? updateParty : addParty} className="btn-primary">
-              {editingParty ? 'Save Changes' : 'Add Party'}
+              {editingParty ? 'FloppyDisk Changes' : 'Add Party'}
             </Button>
           </DialogFooter>
         </DialogContent>

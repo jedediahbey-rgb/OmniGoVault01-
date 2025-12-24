@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import { 
   FolderSimple, FileText, Briefcase, Bell, Plus, ArrowRight, BookOpen,
-  Sparkle, Clock, PencilSimple, Trash, DotsThreeVertical, Search, Robot
+  Sparkle, Clock, PencilSimple, Trash, DotsThreeVertical, MagnifyingGlass, Robot
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import StatCard from '../components/shared/StatCard';
@@ -145,7 +145,7 @@ export default function DashboardPage({ user }) {
         }
       />
 
-      {/* Stats Grid */}
+      {/* Stats SquaresFour */}
       <motion.div 
         variants={staggerContainer}
         initial="initial"
@@ -166,7 +166,7 @@ export default function DashboardPage({ user }) {
         </motion.div>
       </motion.div>
 
-      {/* Main Content Grid */}
+      {/* Main Content SquaresFour */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Quick Actions */}
         <motion.div 
@@ -432,7 +432,7 @@ export default function DashboardPage({ user }) {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowEditPortfolio(false)}>Cancel</Button>
-            <Button onClick={updatePortfolio} className="btn-primary">Save Changes</Button>
+            <Button onClick={updatePortfolio} className="btn-primary">FloppyDisk Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

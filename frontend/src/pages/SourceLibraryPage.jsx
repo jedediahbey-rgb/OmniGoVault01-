@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Scales, CaretRight, FileText, ArrowSquareOut, Search } from "@phosphor-icons/react";
+import { Scales, CaretRight, FileText, ArrowSquareOut, MagnifyingGlass } from "@phosphor-icons/react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import axios from "axios";
@@ -118,16 +118,16 @@ const SourceLibraryPage = () => {
                   </button>
                 ))}
 
-                {/* Search within PDF */}
+                {/* MagnifyingGlass within PDF */}
                 <div className="pt-4 border-t border-white/5">
                   <label className="font-sans text-xs text-slate-500 uppercase tracking-wider mb-2 block">
-                    Search Within Sources
+                    MagnifyingGlass Within Sources
                   </label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                    <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <Input
                       type="text"
-                      placeholder="Search..."
+                      placeholder="MagnifyingGlass..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10 bg-[#111827] border-white/10 text-[#F8FAFC] placeholder:text-slate-500 focus:border-[#C6A87C]/50"

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { marked } from 'marked';
 import {
-  Robot, X, Send, Sparkle, BookOpen, FileText, CheckSquare,
+  Robot, X, PaperPlaneTilt, Sparkle, BookOpen, FileText, CheckSquare,
   List, Copy, RefreshCw, CaretDown, Loader2
 } from '@phosphor-icons/react';
 import { Button } from '../ui/button';
@@ -215,7 +215,7 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
                 disabled={!input.trim() || loading}
                 className="btn-primary h-auto px-3"
               >
-                <Send className="w-4 h-4" />
+                <PaperPlaneTilt className="w-4 h-4" />
               </Button>
             </div>
           </div>

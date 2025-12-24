@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Search, FileText, BookOpen, Sparkle, FolderSimple, Robot,
+  MagnifyingGlass, FileText, BookOpen, Sparkle, FolderSimple, Robot,
   Plus, Settings, Home, BookText, ArrowRight
 } from '@phosphor-icons/react';
 import { Input } from '../ui/input';
@@ -80,7 +80,7 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
         >
           <div className="p-4 border-b border-white/10">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
               <Input
                 autoFocus
                 placeholder="Type a command or search..."

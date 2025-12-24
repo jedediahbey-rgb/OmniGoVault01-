@@ -19,7 +19,7 @@ import {
   ArrowLeft,
   Check,
   X,
-  RotateCcw
+  ArrowCounterClockwise
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
@@ -941,7 +941,7 @@ export default function LearnPage({ user }) {
             ) : (
               <>
                 <Button onClick={resetQuiz} variant="outline" className="btn-secondary">
-                  <RotateCcw className="w-4 h-4 mr-2" /> Try Again
+                  <ArrowCounterClockwise className="w-4 h-4 mr-2" /> Try Again
                 </Button>
                 <Button onClick={() => { setShowQuiz(false); resetQuiz(); }} className="btn-primary">
                   Continue Learning
@@ -963,7 +963,7 @@ export default function LearnPage({ user }) {
       />
 
       {!selectedModule ? (
-        // Module Grid
+        // Module SquaresFour
         <motion.div
           variants={staggerContainer}
           initial="initial"

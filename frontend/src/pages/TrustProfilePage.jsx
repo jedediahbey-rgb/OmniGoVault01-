@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import {
-  ArrowLeft, Save, Mail, FileText, Plus, Upload, Clock, Question
+  ArrowLeft, FloppyDisk, Envelope, FileText, Plus, Upload, Clock, Question
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
@@ -67,7 +67,7 @@ export default function TrustProfilePage({ user }) {
     try {
       const [profileRes, mailRes] = await Promise.all([
         axios.get(`${API}/portfolios/${portfolioId}/trust-profile`),
-        Promise.resolve({ data: [] }) // Mail events will be fetched if profile exists
+        Promise.resolve({ data: [] }) // Envelope events will be fetched if profile exists
       ]);
       
       if (profileRes.data) {
@@ -140,7 +140,7 @@ export default function TrustProfilePage({ user }) {
         fetchData();
       }
     } catch (error) {
-      console.error('Save profile error:', error);
+      console.error('FloppyDisk profile error:', error);
       toast.error(error.response?.data?.detail || 'Failed to save trust profile');
     } finally {
       setSaving(false);
@@ -170,8 +170,8 @@ export default function TrustProfilePage({ user }) {
         subtitle="Configure trust details, RM-ID tracking, and tax identifiers"
         actions={
           <Button onClick={saveProfile} disabled={saving} className="btn-primary">
-            <Save className="w-4 h-4 mr-2" />
-            {saving ? 'Saving...' : 'Save Profile'}
+            <FloppyDisk className="w-4 h-4 mr-2" />
+            {saving ? 'Saving...' : 'FloppyDisk Profile'}
           </Button>
         }
       />
@@ -191,7 +191,7 @@ export default function TrustProfilePage({ user }) {
             Tax IDs
           </TabsTrigger>
           <TabsTrigger value="mail-log" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            Mail Log
+            Envelope Log
           </TabsTrigger>
         </TabsList>
 
@@ -359,9 +359,9 @@ export default function TrustProfilePage({ user }) {
         <TabsContent value="rm-id" className="mt-6">
           <GlassCard>
             <div className="flex items-start gap-3 mb-6">
-              <Mail className="w-6 h-6 text-vault-gold flex-shrink-0" />
+              <Envelope className="w-6 h-6 text-vault-gold flex-shrink-0" />
               <div>
-                <h3 className="font-heading text-lg text-white">Registered Mail ID System</h3>
+                <h3 className="font-heading text-lg text-white">Registered Envelope ID System</h3>
                 <p className="text-white/50 text-sm">
                   Internal recordkeeping identifier using registered mail sticker numbers.
                 </p>
@@ -518,18 +518,18 @@ export default function TrustProfilePage({ user }) {
           </GlassCard>
         </TabsContent>
 
-        {/* Mail Log Tab */}
+        {/* Envelope Log Tab */}
         <TabsContent value="mail-log" className="mt-6">
           <GlassCard>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-lg text-white">Mail Event Log</h3>
+              <h3 className="font-heading text-lg text-white">Envelope Event Log</h3>
               <Button className="btn-secondary" disabled={!profile}>
                 <Plus className="w-4 h-4 mr-2" /> Log Event
               </Button>
             </div>
 
             {!profile && (
-              <p className="text-white/40">Save the trust profile first to enable mail event logging.</p>
+              <p className="text-white/40">FloppyDisk the trust profile first to enable mail event logging.</p>
             )}
 
             {profile && mailEvents.length === 0 && (

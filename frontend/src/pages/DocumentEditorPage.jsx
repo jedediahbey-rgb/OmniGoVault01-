@@ -6,17 +6,17 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { 
-  Save, 
+  FloppyDisk, 
   Download, 
   ArrowLeft,
-  Bold,
-  Italic,
+  TextB,
+  TextItalic,
   List,
   ListOrdered,
   Heading1,
   Heading2,
-  Undo,
-  Redo,
+  ArrowCounterClockwise,
+  ArrowClockwise,
   FileText,
   Clock,
   Check,
@@ -74,16 +74,16 @@ const EditorToolbar = ({ editor, disabled }) => {
       <ToolbarButton
         onClick={() => editor.chain().focus().undo().run()}
         disabled={disabled || !editor.can().undo()}
-        title="Undo"
+        title="ArrowCounterClockwise"
       >
-        <Undo className="w-4 h-4" />
+        <ArrowCounterClockwise className="w-4 h-4" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().redo().run()}
         disabled={disabled || !editor.can().redo()}
-        title="Redo"
+        title="ArrowClockwise"
       >
-        <Redo className="w-4 h-4" />
+        <ArrowClockwise className="w-4 h-4" />
       </ToolbarButton>
 
       <div className="w-px h-6 bg-white/10 mx-2" />
@@ -113,17 +113,17 @@ const EditorToolbar = ({ editor, disabled }) => {
         onClick={() => editor.chain().focus().toggleBold().run()}
         isActive={editor.isActive('bold')}
         disabled={disabled}
-        title="Bold"
+        title="TextB"
       >
-        <Bold className="w-4 h-4" />
+        <TextB className="w-4 h-4" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleItalic().run()}
         isActive={editor.isActive('italic')}
         disabled={disabled}
-        title="Italic"
+        title="TextItalic"
       >
-        <Italic className="w-4 h-4" />
+        <TextItalic className="w-4 h-4" />
       </ToolbarButton>
 
       <div className="w-px h-6 bg-white/10 mx-2" />
@@ -309,7 +309,7 @@ export default function DocumentEditorPage({ user }) {
   }, [editor, documentId, title, saving, document?.is_locked]);
 
   const finalizeDocument = async () => {
-    // Save first if there are changes
+    // FloppyDisk first if there are changes
     if (hasChanges && editor) {
       await saveDocument();
     }
@@ -565,8 +565,8 @@ export default function DocumentEditorPage({ user }) {
               </DropdownMenu>
 
               <Button onClick={saveDocument} disabled={saving || !hasChanges} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
-                <Save className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
+                <FloppyDisk className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">{saving ? 'Saving...' : 'FloppyDisk'}</span>
               </Button>
               <Button onClick={exportToPDF} variant="outline" className="hidden sm:flex btn-secondary">
                 <Download className="w-4 h-4 mr-2" />

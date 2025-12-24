@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { 
-  Scales, Plus, FileText, ArrowLeft, User, LogOut, Briefcase,
+  Scales, Plus, FileText, ArrowLeft, User, SignOut, Briefcase,
   Wallet, Bell, Clock, CheckCircle, Trash, Download, Edit,
   CaretRight, Calendar
 } from "@phosphor-icons/react";
@@ -231,7 +231,7 @@ const PortfolioPage = ({ user, logout }) => {
             </div>
           </div>
           <Button onClick={handleLogout} variant="ghost" className="w-full justify-start text-slate-400 hover:text-[#F8FAFC]">
-            <LogOut className="w-4 h-4 mr-2" />
+            <SignOut className="w-4 h-4 mr-2" />
             Sign Out
           </Button>
         </div>

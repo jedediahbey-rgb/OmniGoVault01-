@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Scales, BookOpen, CaretRight, Search, FileText, ArrowSquareOut } from "@phosphor-icons/react";
+import { Scales, BookOpen, CaretRight, MagnifyingGlass, FileText, ArrowSquareOut } from "@phosphor-icons/react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import axios from "axios";
@@ -87,10 +87,10 @@ const KnowledgePage = () => {
             </div>
             <div className="w-96">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <Input
                   type="text"
-                  placeholder="Search topics..."
+                  placeholder="MagnifyingGlass topics..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 bg-[#111827] border-white/10 text-[#F8FAFC] placeholder:text-slate-500 focus:border-[#C6A87C]/50 rounded-full"
@@ -102,7 +102,7 @@ const KnowledgePage = () => {
         </div>
       </section>
 
-      {/* Topics Grid */}
+      {/* Topics SquaresFour */}
       <section className="pb-24 px-6">
         <div className="max-w-7xl mx-auto">
           {loading ? (

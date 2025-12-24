@@ -6,7 +6,7 @@ import {
   FolderSimple, 
   FileText, 
   Plus, 
-  Search,
+  MagnifyingGlass,
   Folder,
   Tag,
   Clock,
@@ -14,17 +14,17 @@ import {
   Trash,
   Download,
   CaretRight,
-  Grid,
+  SquaresFour,
   List,
   Package,
-  RotateCcw,
+  ArrowCounterClockwise,
   X,
   Check,
   Archive,
   Star,
-  StarOff,
-  Filter,
-  Menu
+  Star,
+  Funnel,
+  List
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
@@ -390,12 +390,12 @@ export default function VaultPage({ user }) {
             className="lg:hidden p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg shrink-0"
             aria-label="Open portfolios"
           >
-            <Menu className="w-5 h-5" />
+            <List className="w-5 h-5" />
           </button>
           <div className="relative flex-1 min-w-0">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+            <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
             <Input
-              placeholder="Search documents..."
+              placeholder="MagnifyingGlass documents..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-white/5 border-white/10 focus:border-vault-gold text-base"
@@ -406,7 +406,7 @@ export default function VaultPage({ user }) {
               onClick={() => setViewMode('grid')}
               className={`p-2 rounded ${viewMode === 'grid' ? 'bg-vault-gold/20 text-vault-gold' : 'text-white/40'}`}
             >
-              <Grid className="w-4 h-4" />
+              <SquaresFour className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('list')}
@@ -475,7 +475,7 @@ export default function VaultPage({ user }) {
           </div>
         )}
 
-        {/* Documents Grid/List */}
+        {/* Documents SquaresFour/List */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
           {showTrash ? (
             <div className="flex items-center gap-2 text-red-400 text-sm mb-4">
@@ -538,7 +538,7 @@ export default function VaultPage({ user }) {
                                   onClick={(e) => { e.stopPropagation(); togglePinDocument(doc.document_id); }}
                                   className="text-white/70 hover:text-white focus:text-white"
                                 >
-                                  {isPinned ? <StarOff className="w-4 h-4 mr-2" /> : <Star className="w-4 h-4 mr-2" />}
+                                  {isPinned ? <Star className="w-4 h-4 mr-2" /> : <Star className="w-4 h-4 mr-2" />}
                                   {isPinned ? 'Unpin' : 'Pin'}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
@@ -570,7 +570,7 @@ export default function VaultPage({ user }) {
                                   onClick={(e) => { e.stopPropagation(); restoreDocument(doc.document_id); }}
                                   className="text-green-400 hover:text-green-300 focus:text-green-300"
                                 >
-                                  <RotateCcw className="w-4 h-4 mr-2" />
+                                  <ArrowCounterClockwise className="w-4 h-4 mr-2" />
                                   Restore
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
@@ -750,7 +750,7 @@ export default function VaultPage({ user }) {
                     onClick={() => restoreDocument(selectedDocument.document_id)}
                     className="w-full bg-green-600 hover:bg-green-700"
                   >
-                    <RotateCcw className="w-4 h-4 mr-2" />
+                    <ArrowCounterClockwise className="w-4 h-4 mr-2" />
                     Restore Document
                   </Button>
                   <Button 

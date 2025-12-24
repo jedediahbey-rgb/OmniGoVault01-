@@ -3,16 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { 
   Sparkle, 
-  Search, 
+  MagnifyingGlass, 
   BookOpen, 
   CaretDown,
   CaretUp,
-  Filter,
+  Funnel,
   ArrowRight,
   ArrowLeft,
   Bookmark,
   Brain,
-  RotateCcw,
+  ArrowCounterClockwise,
   Check,
   X,
   Clock,
@@ -705,12 +705,12 @@ export default function MaximsPage({ user }) {
         </div>
       )}
 
-      {/* Search and Filters */}
+      {/* MagnifyingGlass and Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <Input
-            placeholder="Search maxims..."
+            placeholder="MagnifyingGlass maxims..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-white/5 border-white/10 focus:border-vault-gold"

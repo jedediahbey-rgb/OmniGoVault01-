@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import { Menu, X } from '@phosphor-icons/react';
+import { List, X } from '@phosphor-icons/react';
 import Sidebar from './Sidebar';
 import { pageTransition } from '../../lib/motion';
 
@@ -44,7 +44,7 @@ export default function MainLayout({ children, user, onLogout }) {
             className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             aria-label="Open menu"
           >
-            <Menu className="w-5 h-5" />
+            <List className="w-5 h-5" />
           </button>
           <span className="font-heading text-lg text-white">Equity Trust</span>
           <div className="w-9" /> {/* Spacer for centering */}

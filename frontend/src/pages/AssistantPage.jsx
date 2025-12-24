@@ -4,7 +4,7 @@ import axios from 'axios';
 import { marked } from 'marked';
 import { 
   Robot, 
-  Send, 
+  PaperPlaneTilt, 
   User,
   Sparkle,
   BookOpen,
@@ -257,7 +257,7 @@ export default function AssistantPage({ user }) {
                   disabled={!input.trim() || loading}
                   className="btn-primary h-auto"
                 >
-                  <Send className="w-5 h-5" />
+                  <PaperPlaneTilt className="w-5 h-5" />
                 </Button>
               </div>
               <p className="text-xs text-white/30 mt-2">

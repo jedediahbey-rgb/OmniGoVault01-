@@ -272,7 +272,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
 <p><strong>To:</strong> [RECIPIENT]<br/>
 <strong>From:</strong> <strong>[GRANTOR NAME]</strong>, grantee, private Citizen</p>
 
-<p><strong>Re:</strong> <strong>[DATE]</strong> USPS Registered Mail Account Number <strong>[RM-ID]</strong>, hereinafter "ACCOUNT," signed by grantee.</p>
+<p><strong>Re:</strong> <strong>[DATE]</strong> USPS Registered Envelope Account Number <strong>[RM-ID]</strong>, hereinafter "ACCOUNT," signed by grantee.</p>
 
 <h2>DECLARATION</h2>
 <p>LET IT BE KNOWN BY ALL MEN AND PERSONS WORLDWIDE BY THESE WORDS, I, the undersigned, <strong>[GRANTOR NAME]</strong> grantee herein, private Citizen, by my freewill act and Deed, execute this Deed of my acknowledgement, receipt, and acceptance ab initio for private lawful consideration of one stamp of lawful currency canceled/signed by grantee, and other sufficient valuable lawful consideration tendered by grantee, on <strong>[DATE]</strong> for absolute estate in/for above referenced ACCOUNT and all attachments and transmutations therefrom pursuant to Maxims of Equity:</p>
@@ -291,7 +291,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
 Without prejudice, without recourse<br/>
 Private Citizen</p>
 
-<p>Mail In Care of: <strong>[ADDRESS]</strong><br/>
+<p>Envelope In Care of: <strong>[ADDRESS]</strong><br/>
 <strong>[CITY, STATE, COUNTY]</strong></p>
 
 <p style="margin-top: 30px;"><strong>Signed in the presence of:</strong></p>
