@@ -557,6 +557,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent 
           className="bg-vault-navy border-white/10"
+          onOpenAutoFocus={(e) => e.preventDefault()}
           onInteractOutside={(e) => {
             // Prevent dialog from closing when interacting with Select dropdown
             const target = e.target;
