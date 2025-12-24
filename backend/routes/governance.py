@@ -1058,13 +1058,24 @@ async def verify_meeting_hash(meeting_id: str, request: Request):
         return error_response("VERIFY_ERROR", "Failed to verify meeting", {"error": str(e)}, status_code=500)
 
 
-# ============ DISTRIBUTIONS (Stub with Empty State) ============
+# ============ DISTRIBUTIONS ============
+
+def normalize_distribution(dist: dict) -> dict:
+    """Normalize distribution data for API responses"""
+    if not dist:
+        return dist
+    dist["id"] = dist.get("distribution_id", "")
+    if "locked" not in dist:
+        dist["locked"] = dist.get("status") in ("approved", "in_progress", "completed")
+    return dist
+
 
 @router.get("/distributions")
 async def get_distributions(
     request: Request,
     portfolio_id: Optional[str] = None,
     trust_id: Optional[str] = None,
+    status: Optional[str] = None,
     sort_by: str = "created_at",
     sort_dir: str = "asc",
     limit: int = 100,
@@ -1076,14 +1087,36 @@ async def get_distributions(
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    # For now, return empty with rich empty_state
-    return success_list(
-        items=[],
-        total=0,
-        sort_by=sort_by,
-        sort_dir=sort_dir,
-        empty_state=EMPTY_STATES["distributions"]
-    )
+    try:
+        query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        if trust_id:
+            query["trust_id"] = trust_id
+        if status:
+            query["status"] = status
+        
+        sort_direction = 1 if sort_dir == "asc" else -1
+        
+        distributions = await db.distributions.find(query, {"_id": 0}).sort(
+            sort_by, sort_direction
+        ).skip(offset).limit(limit).to_list(limit)
+        
+        total = await db.distributions.count_documents(query)
+        
+        # Normalize all distributions
+        distributions = [normalize_distribution(d) for d in distributions]
+        
+        return success_list(
+            items=distributions,
+            total=total,
+            sort_by=sort_by,
+            sort_dir=sort_dir,
+            empty_state=EMPTY_STATES["distributions"] if not distributions else None
+        )
+    except Exception as e:
+        print(f"Error fetching distributions: {e}")
+        return error_response("DB_ERROR", "Failed to fetch distributions", status_code=500)
 
 
 @router.get("/distributions/summary")
@@ -1098,13 +1131,66 @@ async def get_distributions_summary(
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return success_item({
-        "has_data": False,
-        "donut_data": [],
-        "timeline_data": [],
-        "waterfall_data": [],
-        "empty_state": EMPTY_STATES["distributions"]
-    })
+    try:
+        query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        if trust_id:
+            query["trust_id"] = trust_id
+        
+        distributions = await db.distributions.find(query, {"_id": 0}).to_list(1000)
+        
+        if not distributions:
+            return success_item({
+                "has_data": False,
+                "total_distributed": 0,
+                "pending_amount": 0,
+                "distribution_count": 0,
+                "donut_data": [],
+                "timeline_data": [],
+                "by_type": {},
+                "by_status": {},
+                "empty_state": EMPTY_STATES["distributions"]
+            })
+        
+        # Calculate summary stats
+        total_distributed = sum(d.get("total_amount", 0) for d in distributions if d.get("status") == "completed")
+        pending_amount = sum(d.get("total_amount", 0) for d in distributions if d.get("status") in ("draft", "pending_approval", "approved"))
+        
+        # Group by type
+        by_type = {}
+        for d in distributions:
+            dtype = d.get("distribution_type", "regular")
+            by_type[dtype] = by_type.get(dtype, 0) + d.get("total_amount", 0)
+        
+        # Group by status
+        by_status = {}
+        for d in distributions:
+            status = d.get("status", "draft")
+            by_status[status] = by_status.get(status, 0) + 1
+        
+        # Donut chart data (by recipient role)
+        recipient_totals = {}
+        for d in distributions:
+            for r in d.get("recipients", []):
+                role = r.get("role", "beneficiary")
+                recipient_totals[role] = recipient_totals.get(role, 0) + r.get("amount", 0)
+        
+        donut_data = [{"name": k, "value": v} for k, v in recipient_totals.items()]
+        
+        return success_item({
+            "has_data": True,
+            "total_distributed": total_distributed,
+            "pending_amount": pending_amount,
+            "distribution_count": len(distributions),
+            "donut_data": donut_data,
+            "timeline_data": [],  # Would need date-based aggregation
+            "by_type": by_type,
+            "by_status": by_status
+        })
+    except Exception as e:
+        print(f"Error fetching distribution summary: {e}")
+        return error_response("DB_ERROR", "Failed to fetch summary", status_code=500)
 
 
 @router.post("/distributions")
@@ -1115,8 +1201,317 @@ async def create_distribution(data: dict, request: Request):
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    # Placeholder - would create in governance_distributions collection
-    return error_response("NOT_IMPLEMENTED", "Distribution creation coming soon")
+    if not data.get("portfolio_id"):
+        return error_response("MISSING_PORTFOLIO", "Portfolio ID is required")
+    if not data.get("title"):
+        return error_response("MISSING_TITLE", "Distribution title is required")
+    
+    try:
+        # Generate RM-ID
+        rm_id = ""
+        try:
+            rm_id, _, _, _ = await generate_subject_rm_id(
+                data.get("portfolio_id"), user.user_id, "21", "Distribution"
+            )
+        except Exception as e:
+            print(f"Warning: Could not generate RM-ID: {e}")
+        
+        from models.governance import Distribution, DistributionRecipient
+        
+        # Process recipients
+        recipients = []
+        for r in data.get("recipients", []):
+            recipients.append(DistributionRecipient(
+                party_id=r.get("party_id"),
+                name=r.get("name", ""),
+                role=r.get("role", "beneficiary"),
+                share_percentage=r.get("share_percentage", 0),
+                amount=r.get("amount", 0),
+                payment_method=r.get("payment_method", ""),
+                notes=r.get("notes", "")
+            ).model_dump())
+        
+        distribution = Distribution(
+            portfolio_id=data.get("portfolio_id"),
+            trust_id=data.get("trust_id"),
+            user_id=user.user_id,
+            title=data.get("title"),
+            distribution_type=data.get("distribution_type", "regular"),
+            description=data.get("description", ""),
+            rm_id=rm_id,
+            total_amount=data.get("total_amount", 0),
+            currency=data.get("currency", "USD"),
+            asset_type=data.get("asset_type", "cash"),
+            source_account=data.get("source_account", ""),
+            scheduled_date=data.get("scheduled_date"),
+            requires_approval=data.get("requires_approval", True),
+            approval_threshold=data.get("approval_threshold", 1),
+            recipients=recipients,
+            authorized_meeting_id=data.get("authorized_meeting_id")
+        )
+        
+        doc = distribution.model_dump()
+        doc["created_at"] = doc["created_at"].isoformat()
+        doc["updated_at"] = doc["updated_at"].isoformat()
+        
+        await db.distributions.insert_one(doc)
+        
+        return success_item({k: v for k, v in doc.items() if k != "_id"})
+    except Exception as e:
+        print(f"Error creating distribution: {e}")
+        return error_response("CREATE_ERROR", f"Failed to create distribution: {str(e)}", status_code=500)
+
+
+@router.get("/distributions/{distribution_id}")
+async def get_distribution(distribution_id: str, request: Request):
+    """Get a single distribution"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        distribution = await db.distributions.find_one(
+            {"distribution_id": distribution_id, "user_id": user.user_id},
+            {"_id": 0}
+        )
+        
+        if not distribution:
+            return error_response("NOT_FOUND", "Distribution not found", status_code=404)
+        
+        return success_item(normalize_distribution(distribution))
+    except Exception as e:
+        print(f"Error fetching distribution: {e}")
+        return error_response("DB_ERROR", "Failed to fetch distribution", status_code=500)
+
+
+@router.put("/distributions/{distribution_id}")
+async def update_distribution(distribution_id: str, data: dict, request: Request):
+    """Update a distribution (only if draft/unlocked)"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        distribution = await db.distributions.find_one(
+            {"distribution_id": distribution_id, "user_id": user.user_id}
+        )
+        
+        if not distribution:
+            return error_response("NOT_FOUND", "Distribution not found", status_code=404)
+        
+        # Check if locked
+        is_locked = distribution.get("locked", False) or distribution.get("status") in ("approved", "in_progress", "completed")
+        if is_locked:
+            return error_response(
+                "DISTRIBUTION_LOCKED",
+                "Distribution is locked and cannot be edited.",
+                status_code=409
+            )
+        
+        # Build update
+        update_fields = {}
+        allowed_fields = [
+            "title", "distribution_type", "description", "total_amount",
+            "currency", "asset_type", "source_account", "scheduled_date",
+            "requires_approval", "approval_threshold", "recipients",
+            "authorized_meeting_id", "authorization_notes"
+        ]
+        
+        for field in allowed_fields:
+            if field in data:
+                update_fields[field] = data[field]
+        
+        update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+        
+        await db.distributions.update_one(
+            {"distribution_id": distribution_id},
+            {"$set": update_fields}
+        )
+        
+        updated = await db.distributions.find_one({"distribution_id": distribution_id}, {"_id": 0})
+        return success_item(normalize_distribution(updated))
+    except Exception as e:
+        print(f"Error updating distribution: {e}")
+        return error_response("UPDATE_ERROR", "Failed to update distribution", status_code=500)
+
+
+@router.delete("/distributions/{distribution_id}")
+async def delete_distribution(distribution_id: str, request: Request):
+    """Soft delete a distribution"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        distribution = await db.distributions.find_one(
+            {"distribution_id": distribution_id, "user_id": user.user_id}
+        )
+        
+        if not distribution:
+            return error_response("NOT_FOUND", "Distribution not found", status_code=404)
+        
+        # Can only delete drafts
+        if distribution.get("status") != "draft":
+            return error_response("CANNOT_DELETE", "Only draft distributions can be deleted")
+        
+        await db.distributions.update_one(
+            {"distribution_id": distribution_id},
+            {"$set": {"deleted_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        return success_message("Distribution deleted")
+    except Exception as e:
+        print(f"Error deleting distribution: {e}")
+        return error_response("DELETE_ERROR", "Failed to delete distribution", status_code=500)
+
+
+@router.post("/distributions/{distribution_id}/submit")
+async def submit_distribution_for_approval(distribution_id: str, request: Request):
+    """Submit a distribution for approval"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        distribution = await db.distributions.find_one(
+            {"distribution_id": distribution_id, "user_id": user.user_id}
+        )
+        
+        if not distribution:
+            return error_response("NOT_FOUND", "Distribution not found", status_code=404)
+        
+        if distribution.get("status") != "draft":
+            return error_response("INVALID_STATUS", "Only draft distributions can be submitted")
+        
+        if not distribution.get("recipients"):
+            return error_response("NO_RECIPIENTS", "Distribution must have at least one recipient")
+        
+        new_status = "pending_approval" if distribution.get("requires_approval") else "approved"
+        
+        await db.distributions.update_one(
+            {"distribution_id": distribution_id},
+            {"$set": {
+                "status": new_status,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        updated = await db.distributions.find_one({"distribution_id": distribution_id}, {"_id": 0})
+        return success_message(f"Distribution submitted for {'approval' if new_status == 'pending_approval' else 'execution'}", {"item": normalize_distribution(updated)})
+    except Exception as e:
+        print(f"Error submitting distribution: {e}")
+        return error_response("SUBMIT_ERROR", "Failed to submit distribution", status_code=500)
+
+
+@router.post("/distributions/{distribution_id}/approve")
+async def approve_distribution(distribution_id: str, data: dict, request: Request):
+    """Add approval to a distribution"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        distribution = await db.distributions.find_one(
+            {"distribution_id": distribution_id, "user_id": user.user_id}
+        )
+        
+        if not distribution:
+            return error_response("NOT_FOUND", "Distribution not found", status_code=404)
+        
+        if distribution.get("status") != "pending_approval":
+            return error_response("INVALID_STATUS", "Distribution is not pending approval")
+        
+        from models.governance import DistributionApproval
+        
+        approval = DistributionApproval(
+            approver_party_id=data.get("approver_party_id"),
+            approver_name=data.get("approver_name", ""),
+            approver_role=data.get("approver_role", "trustee"),
+            status="approved",
+            approved_at=datetime.now(timezone.utc).isoformat(),
+            signature_data=data.get("signature_data", ""),
+            notes=data.get("notes", "")
+        ).model_dump()
+        
+        approvals = distribution.get("approvals", [])
+        approvals.append(approval)
+        
+        # Check if we have enough approvals
+        threshold = distribution.get("approval_threshold", 1)
+        approved_count = len([a for a in approvals if a.get("status") == "approved"])
+        new_status = "approved" if approved_count >= threshold else "pending_approval"
+        
+        update_data = {
+            "approvals": approvals,
+            "status": new_status,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        if new_status == "approved":
+            update_data["locked"] = True
+            update_data["locked_at"] = datetime.now(timezone.utc).isoformat()
+        
+        await db.distributions.update_one(
+            {"distribution_id": distribution_id},
+            {"$set": update_data}
+        )
+        
+        updated = await db.distributions.find_one({"distribution_id": distribution_id}, {"_id": 0})
+        return success_message("Approval added", {"item": normalize_distribution(updated)})
+    except Exception as e:
+        print(f"Error approving distribution: {e}")
+        return error_response("APPROVE_ERROR", "Failed to approve distribution", status_code=500)
+
+
+@router.post("/distributions/{distribution_id}/execute")
+async def execute_distribution(distribution_id: str, data: dict, request: Request):
+    """Mark distribution as executed/completed"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        distribution = await db.distributions.find_one(
+            {"distribution_id": distribution_id, "user_id": user.user_id}
+        )
+        
+        if not distribution:
+            return error_response("NOT_FOUND", "Distribution not found", status_code=404)
+        
+        if distribution.get("status") not in ("approved", "in_progress"):
+            return error_response("INVALID_STATUS", "Distribution must be approved before execution")
+        
+        execution_date = datetime.now(timezone.utc).isoformat()
+        
+        # Update all recipients to paid
+        recipients = distribution.get("recipients", [])
+        for r in recipients:
+            if r.get("status") == "pending" or r.get("status") == "approved":
+                r["status"] = "paid"
+                r["paid_at"] = execution_date
+                r["payment_reference"] = data.get("payment_reference", "")
+        
+        await db.distributions.update_one(
+            {"distribution_id": distribution_id},
+            {"$set": {
+                "status": "completed",
+                "execution_date": execution_date,
+                "recipients": recipients,
+                "updated_at": execution_date
+            }}
+        )
+        
+        updated = await db.distributions.find_one({"distribution_id": distribution_id}, {"_id": 0})
+        return success_message("Distribution executed", {"item": normalize_distribution(updated)})
+    except Exception as e:
+        print(f"Error executing distribution: {e}")
+        return error_response("EXECUTE_ERROR", "Failed to execute distribution", status_code=500)
 
 
 # ============ DISPUTES (Stub with Empty State) ============
