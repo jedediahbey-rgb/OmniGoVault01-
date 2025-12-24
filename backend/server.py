@@ -966,7 +966,7 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
     cat_name = category.get("name", "General")
     category_id = category.get("category_id")
     
-    # Find all used sequence numbers for this category across documents, assets, and ledger entries
+    # Find all used sequence numbers for this category across documents, assets, ledger, and governance
     used_sequences = set()
     
     # Check documents
@@ -995,6 +995,56 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
     for entry in ledger_entries:
         if entry.get("sequence_number"):
             used_sequences.add(entry["sequence_number"])
+    
+    # Check governance collections for used sequence numbers
+    # Parse rm_id to extract sequence numbers (format: BASE-CODE.SEQUENCE)
+    def extract_sequence_from_rm_id(rm_id, target_code):
+        """Extract sequence number from RM-ID if it matches the subject code"""
+        if not rm_id or "-" not in rm_id or "." not in rm_id:
+            return None
+        try:
+            # Format: RF123456789US-20.001 -> code=20, seq=1
+            parts = rm_id.split("-")
+            if len(parts) >= 2:
+                code_seq = parts[-1].split(".")
+                if len(code_seq) == 2 and code_seq[0] == target_code:
+                    return int(code_seq[1])
+        except:
+            pass
+        return None
+    
+    # Check meetings (subject code 20)
+    if cat_code == "20":
+        meetings = await db.meetings.find(
+            {"portfolio_id": portfolio_id, "user_id": user_id, "deleted_at": None},
+            {"rm_id": 1}
+        ).to_list(1000)
+        for m in meetings:
+            seq = extract_sequence_from_rm_id(m.get("rm_id"), cat_code)
+            if seq:
+                used_sequences.add(seq)
+    
+    # Check distributions (subject code 21)
+    if cat_code == "21":
+        distributions = await db.distributions.find(
+            {"portfolio_id": portfolio_id, "user_id": user_id, "deleted_at": None},
+            {"rm_id": 1}
+        ).to_list(1000)
+        for d in distributions:
+            seq = extract_sequence_from_rm_id(d.get("rm_id"), cat_code)
+            if seq:
+                used_sequences.add(seq)
+    
+    # Check disputes (subject code 22)
+    if cat_code == "22":
+        disputes = await db.disputes.find(
+            {"portfolio_id": portfolio_id, "user_id": user_id, "deleted_at": None},
+            {"rm_id": 1}
+        ).to_list(1000)
+        for d in disputes:
+            seq = extract_sequence_from_rm_id(d.get("rm_id"), cat_code)
+            if seq:
+                used_sequences.add(seq)
     
     # Find the lowest available sequence number starting from 1
     sequence_num = 1
