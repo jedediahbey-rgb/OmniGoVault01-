@@ -610,7 +610,14 @@ export default function MeetingEditorPage({ user }) {
               {/* Header content */}
               <div className="flex items-start gap-4">
                 <div className={`p-4 rounded-xl ${typeConfig.bg} shrink-0`}>
-                  <TypeIcon className={`w-8 h-8 ${typeConfig.color}`} />
+                  {meeting.meeting_type === 'regular' ? (
+                    <DynamicCalendarIcon 
+                      day={meeting.date_time ? new Date(meeting.date_time).getDate() : null} 
+                      className={`w-8 h-8 ${typeConfig.color}`} 
+                    />
+                  ) : (
+                    <TypeIcon className={`w-8 h-8 ${typeConfig.color}`} />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
