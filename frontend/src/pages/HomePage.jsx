@@ -237,7 +237,7 @@ const HomePage = () => {
           <div className="flex flex-col items-center gap-4 sm:gap-6 text-center md:flex-row md:justify-between md:text-left">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-                <Scale className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C6A87C]" weight="duotone" />
+                <Scales className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C6A87C]" weight="duotone" />
               </div>
               <span className="font-serif text-base sm:text-lg text-[#F8FAFC]">Equity Trust</span>
             </div>
