@@ -425,7 +425,7 @@ export default function CyberHomePage() {
               variants={staggerContainer}
             >
               <motion.div variants={fadeInUp}>
-                <IconChip icon={Vault} label="Trust Matrix" variant="gold" />
+                <IconChip icon={Vault} label="Exclusive Equity" variant="gold" />
               </motion.div>
               
               <motion.h1 
