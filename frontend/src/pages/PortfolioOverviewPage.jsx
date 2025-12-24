@@ -768,17 +768,18 @@ export default function PortfolioOverviewPage({ user }) {
                   <IconChip variant={doc.is_locked ? 'green' : 'gold'} size="sm">
                     {doc.is_locked ? <Lock /> : <FileText />}
                   </IconChip>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 overflow-hidden">
                     <p className="text-white font-medium truncate">{doc.title}</p>
-                    <div className="flex items-center gap-3 text-xs">
+                    <div className="flex items-center gap-2 text-xs flex-wrap">
                       <span className="text-white/40">{humanizeSlug(doc.document_type)}</span>
                       {doc.sub_record_id && (
-                        <span className="text-vault-gold/60 font-mono">{doc.sub_record_id}</span>
+                        <span className="text-vault-gold/60 font-mono truncate max-w-[120px]">{doc.sub_record_id}</span>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`px-2 py-1 rounded text-xs ${
+                  <div className="flex items-center gap-2 shrink-0 ml-2">
+                    <span className={`px-2 py-1 rounded text-[10px] sm:text-xs whitespace-nowrap ${
+                      doc.is_locked ? 'bg-blue-500/20 text-blue-400' :
                       doc.status === 'final' ? 'bg-green-500/20 text-green-400' :
                       doc.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
                       'bg-white/10 text-white/50'
