@@ -383,6 +383,155 @@ class EquityTrustAPITester:
         
         return meeting_id
 
+    def test_distributions(self, portfolio_id):
+        """Test distributions module - Full CRUD and workflow"""
+        if not portfolio_id:
+            print("\n⚠️ Skipping Distributions tests - no portfolio ID")
+            return None
+            
+        print("\n📋 Testing Distributions Module...")
+        
+        # Test 1: Get distributions list (should return envelope format)
+        distributions_response = self.run_test("Distributions - Get List", "GET", f"governance/distributions?portfolio_id={portfolio_id}", 200)
+        if distributions_response:
+            # Check envelope format: {ok, items, count, total, sort}
+            if isinstance(distributions_response, dict) and 'ok' in distributions_response:
+                print(f"   ✅ Envelope format detected: {distributions_response.get('count', 0)} distributions")
+            else:
+                print(f"   Found {len(distributions_response) if isinstance(distributions_response, list) else 0} distributions")
+        
+        # Test 2: Create a distribution
+        distribution_data = {
+            "portfolio_id": portfolio_id,
+            "title": f"Q4 2024 Distribution {datetime.now().strftime('%H%M%S')}",
+            "distribution_type": "regular",
+            "description": "Quarterly distribution to beneficiaries",
+            "total_amount": 50000.0,
+            "currency": "USD",
+            "asset_type": "cash",
+            "scheduled_date": "2024-12-31",
+            "requires_approval": True,
+            "approval_threshold": 1,
+            "recipients": [
+                {
+                    "name": "Jane Smith",
+                    "role": "beneficiary",
+                    "share_percentage": 60.0,
+                    "amount": 30000.0,
+                    "payment_method": "wire"
+                },
+                {
+                    "name": "Bob Wilson", 
+                    "role": "beneficiary",
+                    "share_percentage": 40.0,
+                    "amount": 20000.0,
+                    "payment_method": "check"
+                }
+            ]
+        }
+        created_distribution = self.run_test("Distributions - Create", "POST", "governance/distributions", 200, distribution_data)
+        
+        if not created_distribution:
+            print("   ❌ Failed to create distribution, skipping remaining tests")
+            return None
+        
+        # Extract distribution ID from envelope or direct response
+        distribution_id = None
+        if isinstance(created_distribution, dict):
+            if 'item' in created_distribution:
+                distribution_id = created_distribution['item'].get('distribution_id')
+            else:
+                distribution_id = created_distribution.get('distribution_id')
+        
+        if not distribution_id:
+            print("   ❌ No distribution ID returned, skipping remaining tests")
+            return None
+            
+        print(f"   Created distribution ID: {distribution_id}")
+        
+        # Check for RM-ID generation
+        rm_id = None
+        if isinstance(created_distribution, dict):
+            if 'item' in created_distribution:
+                rm_id = created_distribution['item'].get('rm_id')
+            else:
+                rm_id = created_distribution.get('rm_id')
+        
+        if rm_id:
+            print(f"   ✅ RM-ID generated: {rm_id}")
+        else:
+            print("   ⚠️ No RM-ID found in response")
+        
+        # Test 3: Get single distribution
+        distribution = self.run_test("Distributions - Get Single", "GET", f"governance/distributions/{distribution_id}", 200)
+        
+        # Test 4: Update distribution (should work for draft status)
+        update_data = {
+            "title": f"Updated Q4 2024 Distribution {datetime.now().strftime('%H%M%S')}",
+            "description": "Updated quarterly distribution with revised amounts",
+            "total_amount": 55000.0
+        }
+        updated = self.run_test("Distributions - Update", "PUT", f"governance/distributions/{distribution_id}", 200, update_data)
+        
+        # Test 5: Submit for approval (changes status to pending_approval)
+        submitted = self.run_test("Distributions - Submit for Approval", "POST", f"governance/distributions/{distribution_id}/submit", 200)
+        if submitted:
+            print("   ✅ Distribution submitted for approval")
+        
+        # Test 6: Add approval
+        approval_data = {
+            "approver_name": "John Doe",
+            "approver_role": "trustee",
+            "signature_data": "John Doe",
+            "notes": "Approved after review of beneficiary needs"
+        }
+        approved = self.run_test("Distributions - Add Approval", "POST", f"governance/distributions/{distribution_id}/approve", 200, approval_data)
+        if approved:
+            print("   ✅ Approval added to distribution")
+        
+        # Test 7: Execute distribution (marks as completed)
+        execute_data = {
+            "payment_reference": f"WIRE_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        }
+        executed = self.run_test("Distributions - Execute", "POST", f"governance/distributions/{distribution_id}/execute", 200, execute_data)
+        if executed:
+            print("   ✅ Distribution executed successfully")
+        
+        # Test 8: Try to update locked distribution (should return 409)
+        locked_update = {
+            "title": "This should fail - distribution is locked"
+        }
+        # We expect this to fail with 409 or similar
+        response = self.run_test("Distributions - Update Locked (409 test)", "PUT", f"governance/distributions/{distribution_id}", [409, 400], locked_update)
+        if response is False:  # If it returned 409/400 as expected
+            print("   ✅ Locked distribution update correctly rejected")
+        
+        # Test 9: Create another distribution for delete test
+        delete_test_data = {
+            "portfolio_id": portfolio_id,
+            "title": "Distribution for Delete Test",
+            "distribution_type": "regular",
+            "total_amount": 1000.0,
+            "currency": "USD"
+        }
+        delete_dist = self.run_test("Distributions - Create for Delete", "POST", "governance/distributions", 200, delete_test_data)
+        
+        if delete_dist:
+            delete_dist_id = None
+            if isinstance(delete_dist, dict):
+                if 'item' in delete_dist:
+                    delete_dist_id = delete_dist['item'].get('distribution_id')
+                else:
+                    delete_dist_id = delete_dist.get('distribution_id')
+            
+            if delete_dist_id:
+                # Test 10: Soft delete distribution (only works for draft status)
+                deleted = self.run_test("Distributions - Soft Delete", "DELETE", f"governance/distributions/{delete_dist_id}", 200)
+                if deleted:
+                    print("   ✅ Distribution soft deleted successfully")
+        
+        return distribution_id
+
     def run_all_tests(self):
         """Run all API tests"""
         print("🚀 Starting Equity Trust API Tests")
