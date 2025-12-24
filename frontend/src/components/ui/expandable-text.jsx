@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { CaretDown } from '@phosphor-icons/react';
 import { cn } from '../../lib/utils';
 
 /**
@@ -66,7 +66,7 @@ export function ExpandableText({
           animate={{ rotate: isExpanded ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-3 h-3" weight="duotone" />
+          <CaretDown className="w-3 h-3" weight="duotone" />
         </motion.span>
       </button>
     </div>
