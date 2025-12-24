@@ -509,16 +509,10 @@ export default function DisputeEditorPage({ user }) {
             {/* Right side - Actions */}
             <div className="flex items-center gap-2 shrink-0">
               {isOpen && (
-                <>
-                  <Button variant="outline" onClick={() => setEditingHeader(true)} className="border-vault-gold/30 text-white">
-                    <PencilSimple className="w-4 h-4 mr-2" />
-                    Edit
-                  </Button>
-                  <Button onClick={() => setShowResolve(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Resolve
-                  </Button>
-                </>
+                <Button onClick={() => setShowResolve(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Resolve
+                </Button>
               )}
               
               <DropdownMenu>
