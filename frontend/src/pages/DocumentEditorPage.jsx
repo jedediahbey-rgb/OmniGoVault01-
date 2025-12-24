@@ -174,7 +174,7 @@ const DocumentView = ({ document, content }) => {
 
       {/* Document Seal/Badge */}
       {document.is_locked && (
-        <div className="flex justify-center -mt-4 relative z-10">
+        <div className="flex justify-center py-3 bg-green-600/10 border-b border-green-500/20">
           <div className="bg-green-600 text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full flex items-center gap-2 shadow-lg text-xs sm:text-sm">
             <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" weight="duotone" />
             <span className="font-semibold">FINALIZED</span>
