@@ -487,13 +487,22 @@ export default function CyberHomePage() {
           </div>
         </div>
         
-        {/* Scroll indicator - subtle chevron */}
+        {/* Scroll indicator - Enhanced cyber mouse */}
         <motion.div 
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden sm:block"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <CaretRight className="w-6 h-6 text-[#C6A87C]/50 rotate-90" weight="bold" />
+          <div className="relative w-7 h-12 rounded-full border-2 border-[#C6A87C]/40 flex justify-center pt-2 bg-[#0B1221]/50 backdrop-blur-sm shadow-[0_0_15px_rgba(198,168,124,0.15)]">
+            {/* Inner glow */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-b from-[#C6A87C]/10 to-transparent" />
+            {/* Scroll dot */}
+            <motion.div 
+              className="w-1.5 h-3 bg-gradient-to-b from-[#C6A87C] to-[#C6A87C]/50 rounded-full"
+              animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </div>
         </motion.div>
       </section>
       
