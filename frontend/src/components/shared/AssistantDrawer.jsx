@@ -7,10 +7,10 @@ import {
   BookOpen,
   CaretDown,
   CheckSquare,
+  CircleNotch,
   Copy,
   FileText,
   List,
-  Loader2,
   PaperPlaneTilt,
   Robot,
   Sparkle,
@@ -197,7 +197,7 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
 
             {loading && (
               <div className="flex gap-2 items-center text-white/40">
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <CircleNotch className="w-4 h-4 animate-spin" />
                 <span className="text-sm">Thinking...</span>
               </div>
             )}

@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Check,
   CheckCircle,
+  CircleNotch,
   Clock,
   Download,
   Eye,
@@ -23,7 +24,6 @@ import {
   Heading2,
   List,
   ListOrdered,
-  Loader2,
   Lock,
   MagicWand,
   PencilSimple,
@@ -705,7 +705,7 @@ export default function DocumentEditorPage({ user }) {
             <Button onClick={aiUpdateDocument} disabled={aiProcessing || !aiInstructions.trim()} className="btn-primary">
               {aiProcessing ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
                   Processing...
                 </>
               ) : (
@@ -738,7 +738,7 @@ export default function DocumentEditorPage({ user }) {
               </div>
             ) : (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 text-vault-gold animate-spin" />
+                <CircleNotch className="w-6 h-6 text-vault-gold animate-spin" />
               </div>
             )}
           </div>

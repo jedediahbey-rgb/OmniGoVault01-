@@ -6,8 +6,8 @@ import {
   ArrowRight,
   Bell,
   CheckCircle,
+  CircleNotch,
   FileText,
-  Loader2,
   Package,
   Plus,
   Scales,
@@ -681,7 +681,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
             <Button onClick={aiGenerateDocument} disabled={aiGenerating || !aiInstructions.trim()} className="btn-primary">
               {aiGenerating ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
                   Generating...
                 </>
               ) : (
