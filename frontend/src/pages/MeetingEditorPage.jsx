@@ -1132,10 +1132,7 @@ export default function MeetingEditorPage({ user }) {
                 <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent 
-                  container={attestDialogRef.current}
-                  className="bg-[#0B1221] border-vault-gold/30 z-[100]"
-                >
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                   {roleOptions.slice(0, 4).map(r => (
                     <SelectItem key={r.value} value={r.value} className="text-white hover:bg-vault-gold/20">
                       {r.label}
