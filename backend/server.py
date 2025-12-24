@@ -1037,6 +1037,47 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
         if code:
             used_codes.add(code)
     
+    # Check governance collections for used codes
+    # Meetings
+    meetings = await db.meetings.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id},
+        {"rm_id": 1}
+    ).to_list(10000)
+    for m in meetings:
+        code = extract_code_from_rm_id(m.get("rm_id"))
+        if code:
+            used_codes.add(code)
+    
+    # Distributions
+    distributions = await db.distributions.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id},
+        {"rm_id": 1}
+    ).to_list(10000)
+    for d in distributions:
+        code = extract_code_from_rm_id(d.get("rm_id"))
+        if code:
+            used_codes.add(code)
+    
+    # Disputes
+    disputes = await db.disputes.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id},
+        {"rm_id": 1}
+    ).to_list(10000)
+    for d in disputes:
+        code = extract_code_from_rm_id(d.get("rm_id"))
+        if code:
+            used_codes.add(code)
+    
+    # Insurance Policies
+    insurance_policies = await db.insurance_policies.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id},
+        {"rm_id": 1}
+    ).to_list(10000)
+    for p in insurance_policies:
+        code = extract_code_from_rm_id(p.get("rm_id"))
+        if code:
+            used_codes.add(code)
+    
     # Find the next available subject code starting from the requested code
     # Asset codes should be in range 10-99 (excluding reserved 20-29 for governance)
     requested_code_int = int(subject_code) if subject_code.isdigit() else 10
