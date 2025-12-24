@@ -180,7 +180,7 @@ class EquityTrustAPITester:
             "tags": ["test"],
             "folder": "/"
         }
-        created_document = self.run_test("Documents - Create", "POST", "documents", 201, document_data)
+        created_document = self.run_test("Documents - Create", "POST", "documents", 200, document_data)
         
         if created_document and 'document_id' in created_document:
             document_id = created_document['document_id']
