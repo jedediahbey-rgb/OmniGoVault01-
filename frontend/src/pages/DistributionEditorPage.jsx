@@ -159,21 +159,31 @@ export default function DistributionEditorPage({ user }) {
           }
         }
       } catch (error) {
-        // Check for any form of abort/cancel error
-        if (!isMounted || error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED' || error?.message === 'canceled' || abortController.signal.aborted) {
-          return;
-        }
+        // Silently ignore any errors if component is unmounting or request was aborted
+        if (!isMounted) return;
+        if (abortController.signal.aborted) return;
+        if (error?.name === 'CanceledError') return;
+        if (error?.name === 'AbortError') return;
+        if (error?.code === 'ERR_CANCELED') return;
+        if (error?.message?.includes('canceled')) return;
+        if (error?.message?.includes('aborted')) return;
+        
         console.error('Failed to fetch distribution:', error);
-        toast.error('Failed to load distribution details');
-        navigate('/vault/governance');
+        // Only show error and navigate if still mounted
+        if (isMounted && !abortController.signal.aborted) {
+          toast.error('Failed to load distribution details');
+          navigate('/vault/governance');
+        }
       } finally {
-        if (isMounted) {
+        if (isMounted && !abortController.signal.aborted) {
           setLoading(false);
         }
       }
     };
 
-    fetchDistribution();
+    if (distributionId) {
+      fetchDistribution();
+    }
     
     return () => {
       isMounted = false;
