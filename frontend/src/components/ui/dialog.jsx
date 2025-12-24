@@ -47,9 +47,18 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
         className
       )}
       // Block ALL outside interactions from closing the dialog
-      onPointerDownOutside={(e) => e.preventDefault()}
-      onInteractOutside={(e) => e.preventDefault()}
-      onFocusOutside={(e) => e.preventDefault()}
+      onPointerDownOutside={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onInteractOutside={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onFocusOutside={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
       {...props}>
       {children}
       <DialogPrimitive.Close
