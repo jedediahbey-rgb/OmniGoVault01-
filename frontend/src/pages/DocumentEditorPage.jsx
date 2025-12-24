@@ -317,9 +317,25 @@ export default function DocumentEditorPage({ user }) {
   }, [editor, documentId, title, saving, document?.is_locked]);
 
   const finalizeDocument = async () => {
-    // FloppyDisk first if there are changes
+    // Save first if there are changes (silently)
     if (hasChanges && editor) {
-      await saveDocument();
+      setSaving(true);
+      try {
+        const content = editor.getHTML();
+        await axios.put(`${API}/documents/${documentId}`, {
+          title,
+          content
+        });
+        setLastSaved(new Date());
+        setHasChanges(false);
+      } catch (error) {
+        console.error('Failed to save document:', error);
+        toast.error('Failed to save document');
+        setSaving(false);
+        return;
+      } finally {
+        setSaving(false);
+      }
     }
     
     try {
