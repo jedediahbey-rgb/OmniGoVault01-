@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
+import axios from 'axios';
 import {
   ArrowRight,
   BookOpen,
@@ -31,7 +32,9 @@ import {
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 
-// Demo Data
+const API = process.env.REACT_APP_BACKEND_URL + '/api';
+
+// Demo Data (fallback)
 const DEMO_SIGNALS = [
   { id: 1, type: 'meeting', message: 'Meeting Finalized', detail: 'RM-ID RF743916765US-20.001', time: '2m ago', icon: Notebook },
   { id: 2, type: 'distribution', message: 'Distribution Logged', detail: 'Beneficiary shares updated', time: '5m ago', icon: CurrencyDollar },
