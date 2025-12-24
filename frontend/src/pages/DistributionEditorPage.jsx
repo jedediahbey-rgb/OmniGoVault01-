@@ -683,19 +683,24 @@ export default function DistributionEditorPage({ user }) {
                     <SelectValue placeholder="Choose a beneficiary..." />
                   </SelectTrigger>
                   <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
-                    {parties.map(party => (
-                      <SelectItem 
-                        key={party.party_id || party.name} 
-                        value={party.name} 
-                        className="text-white hover:bg-vault-gold/20"
-                      >
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-vault-muted" />
-                          <span>{party.name}</span>
-                          <span className="text-xs text-vault-muted">({party.role || 'party'})</span>
-                        </div>
-                      </SelectItem>
-                    ))}
+                    {/* Deduplicate parties by name - show each person only once */}
+                    {parties
+                      .filter((party, index, self) => 
+                        index === self.findIndex(p => p.name === party.name)
+                      )
+                      .map(party => (
+                        <SelectItem 
+                          key={party.party_id || party.name} 
+                          value={party.name} 
+                          className="text-white hover:bg-vault-gold/20"
+                        >
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4 text-vault-muted" />
+                            <span>{party.name}</span>
+                            <span className="text-xs text-vault-muted">({party.role || 'party'})</span>
+                          </div>
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               ) : (
