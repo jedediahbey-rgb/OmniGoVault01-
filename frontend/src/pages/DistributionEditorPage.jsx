@@ -104,7 +104,9 @@ export default function DistributionEditorPage({ user }) {
   const [showApprove, setShowApprove] = useState(false);
   const [showExecute, setShowExecute] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showFinalizeConfirm, setShowFinalizeConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
   
   // New recipient form
   const [newRecipient, setNewRecipient] = useState({
