@@ -165,39 +165,58 @@ export default function MeetingEditorPage({ user }) {
   };
 
   useEffect(() => {
-    fetchMeeting();
-  }, [meetingId]);
-
-  const fetchMeeting = async () => {
-    try {
-      const res = await axios.get(`${API}/governance/meetings/${meetingId}`);
-      setMeeting(res.data);
-      setEditedHeader({
-        title: res.data.title,
-        meeting_type: res.data.meeting_type,
-        date_time: res.data.date_time?.slice(0, 16) || '',
-        location: res.data.location || '',
-        called_by: res.data.called_by || '',
-      });
-      
-      // Fetch parties for this portfolio
-      if (res.data.portfolio_id) {
-        const partiesRes = await axios.get(`${API}/portfolios/${res.data.portfolio_id}/parties`);
-        setParties(partiesRes.data || []);
+    let isMounted = true;
+    
+    const fetchMeeting = async () => {
+      try {
+        const res = await axios.get(`${API}/governance/meetings/${meetingId}`);
+        
+        if (!isMounted) return;
+        
+        setMeeting(res.data);
+        setEditedHeader({
+          title: res.data.title,
+          meeting_type: res.data.meeting_type,
+          date_time: res.data.date_time?.slice(0, 16) || '',
+          location: res.data.location || '',
+          called_by: res.data.called_by || '',
+        });
+        
+        // Fetch parties for this portfolio
+        if (res.data.portfolio_id) {
+          const partiesRes = await axios.get(`${API}/portfolios/${res.data.portfolio_id}/parties`);
+          if (isMounted) {
+            setParties(partiesRes.data || []);
+          }
+        }
+        
+        // Expand all agenda items by default
+        if (isMounted) {
+          const expanded = {};
+          (res.data.agenda_items || []).forEach(item => {
+            expanded[item.item_id] = true;
+          });
+          setExpandedItems(expanded);
+        }
+      } catch (error) {
+        console.error('Failed to fetch meeting:', error);
+        if (isMounted) {
+          toast.error('Failed to load meeting');
+          navigate('/vault/governance');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-      
-      // Expand all agenda items by default
-      const expanded = {};
-      (res.data.agenda_items || []).forEach(item => {
-        expanded[item.item_id] = true;
-      });
-      setExpandedItems(expanded);
-    } catch (error) {
-      console.error('Failed to fetch meeting:', error);
-      toast.error('Failed to load meeting');
-      navigate('/vault/governance');
-    } finally {
-      setLoading(false);
+    };
+    
+    fetchMeeting();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [meetingId, navigate]);;
     }
   };
 
