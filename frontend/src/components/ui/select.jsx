@@ -3,11 +3,29 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, CaretDown, CaretUp } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
+import { registerSelectOpen, registerSelectClose } from "./dialog"
 
-// Use modal={false} so clicking outside closes dropdown without blocking other interactions
-const Select = React.forwardRef((props, ref) => (
-  <SelectPrimitive.Root modal={false} {...props} />
-))
+// Custom Select that tracks open state for dialog compatibility
+const Select = React.forwardRef(({ onOpenChange, ...props }, ref) => {
+  const handleOpenChange = React.useCallback((open) => {
+    if (open) {
+      registerSelectOpen();
+    } else {
+      registerSelectClose();
+    }
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
+  }, [onOpenChange]);
+
+  return (
+    <SelectPrimitive.Root 
+      modal={false} 
+      onOpenChange={handleOpenChange}
+      {...props} 
+    />
+  );
+})
 Select.displayName = "Select"
 
 const SelectGroup = SelectPrimitive.Group
