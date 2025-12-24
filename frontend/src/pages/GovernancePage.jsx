@@ -190,6 +190,10 @@ export default function GovernancePage({ user }) {
         date_time: new Date(newMeeting.date_time).toISOString(),
       });
       
+      // Handle new envelope format: { ok: true, item: { meeting_id: ... } }
+      const data = res.data;
+      const meetingData = data.item || data; // Support both envelope and direct format
+      
       toast.success('Meeting created');
       setShowNewMeeting(false);
       setNewMeeting({
@@ -201,10 +205,10 @@ export default function GovernancePage({ user }) {
       });
       
       // Navigate to the new meeting
-      navigate(`/vault/governance/meetings/${res.data.meeting_id}`);
+      navigate(`/vault/governance/meetings/${meetingData.meeting_id}`);
     } catch (error) {
       console.error('Failed to create meeting:', error);
-      toast.error('Failed to create meeting');
+      toast.error(error.response?.data?.error?.message || 'Failed to create meeting');
     } finally {
       setCreating(false);
     }
