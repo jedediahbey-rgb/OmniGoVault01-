@@ -1414,13 +1414,13 @@ export default function GovernancePage({ user }) {
                 <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                   <SelectItem value="regular" className="text-white hover:bg-vault-gold/20">
                     <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-blue-400" />
+                      <CyberDateIcon className="w-4 h-4 text-blue-400" />
                       Regular Meeting
                     </div>
                   </SelectItem>
                   <SelectItem value="special" className="text-white hover:bg-vault-gold/20">
                     <div className="flex items-center gap-2">
-                      <Gavel className="w-4 h-4 text-amber-400" />
+                      <Sparkle className="w-4 h-4 text-purple-400" />
                       Special Meeting
                     </div>
                   </SelectItem>
