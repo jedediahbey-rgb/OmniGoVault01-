@@ -240,6 +240,16 @@ const AppRouter = ({ auth }) => {
         }
       />
       <Route
+        path="/vault/trash"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <VaultPage user={user} initialView="trash" />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/vault/document/:documentId"
         element={
           <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
