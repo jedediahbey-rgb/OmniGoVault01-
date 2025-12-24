@@ -33,19 +33,19 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
         "fixed left-1/2 top-[10dvh] z-50 grid w-[95%] max-w-lg -translate-x-1/2 max-h-[85dvh] overflow-y-auto gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
         className
       )}
+      // GLOBAL FIX: Completely prevent pointer-down-outside from closing the dialog
+      // User must explicitly click the X button or press Escape to close
       onPointerDownOutside={(e) => {
-        // Prevent dialog from closing when clicking inside Select dropdown portal
-        const target = e.target;
-        if (target?.closest('[role="listbox"]') || target?.closest('[data-radix-select-viewport]') || target?.closest('[data-radix-select-content]')) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       }}
+      // GLOBAL FIX: Completely prevent interact-outside from closing the dialog
+      // This fixes the dropdown → other field → dialog collapse issue on mobile
       onInteractOutside={(e) => {
-        // Prevent dialog from closing when interacting with Select dropdown
-        const target = e.target;
-        if (target?.closest('[role="listbox"]') || target?.closest('[data-radix-select-viewport]') || target?.closest('[data-radix-select-content]')) {
-          e.preventDefault();
-        }
+        e.preventDefault();
+      }}
+      // Allow focus to move to other elements inside without closing
+      onFocusOutside={(e) => {
+        e.preventDefault();
       }}
       {...props}>
       {children}
