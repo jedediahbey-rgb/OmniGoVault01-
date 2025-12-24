@@ -370,22 +370,22 @@ export default function DistributionEditorPage({ user }) {
 
       {/* Distribution Header Card */}
       <motion.div variants={fadeInUp} className="mb-6">
-        <GlassCard className="p-6">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-            {/* Left side - Info */}
-            <div className="flex items-start gap-4">
-              <div className={`p-4 rounded-xl ${typeConfig.bg}`}>
-                <TypeIcon className={`w-8 h-8 ${typeConfig.color}`} />
+        <GlassCard className="p-4 sm:p-6 overflow-hidden">
+          <div className="flex flex-col gap-4">
+            {/* Top row - Icon, badges, status */}
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className={`p-3 sm:p-4 rounded-xl ${typeConfig.bg} shrink-0`}>
+                <TypeIcon className={`w-6 h-6 sm:w-8 sm:h-8 ${typeConfig.color}`} />
               </div>
               
               {editingHeader && isDraft ? (
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 min-w-0 space-y-4">
                   <Input
                     value={editedHeader.title}
                     onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
-                    className="text-2xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
+                    className="text-lg sm:text-2xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
                   />
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="text-xs text-vault-muted">Total Amount</label>
                       <Input
