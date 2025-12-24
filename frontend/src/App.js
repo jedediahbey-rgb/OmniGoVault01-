@@ -298,7 +298,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Toaster position="bottom-center" richColors />
+      <Toaster position="bottom-center" richColors offset={100} />
       <CommandPalette 
         isOpen={commandPaletteOpen} 
         onClose={() => setCommandPaletteOpen(false)}
