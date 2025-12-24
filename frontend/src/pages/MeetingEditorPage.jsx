@@ -172,19 +172,23 @@ export default function MeetingEditorPage({ user }) {
         
         if (!isMounted) return;
         
-        setMeeting(res.data);
+        // Handle new envelope format: { ok: true, item: {...} }
+        const data = res.data;
+        const meetingData = data.item || data; // Support both envelope and direct format
+        
+        setMeeting(meetingData);
         setEditedHeader({
-          title: res.data.title,
-          meeting_type: res.data.meeting_type,
-          date_time: res.data.date_time?.slice(0, 16) || '',
-          location: res.data.location || '',
-          called_by: res.data.called_by || '',
+          title: meetingData.title,
+          meeting_type: meetingData.meeting_type,
+          date_time: meetingData.date_time?.slice(0, 16) || '',
+          location: meetingData.location || '',
+          called_by: meetingData.called_by || '',
         });
         
         // Fetch parties for this portfolio
-        if (res.data.portfolio_id && isMounted) {
+        if (meetingData.portfolio_id && isMounted) {
           try {
-            const partiesRes = await axios.get(`${API}/portfolios/${res.data.portfolio_id}/parties`, {
+            const partiesRes = await axios.get(`${API}/portfolios/${meetingData.portfolio_id}/parties`, {
               signal: abortController.signal
             });
             if (isMounted) {
@@ -201,7 +205,7 @@ export default function MeetingEditorPage({ user }) {
         // Expand all agenda items by default
         if (isMounted) {
           const expanded = {};
-          (res.data.agenda_items || []).forEach(item => {
+          (meetingData.agenda_items || []).forEach(item => {
             expanded[item.item_id] = true;
           });
           setExpandedItems(expanded);
