@@ -87,6 +87,34 @@ const distributionStatusConfig = {
   cancelled: { label: 'Cancelled', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
 };
 
+// Dispute type icons and colors
+const disputeTypeConfig = {
+  beneficiary: { icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Beneficiary Dispute' },
+  trustee: { icon: Gavel, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Trustee Dispute' },
+  third_party: { icon: Scales, color: 'text-purple-400', bg: 'bg-purple-500/20', label: 'Third Party Dispute' },
+  tax: { icon: CurrencyDollar, color: 'text-emerald-400', bg: 'bg-emerald-500/20', label: 'Tax Dispute' },
+  regulatory: { icon: ShieldCheck, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Regulatory Dispute' },
+};
+
+// Dispute status badges
+const disputeStatusConfig = {
+  open: { label: 'Open', color: 'bg-blue-500/30 text-blue-400 border-blue-400/30' },
+  in_progress: { label: 'In Progress', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30' },
+  mediation: { label: 'Mediation', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
+  litigation: { label: 'Litigation', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
+  settled: { label: 'Settled', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
+  closed: { label: 'Closed', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' },
+  appealed: { label: 'Appealed', color: 'bg-orange-500/30 text-orange-400 border-orange-400/30' },
+};
+
+// Priority badges
+const priorityConfig = {
+  low: { label: 'Low', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' },
+  medium: { label: 'Medium', color: 'bg-blue-500/30 text-blue-400 border-blue-400/30' },
+  high: { label: 'High', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30' },
+  critical: { label: 'Critical', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
+};
+
 // Role badge colors
 const roleColors = {
   trustee: 'bg-vault-gold/20 text-vault-gold border-vault-gold/30',
