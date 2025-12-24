@@ -662,6 +662,8 @@ async def finalize_meeting(meeting_id: str, data: dict, request: Request):
         meeting["finalized_at"] = finalized_at
         meeting["finalized_by"] = finalized_by
         meeting["status"] = "finalized"
+        meeting["locked"] = True
+        meeting["locked_at"] = finalized_at
         
         meeting_hash = generate_meeting_hash(meeting)
         
@@ -669,6 +671,8 @@ async def finalize_meeting(meeting_id: str, data: dict, request: Request):
             {"meeting_id": meeting_id},
             {"$set": {
                 "status": "finalized",
+                "locked": True,
+                "locked_at": finalized_at,
                 "finalized_at": finalized_at,
                 "finalized_by": finalized_by,
                 "finalized_hash": meeting_hash,
