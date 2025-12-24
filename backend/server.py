@@ -1056,6 +1056,9 @@ async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User =
     subject_code = data.get("subject_code", "00")
     subject_name = data.get("subject_name") or data.get("asset_type", "General")
     
+    # Parse currency value (handles $, commas, etc.)
+    parsed_value = parse_currency_value(data.get("value"))
+    
     rm_id, cat_code, sequence_num, cat_name = await generate_subject_rm_id(
         portfolio_id, user.user_id, subject_code, subject_name
     )
@@ -1069,7 +1072,7 @@ async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User =
         sequence_number=sequence_num,
         asset_type=data.get("asset_type", "General"),
         description=data.get("description", ""),
-        value=data.get("value"),
+        value=parsed_value,
         transaction_type=data.get("transaction_type", "deposit"),
         notes=data.get("notes", "")
     )
@@ -1089,7 +1092,7 @@ async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User =
         entry_type="deposit",
         description=f"Asset deposited: {data.get('description', '')}",
         asset_id=asset.asset_id,
-        value=data.get("value"),
+        value=parsed_value,
         balance_effect="credit"
     )
     ledger_doc = ledger_entry.model_dump()
