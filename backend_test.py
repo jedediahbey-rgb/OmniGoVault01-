@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for Equity Trust Portfolio Platform
-Tests all CRUD operations and API endpoints
+Tests all CRUD operations and API endpoints including Distributions Module
 """
 
 import requests
