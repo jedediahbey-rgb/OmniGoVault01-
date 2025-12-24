@@ -900,6 +900,57 @@ export default function DistributionEditorPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-heading text-red-400 flex items-center gap-2">
+              <Trash className="w-5 h-5" />
+              Delete Distribution
+            </DialogTitle>
+            <DialogDescription className="text-vault-muted">
+              This action cannot be undone. Are you sure you want to delete this distribution?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-sm text-red-300">
+                <strong>{distribution?.title}</strong> and all its recipients will be permanently deleted.
+              </p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(false)}
+              className="border-vault-gold/30 text-white"
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-500 text-white"
+            >
+              {deleting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash className="w-4 h-4 mr-2" />
+                  Delete Distribution
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
