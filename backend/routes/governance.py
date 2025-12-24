@@ -2153,8 +2153,9 @@ async def get_insurance_policies(
     request: Request,
     portfolio_id: Optional[str] = None,
     trust_id: Optional[str] = None,
+    status: Optional[str] = None,
     sort_by: str = "created_at",
-    sort_dir: str = "asc",
+    sort_dir: str = "desc",
     limit: int = 100,
     offset: int = 0
 ):
@@ -2164,13 +2165,33 @@ async def get_insurance_policies(
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return success_list(
-        items=[],
-        total=0,
-        sort_by=sort_by,
-        sort_dir=sort_dir,
-        empty_state=EMPTY_STATES["insurance"]
-    )
+    try:
+        query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        if trust_id:
+            query["trust_id"] = trust_id
+        if status:
+            query["status"] = status
+        
+        sort_direction = 1 if sort_dir == "asc" else -1
+        
+        policies = await db.insurance_policies.find(query, {"_id": 0}).sort(
+            sort_by, sort_direction
+        ).skip(offset).limit(limit).to_list(limit)
+        
+        total = await db.insurance_policies.count_documents(query)
+        
+        return success_list(
+            items=policies,
+            total=total,
+            sort_by=sort_by,
+            sort_dir=sort_dir,
+            empty_state=EMPTY_STATES["insurance"] if total == 0 else None
+        )
+    except Exception as e:
+        print(f"Error fetching insurance policies: {e}")
+        return error_response("FETCH_ERROR", "Failed to fetch insurance policies", status_code=500)
 
 
 @router.get("/insurance-policies/summary")
@@ -2185,13 +2206,38 @@ async def get_insurance_summary(
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    return success_item({
-        "has_data": False,
-        "total_coverage": 0,
-        "active_policies": 0,
-        "policies": [],
-        "empty_state": EMPTY_STATES["insurance"]
-    })
+    try:
+        query = {"user_id": user.user_id, "deleted_at": None}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        if trust_id:
+            query["trust_id"] = trust_id
+        
+        policies = await db.insurance_policies.find(query, {"_id": 0}).to_list(1000)
+        
+        active_policies = [p for p in policies if p.get("status") == "active"]
+        total_death_benefit = sum(p.get("death_benefit", 0) for p in active_policies)
+        total_cash_value = sum(p.get("cash_value", 0) for p in active_policies)
+        total_annual_premium = sum(
+            p.get("premium_amount", 0) * (12 if p.get("premium_frequency") == "monthly" else
+                                          4 if p.get("premium_frequency") == "quarterly" else
+                                          2 if p.get("premium_frequency") == "semi_annual" else 1)
+            for p in active_policies
+        )
+        
+        return success_item({
+            "has_data": len(policies) > 0,
+            "total_policies": len(policies),
+            "active_policies": len(active_policies),
+            "total_death_benefit": total_death_benefit,
+            "total_cash_value": total_cash_value,
+            "total_annual_premium": total_annual_premium,
+            "policies_by_type": {},
+            "empty_state": EMPTY_STATES["insurance"] if len(policies) == 0 else None
+        })
+    except Exception as e:
+        print(f"Error fetching insurance summary: {e}")
+        return error_response("FETCH_ERROR", "Failed to fetch insurance summary", status_code=500)
 
 
 @router.post("/insurance-policies")
