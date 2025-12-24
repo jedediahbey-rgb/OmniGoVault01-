@@ -95,7 +95,7 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6 sm:mb-8">
-              <Sparkles className="w-4 h-4 text-[#C6A87C]" />
+              <Sparkle className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
               <span className="font-sans text-xs text-slate-400 uppercase tracking-wider">
                 AI-Powered · Source-Grounded
               </span>
