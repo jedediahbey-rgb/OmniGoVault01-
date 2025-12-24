@@ -1247,7 +1247,13 @@ export default function GovernancePage({ user }) {
                 {filteredDisputes.map((dispute, index) => {
                   const typeConfig = disputeTypeConfig[dispute.dispute_type] || disputeTypeConfig.beneficiary;
                   const TypeIcon = typeConfig.icon;
-                  const status = disputeStatusConfig[dispute.status] || disputeStatusConfig.open;
+                  // For disputes, if locked but status is still "open", show "finalized"
+                  // Otherwise keep the outcome status (settled, closed, etc.)
+                  let effectiveStatus = dispute.status;
+                  if (dispute.locked && (dispute.status === 'open' || dispute.status === 'in_progress')) {
+                    effectiveStatus = 'finalized';
+                  }
+                  const status = disputeStatusConfig[effectiveStatus] || disputeStatusConfig.open;
                   const priority = priorityConfig[dispute.priority] || priorityConfig.medium;
                   const disputeId = dispute.id || dispute.dispute_id;
                   
@@ -1287,11 +1293,6 @@ export default function GovernancePage({ user }) {
                                   <Badge className={`text-xs ${priority.color} border`}>
                                     {priority.label}
                                   </Badge>
-                                  {dispute.locked && (
-                                    <Badge className="text-xs bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                                      🔒 Locked
-                                    </Badge>
-                                  )}
                                 </div>
                               </div>
                               
