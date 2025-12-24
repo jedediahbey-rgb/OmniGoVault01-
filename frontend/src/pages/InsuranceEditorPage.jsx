@@ -488,6 +488,15 @@ export default function InsuranceEditorPage({ user }) {
                   <PencilSimple className="w-4 h-4 mr-2" />
                   Edit
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFinalizeConfirm(true)}
+                  className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10"
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  Finalize
+                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="border-vault-gold/30">
@@ -495,10 +504,6 @@ export default function InsuranceEditorPage({ user }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
-                    <DropdownMenuItem onClick={() => setEditingHeader(true)} className="text-white hover:bg-vault-gold/20">
-                      <PencilSimple className="w-4 h-4 mr-2" />
-                      Edit Details
-                    </DropdownMenuItem>
                     <DropdownMenuItem className="text-vault-muted hover:bg-vault-gold/20">
                       <Download className="w-4 h-4 mr-2" />
                       Export PDF
