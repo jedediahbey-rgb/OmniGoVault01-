@@ -355,9 +355,11 @@ export default function InsuranceEditorPage({ user }) {
 
   const typeConfig = insuranceTypeConfig[policy.policy_type] || insuranceTypeConfig.whole_life;
   const TypeIcon = typeConfig.icon;
-  const status = statusConfig[policy.status] || statusConfig.active;
-  const StatusIcon = status.icon;
   const isLocked = policy.locked;
+  // If locked, show "Finalized" instead of the stored status
+  const effectiveStatus = isLocked ? 'finalized' : policy.status;
+  const status = statusConfig[effectiveStatus] || statusConfig.active;
+  const StatusIcon = status.icon;
 
   return (
     <motion.div
