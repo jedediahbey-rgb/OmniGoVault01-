@@ -33,17 +33,21 @@ export default function StatCard({
     >
       {/* Mobile: Icon on top-right, text below */}
       <div className="sm:hidden">
-        <div className="flex items-start justify-between mb-2">
-          <p className="text-[10px] uppercase tracking-normal text-white/40">
-            {displayLabel}
-          </p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] uppercase tracking-[0.25em] text-white/60 leading-none">
+              {displayLabel}
+            </p>
+          </div>
           {Icon && (
-            <IconChip variant={iconVariant} size="sm">
-              <Icon weight="duotone" />
-            </IconChip>
+            <div className="shrink-0">
+              <IconChip variant={iconVariant} size="sm">
+                <Icon weight="duotone" />
+              </IconChip>
+            </div>
           )}
         </div>
-        <p className="text-2xl font-heading text-white tabular-nums">{value}</p>
+        <p className="text-2xl font-heading text-white tabular-nums mt-2">{value}</p>
         {subtitle && (
           <p className="text-xs text-white/40 mt-1">{subtitle}</p>
         )}
