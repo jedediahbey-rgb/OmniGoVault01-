@@ -230,6 +230,7 @@ class SubjectCategory(BaseModel):
 
 
 # Default seed categories - 01-09 reserved for document templates, 10+ for other entries
+# 20-29 reserved for Governance module
 DEFAULT_SUBJECT_CATEGORIES = [
     {"code": "00", "name": "General", "description": "General/miscellaneous records"},
     {"code": "01", "name": "Declaration of Trust", "description": "Trust declaration documents"},
@@ -247,6 +248,13 @@ DEFAULT_SUBJECT_CATEGORIES = [
     {"code": "13", "name": "Court Case", "description": "Legal proceedings"},
     {"code": "14", "name": "Contract", "description": "Contracts and agreements"},
     {"code": "15", "name": "Correspondence", "description": "Letters and correspondence"},
+    # Governance module categories (20-29)
+    {"code": "20", "name": "Meeting Minutes", "description": "Trust meeting minutes and records"},
+    {"code": "21", "name": "Distributions", "description": "Trust distribution records"},
+    {"code": "22", "name": "Disputes", "description": "Dispute case files"},
+    {"code": "23", "name": "Insurance Policies", "description": "Life insurance and policy records"},
+    {"code": "24", "name": "Compensation", "description": "Trustee compensation records"},
+    {"code": "25", "name": "Resolutions", "description": "Formal resolutions and decisions"},
 ]
 
 
