@@ -941,9 +941,14 @@ async def get_or_create_subject_category(portfolio_id: str, user_id: str, subjec
 
 
 async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: str = "00", subject_name: str = "General") -> tuple:
-    """Generate RM-ID based on subject category. Returns (full_rm_id, subject_code, sequence_num, subject_name)
-    Ensures UNIQUE sequence numbers by checking ALL collections to prevent duplicates.
-    Each entry (court case, financial instrument, etc.) gets its own unique RM-ID."""
+    """Generate RM-ID with a UNIQUE whole subject code for each entry.
+    
+    Each entry (court case, financial instrument, etc.) gets its OWN unique whole number.
+    Example: First court case = 13.001, Second court case = 16.001 (next available whole number)
+    The subnumber (.001, .002) is for sub-items within that entry.
+    
+    Returns (full_rm_id, assigned_subject_code, sequence_num, subject_name)
+    """
     
     # Get trust profile for base RM-ID
     trust_profile = await db.trust_profiles.find_one(
@@ -960,24 +965,116 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
             base_rm_id = normalize_rm_id(trust_profile["rm_record_id"])
     
     if not base_rm_id:
-        # Generate a placeholder RM-ID
         base_rm_id = f"TEMP{uuid.uuid4().hex[:8].upper()}"
     
-    # Get or create subject category (seeds defaults if needed)
-    category = await get_or_create_subject_category(portfolio_id, user_id, subject_code, subject_name)
-    cat_code = category.get("code", "00")
-    cat_name = category.get("name", "General")
-    category_id = category.get("category_id")
+    # Seed default categories
+    await seed_default_categories(portfolio_id, user_id)
     
-    # Helper to extract sequence from RM-ID string
-    def extract_sequence_from_rm_id(rm_id, target_code):
-        """Extract sequence number from RM-ID if it matches the subject code"""
+    # Get the requested category info for the name
+    category = await db.subject_categories.find_one({
+        "portfolio_id": portfolio_id,
+        "user_id": user_id,
+        "code": subject_code
+    })
+    cat_name = category.get("name", subject_name) if category else subject_name
+    
+    # Helper to extract subject code from RM-ID
+    def extract_code_from_rm_id(rm_id):
+        """Extract subject code from RM-ID. Returns code as string or None."""
         if not rm_id or "-" not in rm_id or "." not in rm_id:
             return None
         try:
-            # Format: RF123456789US-13.001 -> code=13, seq=1
             parts = rm_id.split("-")
             if len(parts) >= 2:
+                code_seq = parts[-1].split(".")
+                if len(code_seq) == 2:
+                    return code_seq[0]
+        except:
+            pass
+        return None
+    
+    # Find ALL used subject codes across ALL collections
+    used_codes = set()
+    
+    # Reserved codes: 00-09 for templates, 20-24 for governance
+    # These are shared/system codes, not per-entry codes
+    reserved_codes = {"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", 
+                      "20", "21", "22", "23", "24", "25"}
+    
+    # Check assets for used codes
+    assets = await db.assets.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id},
+        {"subject_code": 1, "rm_id": 1}
+    ).to_list(10000)
+    for asset in assets:
+        if asset.get("subject_code"):
+            used_codes.add(asset["subject_code"])
+        code = extract_code_from_rm_id(asset.get("rm_id"))
+        if code:
+            used_codes.add(code)
+    
+    # Check ledger entries for used codes (standalone entries, not asset-linked)
+    ledger_entries = await db.trust_ledger.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id, "asset_id": None},
+        {"subject_code": 1, "rm_id": 1}
+    ).to_list(10000)
+    for entry in ledger_entries:
+        if entry.get("subject_code"):
+            used_codes.add(entry["subject_code"])
+        code = extract_code_from_rm_id(entry.get("rm_id"))
+        if code:
+            used_codes.add(code)
+    
+    # Check documents for used codes
+    docs = await db.documents.find(
+        {"portfolio_id": portfolio_id, "user_id": user_id},
+        {"subject_code": 1, "rm_id": 1}
+    ).to_list(10000)
+    for doc in docs:
+        if doc.get("subject_code"):
+            used_codes.add(doc["subject_code"])
+        code = extract_code_from_rm_id(doc.get("rm_id"))
+        if code:
+            used_codes.add(code)
+    
+    # Find the next available subject code starting from the requested code
+    # Asset codes should be in range 10-99 (excluding reserved 20-29 for governance)
+    requested_code_int = int(subject_code) if subject_code.isdigit() else 10
+    
+    # Start searching from the requested code
+    assigned_code_int = requested_code_int
+    
+    # Find next available code
+    while True:
+        code_str = f"{assigned_code_int:02d}"
+        if code_str not in used_codes and code_str not in reserved_codes:
+            break
+        assigned_code_int += 1
+        # Skip governance reserved range 20-29
+        if 20 <= assigned_code_int <= 29:
+            assigned_code_int = 30
+        # Cap at 99
+        if assigned_code_int > 99:
+            # Wrap around and find any available
+            for i in range(10, 100):
+                if i >= 20 and i <= 29:
+                    continue  # Skip governance range
+                code_str = f"{i:02d}"
+                if code_str not in used_codes and code_str not in reserved_codes:
+                    assigned_code_int = i
+                    break
+            break
+    
+    assigned_code = f"{assigned_code_int:02d}"
+    
+    # Sequence number is always 001 for the main entry
+    # Sub-items would use 002, 003, etc.
+    sequence_num = 1
+    
+    # Format: BASE-CODE.SEQUENCE (e.g., RF123456789US-13.001)
+    full_rm_id = f"{base_rm_id}-{assigned_code}.{sequence_num:03d}"
+    
+    return full_rm_id, assigned_code, sequence_num, cat_name
                 code_seq = parts[-1].split(".")
                 if len(code_seq) == 2 and code_seq[0] == target_code:
                     return int(code_seq[1])
