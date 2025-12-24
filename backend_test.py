@@ -550,6 +550,7 @@ class EquityTrustAPITester:
         self.test_assets_and_ledger(portfolio_id)
         self.test_parties(portfolio_id)
         meeting_id = self.test_governance(portfolio_id)
+        distribution_id = self.test_distributions(portfolio_id)
         
         # Print summary
         print("\n" + "=" * 50)
