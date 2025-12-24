@@ -839,6 +839,101 @@ async def create_amendment(meeting_id: str, data: dict, request: Request):
         return error_response("AMEND_ERROR", "Failed to create amendment", {"error": str(e)}, status_code=500)
 
 
+@router.get("/meetings/{meeting_id}/versions")
+async def get_meeting_versions(meeting_id: str, request: Request):
+    """Get all versions/revisions of a meeting (original + all amendments).
+    Returns the version chain sorted by revision ascending.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        # Get the original meeting
+        meeting = await db.meetings.find_one(
+            {"meeting_id": meeting_id, "user_id": user.user_id},
+            {"_id": 0}
+        )
+        
+        if not meeting:
+            return error_response("NOT_FOUND", "Meeting not found", status_code=404)
+        
+        # Find the root meeting (traverse up parent chain)
+        root_meeting_id = meeting_id
+        if meeting.get("parent_meeting_id") or meeting.get("amends_meeting_id"):
+            parent_id = meeting.get("parent_meeting_id") or meeting.get("amends_meeting_id")
+            while parent_id:
+                parent = await db.meetings.find_one(
+                    {"meeting_id": parent_id, "user_id": user.user_id},
+                    {"_id": 0}
+                )
+                if parent:
+                    root_meeting_id = parent_id
+                    parent_id = parent.get("parent_meeting_id") or parent.get("amends_meeting_id")
+                else:
+                    break
+        
+        # Get all meetings in the version chain
+        versions = []
+        
+        # Get the root meeting
+        root = await db.meetings.find_one(
+            {"meeting_id": root_meeting_id, "user_id": user.user_id},
+            {"_id": 0}
+        )
+        if root:
+            versions.append(root)
+        
+        # Get all amendments (children)
+        amendments = await db.meetings.find(
+            {
+                "$or": [
+                    {"parent_meeting_id": root_meeting_id},
+                    {"amends_meeting_id": root_meeting_id}
+                ],
+                "user_id": user.user_id
+            },
+            {"_id": 0}
+        ).to_list(100)
+        
+        versions.extend(amendments)
+        
+        # Also get amendments of amendments (recursive children)
+        child_ids = [a.get("meeting_id") for a in amendments]
+        while child_ids:
+            nested_amendments = await db.meetings.find(
+                {
+                    "$or": [
+                        {"parent_meeting_id": {"$in": child_ids}},
+                        {"amends_meeting_id": {"$in": child_ids}}
+                    ],
+                    "user_id": user.user_id
+                },
+                {"_id": 0}
+            ).to_list(100)
+            
+            if not nested_amendments:
+                break
+            
+            versions.extend(nested_amendments)
+            child_ids = [a.get("meeting_id") for a in nested_amendments]
+        
+        # Sort by revision ascending
+        versions.sort(key=lambda x: x.get("revision", 1))
+        
+        return success_list(
+            items=versions,
+            total=len(versions),
+            sort_by="revision",
+            sort_dir="asc"
+        )
+        
+    except Exception as e:
+        print(f"Error fetching meeting versions: {e}")
+        return error_response("DB_ERROR", "Failed to fetch meeting versions", {"error": str(e)}, status_code=500)
+
+
 # ============ ATTACHMENTS ============
 
 @router.post("/meetings/{meeting_id}/attachments")
