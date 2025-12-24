@@ -190,8 +190,9 @@ class GovernanceFeatureTester:
         
         response = self.run_test("Get Single Meeting", "GET", f"governance/meetings/{self.meeting_id}", 200)
         
-        if response and 'item' in response:
-            meeting = response['item']
+        if response:
+            # Handle envelope format: { ok: true, item: {...} }
+            meeting = response.get('item', response)
             
             # Check for required fields
             has_id = 'id' in meeting
