@@ -575,6 +575,13 @@ export default function DisputeEditorPage({ user }) {
                   </Button>
                 )}
                 
+                {isLocked && (
+                  <Button onClick={handleAmend} variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
+                    <PlusCircle className="w-4 h-4 mr-2" />
+                    Amend
+                  </Button>
+                )}
+                
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="border-vault-gold/30">
@@ -591,6 +598,15 @@ export default function DisputeEditorPage({ user }) {
                         <DropdownMenuItem onClick={() => setShowChangeStatus(true)} className="text-white hover:bg-vault-gold/20">
                           <Clock className="w-4 h-4 mr-2" />
                           Change Status
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-vault-gold/20" />
+                      </>
+                    )}
+                    {isLocked && (
+                      <>
+                        <DropdownMenuItem onClick={() => setShowChangeStatus(true)} className="text-white hover:bg-vault-gold/20">
+                          <Scales className="w-4 h-4 mr-2" />
+                          Set Outcome
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-vault-gold/20" />
                       </>
