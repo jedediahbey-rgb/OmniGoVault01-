@@ -21,6 +21,7 @@ import {
   Plus,
   Scales,
   ShieldCheck,
+  Sparkle,
   SquaresFour,
   Timer,
   Trash,
