@@ -317,6 +317,17 @@ const AppRouter = ({ auth }) => {
         }
       />
       
+      <Route 
+        path="/vault/governance/insurance/:policyId"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <InsuranceEditorPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
