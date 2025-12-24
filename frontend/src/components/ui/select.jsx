@@ -21,6 +21,13 @@ const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) 
       "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className
     )}
+    // On touch/click, blur any focused element first (closes keyboard)
+    onPointerDown={(e) => {
+      // Blur active element to close keyboard first
+      if (document.activeElement && document.activeElement !== e.currentTarget) {
+        document.activeElement.blur();
+      }
+    }}
     {...props}>
     {children}
     <SelectPrimitive.Icon asChild>
