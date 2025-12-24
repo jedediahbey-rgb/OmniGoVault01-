@@ -430,6 +430,46 @@ export default function DocumentEditorPage({ user }) {
     }
   };
 
+  // Amendment Functions
+  const fetchAmendments = async () => {
+    try {
+      const response = await axios.get(`${API}/documents/${documentId}/amendments`);
+      setAmendments(response.data);
+    } catch (error) {
+      console.error('Failed to fetch amendments:', error);
+    }
+  };
+
+  const createAmendment = async () => {
+    setCreatingAmendment(true);
+    try {
+      const response = await axios.post(`${API}/documents/${documentId}/amend`, {
+        title: amendmentTitle || null,
+        notes: amendmentNotes || null
+      });
+      
+      toast.success(`Amendment created: ${response.data.rm_id}`);
+      setShowAmendDialog(false);
+      setAmendmentTitle('');
+      setAmendmentNotes('');
+      
+      // Navigate to the new amendment document
+      navigate(`/vault/document/${response.data.document_id}`);
+    } catch (error) {
+      console.error('Failed to create amendment:', error);
+      toast.error(error.response?.data?.detail || 'Failed to create amendment');
+    } finally {
+      setCreatingAmendment(false);
+    }
+  };
+
+  const openAmendDialog = () => {
+    setAmendmentTitle(`Amendment to ${document.title}`);
+    setAmendmentNotes('');
+    fetchAmendments();
+    setShowAmendDialog(true);
+  };
+
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
