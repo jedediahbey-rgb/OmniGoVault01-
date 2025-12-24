@@ -489,26 +489,32 @@ export default function InsuranceEditorPage({ user }) {
             </div>
             
             {/* Actions */}
-            {!isLocked && !editingHeader && (
+            {!editingHeader && (
               <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setEditingHeader(true)}
-                  className="border-vault-gold/30 text-white"
-                >
-                  <PencilSimple className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowFinalizeConfirm(true)}
-                  className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10"
-                >
-                  <Lock className="w-4 h-4 mr-2" />
-                  Finalize
-                </Button>
+                {!isLocked && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowFinalizeConfirm(true)}
+                    className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10"
+                  >
+                    <Lock className="w-4 h-4 mr-2" />
+                    Finalize
+                  </Button>
+                )}
+                
+                {isLocked && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAmend}
+                    className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                  >
+                    <PlusCircle className="w-4 h-4 mr-2" />
+                    Amend
+                  </Button>
+                )}
+                
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="border-vault-gold/30">
@@ -516,18 +522,31 @@ export default function InsuranceEditorPage({ user }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    {!isLocked && (
+                      <>
+                        <DropdownMenuItem onClick={() => setEditingHeader(true)} className="text-white hover:bg-vault-gold/20">
+                          <PencilSimple className="w-4 h-4 mr-2" />
+                          Edit Details
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-vault-gold/20" />
+                      </>
+                    )}
                     <DropdownMenuItem className="text-vault-muted hover:bg-vault-gold/20">
                       <Download className="w-4 h-4 mr-2" />
                       Export PDF
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-vault-gold/20" />
-                    <DropdownMenuItem 
-                      onClick={() => setShowDeleteConfirm(true)} 
-                      className="text-red-400 hover:bg-red-500/20 hover:text-red-300"
-                    >
-                      <Trash className="w-4 h-4 mr-2" />
-                      Delete Policy
-                    </DropdownMenuItem>
+                    {!isLocked && (
+                      <>
+                        <DropdownMenuSeparator className="bg-vault-gold/20" />
+                        <DropdownMenuItem 
+                          onClick={() => setShowDeleteConfirm(true)} 
+                          className="text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                        >
+                          <Trash className="w-4 h-4 mr-2" />
+                          Delete Policy
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
