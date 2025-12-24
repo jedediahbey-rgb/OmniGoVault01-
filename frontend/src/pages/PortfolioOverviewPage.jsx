@@ -667,7 +667,7 @@ export default function PortfolioOverviewPage({ user }) {
                   <CurrencyDollar />
                 </IconChip>
                 <div className="w-full overflow-hidden text-center">
-                  <CurrencyDisplay value={ledger.summary?.balance} variant="gold" />
+                  <CurrencyDisplay value={ledger.summary?.balance} variant="auto" />
                 </div>
                 <p className="text-white/40 text-xs sm:text-sm mt-1">Current Balance</p>
               </div>
