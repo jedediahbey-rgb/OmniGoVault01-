@@ -366,6 +366,20 @@ export default function DisputeEditorPage({ user }) {
     setShowChangeStatus(false);
   };
 
+  const handleFinalize = async () => {
+    setFinalizing(true);
+    try {
+      await axios.post(`${API}/governance/disputes/${disputeId}/finalize`, {});
+      await refetchDispute();
+      setShowFinalizeConfirm(false);
+      toast.success('Dispute finalized and locked');
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to finalize dispute');
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
   const handleDelete = async () => {
     setDeleting(true);
     try {
