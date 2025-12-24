@@ -190,13 +190,13 @@ const HomePage = () => {
               </div>
               <Link to="/sources" className="inline-flex items-center gap-2 mt-6 sm:mt-8 text-[#C6A87C] font-sans font-medium text-sm hover:gap-3 transition-all" data-testid="view-sources">
                 View Source Library
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" weight="bold" />
               </Link>
             </div>
             <div className="relative hidden lg:block">
               <div className="aspect-square bg-gradient-to-br from-[#1E293B] to-[#0F172A] rounded-sm p-12 flex items-center justify-center">
                 <div className="text-center">
-                  <Users className="w-24 h-24 text-[#C6A87C]/20 mx-auto mb-6" />
+                  <Users className="w-24 h-24 text-[#C6A87C]/20 mx-auto mb-6" weight="duotone" />
                   <p className="font-serif text-2xl text-[#C6A87C] italic">
                     "Equity looks to the intent rather than to the form"
                   </p>
