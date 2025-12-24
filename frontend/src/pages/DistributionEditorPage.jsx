@@ -665,13 +665,44 @@ export default function DistributionEditorPage({ user }) {
           
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm text-vault-muted mb-1 block">Name *</label>
-              <Input
-                placeholder="Recipient name"
-                value={newRecipient.name}
-                onChange={(e) => setNewRecipient(prev => ({ ...prev, name: e.target.value }))}
-                className="bg-[#05080F] border-vault-gold/20 text-white"
-              />
+              <label className="text-sm text-vault-muted mb-1 block">Select Beneficiary *</label>
+              {parties.length > 0 ? (
+                <Select 
+                  value={newRecipient.name} 
+                  onValueChange={(v) => {
+                    const selectedParty = parties.find(p => p.name === v);
+                    setNewRecipient(prev => ({ 
+                      ...prev, 
+                      name: v,
+                      role: selectedParty?.role || 'beneficiary',
+                      party_id: selectedParty?.party_id || null
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue placeholder="Choose a beneficiary..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    {parties.map(party => (
+                      <SelectItem 
+                        key={party.party_id || party.name} 
+                        value={party.name} 
+                        className="text-white hover:bg-vault-gold/20"
+                      >
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-vault-muted" />
+                          <span>{party.name}</span>
+                          <span className="text-xs text-vault-muted">({party.role || 'party'})</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="text-sm text-vault-muted p-3 bg-vault-dark/50 rounded-lg border border-vault-gold/10">
+                  No parties found. Add beneficiaries to this trust first.
+                </div>
+              )}
             </div>
             
             <div>
@@ -739,7 +770,11 @@ export default function DistributionEditorPage({ user }) {
             <Button variant="outline" onClick={() => setShowAddRecipient(false)} className="border-vault-gold/30">
               Cancel
             </Button>
-            <Button onClick={handleAddRecipient} disabled={!newRecipient.name.trim()} className="bg-vault-gold text-vault-dark">
+            <Button 
+              onClick={handleAddRecipient} 
+              disabled={!newRecipient.name.trim() || parties.length === 0} 
+              className="bg-vault-gold text-vault-dark"
+            >
               Add Recipient
             </Button>
           </DialogFooter>
