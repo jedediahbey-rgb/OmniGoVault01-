@@ -412,3 +412,112 @@ class DisputeCreate(BaseModel):
     amount_claimed: float = 0.0
     currency: str = "USD"
     priority: str = "medium"
+
+
+
+# ============ LIFE INSURANCE MODELS ============
+
+class InsuranceBeneficiary(BaseModel):
+    """Beneficiary of an insurance policy"""
+    beneficiary_id: str = Field(default_factory=lambda: f"ins_ben_{uuid.uuid4().hex[:8]}")
+    party_id: Optional[str] = None  # Link to trust party
+    name: str
+    relationship: str = ""  # spouse, child, trust, charity, etc.
+    percentage: float = 0.0  # Percentage of benefit
+    beneficiary_type: str = "primary"  # primary, contingent
+    notes: str = ""
+
+
+class InsurancePremiumPayment(BaseModel):
+    """Premium payment record"""
+    payment_id: str = Field(default_factory=lambda: f"prem_{uuid.uuid4().hex[:8]}")
+    payment_date: str
+    amount: float
+    currency: str = "USD"
+    payment_method: str = ""  # check, ach, wire
+    confirmation_number: str = ""
+    notes: str = ""
+
+
+class InsurancePolicy(BaseModel):
+    """Life Insurance Policy record"""
+    policy_id: str = Field(default_factory=lambda: f"ins_{uuid.uuid4().hex[:12]}")
+    trust_id: Optional[str] = None
+    portfolio_id: str
+    user_id: str
+    
+    # Policy details
+    title: str  # Display name for the policy
+    policy_number: str = ""
+    policy_type: str = "whole_life"  # whole_life, term, universal, variable, group
+    
+    # RM-ID for internal recordkeeping
+    rm_id: str = ""
+    
+    # Carrier information
+    carrier_name: str = ""
+    carrier_contact: str = ""
+    carrier_phone: str = ""
+    carrier_address: str = ""
+    agent_name: str = ""
+    agent_contact: str = ""
+    
+    # Insured person
+    insured_name: str = ""
+    insured_dob: Optional[str] = None
+    insured_ssn_last4: str = ""  # Last 4 digits only
+    
+    # Coverage details
+    death_benefit: float = 0.0
+    cash_value: float = 0.0
+    currency: str = "USD"
+    
+    # Premium information
+    premium_amount: float = 0.0
+    premium_frequency: str = "monthly"  # monthly, quarterly, semi_annual, annual
+    premium_due_date: Optional[str] = None  # Day of month/year
+    premium_payments: List[InsurancePremiumPayment] = []
+    
+    # Beneficiaries
+    beneficiaries: List[InsuranceBeneficiary] = []
+    
+    # Key dates
+    effective_date: Optional[str] = None
+    maturity_date: Optional[str] = None
+    expiration_date: Optional[str] = None  # For term policies
+    
+    # Status
+    status: str = "active"  # active, lapsed, paid_up, surrendered, claimed, expired
+    locked: bool = False
+    locked_at: Optional[str] = None
+    
+    # Loans against policy
+    loan_balance: float = 0.0
+    loan_interest_rate: float = 0.0
+    
+    # Related documents
+    related_document_ids: List[str] = []
+    
+    # Notes
+    notes: str = ""
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    deleted_at: Optional[str] = None
+
+
+class InsurancePolicyCreate(BaseModel):
+    """Create insurance policy request"""
+    title: str
+    policy_number: str = ""
+    policy_type: str = "whole_life"
+    carrier_name: str = ""
+    insured_name: str = ""
+    death_benefit: float = 0.0
+    cash_value: float = 0.0
+    currency: str = "USD"
+    premium_amount: float = 0.0
+    premium_frequency: str = "monthly"
+    effective_date: Optional[str] = None
+    notes: str = ""
