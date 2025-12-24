@@ -296,6 +296,18 @@ export default function InsuranceEditorPage({ user }) {
     }
   };
 
+  const handleAmend = async () => {
+    try {
+      const res = await axios.post(`${API}/governance/insurance-policies/${policyId}/amend`, {});
+      const data = res.data;
+      const amendmentData = data.item || data;
+      toast.success('Amendment created');
+      navigate(`/vault/governance/insurance/${amendmentData.policy_id}`);
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to create amendment');
+    }
+  };
+
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
