@@ -521,6 +521,66 @@ export default function GovernancePage({ user }) {
     }
   };
 
+  const handleCreateInsurance = async () => {
+    if (!newInsurance.title.trim()) {
+      toast.error('Please enter a policy name');
+      return;
+    }
+    if (!selectedPortfolio) {
+      toast.error('Please select a portfolio');
+      return;
+    }
+    
+    setCreatingInsurance(true);
+    try {
+      const res = await axios.post(`${API}/governance/insurance-policies`, {
+        ...newInsurance,
+        portfolio_id: selectedPortfolio,
+        death_benefit: parseFloat(newInsurance.death_benefit) || 0,
+        cash_value: parseFloat(newInsurance.cash_value) || 0,
+        premium_amount: parseFloat(newInsurance.premium_amount) || 0,
+      });
+      
+      const data = res.data;
+      const policyData = data.item || data;
+      
+      toast.success('Insurance policy created');
+      setShowNewInsurance(false);
+      setNewInsurance({
+        title: '',
+        policy_type: 'whole_life',
+        policy_number: '',
+        carrier_name: '',
+        insured_name: '',
+        death_benefit: '',
+        cash_value: '',
+        currency: 'USD',
+        premium_amount: '',
+        premium_frequency: 'monthly',
+        effective_date: '',
+        notes: '',
+      });
+      
+      navigate(`/vault/governance/insurance/${policyData.policy_id}`);
+    } catch (error) {
+      console.error('Failed to create insurance policy:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to create insurance policy');
+    } finally {
+      setCreatingInsurance(false);
+    }
+  };
+
+  const handleDeleteInsurance = async (policyId) => {
+    try {
+      await axios.delete(`${API}/governance/insurance-policies/${policyId}`);
+      toast.success('Insurance policy deleted');
+      fetchInsurancePolicies();
+    } catch (error) {
+      console.error('Failed to delete insurance policy:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to delete insurance policy');
+    }
+  };
+
   const filteredMeetings = meetings.filter(m => 
     m.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.rm_id?.toLowerCase().includes(searchTerm.toLowerCase())
