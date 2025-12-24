@@ -996,10 +996,14 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
     # Find ALL used subject codes across ALL collections
     used_codes = set()
     
-    # Reserved codes: 00-09 for templates, 20-24 for governance
-    # These are shared/system codes, not per-entry codes
-    reserved_codes = {"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", 
-                      "20", "21", "22", "23", "24", "25"}
+    # Reserved codes: 00-09 for templates
+    # Governance codes 20-29 are NOT in reserved_codes because each governance module
+    # uses its own designated code (20=Meetings, 21=Distributions, 22=Disputes, 23=Insurance, 24=Compensation)
+    # Non-governance items should skip 20-29 when finding available codes
+    reserved_codes = {"00", "01", "02", "03", "04", "05", "06", "07", "08", "09"}
+    
+    # Governance codes that are designated for specific modules
+    governance_codes = {"20", "21", "22", "23", "24", "25", "26", "27", "28", "29"}
     
     # Check assets for used codes
     assets = await db.assets.find(
