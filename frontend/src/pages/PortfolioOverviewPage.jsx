@@ -1298,13 +1298,13 @@ export default function PortfolioOverviewPage({ user }) {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent className="bg-vault-navy border-white/10 z-[100]" position="popper" sideOffset={4}>
-                      {subjectCategories.map(cat => (
+                      {ledgerCategories.map(cat => (
                         <SelectItem key={cat.code} value={cat.code}>
                           {cat.code} - {cat.name}
                         </SelectItem>
                       ))}
-                      {subjectCategories.length === 0 && (
-                        <SelectItem value="00">00 - General</SelectItem>
+                      {ledgerCategories.length === 0 && (
+                        <SelectItem value="10">10 - Real Estate</SelectItem>
                       )}
                     </SelectContent>
                   </Select>
