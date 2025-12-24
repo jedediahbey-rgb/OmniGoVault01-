@@ -2,30 +2,16 @@
 
 ## Current Testing Session
 - Session Date: 2024-12-24
-- Testing Focus: Governance Module - Meeting Minutes MVP
+- Testing Focus: Governance Module - Meeting Minutes MVP - API Envelope Adaptation
 
 ## Features to Test
 
-### P0: Governance Meeting Minutes Module (NEW FEATURE)
-**Implementation:**
-- Backend: `/app/backend/routes/governance.py` - Full CRUD for meetings
-- Backend Models: `/app/backend/models/governance.py` - Meeting, Attendee, AgendaItem, Motion, Attestation models
-- Frontend: `/app/frontend/src/pages/GovernancePage.jsx` - Governance hub with meetings list
-- Frontend: `/app/frontend/src/pages/MeetingEditorPage.jsx` - Meeting editor with full functionality
-
-**Backend API Endpoints:**
-- POST /api/governance/meetings - Create meeting
-- GET /api/governance/meetings - List meetings
-- GET /api/governance/meetings/{id} - Get meeting
-- PUT /api/governance/meetings/{id} - Update meeting
-- DELETE /api/governance/meetings/{id} - Delete meeting (draft only)
-- POST /api/governance/meetings/{id}/agenda - Add agenda item
-- PUT /api/governance/meetings/{id}/agenda/{item_id} - Update agenda item
-- DELETE /api/governance/meetings/{id}/agenda/{item_id} - Delete agenda item
-- POST /api/governance/meetings/{id}/finalize - Finalize & lock meeting
-- POST /api/governance/meetings/{id}/attest - Add attestation
-- POST /api/governance/meetings/{id}/amend - Create amendment
-- GET /api/governance/meetings/{id}/verify - Verify hash integrity
+### P0: Frontend API Adaptation for New Envelope Format
+**What was changed:**
+- `GovernancePage.jsx` - `handleCreateMeeting` now handles `{ ok: true, item: {...} }` response
+- `MeetingEditorPage.jsx` - `fetchMeeting` and `refetchMeeting` now handle `{ ok: true, item: {...} }` response
+- `MeetingEditorPage.jsx` - `handleAmend` now handles the envelope format
+- Error messages now extract from `error.response?.data?.error?.message`
 
 **Test Steps for Frontend:**
 1. Login via Google Auth
@@ -34,42 +20,33 @@
 4. Click "New Meeting" button
 5. Fill in meeting details (title, type, date, location)
 6. Click "Create Meeting"
-7. **EXPECTED**: Navigate to meeting editor page
-8. Add attendees (name, role, present status)
-9. Add agenda items
-10. Add motions to agenda items
-11. Change motion status
-12. Click "Finalize Minutes"
-13. **EXPECTED**: Meeting is locked, hash is generated
-14. Add attestation
-15. **EXPECTED**: Attestation appears with signature
-16. Try to create amendment
-17. **EXPECTED**: New meeting is created referencing original
+7. **EXPECTED**: Navigate to meeting editor page (verifies handleCreateMeeting works)
+8. Verify meeting data is displayed correctly (verifies fetchMeeting works)
+9. Add attendees
+10. Add agenda items
+11. Save changes and verify they persist (verifies refetchMeeting works)
+12. Finalize meeting
+13. Add attestation
+14. Try to create amendment (verifies handleAmend works)
 
-**Test Steps for Backend:**
-1. Create meeting via POST /api/governance/meetings
-2. Update meeting via PUT /api/governance/meetings/{id}
-3. Add agenda item via POST /api/governance/meetings/{id}/agenda
-4. Finalize meeting via POST /api/governance/meetings/{id}/finalize
-5. Verify hash via GET /api/governance/meetings/{id}/verify
-6. Add attestation via POST /api/governance/meetings/{id}/attest
-7. Create amendment via POST /api/governance/meetings/{id}/amend
+**Backend API Response Formats:**
+- GET /api/governance/meetings → `{ ok, items, count, total, sort }`
+- GET /api/governance/meetings/{id} → `{ ok, item }`
+- POST /api/governance/meetings → `{ ok, item }`
+- PUT /api/governance/meetings/{id} → `{ ok, item }`
+- POST /api/governance/meetings/{id}/finalize → `{ ok, message, finalized_hash, item }`
+- POST /api/governance/meetings/{id}/attest → `{ ok, message, attestation }`
+- POST /api/governance/meetings/{id}/amend → `{ ok, message, item }`
 
 ## Code Files Modified This Session
-- `/app/backend/server.py` - Added governance router, new subject categories
-- `/app/backend/routes/governance.py` - NEW FILE - Governance API routes
-- `/app/backend/models/governance.py` - NEW FILE - Governance data models
-- `/app/frontend/src/App.js` - Added governance routes
-- `/app/frontend/src/pages/GovernancePage.jsx` - NEW FILE - Governance hub page
-- `/app/frontend/src/pages/MeetingEditorPage.jsx` - NEW FILE - Meeting editor page
-- `/app/frontend/src/components/layout/Sidebar.jsx` - Added Governance nav item
+- `/app/frontend/src/pages/GovernancePage.jsx` - Fixed handleCreateMeeting
+- `/app/frontend/src/pages/MeetingEditorPage.jsx` - Fixed fetchMeeting, refetchMeeting, handleAmend, error handling
 
 ## Testing Scope
-- Backend testing via API calls
 - Frontend testing via Playwright with authenticated session
 - Requires Emergent-managed Google Auth for login
 
 ## Incorporate User Feedback
 - Meeting Minutes is the foundation module for Governance
-- Tamper-evident hash chain is critical for trust governance
-- Attestation workflow must be smooth for trustees
+- Frontend must properly handle the new standardized API envelope
+- All API call sites have been updated to extract data from envelope
