@@ -207,12 +207,13 @@ export default function MeetingEditorPage({ user }) {
           setExpandedItems(expanded);
         }
       } catch (error) {
-        // Ignore abort errors
-        if (error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
+        // Silently ignore aborted requests (happens on navigation)
+        if (error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED' || !isMounted) {
           return;
         }
         console.error('Failed to fetch meeting:', error);
-        if (isMounted) {
+        // Only show error if still mounted and not a cancellation
+        if (isMounted && error?.response?.status !== 0) {
           toast.error('Failed to load meeting details');
           navigate('/vault/governance');
         }
