@@ -2,34 +2,52 @@
 
 ## Current Testing Session
 - Session Date: 2024-12-24
-- Testing Focus: P0 Bugs - RM-ID Sequence Fix & Sorting Order
+- Testing Focus: P0 Mobile Dropdown Bug Fix, Trash View, Error Toast
 
 ## Features to Test
 
-### P0 Issue #1: RM-ID Sequence Bug Fix
-1. Create first document from "Declaration of Trust" template → Should get RM-ID ending in `.001`
-2. Create second document from same template → Should get RM-ID ending in `.002`
-3. Create document from different template (e.g., "Trust Transfer Grant Deed") → Should get RM-ID ending in `.001` for that category
-4. Verify atomic operations prevent race conditions in concurrent requests
+### P0 Issue #1: Mobile Dropdown Auto-Collapse in Template Studio (FIXED)
+**Fix Applied:** Implemented robust controlled Select with Fix A + Fix C pattern:
+- Added `portfolioSelectOpen` state for controlled dropdown
+- Added `titleInputRef` to blur keyboard before opening dropdown  
+- `onPointerDown` handler opens dropdown with `setPortfolioSelectOpen(true)` (never toggle)
+- Added `onPointerDownOutside` and `onInteractOutside` handlers to SelectContent
+- Dialog's `onOpenChange` prevents closing when dropdown is open
 
-### P0 Issue #2: Sorting Order Verification
-1. GET /api/documents → Should return documents sorted by `created_at` ascending (oldest first)
-2. GET /api/portfolios/{id}/assets → Should return assets sorted by `created_at` ascending (oldest first)
-3. GET /api/portfolios/{id}/ledger → Should return ledger entries sorted by `created_at` ascending (oldest first)
+**Test Steps:**
+1. Login via Google Auth
+2. Navigate to `/templates` (Template Studio)
+3. Click on any template card (e.g., "Declaration of Trust")
+4. In the "Create Document" dialog, first type in the Document Title input
+5. Then tap/click on the "Portfolio (Optional)" dropdown
+6. **EXPECTED**: Dropdown opens and stays open, allowing user to select a portfolio
+7. Select a portfolio or "No Portfolio"
+8. **EXPECTED**: Selection is made and dropdown closes properly
 
-## Backend Changes Made
-1. `seed_default_categories` now uses `update_one` with `upsert=True` to prevent race condition duplicates
-2. `generate_subject_rm_id` now uses `find_one_and_update` with `ReturnDocument.BEFORE` for atomic sequence generation
-3. Ledger entries endpoint now sorts by `created_at` ascending (was `recorded_date` descending)
+### P0 Issue #2: Trash View Empty & Redirect on Refresh
+**Test Steps:**
+1. Navigate to `/vault/documents`
+2. Create a test document if needed
+3. Delete the document (move to trash)
+4. Navigate to `/vault/trash`
+5. **EXPECTED**: Trashed documents should be visible
+6. Refresh the page (F5)
+7. **EXPECTED**: Should remain on `/vault/trash`, not redirect to `/vault/documents`
 
-## Code Files Modified
-- `/app/backend/server.py`
+### P1 Issue #3: "Failed to load portfolio" Toast 
+**Test Steps:**
+1. Navigate to a portfolio overview page
+2. Click the "Docs" tab
+3. Click on any document to navigate to the editor
+4. **EXPECTED**: No erroneous "Failed to load portfolio" toast should appear
+
+## Code Files Modified This Session
+- `/app/frontend/src/pages/TemplatesPage.jsx` - Fixed mobile dropdown with controlled Select pattern
 
 ## Testing Scope
-- Backend API tests for RM-ID generation
-- Backend API tests for sorting order
-- Requires authentication via Google OAuth
+- Frontend testing via Playwright with mobile viewport (375px)
+- Requires Emergent-managed Google Auth for login
 
 ## Incorporate User Feedback
-- First document from a default template category must have RM-ID ending in `.001`
-- All lists (documents, assets, ledger entries) must be sorted oldest first (ascending by created_at)
+- Mobile dropdown should open and STAY OPEN when tapping after focusing on Document Title input
+- Trash view must persist on page refresh at /vault/trash URL
