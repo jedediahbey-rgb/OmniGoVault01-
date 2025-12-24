@@ -1029,7 +1029,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Attestation Dialog */}
       <Dialog open={showAttest} onOpenChange={setShowAttest}>
-        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+        <DialogContent ref={attestDialogRef} className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-vault-gold flex items-center gap-2">
               <Seal className="w-5 h-5" />
@@ -1043,7 +1043,6 @@ export default function MeetingEditorPage({ user }) {
             <div>
               <label className="text-sm text-vault-muted mb-1 block">Your Name</label>
               <Input
-                ref={attestationNameInputRef}
                 value={attestation.party_name}
                 onChange={(e) => setAttestation(prev => ({ ...prev, party_name: e.target.value }))}
                 placeholder="Full legal name"
@@ -1056,13 +1055,13 @@ export default function MeetingEditorPage({ user }) {
                 value={attestation.party_role} 
                 onValueChange={(v) => setAttestation(prev => ({ ...prev, party_role: v }))}
               >
-                <SelectTrigger 
-                  className="bg-[#05080F] border-vault-gold/20 text-white"
-                  onPointerDown={handleSelectPointerDown(attestationNameInputRef)}
-                >
+                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                <SelectContent 
+                  container={attestDialogRef.current}
+                  className="bg-[#0B1221] border-vault-gold/30 z-[100]"
+                >
                   {roleOptions.slice(0, 4).map(r => (
                     <SelectItem key={r.value} value={r.value} className="text-white hover:bg-vault-gold/20">
                       {r.label}
