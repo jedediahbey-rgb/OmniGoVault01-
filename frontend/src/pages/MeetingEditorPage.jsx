@@ -453,7 +453,7 @@ export default function MeetingEditorPage({ user }) {
         <GlassCard className="p-8 text-center">
           <Warning className="w-16 h-16 mx-auto text-red-400 mb-4" />
           <h2 className="text-xl text-white">Meeting not found</h2>
-          <Button onClick={() => navigate('/vault/governance')} className="mt-4">
+          <Button onClick={() => navigate('/vault/governance')} className="mt-4 bg-vault-gold text-vault-dark">
             Back to Governance
           </Button>
         </GlassCard>
