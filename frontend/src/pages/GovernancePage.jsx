@@ -910,6 +910,165 @@ export default function GovernancePage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* New Distribution Dialog */}
+      <Dialog open={showNewDistribution} onOpenChange={setShowNewDistribution}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
+              <HandCoins className="w-6 h-6" />
+              New Distribution
+            </DialogTitle>
+            <DialogDescription className="text-vault-muted">
+              Create a new trust distribution record
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Distribution Title *</label>
+              <Input
+                placeholder="e.g., Q4 2024 Beneficiary Distribution"
+                value={newDistribution.title}
+                onChange={(e) => setNewDistribution(prev => ({ ...prev, title: e.target.value }))}
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Distribution Type</label>
+              <Select 
+                value={newDistribution.distribution_type} 
+                onValueChange={(v) => setNewDistribution(prev => ({ ...prev, distribution_type: v }))}
+              >
+                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                  <SelectItem value="regular" className="text-white hover:bg-vault-gold/20">
+                    <div className="flex items-center gap-2">
+                      <HandCoins className="w-4 h-4 text-emerald-400" />
+                      Regular Distribution
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="special" className="text-white hover:bg-vault-gold/20">
+                    <div className="flex items-center gap-2">
+                      <Gavel className="w-4 h-4 text-amber-400" />
+                      Special Distribution
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="final" className="text-white hover:bg-vault-gold/20">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-vault-gold" />
+                      Final Distribution
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="emergency" className="text-white hover:bg-vault-gold/20">
+                    <div className="flex items-center gap-2">
+                      <Warning className="w-4 h-4 text-red-400" />
+                      Emergency Distribution
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Total Amount</label>
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  value={newDistribution.total_amount}
+                  onChange={(e) => setNewDistribution(prev => ({ ...prev, total_amount: e.target.value }))}
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Currency</label>
+                <Select 
+                  value={newDistribution.currency} 
+                  onValueChange={(v) => setNewDistribution(prev => ({ ...prev, currency: v }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <SelectItem value="USD" className="text-white hover:bg-vault-gold/20">USD</SelectItem>
+                    <SelectItem value="EUR" className="text-white hover:bg-vault-gold/20">EUR</SelectItem>
+                    <SelectItem value="GBP" className="text-white hover:bg-vault-gold/20">GBP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Asset Type</label>
+              <Select 
+                value={newDistribution.asset_type} 
+                onValueChange={(v) => setNewDistribution(prev => ({ ...prev, asset_type: v }))}
+              >
+                <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                  <SelectItem value="cash" className="text-white hover:bg-vault-gold/20">Cash</SelectItem>
+                  <SelectItem value="securities" className="text-white hover:bg-vault-gold/20">Securities</SelectItem>
+                  <SelectItem value="property" className="text-white hover:bg-vault-gold/20">Property</SelectItem>
+                  <SelectItem value="mixed" className="text-white hover:bg-vault-gold/20">Mixed Assets</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Scheduled Date</label>
+              <Input
+                type="date"
+                value={newDistribution.scheduled_date}
+                onChange={(e) => setNewDistribution(prev => ({ ...prev, scheduled_date: e.target.value }))}
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Description</label>
+              <Textarea
+                placeholder="Optional notes about this distribution..."
+                value={newDistribution.description}
+                onChange={(e) => setNewDistribution(prev => ({ ...prev, description: e.target.value }))}
+                className="bg-[#05080F] border-vault-gold/20 text-white min-h-[80px]"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowNewDistribution(false)}
+              className="border-vault-gold/30 text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateDistribution}
+              disabled={creatingDistribution || !newDistribution.title.trim()}
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+            >
+              {creatingDistribution ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-vault-dark border-t-transparent rounded-full animate-spin mr-2" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Distribution
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
