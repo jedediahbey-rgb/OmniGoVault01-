@@ -14,6 +14,7 @@ from typing import Optional, List
 import hashlib
 import json
 import re
+import uuid
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api/governance", tags=["governance"])
