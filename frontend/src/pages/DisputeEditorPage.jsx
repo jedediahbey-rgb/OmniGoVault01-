@@ -366,6 +366,29 @@ export default function DisputeEditorPage({ user }) {
     setShowChangeStatus(false);
   };
 
+  const handleSetOutcome = async (outcome) => {
+    try {
+      await axios.post(`${API}/governance/disputes/${disputeId}/set-outcome`, { status: outcome });
+      await refetchDispute();
+      setShowChangeStatus(false);
+      toast.success(`Dispute outcome set to ${outcome}`);
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to set outcome');
+    }
+  };
+
+  const handleAmend = async () => {
+    try {
+      const res = await axios.post(`${API}/governance/disputes/${disputeId}/amend`, {});
+      const data = res.data;
+      const amendmentData = data.item || data;
+      toast.success('Amendment created');
+      navigate(`/vault/governance/disputes/${amendmentData.dispute_id}`);
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to create amendment');
+    }
+  };
+
   const handleFinalize = async () => {
     setFinalizing(true);
     try {
