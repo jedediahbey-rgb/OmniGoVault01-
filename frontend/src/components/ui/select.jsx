@@ -68,6 +68,18 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
         className
       )}
       position={position}
+      // When clicking outside dropdown, close it and stop event from reaching dialog
+      onPointerDownOutside={(e) => {
+        // Let the dropdown close, but stop the event from bubbling to dialog
+        e.stopPropagation();
+      }}
+      onInteractOutside={(e) => {
+        e.stopPropagation();
+      }}
+      // Prevent focus from jumping around
+      onCloseAutoFocus={(e) => {
+        e.preventDefault();
+      }}
       {...props}>
       <SelectScrollUpButton />
       <SelectPrimitive.Viewport
