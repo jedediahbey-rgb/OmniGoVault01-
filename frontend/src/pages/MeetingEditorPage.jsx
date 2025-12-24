@@ -600,9 +600,15 @@ export default function MeetingEditorPage({ user }) {
                       <StatusIcon className="w-3 h-3 mr-1" />
                       {status.label}
                     </Badge>
+                    {isLocked && (
+                      <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
+                        <Lock className="w-3 h-3 mr-1" />
+                        Locked
+                      </Badge>
+                    )}
                     {meeting.is_amendment && (
                       <Badge className="bg-purple-500/20 text-purple-400 border border-purple-400/30">
-                        Amendment #{meeting.amendment_number}
+                        v{meeting.revision || meeting.amendment_number + 1}
                       </Badge>
                     )}
                     <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20">
