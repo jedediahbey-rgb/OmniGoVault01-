@@ -647,18 +647,18 @@ export default function MaximsPage({ user }) {
 
   // Main Maxims List View
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8 min-w-0 max-w-full">
       <PageHeader
         icon={Sparkle}
         title="Maxims of Equity"
         subtitle="The foundational principles governing equitable jurisprudence"
         actions={
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {dueForReview.length > 0 && (
               <Button 
                 onClick={() => { setStudyMode('review'); setCurrentStudyIndex(0); setShowAnswer(false); }}
                 variant="outline"
-                className="btn-secondary"
+                className="btn-secondary whitespace-nowrap"
               >
                 <Clock className="w-4 h-4 mr-2" weight="duotone" />
                 Review ({dueForReview.length})
@@ -667,14 +667,14 @@ export default function MaximsPage({ user }) {
             <Button 
               onClick={() => { setStudyMode('flashcard'); setCurrentStudyIndex(0); setShowAnswer(false); }}
               variant="outline"
-              className="btn-secondary"
+              className="btn-secondary whitespace-nowrap"
             >
               <Brain className="w-4 h-4 mr-2" weight="duotone" />
               Flashcards
             </Button>
             <Button 
               onClick={() => { setStudyMode('study'); setCurrentStudyIndex(0); }} 
-              className="btn-primary"
+              className="btn-primary whitespace-nowrap"
             >
               <BookOpen className="w-4 h-4 mr-2" weight="duotone" />
               Study Mode
