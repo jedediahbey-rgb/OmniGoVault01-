@@ -356,6 +356,13 @@ export default function GovernancePage({ user }) {
     });
   };
 
+  const formatCurrency = (amount, currency = 'USD') => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount || 0);
+  };
+
   const selectedPortfolioData = portfolios.find(p => p.portfolio_id === selectedPortfolio);
 
   return (
