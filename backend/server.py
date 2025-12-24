@@ -25,11 +25,20 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 
-# Import modular components (new structure)
-# Note: Models are still defined inline for now - will migrate gradually
-# from models import *
-# from services.rmid import normalize_rm_id, generate_subject_rm_id
-# from utils.auth import get_current_user
+# ============================================================================
+# MODULAR ARCHITECTURE (Partial Migration)
+# ============================================================================
+# The codebase is being migrated to a modular structure:
+#   /app/backend/
+#   ├── server.py          <- This file (main app + routes)
+#   ├── models/            <- Pydantic models (user, portfolio, document, etc.)
+#   ├── routes/            <- API route handlers (to be extracted)
+#   ├── services/          <- Business logic (rmid.py, pdf.py)
+#   └── utils/             <- Utilities (db.py, auth.py)
+#
+# Current state: Models and core functions are still inline for stability.
+# Next steps: Extract routes into separate modules one at a time.
+# ============================================================================
 
 
 ROOT_DIR = Path(__file__).parent
