@@ -16,7 +16,7 @@ const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props} />
@@ -32,27 +32,9 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
         "fixed left-1/2 top-[10dvh] z-50 grid w-[95%] max-w-lg -translate-x-1/2 max-h-[85dvh] overflow-y-auto gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
         className
       )}
-      // FIX #2: Prevent dialog close when clicking on Select dropdown content
-      onPointerDownOutside={(e) => {
-        const t = e.target;
-        // If click is inside ANY radix select content, don't close the dialog
-        if (t?.closest?.('[data-radix-select-content]') || 
-            t?.closest?.('[data-radix-select-viewport]') ||
-            t?.closest?.('[role="listbox"]') ||
-            t?.closest?.('[role="option"]')) {
-          e.preventDefault();
-        }
-      }}
-      onInteractOutside={(e) => {
-        const t = e.target;
-        // If interaction is inside ANY radix select content, don't close the dialog
-        if (t?.closest?.('[data-radix-select-content]') || 
-            t?.closest?.('[data-radix-select-viewport]') ||
-            t?.closest?.('[role="listbox"]') ||
-            t?.closest?.('[role="option"]')) {
-          e.preventDefault();
-        }
-      }}
+      onPointerDownOutside={(e) => e.preventDefault()}
+      onInteractOutside={(e) => e.preventDefault()}
+      onEscapeKeyDown={(e) => {/* Allow escape to close */}}
       {...props}>
       {children}
       <DialogPrimitive.Close
