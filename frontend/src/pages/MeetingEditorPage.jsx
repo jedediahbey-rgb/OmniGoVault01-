@@ -424,10 +424,14 @@ export default function MeetingEditorPage({ user }) {
       const res = await axios.post(`${API}/governance/meetings/${meetingId}/amend`, {
         reason: amendReason
       });
+      // Handle envelope format: { ok: true, message: "...", item: {...} }
+      const data = res.data;
+      const amendmentData = data.item || data.amendment || data;
+      
       toast.success('Amendment created');
-      navigate(`/vault/governance/meetings/${res.data.amendment.meeting_id}`);
+      navigate(`/vault/governance/meetings/${amendmentData.meeting_id}`);
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to create amendment');
+      toast.error(error.response?.data?.error?.message || 'Failed to create amendment');
     }
   };
 
