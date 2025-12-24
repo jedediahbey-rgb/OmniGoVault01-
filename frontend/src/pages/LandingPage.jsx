@@ -185,7 +185,7 @@ export default function LandingPage() {
                   className="glass-card p-5 sm:p-6 rounded-xl group hover:border-vault-gold/30 transition-all duration-300"
                 >
                   <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-vault-gold/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-vault-gold/20 transition-colors">
-                    <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-vault-gold" />
+                    <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-vault-gold" weight="duotone" />
                   </div>
                   <h3 className="text-lg sm:text-xl font-heading text-white mb-2">{feature.title}</h3>
                   <p className="text-white/50 text-sm leading-relaxed">{feature.description}</p>
