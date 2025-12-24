@@ -552,6 +552,18 @@ export default function DistributionEditorPage({ user }) {
                 </Button>
               )}
               
+              {!isLocked && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFinalizeConfirm(true)}
+                  className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10"
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  Finalize
+                </Button>
+              )}
+              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="border-vault-gold/30">
