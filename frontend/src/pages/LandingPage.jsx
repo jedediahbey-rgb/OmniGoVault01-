@@ -77,7 +77,7 @@ export default function LandingPage() {
         <nav className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 max-w-7xl mx-auto">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-vault-gold to-vault-gold-dim flex items-center justify-center flex-shrink-0">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-vault-navy" />
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-vault-navy" weight="duotone" />
             </div>
             <span className="font-heading text-lg sm:text-xl text-white truncate">Equity Trust</span>
           </div>
