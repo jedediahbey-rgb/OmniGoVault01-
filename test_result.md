@@ -2,7 +2,20 @@
 
 ## Current Testing Session
 - Session Date: 2024-12-24
-- Testing Focus: Trustee Compensation Module Implementation (P1)
+- Testing Focus: Governance Editor Pages UI Refactor (P0)
+
+## Latest Changes (Editor Page Refactor)
+The following governance editor pages have been refactored to match the clean layout of DisputeEditorPage:
+1. **DistributionEditorPage.jsx** - Added `handleAmend` function, moved "Edit" to 3-dot dropdown
+2. **InsuranceEditorPage.jsx** - Added `handleAmend` function and `PlusCircle` import, moved "Edit" to 3-dot dropdown
+3. **MeetingEditorPage.jsx** - Moved "Edit" into 3-dot dropdown menu
+
+### Key UI Changes:
+- "Edit Details" button is now inside the 3-dot dropdown menu (not a separate button)
+- "Finalize" button remains visible outside dropdown
+- "Amend" button appears when document is locked (outside dropdown for visibility)
+- "Delete" option is in the dropdown menu
+- Consistent layout across all editor pages
 
 ## Features to Test
 
