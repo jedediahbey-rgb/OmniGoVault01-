@@ -129,6 +129,7 @@ const disputeStatusConfig = {
   litigation: { label: 'Litigation', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
   settled: { label: 'Settled', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   closed: { label: 'Closed', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' },
+  finalized: { label: 'Finalized', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30' },
   appealed: { label: 'Appealed', color: 'bg-orange-500/30 text-orange-400 border-orange-400/30' },
 };
 
