@@ -64,7 +64,7 @@ export default function PortfolioOverviewPage({ user }) {
   const [editingAsset, setEditingAsset] = useState(null);
   const [newAssetDescription, setNewAssetDescription] = useState('');
   const [newAssetType, setNewAssetType] = useState('real_property');
-  const [newAssetSubjectCode, setNewAssetSubjectCode] = useState('00');
+  const [newAssetSubjectCode, setNewAssetSubjectCode] = useState('10'); // Assets start at code 10
   const [newAssetValue, setNewAssetValue] = useState('');
   const [newAssetNotes, setNewAssetNotes] = useState('');
   const [assetTransactionType, setAssetTransactionType] = useState('deposit');
@@ -74,7 +74,7 @@ export default function PortfolioOverviewPage({ user }) {
   const [showLedgerDialog, setShowLedgerDialog] = useState(false);
   const [editingLedger, setEditingLedger] = useState(null);
   const [ledgerEntryType, setLedgerEntryType] = useState('deposit');
-  const [ledgerSubjectCode, setLedgerSubjectCode] = useState('00');
+  const [ledgerSubjectCode, setLedgerSubjectCode] = useState('10'); // Ledger entries default to 10
   const [ledgerDescription, setLedgerDescription] = useState('');
   const [ledgerValue, setLedgerValue] = useState('');
   const [ledgerNotes, setLedgerNotes] = useState('');
