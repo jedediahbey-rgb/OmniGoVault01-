@@ -2675,6 +2675,66 @@ async def add_premium_payment(policy_id: str, data: dict, request: Request):
         return error_response("ADD_ERROR", "Failed to record premium payment", status_code=500)
 
 
+@router.post("/insurance-policies/{policy_id}/finalize")
+async def finalize_insurance_policy(policy_id: str, data: dict, request: Request):
+    """Finalize an insurance policy record - locks it permanently"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        policy = await db.insurance_policies.find_one(
+            {"policy_id": policy_id, "user_id": user.user_id}
+        )
+        
+        if not policy:
+            return error_response("NOT_FOUND", "Insurance policy not found", status_code=404)
+        
+        if policy.get("locked"):
+            return error_response("ALREADY_FINALIZED", "Policy already finalized")
+        
+        finalized_at = datetime.now(timezone.utc).isoformat()
+        finalized_by = data.get("finalized_by", user.name if hasattr(user, 'name') else "Unknown")
+        
+        await db.insurance_policies.update_one(
+            {"policy_id": policy_id},
+            {"$set": {
+                "locked": True,
+                "locked_at": finalized_at,
+                "finalized_at": finalized_at,
+                "finalized_by": finalized_by,
+                "updated_at": finalized_at
+            }}
+        )
+        
+        # Create ledger entry
+        if policy.get("rm_id"):
+            try:
+                await create_governance_ledger_entry(
+                    portfolio_id=policy.get("portfolio_id"),
+                    user_id=user.user_id,
+                    governance_type="insurance",
+                    governance_id=policy_id,
+                    rm_id=policy.get("rm_id"),
+                    title=policy.get("title", "Insurance Policy"),
+                    description=f"Policy finalized on {finalized_at[:10]}",
+                    value=policy.get("death_benefit"),
+                    entry_type="insurance",
+                    balance_effect="neutral",
+                    subject_code="23",
+                    subject_name="Insurance"
+                )
+            except Exception as le_err:
+                print(f"Warning: Could not create ledger entry: {le_err}")
+        
+        updated = await db.insurance_policies.find_one({"policy_id": policy_id}, {"_id": 0})
+        return success_message("Policy finalized", {"item": updated})
+    except Exception as e:
+        print(f"Error finalizing policy: {e}")
+        return error_response("FINALIZE_ERROR", "Failed to finalize policy", status_code=500)
+
+
 # ============ TRUSTEE COMPENSATION ============
 
 @router.get("/compensation")
