@@ -17,6 +17,7 @@ import {
   Lock,
   PencilSimple,
   Plus,
+  PlusCircle,
   Scales,
   ShieldCheck,
   Trash,
