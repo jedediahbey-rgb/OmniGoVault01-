@@ -292,7 +292,7 @@ export default function PortfolioOverviewPage({ user }) {
     setEditingAsset(asset);
     setNewAssetDescription(asset.description || '');
     setNewAssetType(asset.asset_type || 'real_property');
-    setNewAssetSubjectCode(asset.subject_code || '00');
+    setNewAssetSubjectCode(asset.subject_code || '10'); // Default to 10 for assets
     setNewAssetValue(asset.value ? String(asset.value) : '');
     setNewAssetNotes(asset.notes || '');
     setShowAssetDialog(true);
