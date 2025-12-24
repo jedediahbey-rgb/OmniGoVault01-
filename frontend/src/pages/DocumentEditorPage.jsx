@@ -508,11 +508,8 @@ export default function DocumentEditorPage({ user }) {
             <div className="min-w-0">
               <h2 className="text-white font-heading text-sm sm:text-base truncate">{title}</h2>
               <div className="flex items-center gap-2 text-xs sm:text-sm">
-                <span className="text-green-400 flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3" weight="duotone" /> <span className="hidden sm:inline">Finalized</span>
-                </span>
                 {document.sub_record_id && (
-                  <span className="text-vault-gold/60 font-mono text-xs truncate max-w-[100px] sm:max-w-none">{document.sub_record_id}</span>
+                  <span className="text-vault-gold/60 font-mono text-xs truncate max-w-[120px] sm:max-w-none">{document.sub_record_id}</span>
                 )}
               </div>
             </div>
