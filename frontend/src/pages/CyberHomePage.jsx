@@ -502,13 +502,13 @@ export default function CyberHomePage() {
               </motion.p>
               
               <motion.div variants={fadeInUp} className="mt-8 flex flex-col sm:flex-row gap-4">
-                <Link to="/vault">
+                <Link to="/login">
                   <Button size="lg" className="w-full sm:w-auto bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
                     Enter the Vault
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
-                <Link to="/vault/governance">
+                <Link to="/login">
                   <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/5">
                     Open Governance Console
                   </Button>
