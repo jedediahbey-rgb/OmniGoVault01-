@@ -2992,7 +2992,9 @@ async def create_insurance_amendment(policy_id: str, data: dict, request: Reques
             {"$set": {"amended_by_id": new_id}}
         )
         
-        return success_message("Amendment created", {"item": amendment})
+        # Remove MongoDB _id field before returning
+        clean_amendment = {k: v for k, v in amendment.items() if k != "_id"}
+        return success_message("Amendment created", {"item": clean_amendment})
     except Exception as e:
         print(f"Error creating amendment: {e}")
         return error_response("AMEND_ERROR", "Failed to create amendment", status_code=500)
