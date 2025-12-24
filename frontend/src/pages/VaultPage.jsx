@@ -22,9 +22,7 @@ import {
   Check,
   Archive,
   Star,
-  Star,
-  Funnel,
-  List
+  Funnel
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
