@@ -633,6 +633,14 @@ export default function MeetingEditorPage({ user }) {
               </div>
               
               <div className="flex items-center gap-2 shrink-0">
+                {/* Read-only indicator for finalized meetings */}
+                {isLocked && (
+                  <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30 gap-1">
+                    <Lock className="w-3 h-3" />
+                    Read-Only
+                  </Badge>
+                )}
+                
                 {isDraft && (
                   <Button
                     variant="outline"
@@ -641,6 +649,17 @@ export default function MeetingEditorPage({ user }) {
                   >
                     <PencilSimple className="w-4 h-4 mr-2" />
                     Edit
+                  </Button>
+                )}
+                
+                {/* Amend button - prominent for finalized meetings */}
+                {isFinalized && !meeting.amended_by_id && (
+                  <Button
+                    onClick={() => setShowAmend(true)}
+                    className="bg-purple-600 hover:bg-purple-500 text-white"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Amend
                   </Button>
                 )}
                 
@@ -669,13 +688,15 @@ export default function MeetingEditorPage({ user }) {
                           <Seal className="w-4 h-4 mr-2" />
                           Add Attestation
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          className="text-purple-400 hover:bg-purple-500/20"
-                          onClick={() => setShowAmend(true)}
-                        >
-                          <FileText className="w-4 h-4 mr-2" />
-                          Create Amendment
-                        </DropdownMenuItem>
+                        {!meeting.amended_by_id && (
+                          <DropdownMenuItem 
+                            className="text-purple-400 hover:bg-purple-500/20"
+                            onClick={() => setShowAmend(true)}
+                          >
+                            <FileText className="w-4 h-4 mr-2" />
+                            Create Amendment
+                          </DropdownMenuItem>
+                        )}
                       </>
                     )}
                     <DropdownMenuSeparator className="bg-vault-gold/20" />
