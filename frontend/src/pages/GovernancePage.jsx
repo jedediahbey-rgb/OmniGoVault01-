@@ -330,7 +330,6 @@ export default function GovernancePage({ user }) {
               <TabsTrigger 
                 value="distributions" 
                 className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
-                disabled
               >
                 <HandCoins className="w-4 h-4 mr-2 shrink-0" />
                 <span className="hidden sm:inline">Distributions</span><span className="sm:hidden">Dist.</span>
