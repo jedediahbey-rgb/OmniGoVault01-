@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { 
   BookOpen, 
-  Scale, 
+  Scales, 
   Shield, 
   ChatCircle, 
   FileText, 
