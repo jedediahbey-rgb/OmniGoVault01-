@@ -585,21 +585,22 @@ export default function VaultPage({ user }) {
                         <h3 className="text-white font-medium mb-1 line-clamp-2 min-w-0">{doc.title}</h3>
                         <p className="text-white/40 text-xs mb-3">{humanizeSlug(doc.document_type)}</p>
                         {doc.rm_id && (
-                          <p className="text-vault-gold/60 text-xs font-mono break-words mb-2 sm:hidden">
+                          <p className="text-vault-gold/60 text-[10px] sm:text-xs font-mono truncate mb-2 sm:hidden max-w-[150px]">
                             {doc.sub_record_id || doc.rm_id}
                           </p>
                         )}
-                        <div className="flex items-center justify-between text-xs text-white/30">
-                          <span className="flex items-center gap-1">
+                        <div className="flex items-center justify-between text-xs text-white/30 gap-2">
+                          <span className="flex items-center gap-1 shrink-0">
                             <Clock className="w-3 h-3" weight="duotone" />
                             {new Date(doc.updated_at).toLocaleDateString()}
                           </span>
-                          <span className={`px-2 py-0.5 rounded ${
+                          <span className={`px-2 py-0.5 rounded shrink-0 ${
                             doc.status === 'completed' ? 'bg-green-500/20 text-green-400' :
                             doc.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
+                            doc.is_locked ? 'bg-blue-500/20 text-blue-400' :
                             'bg-white/10 text-white/50'
                           }`}>
-                            {doc.status}
+                            {doc.is_locked ? 'Finalized' : doc.status}
                           </span>
                         </div>
                       </GlassCard>
