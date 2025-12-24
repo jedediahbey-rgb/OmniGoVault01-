@@ -157,8 +157,9 @@ class GovernanceFeatureTester:
         # Test meetings list endpoint
         response = self.run_test("Get Meetings List", "GET", f"governance/meetings?portfolio_id={self.portfolio_id}", 200)
         
-        if response and 'items' in response:
-            meetings = response['items']
+        if response:
+            # Handle envelope format: { ok: true, items: [...] }
+            meetings = response.get('items', response if isinstance(response, list) else [])
             if meetings:
                 meeting = meetings[0]
                 
@@ -174,6 +175,8 @@ class GovernanceFeatureTester:
                 if has_id and has_locked and has_revision:
                     print(f"   ✅ Meeting fields: id={meeting['id']}, locked={meeting['locked']}, revision={meeting['revision']}")
                     return True
+            else:
+                print(f"   ❌ No meetings found in response: {response}")
         
         return False
 
