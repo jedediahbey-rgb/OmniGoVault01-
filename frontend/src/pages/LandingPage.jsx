@@ -135,7 +135,7 @@ export default function LandingPage() {
                 onClick={handleLogin}
                 className="btn-primary text-sm sm:text-lg px-6 sm:px-8 py-3 sm:py-4 w-full sm:w-auto"
               >
-                Get Started <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                Get Started <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" weight="bold" />
               </Button>
               <Button 
                 onClick={() => navigate('/learn')}
