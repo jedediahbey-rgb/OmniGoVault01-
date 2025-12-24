@@ -155,11 +155,20 @@ export default function MeetingEditorPage({ user }) {
   const [expandedItems, setExpandedItems] = useState({});
 
   useEffect(() => {
+    // Guard: don't fetch with undefined meetingId
+    if (!meetingId) {
+      setLoading(false);
+      return;
+    }
+    
+    const abortController = new AbortController();
     let isMounted = true;
     
     const fetchMeeting = async () => {
       try {
-        const res = await axios.get(`${API}/governance/meetings/${meetingId}`);
+        const res = await axios.get(`${API}/governance/meetings/${meetingId}`, {
+          signal: abortController.signal
+        });
         
         if (!isMounted) return;
         
@@ -173,10 +182,19 @@ export default function MeetingEditorPage({ user }) {
         });
         
         // Fetch parties for this portfolio
-        if (res.data.portfolio_id) {
-          const partiesRes = await axios.get(`${API}/portfolios/${res.data.portfolio_id}/parties`);
-          if (isMounted) {
-            setParties(partiesRes.data || []);
+        if (res.data.portfolio_id && isMounted) {
+          try {
+            const partiesRes = await axios.get(`${API}/portfolios/${res.data.portfolio_id}/parties`, {
+              signal: abortController.signal
+            });
+            if (isMounted) {
+              setParties(partiesRes.data || []);
+            }
+          } catch (partiesError) {
+            // Ignore parties fetch errors
+            if (partiesError?.name !== 'CanceledError') {
+              console.warn('Failed to fetch parties:', partiesError);
+            }
           }
         }
         
@@ -189,9 +207,13 @@ export default function MeetingEditorPage({ user }) {
           setExpandedItems(expanded);
         }
       } catch (error) {
+        // Ignore abort errors
+        if (error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
+          return;
+        }
         console.error('Failed to fetch meeting:', error);
         if (isMounted) {
-          toast.error('Failed to load meeting');
+          toast.error('Failed to load meeting details');
           navigate('/vault/governance');
         }
       } finally {
@@ -205,11 +227,14 @@ export default function MeetingEditorPage({ user }) {
     
     return () => {
       isMounted = false;
+      abortController.abort();
     };
   }, [meetingId, navigate]);
 
   // Refetch meeting data
   const refetchMeeting = async () => {
+    if (!meetingId) return;
+    
     try {
       const res = await axios.get(`${API}/governance/meetings/${meetingId}`);
       setMeeting(res.data);
