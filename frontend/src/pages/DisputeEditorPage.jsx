@@ -449,10 +449,15 @@ export default function DisputeEditorPage({ user }) {
 
   const typeConfig = disputeTypeConfig[dispute.dispute_type] || disputeTypeConfig.beneficiary;
   const TypeIcon = typeConfig.icon;
-  const status = statusConfig[dispute.status] || statusConfig.open;
+  const isLocked = dispute.locked === true || ['settled', 'closed'].includes(dispute.status);
+  // If locked but status is still open/in_progress, show "finalized"
+  let effectiveStatus = dispute.status;
+  if (dispute.locked && (dispute.status === 'open' || dispute.status === 'in_progress')) {
+    effectiveStatus = 'finalized';
+  }
+  const status = statusConfig[effectiveStatus] || statusConfig.open;
   const StatusIcon = status.icon;
   const priority = priorityConfig[dispute.priority] || priorityConfig.medium;
-  const isLocked = dispute.locked === true || dispute.status in ['settled', 'closed'];
   const isOpen = !isLocked && dispute.status !== 'settled' && dispute.status !== 'closed';
 
   return (
@@ -491,12 +496,6 @@ export default function DisputeEditorPage({ user }) {
             <Badge className={`${priority.color} border`}>
               {priority.label} Priority
             </Badge>
-            {isLocked && (
-              <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                <Lock className="w-3 h-3 mr-1" />
-                Locked
-              </Badge>
-            )}
           </div>
           
           {editingHeader && isOpen ? (
