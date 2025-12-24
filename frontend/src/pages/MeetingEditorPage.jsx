@@ -470,7 +470,7 @@ export default function MeetingEditorPage({ user }) {
 
   return (
     <motion.div 
-      className="min-h-screen p-4 md:p-6 lg:p-8"
+      className="min-h-screen p-4 md:p-6 lg:p-8 w-full max-w-full overflow-x-hidden"
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
