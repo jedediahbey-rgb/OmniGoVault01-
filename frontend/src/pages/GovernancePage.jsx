@@ -272,6 +272,7 @@ export default function GovernancePage({ user }) {
       fetchDistributions();
       fetchDisputes();
       fetchInsurancePolicies();
+      fetchCompensationEntries();
     }
   }, [selectedPortfolio]);
 
