@@ -1082,35 +1082,44 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
         if code:
             used_codes.add(code)
     
-    # Find the next available subject code starting from the requested code
-    # Asset codes should be in range 10-99 (excluding reserved 20-29 for governance)
+    # Determine if this is a governance code request
     requested_code_int = int(subject_code) if subject_code.isdigit() else 10
+    is_governance_request = 20 <= requested_code_int <= 29
     
-    # Start searching from the requested code
-    assigned_code_int = requested_code_int
-    
-    # Find next available code
-    while True:
-        code_str = f"{assigned_code_int:02d}"
-        if code_str not in used_codes and code_str not in reserved_codes:
-            break
-        assigned_code_int += 1
-        # Skip governance reserved range 20-29
-        if 20 <= assigned_code_int <= 29:
-            assigned_code_int = 30
-        # Cap at 99
-        if assigned_code_int > 99:
-            # Wrap around and find any available
-            for i in range(10, 100):
-                if i >= 20 and i <= 29:
-                    continue  # Skip governance range
-                code_str = f"{i:02d}"
-                if code_str not in used_codes and code_str not in reserved_codes:
-                    assigned_code_int = i
-                    break
-            break
-    
-    assigned_code = f"{assigned_code_int:02d}"
+    # For governance modules requesting their specific code (20-29), 
+    # they can ALWAYS use their designated code - no uniqueness check needed
+    # because each module has its own designated code
+    if is_governance_request:
+        # Governance modules use their designated code directly
+        # 20=Meetings, 21=Distributions, 22=Disputes, 23=Insurance, 24=Compensation
+        assigned_code = f"{requested_code_int:02d}"
+    else:
+        # Non-governance items need to find an available code
+        assigned_code_int = requested_code_int
+        
+        # Find next available code
+        while True:
+            code_str = f"{assigned_code_int:02d}"
+            # Skip reserved (00-09) and governance (20-29) ranges
+            if code_str not in used_codes and code_str not in reserved_codes and code_str not in governance_codes:
+                break
+            assigned_code_int += 1
+            # Skip governance reserved range 20-29 for non-governance items
+            if 20 <= assigned_code_int <= 29:
+                assigned_code_int = 30
+            # Cap at 99
+            if assigned_code_int > 99:
+                # Wrap around and find any available
+                for i in range(10, 100):
+                    if i >= 20 and i <= 29:
+                        continue  # Skip governance range
+                    code_str = f"{i:02d}"
+                    if code_str not in used_codes and code_str not in reserved_codes:
+                        assigned_code_int = i
+                        break
+                break
+        
+        assigned_code = f"{assigned_code_int:02d}"
     
     # Sequence number is always 001 for the main entry
     # Sub-items would use 002, 003, etc.
