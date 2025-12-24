@@ -728,6 +728,12 @@ export default function GovernancePage({ user }) {
     p.carrier_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredCompensation = compensationEntries.filter(c => 
+    c.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.rm_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.recipient_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const formatDate = (dateStr) => {
     if (!dateStr) return 'No date';
     const date = new Date(dateStr);
