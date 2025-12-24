@@ -1198,9 +1198,9 @@ function AgendaItemCard({
                                 <SelectTrigger className={`h-7 text-xs w-28 ${statusOpt.color}`}>
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-vault-dark border-vault-gold/30">
+                                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                                   {motionStatusOptions.map(s => (
-                                    <SelectItem key={s.value} value={s.value} className="text-white text-xs">
+                                    <SelectItem key={s.value} value={s.value} className="text-white text-xs hover:bg-vault-gold/20">
                                       {s.label}
                                     </SelectItem>
                                   ))}
