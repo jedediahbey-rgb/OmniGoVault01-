@@ -1,39 +1,36 @@
-"""Learning and chat models"""
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict
 from datetime import datetime, timezone
+from typing import Optional, List, Dict
 import uuid
 
 
-class ChatMessage(BaseModel):
-    message_id: str = Field(default_factory=lambda: f"msg_{uuid.uuid4().hex[:12]}")
-    session_id: str
-    user_id: str
-    role: str  # user, assistant
-    content: str
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-
 class LearningProgress(BaseModel):
+    """Track user's learning progress"""
     progress_id: str = Field(default_factory=lambda: f"prog_{uuid.uuid4().hex[:12]}")
     user_id: str
-    completed_lessons: List[str] = []
-    quiz_scores: Dict[str, int] = {}  # lesson_id -> score
-    checklist_items: Dict[str, List[str]] = {}  # lesson_id -> completed items
-    last_lesson: str = ""
-    total_time_spent: int = 0  # seconds
-    streak_days: int = 0
-    last_activity: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    module_id: str  # curriculum module identifier
+    module_title: str
+    status: str = "not_started"  # not_started, in_progress, completed
+    progress_percent: int = 0
+    last_position: str = ""  # bookmark position
+    notes: str = ""
+    completed_sections: List[str] = []
+    quiz_scores: Dict[str, int] = {}
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    completed_at: Optional[datetime] = None
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class MaximStudyProgress(BaseModel):
+    """Track spaced repetition for maxims study"""
     study_id: str = Field(default_factory=lambda: f"study_{uuid.uuid4().hex[:12]}")
     user_id: str
-    studied_maxims: List[str] = []  # maxim IDs that have been studied
-    flashcard_scores: Dict[str, int] = {}  # maxim_id -> correct count
-    favorites: List[str] = []  # favorited maxim IDs
-    notes: Dict[str, str] = {}  # maxim_id -> user notes
-    last_study_session: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    maxim_id: str
+    maxim_text: str
+    ease_factor: float = 2.5
+    interval_days: int = 1
+    repetitions: int = 0
+    next_review: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_review: Optional[datetime] = None
+    correct_count: int = 0
+    incorrect_count: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
