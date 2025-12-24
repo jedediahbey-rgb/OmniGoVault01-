@@ -570,10 +570,7 @@ export default function GovernancePage({ user }) {
                 <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent 
-                  container={newMeetingDialogRef.current}
-                  className="bg-[#0B1221] border-vault-gold/30 z-[100]"
-                >
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                   <SelectItem value="regular" className="text-white hover:bg-vault-gold/20">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-blue-400" />
