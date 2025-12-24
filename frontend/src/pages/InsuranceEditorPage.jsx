@@ -279,6 +279,20 @@ export default function InsuranceEditorPage({ user }) {
     }
   };
 
+  const handleFinalize = async () => {
+    setFinalizing(true);
+    try {
+      await axios.post(`${API}/governance/insurance-policies/${policyId}/finalize`, {});
+      await refetchPolicy();
+      setShowFinalizeConfirm(false);
+      toast.success('Insurance policy finalized and locked');
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to finalize policy');
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
