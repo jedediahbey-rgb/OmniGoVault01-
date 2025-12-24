@@ -281,8 +281,9 @@ class GovernanceFeatureTester:
         amendment_data = {"reason": "Test amendment for revision tracking"}
         response = self.run_test("Create Amendment", "POST", f"governance/meetings/{self.meeting_id}/amend", 200, amendment_data)
         
-        if response and 'item' in response:
-            amendment = response['item']
+        if response:
+            # Handle envelope format: { ok: true, message: "...", item: {...} }
+            amendment = response.get('item', response)
             
             has_parent_id = 'parent_meeting_id' in amendment and amendment['parent_meeting_id'] == self.meeting_id
             has_revision = 'revision' in amendment and amendment['revision'] > 1
