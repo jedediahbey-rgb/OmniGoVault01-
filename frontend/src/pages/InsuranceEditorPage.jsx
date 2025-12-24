@@ -465,12 +465,6 @@ export default function InsuranceEditorPage({ user }) {
                       <StatusIcon className="w-3 h-3 mr-1" />
                       {status.label}
                     </Badge>
-                    {isLocked && (
-                      <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                        <Lock className="w-3 h-3 mr-1" />
-                        Locked
-                      </Badge>
-                    )}
                     <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 hidden sm:flex">
                       {typeConfig.label}
                     </Badge>
@@ -492,9 +486,9 @@ export default function InsuranceEditorPage({ user }) {
               )}
             </div>
             
-            {/* Actions */}
+            {/* Actions - properly aligned */}
             {!editingHeader && (
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-2 justify-end mt-4">
                 {!isLocked && (
                   <Button
                     variant="outline"
