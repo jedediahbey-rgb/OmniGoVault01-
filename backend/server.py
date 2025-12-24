@@ -866,13 +866,15 @@ async def seed_default_categories(portfolio_id: str, user_id: str):
                 "code": cat_data["code"]
             },
             {
+                "$set": {
+                    "name": cat_data["name"],  # Always update name to latest
+                    "description": cat_data["description"],  # Always update description
+                },
                 "$setOnInsert": {
                     "category_id": f"cat_{uuid.uuid4().hex[:12]}",
                     "portfolio_id": portfolio_id,
                     "user_id": user_id,
                     "code": cat_data["code"],
-                    "name": cat_data["name"],
-                    "description": cat_data["description"],
                     "is_active": True,
                     "next_sequence": 1,
                     "created_at": datetime.now(timezone.utc).isoformat()
