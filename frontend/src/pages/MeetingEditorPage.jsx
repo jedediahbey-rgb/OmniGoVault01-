@@ -937,7 +937,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Add Attendee Dialog */}
       <Dialog open={showAddAttendee} onOpenChange={setShowAddAttendee}>
-        <DialogContent ref={addAttendeeDialogRef} className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-vault-gold">Add Attendee</DialogTitle>
           </DialogHeader>
@@ -1099,7 +1099,7 @@ export default function MeetingEditorPage({ user }) {
 
       {/* Attestation Dialog */}
       <Dialog open={showAttest} onOpenChange={setShowAttest}>
-        <DialogContent ref={attestDialogRef} className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-vault-gold flex items-center gap-2">
               <Seal className="w-5 h-5" />
