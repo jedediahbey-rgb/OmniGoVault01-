@@ -142,10 +142,17 @@ class GovernanceFeatureTester:
         }
         
         created = self.run_test("Create Test Meeting", "POST", "governance/meetings", 200, meeting_data)
-        if not created or 'meeting_id' not in created:
+        if not created:
             return False
         
-        self.meeting_id = created['meeting_id']
+        # Handle envelope format: { ok: true, item: {...} }
+        meeting_data_response = created.get('item', created)
+        if 'meeting_id' not in meeting_data_response:
+            print(f"   ❌ No meeting_id in response: {created}")
+            return False
+        
+        self.meeting_id = meeting_data_response['meeting_id']
+        print(f"   Meeting ID: {self.meeting_id}")
         
         # Test meetings list endpoint
         response = self.run_test("Get Meetings List", "GET", f"governance/meetings?portfolio_id={self.portfolio_id}", 200)
