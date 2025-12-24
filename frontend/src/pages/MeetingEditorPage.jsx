@@ -671,7 +671,7 @@ export default function MeetingEditorPage({ user }) {
                       <DotsThreeVertical className="w-5 h-5" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-vault-dark border-vault-gold/30">
+                  <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
                     {isDraft && (
                       <DropdownMenuItem 
                         className="text-vault-gold hover:bg-vault-gold/20"
