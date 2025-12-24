@@ -395,7 +395,7 @@ async def create_meeting(data: dict, request: Request):
 
 @router.put("/meetings/{meeting_id}")
 async def update_meeting(meeting_id: str, data: dict, request: Request):
-    """Update a meeting (only if draft)"""
+    """Update a meeting (only if draft/unlocked)"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -412,8 +412,16 @@ async def update_meeting(meeting_id: str, data: dict, request: Request):
         if not meeting:
             return error_response("NOT_FOUND", "Meeting not found", status_code=404)
         
-        if meeting.get("status") != "draft":
-            return error_response("LOCKED", "Cannot edit finalized meeting. Create an amendment instead.")
+        # Check if meeting is locked/finalized - return 409 Conflict
+        is_locked = meeting.get("locked", False) or meeting.get("status") in ("finalized", "attested", "amended") or meeting.get("locked_at") is not None
+        
+        if is_locked:
+            return error_response(
+                "MEETING_LOCKED", 
+                "Meeting is finalized and cannot be edited. Use amend to create a new revision.",
+                {"meeting_id": meeting_id, "status": meeting.get("status"), "locked": True},
+                status_code=409
+            )
         
         # Build update data
         update_fields = {}
