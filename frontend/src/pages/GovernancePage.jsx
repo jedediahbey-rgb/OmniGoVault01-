@@ -233,6 +233,29 @@ export default function GovernancePage({ user }) {
     }
   };
 
+  const fetchDisputes = async () => {
+    if (!selectedPortfolio) return;
+    setDisputesLoading(true);
+    try {
+      const res = await axios.get(`${API}/governance/disputes`, {
+        params: { portfolio_id: selectedPortfolio }
+      });
+      const data = res.data;
+      if (data.ok && data.items) {
+        setDisputes(data.items);
+      } else if (Array.isArray(data)) {
+        setDisputes(data);
+      } else {
+        setDisputes([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch disputes:', error);
+      setDisputes([]);
+    } finally {
+      setDisputesLoading(false);
+    }
+  };
+
   const fetchParties = async () => {
     if (!selectedPortfolio) return;
     try {
