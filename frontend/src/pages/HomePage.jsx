@@ -174,7 +174,7 @@ const HomePage = () => {
               </p>
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-[#111827] border border-white/5 rounded-sm">
-                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#C6A87C] mt-1 flex-shrink-0" />
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#C6A87C] mt-1 flex-shrink-0" weight="duotone" />
                   <div className="min-w-0">
                     <h4 className="font-sans font-semibold text-[#F8FAFC] mb-1 text-sm sm:text-base">Kingdom vs Empire (Roark)</h4>
                     <p className="font-sans text-xs sm:text-sm text-slate-400">Comprehensive guide to equity jurisprudence, maxims, and trust relationships.</p>
