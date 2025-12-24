@@ -362,7 +362,7 @@ export default function PortfolioOverviewPage({ user }) {
   const openEditLedger = (entry) => {
     setEditingLedger(entry);
     setLedgerEntryType(entry.entry_type || 'deposit');
-    setLedgerSubjectCode(entry.subject_code || '00');
+    setLedgerSubjectCode(entry.subject_code || '10'); // Default to 10 for ledger
     setLedgerDescription(entry.description || '');
     setLedgerValue(entry.value ? String(entry.value) : '');
     setLedgerNotes(entry.notes || '');
