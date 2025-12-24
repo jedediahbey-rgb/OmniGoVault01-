@@ -383,6 +383,255 @@ class EquityTrustAPITester:
         
         return meeting_id
 
+    def test_disputes(self, portfolio_id):
+        """Test disputes module - Full CRUD and workflow including amend and set-outcome"""
+        if not portfolio_id:
+            print("\n⚠️ Skipping Disputes tests - no portfolio ID")
+            return None
+            
+        print("\n📋 Testing Disputes Module...")
+        
+        # Test 1: Create a dispute
+        dispute_data = {
+            "portfolio_id": portfolio_id,
+            "title": f"Test Dispute {datetime.now().strftime('%H%M%S')}",
+            "dispute_type": "beneficiary",
+            "description": "Test dispute for API testing",
+            "amount_claimed": 25000.0,
+            "currency": "USD",
+            "priority": "medium",
+            "case_number": f"CASE-{datetime.now().strftime('%Y%m%d-%H%M%S')}",
+            "jurisdiction": "Delaware"
+        }
+        created_dispute = self.run_test("Disputes - Create", "POST", "governance/disputes", 200, dispute_data)
+        
+        if not created_dispute:
+            print("   ❌ Failed to create dispute, skipping remaining tests")
+            return None
+        
+        # Extract dispute ID from envelope or direct response
+        dispute_id = None
+        if isinstance(created_dispute, dict):
+            if 'item' in created_dispute:
+                dispute_id = created_dispute['item'].get('dispute_id')
+            else:
+                dispute_id = created_dispute.get('dispute_id')
+        
+        if not dispute_id:
+            print("   ❌ No dispute ID returned, skipping remaining tests")
+            return None
+            
+        print(f"   Created dispute ID: {dispute_id}")
+        
+        # Test 2: Get single dispute
+        dispute = self.run_test("Disputes - Get Single", "GET", f"governance/disputes/{dispute_id}", 200)
+        
+        # Test 3: Update dispute (should work for open status)
+        update_data = {
+            "title": f"Updated Test Dispute {datetime.now().strftime('%H%M%S')}",
+            "description": "Updated dispute description",
+            "priority": "high"
+        }
+        updated = self.run_test("Disputes - Update", "PUT", f"governance/disputes/{dispute_id}", 200, update_data)
+        
+        # Test 4: Finalize dispute (lock it)
+        finalize_data = {
+            "finalized_by": "John Doe"
+        }
+        finalized = self.run_test("Disputes - Finalize", "POST", f"governance/disputes/{dispute_id}/finalize", 200, finalize_data)
+        if finalized:
+            print("   ✅ Dispute finalized successfully")
+        
+        # Test 5: Test Dispute Set-Outcome endpoint (BUG FIX TEST)
+        outcome_data = {
+            "status": "settled"
+        }
+        outcome = self.run_test("Disputes - Set Outcome", "POST", f"governance/disputes/{dispute_id}/set-outcome", 200, outcome_data)
+        if outcome:
+            print("   ✅ Dispute outcome set successfully")
+        
+        # Test 6: Test Dispute Amend endpoint (BUG FIX TEST)
+        amend_data = {
+            "reason": "Testing dispute amendment functionality"
+        }
+        amendment = self.run_test("Disputes - Create Amendment", "POST", f"governance/disputes/{dispute_id}/amend", 200, amend_data)
+        if amendment:
+            print("   ✅ Dispute amendment created successfully")
+            # Check if amendment has dispute_id
+            amendment_id = None
+            if isinstance(amendment, dict):
+                if 'item' in amendment:
+                    amendment_id = amendment['item'].get('dispute_id')
+                else:
+                    amendment_id = amendment.get('dispute_id')
+            if amendment_id:
+                print(f"   ✅ Amendment ID: {amendment_id}")
+        
+        return dispute_id
+
+    def test_insurance(self, portfolio_id):
+        """Test insurance module - Full CRUD and workflow including amend"""
+        if not portfolio_id:
+            print("\n⚠️ Skipping Insurance tests - no portfolio ID")
+            return None
+            
+        print("\n📋 Testing Insurance Module...")
+        
+        # Test 1: Create an insurance policy
+        insurance_data = {
+            "portfolio_id": portfolio_id,
+            "title": f"Test Life Insurance Policy {datetime.now().strftime('%H%M%S')}",
+            "policy_type": "whole_life",
+            "policy_number": f"POL-{datetime.now().strftime('%Y%m%d%H%M%S')}",
+            "carrier_name": "Test Insurance Company",
+            "insured_name": "John Doe",
+            "death_benefit": 1000000.0,
+            "cash_value": 50000.0,
+            "currency": "USD",
+            "premium_amount": 2500.0,
+            "premium_frequency": "monthly",
+            "effective_date": "2024-01-01",
+            "notes": "Test policy for API testing"
+        }
+        created_insurance = self.run_test("Insurance - Create", "POST", "governance/insurance-policies", 200, insurance_data)
+        
+        if not created_insurance:
+            print("   ❌ Failed to create insurance policy, skipping remaining tests")
+            return None
+        
+        # Extract policy ID from envelope or direct response
+        policy_id = None
+        if isinstance(created_insurance, dict):
+            if 'item' in created_insurance:
+                policy_id = created_insurance['item'].get('policy_id')
+            else:
+                policy_id = created_insurance.get('policy_id')
+        
+        if not policy_id:
+            print("   ❌ No policy ID returned, skipping remaining tests")
+            return None
+            
+        print(f"   Created policy ID: {policy_id}")
+        
+        # Test 2: Get single insurance policy
+        policy = self.run_test("Insurance - Get Single", "GET", f"governance/insurance-policies/{policy_id}", 200)
+        
+        # Test 3: Update insurance policy
+        update_data = {
+            "title": f"Updated Test Life Insurance Policy {datetime.now().strftime('%H%M%S')}",
+            "cash_value": 55000.0,
+            "notes": "Updated policy notes"
+        }
+        updated = self.run_test("Insurance - Update", "PUT", f"governance/insurance-policies/{policy_id}", 200, update_data)
+        
+        # Test 4: Finalize insurance policy (lock it)
+        finalize_data = {
+            "finalized_by": "John Doe"
+        }
+        finalized = self.run_test("Insurance - Finalize", "POST", f"governance/insurance-policies/{policy_id}/finalize", 200, finalize_data)
+        if finalized:
+            print("   ✅ Insurance policy finalized successfully")
+        
+        # Test 5: Test Insurance Amend endpoint (BUG FIX TEST)
+        amend_data = {
+            "reason": "Testing insurance policy amendment functionality"
+        }
+        amendment = self.run_test("Insurance - Create Amendment", "POST", f"governance/insurance-policies/{policy_id}/amend", 200, amend_data)
+        if amendment:
+            print("   ✅ Insurance policy amendment created successfully")
+            # Check if amendment has policy_id
+            amendment_id = None
+            if isinstance(amendment, dict):
+                if 'item' in amendment:
+                    amendment_id = amendment['item'].get('policy_id')
+                else:
+                    amendment_id = amendment.get('policy_id')
+            if amendment_id:
+                print(f"   ✅ Amendment ID: {amendment_id}")
+        
+        return policy_id
+
+    def test_compensation(self, portfolio_id):
+        """Test compensation module - Full CRUD and workflow including edit/finalize/amend"""
+        if not portfolio_id:
+            print("\n⚠️ Skipping Compensation tests - no portfolio ID")
+            return None
+            
+        print("\n📋 Testing Compensation Module...")
+        
+        # Test 1: Create a compensation entry
+        compensation_data = {
+            "portfolio_id": portfolio_id,
+            "title": f"Q4 2024 Trustee Compensation {datetime.now().strftime('%H%M%S')}",
+            "compensation_type": "annual_fee",
+            "recipient_name": "John Doe",
+            "recipient_role": "trustee",
+            "amount": 15000.0,
+            "currency": "USD",
+            "period_start": "2024-01-01",
+            "period_end": "2024-12-31",
+            "fiscal_year": "2024",
+            "basis_of_calculation": "1.5% of trust assets under management",
+            "notes": "Annual trustee compensation for 2024"
+        }
+        created_compensation = self.run_test("Compensation - Create", "POST", "governance/compensation", 200, compensation_data)
+        
+        if not created_compensation:
+            print("   ❌ Failed to create compensation entry, skipping remaining tests")
+            return None
+        
+        # Extract compensation ID from envelope or direct response
+        compensation_id = None
+        if isinstance(created_compensation, dict):
+            if 'item' in created_compensation:
+                compensation_id = created_compensation['item'].get('compensation_id')
+            else:
+                compensation_id = created_compensation.get('compensation_id')
+        
+        if not compensation_id:
+            print("   ❌ No compensation ID returned, skipping remaining tests")
+            return None
+            
+        print(f"   Created compensation ID: {compensation_id}")
+        
+        # Test 2: Get single compensation entry
+        compensation = self.run_test("Compensation - Get Single", "GET", f"governance/compensation/{compensation_id}", 200)
+        
+        # Test 3: Update compensation entry (should work for draft status)
+        update_data = {
+            "title": f"Updated Q4 2024 Trustee Compensation {datetime.now().strftime('%H%M%S')}",
+            "amount": 16000.0,
+            "notes": "Updated compensation amount based on final asset valuation"
+        }
+        updated = self.run_test("Compensation - Update", "PUT", f"governance/compensation/{compensation_id}", 200, update_data)
+        
+        # Test 4: Finalize compensation entry (BUG FIX TEST)
+        finalize_data = {
+            "finalized_by": "John Doe"
+        }
+        finalized = self.run_test("Compensation - Finalize", "POST", f"governance/compensation/{compensation_id}/finalize", 200, finalize_data)
+        if finalized:
+            print("   ✅ Compensation entry finalized successfully")
+        
+        # Test 5: Test Compensation Amend endpoint (BUG FIX TEST)
+        amend_data = {
+            "reason": "Testing compensation amendment functionality"
+        }
+        amendment = self.run_test("Compensation - Create Amendment", "POST", f"governance/compensation/{compensation_id}/amend", 200, amend_data)
+        if amendment:
+            print("   ✅ Compensation amendment created successfully")
+            # Check if amendment has compensation_id
+            amendment_id = None
+            if isinstance(amendment, dict):
+                if 'item' in amendment:
+                    amendment_id = amendment['item'].get('compensation_id')
+                else:
+                    amendment_id = amendment.get('compensation_id')
+            if amendment_id:
+                print(f"   ✅ Amendment ID: {amendment_id}")
+        
+        return compensation_id
+
     def test_distributions(self, portfolio_id):
         """Test distributions module - Full CRUD and workflow"""
         if not portfolio_id:
