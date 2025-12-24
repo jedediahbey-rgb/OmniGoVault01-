@@ -2,7 +2,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen,
-  BookText,
   CaretRight,
   FileText,
   FolderSimple,
@@ -20,7 +19,7 @@ const navItems = [
   { name: 'Dashboard', href: '/vault', icon: House, section: 'main' },
   { name: 'Learn', href: '/learn', icon: BookOpen, section: 'knowledge' },
   { name: 'Maxims', href: '/maxims', icon: Sparkle, section: 'knowledge' },
-  { name: 'Glossary', href: '/glossary', icon: BookText, section: 'knowledge' },
+  { name: 'Glossary', href: '/glossary', icon: BookOpen, section: 'knowledge' },
   { name: 'Diagrams', href: '/diagrams', icon: GitBranch, section: 'knowledge' },
   { name: 'Vault', href: '/vault/documents', icon: FolderSimple, section: 'workspace' },
   { name: 'Templates', href: '/templates', icon: FileText, section: 'workspace' },

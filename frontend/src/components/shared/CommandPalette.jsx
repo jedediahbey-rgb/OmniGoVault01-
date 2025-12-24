@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight,
   BookOpen,
-  BookText,
   FileText,
   FolderSimple,
   House,
@@ -20,7 +19,7 @@ const commands = [
   { id: 'dashboard', name: 'Go to Dashboard', icon: House, action: '/vault', type: 'nav' },
   { id: 'learn', name: 'Go to Learn', icon: BookOpen, action: '/learn', type: 'nav' },
   { id: 'maxims', name: 'Go to Maxims', icon: Sparkle, action: '/maxims', type: 'nav' },
-  { id: 'glossary', name: 'Go to Glossary', icon: BookText, action: '/glossary', type: 'nav' },
+  { id: 'glossary', name: 'Go to Glossary', icon: BookOpen, action: '/glossary', type: 'nav' },
   { id: 'vault', name: 'Go to Vault', icon: FolderSimple, action: '/vault/documents', type: 'nav' },
   { id: 'templates', name: 'Go to Templates', icon: FileText, action: '/templates', type: 'nav' },
   { id: 'assistant', name: 'Open AI Assistant', icon: Robot, action: '/assistant', type: 'nav' },
