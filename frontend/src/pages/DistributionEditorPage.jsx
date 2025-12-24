@@ -151,20 +151,21 @@ export default function DistributionEditorPage({ user }) {
               setParties(partiesRes.data || []);
             }
           } catch (partiesError) {
-            if (partiesError?.name !== 'CanceledError') {
-              console.warn('Failed to fetch parties:', partiesError);
+            // Silently ignore abort errors
+            if (partiesError?.name === 'CanceledError' || partiesError?.code === 'ERR_CANCELED' || partiesError?.message === 'canceled') {
+              return;
             }
+            console.warn('Failed to fetch parties:', partiesError);
           }
         }
       } catch (error) {
-        if (error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
+        // Check for any form of abort/cancel error
+        if (!isMounted || error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED' || error?.message === 'canceled' || abortController.signal.aborted) {
           return;
         }
         console.error('Failed to fetch distribution:', error);
-        if (isMounted) {
-          toast.error('Failed to load distribution details');
-          navigate('/vault/governance');
-        }
+        toast.error('Failed to load distribution details');
+        navigate('/vault/governance');
       } finally {
         if (isMounted) {
           setLoading(false);
