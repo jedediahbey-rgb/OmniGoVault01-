@@ -374,6 +374,61 @@ export default function GovernancePage({ user }) {
     }
   };
 
+  // Dispute handlers
+  const handleCreateDispute = async () => {
+    if (!newDispute.title.trim()) {
+      toast.error('Please enter a dispute title');
+      return;
+    }
+    if (!selectedPortfolio) {
+      toast.error('Please select a portfolio');
+      return;
+    }
+    
+    setCreatingDispute(true);
+    try {
+      const res = await axios.post(`${API}/governance/disputes`, {
+        ...newDispute,
+        portfolio_id: selectedPortfolio,
+        amount_claimed: parseFloat(newDispute.amount_claimed) || 0,
+      });
+      
+      const data = res.data;
+      const disputeData = data.item || data;
+      
+      toast.success('Dispute created');
+      setShowNewDispute(false);
+      setNewDispute({
+        title: '',
+        dispute_type: 'beneficiary',
+        description: '',
+        amount_claimed: '',
+        currency: 'USD',
+        priority: 'medium',
+        case_number: '',
+        jurisdiction: '',
+      });
+      
+      navigate(`/vault/governance/disputes/${disputeData.dispute_id}`);
+    } catch (error) {
+      console.error('Failed to create dispute:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to create dispute');
+    } finally {
+      setCreatingDispute(false);
+    }
+  };
+
+  const handleDeleteDispute = async (disputeId) => {
+    try {
+      await axios.delete(`${API}/governance/disputes/${disputeId}`);
+      toast.success('Dispute deleted');
+      fetchDisputes();
+    } catch (error) {
+      console.error('Failed to delete dispute:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to delete dispute');
+    }
+  };
+
   const filteredMeetings = meetings.filter(m => 
     m.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.rm_id?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -382,6 +437,12 @@ export default function GovernancePage({ user }) {
   const filteredDistributions = distributions.filter(d => 
     d.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     d.rm_id?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredDisputes = disputes.filter(d => 
+    d.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    d.rm_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    d.case_number?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const formatDate = (dateStr) => {
