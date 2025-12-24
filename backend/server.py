@@ -815,27 +815,30 @@ async def generate_placeholder_rm_id(profile_id: str, user: User = Depends(get_c
 
 
 async def seed_default_categories(portfolio_id: str, user_id: str):
-    """Seed default subject categories for a new portfolio"""
-    existing = await db.subject_categories.count_documents({
-        "portfolio_id": portfolio_id,
-        "user_id": user_id
-    })
-    
-    if existing > 0:
-        return  # Already has categories
-    
+    """Seed default subject categories for a new portfolio using upsert to prevent race conditions"""
+    # Use upsert to safely seed categories without race condition duplicates
     for cat_data in DEFAULT_SUBJECT_CATEGORIES:
-        category = SubjectCategory(
-            portfolio_id=portfolio_id,
-            user_id=user_id,
-            code=cat_data["code"],
-            name=cat_data["name"],
-            description=cat_data["description"],
-            next_sequence=1
+        await db.subject_categories.update_one(
+            {
+                "portfolio_id": portfolio_id,
+                "user_id": user_id,
+                "code": cat_data["code"]
+            },
+            {
+                "$setOnInsert": {
+                    "category_id": f"cat_{uuid.uuid4().hex[:12]}",
+                    "portfolio_id": portfolio_id,
+                    "user_id": user_id,
+                    "code": cat_data["code"],
+                    "name": cat_data["name"],
+                    "description": cat_data["description"],
+                    "is_active": True,
+                    "next_sequence": 1,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+            },
+            upsert=True
         )
-        doc = category.model_dump()
-        doc['created_at'] = doc['created_at'].isoformat()
-        await db.subject_categories.insert_one(doc)
 
 
 async def get_or_create_subject_category(portfolio_id: str, user_id: str, subject_code: str = "00", subject_name: str = "General") -> dict:
