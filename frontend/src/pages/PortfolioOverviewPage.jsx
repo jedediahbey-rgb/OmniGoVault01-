@@ -1218,6 +1218,7 @@ export default function PortfolioOverviewPage({ user }) {
                   <SelectContent className="bg-vault-navy border-white/10 z-[100]" position="popper" sideOffset={4}>
                     <SelectItem value="deposit">Deposit into Trust</SelectItem>
                     <SelectItem value="transfer_in">Transfer In</SelectItem>
+                    <SelectItem value="transfer_out">Transfer Out</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
