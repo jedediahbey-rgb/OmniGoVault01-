@@ -500,8 +500,12 @@ export default function PortfolioOverviewPage({ user }) {
           title="Trust Balance"
           value={
             <>
-              <span className="sm:hidden">{formatCurrencyCompact(ledger.summary?.balance || 0)}</span>
-              <span className="hidden sm:inline">{formatCurrency(ledger.summary?.balance || 0)}</span>
+              <span className={`sm:hidden ${(ledger.summary?.balance || 0) < 0 ? 'text-red-400' : 'text-green-400'}`}>
+                {formatCurrencyCompact(ledger.summary?.balance || 0)}
+              </span>
+              <span className={`hidden sm:inline ${(ledger.summary?.balance || 0) < 0 ? 'text-red-400' : 'text-green-400'}`}>
+                {formatCurrency(ledger.summary?.balance || 0)}
+              </span>
             </>
           }
           icon={CurrencyDollar}
