@@ -461,7 +461,6 @@ export default function GovernancePage({ user }) {
               <TabsTrigger 
                 value="disputes" 
                 className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
-                disabled
               >
                 <Scales className="w-4 h-4 mr-2 shrink-0" />
                 Disputes
