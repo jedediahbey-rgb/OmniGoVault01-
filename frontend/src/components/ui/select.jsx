@@ -51,8 +51,10 @@ const SelectScrollDownButton = React.forwardRef(({ className, ...props }, ref) =
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName
 
-const SelectContent = React.forwardRef(({ className, children, position = "popper", container, ...props }, ref) => (
-  <SelectPrimitive.Portal container={container}>
+const SelectContent = React.forwardRef(({ className, children, position = "popper", container, ...props }, ref) => {
+  // If container is specified, render inside that container (no portal)
+  // This prevents "outside click" issues when Select is inside a Dialog
+  const Content = (
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
@@ -72,8 +74,19 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
       </SelectPrimitive.Viewport>
       <SelectScrollDownButton />
     </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-))
+  );
+
+  // Use portal only if no container specified
+  return container ? (
+    <SelectPrimitive.Portal container={container}>
+      {Content}
+    </SelectPrimitive.Portal>
+  ) : (
+    <SelectPrimitive.Portal>
+      {Content}
+    </SelectPrimitive.Portal>
+  );
+})
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
 const SelectLabel = React.forwardRef(({ className, ...props }, ref) => (
