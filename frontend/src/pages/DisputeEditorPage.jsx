@@ -441,73 +441,136 @@ export default function DisputeEditorPage({ user }) {
 
       {/* Dispute Header Card */}
       <motion.div variants={fadeInUp} className="mb-6">
-        <GlassCard className="p-6">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-            {/* Left side - Info */}
-            <div className="flex items-start gap-4">
-              <div className={`p-4 rounded-xl ${typeConfig.bg}`}>
-                <TypeIcon className={`w-8 h-8 ${typeConfig.color}`} />
-              </div>
-              
-              {editingHeader && isOpen ? (
-                <div className="flex-1 space-y-4 max-w-lg">
-                  <Input
-                    value={editedHeader.title}
-                    onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
-                    className="text-xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs text-vault-muted">Amount Claimed</label>
-                      <Input
-                        type="number"
-                        value={editedHeader.amount_claimed}
-                        onChange={(e) => setEditedHeader(prev => ({ ...prev, amount_claimed: e.target.value }))}
-                        className="bg-[#05080F] border-vault-gold/20 text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs text-vault-muted">Priority</label>
-                      <Select 
-                        value={editedHeader.priority} 
-                        onValueChange={(v) => setEditedHeader(prev => ({ ...prev, priority: v }))}
-                      >
-                        <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                          <SelectItem value="critical">Critical</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={handleSaveHeader} disabled={saving} className="bg-vault-gold text-vault-dark">
-                      {saving ? 'Saving...' : 'Save'}
-                    </Button>
-                    <Button variant="outline" onClick={() => setEditingHeader(false)} className="border-vault-gold/30">
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ) : (
+        <GlassCard className="p-4 sm:p-6">
+          {/* Status badges - mobile first */}
+          <div className="flex items-center gap-2 flex-wrap mb-3">
+            <Badge className={`${status.color} border`}>
+              <StatusIcon className="w-3 h-3 mr-1" />
+              {status.label}
+            </Badge>
+            <Badge className={`${priority.color} border`}>
+              {priority.label} Priority
+            </Badge>
+            {isLocked && (
+              <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
+                <Lock className="w-3 h-3 mr-1" />
+                Closed
+              </Badge>
+            )}
+          </div>
+          
+          {editingHeader && isOpen ? (
+            <div className="space-y-4">
+              <Input
+                value={editedHeader.title}
+                onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
+                className="text-xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
+              />
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <Badge className={`${status.color} border`}>
-                      <StatusIcon className="w-3 h-3 mr-1" />
-                      {status.label}
-                    </Badge>
-                    <Badge className={`${priority.color} border`}>
-                      {priority.label} Priority
-                    </Badge>
-                    {isLocked && (
-                      <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                        <Lock className="w-3 h-3 mr-1" />
-                        Closed
-                      </Badge>
+                  <label className="text-xs text-vault-muted">Amount Claimed</label>
+                  <Input
+                    type="number"
+                    value={editedHeader.amount_claimed}
+                    onChange={(e) => setEditedHeader(prev => ({ ...prev, amount_claimed: e.target.value }))}
+                    className="bg-[#05080F] border-vault-gold/20 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-vault-muted">Priority</label>
+                  <Select 
+                    value={editedHeader.priority} 
+                    onValueChange={(v) => setEditedHeader(prev => ({ ...prev, priority: v }))}
+                  >
+                    <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="critical">Critical</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleSaveHeader} disabled={saving} className="bg-vault-gold text-vault-dark">
+                  {saving ? 'Saving...' : 'Save'}
+                </Button>
+                <Button variant="outline" onClick={() => setEditingHeader(false)} className="border-vault-gold/30">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Title and details */}
+              <h1 className="text-xl sm:text-2xl font-heading text-white mb-2">{dispute.title}</h1>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-vault-muted mb-2">
+                {dispute.rm_id && <span className="font-mono text-vault-gold">{dispute.rm_id}</span>}
+                {dispute.case_number && <span>Case: {dispute.case_number}</span>}
+                {dispute.jurisdiction && <span>{dispute.jurisdiction}</span>}
+              </div>
+              {dispute.amount_claimed > 0 && (
+                <div className="text-xl sm:text-2xl font-heading text-red-400 mb-4">
+                  {formatCurrency(dispute.amount_claimed, dispute.currency)}
+                  <span className="text-sm text-vault-muted ml-2">claimed</span>
+                </div>
+              )}
+              
+              {/* Action buttons */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {isOpen && (
+                  <Button onClick={() => setShowResolve(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Resolve
+                  </Button>
+                )}
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="border-vault-gold/30">
+                      <DotsThreeVertical className="w-5 h-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    {isOpen && (
+                      <>
+                        <DropdownMenuItem onClick={() => setEditingHeader(true)} className="text-white hover:bg-vault-gold/20">
+                          <PencilSimple className="w-4 h-4 mr-2" />
+                          Edit Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setShowChangeStatus(true)} className="text-white hover:bg-vault-gold/20">
+                          <Clock className="w-4 h-4 mr-2" />
+                          Change Status
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-vault-gold/20" />
+                      </>
+                    )}
+                    <DropdownMenuItem className="text-vault-muted hover:bg-vault-gold/20">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export PDF
+                    </DropdownMenuItem>
+                    {isOpen && (
+                      <>
+                        <DropdownMenuSeparator className="bg-vault-gold/20" />
+                        <DropdownMenuItem 
+                          onClick={() => setShowDeleteConfirm(true)} 
+                          className="text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                        >
+                          <Trash className="w-4 h-4 mr-2" />
+                          Delete Dispute
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </>
+          )}
+        </GlassCard>
+      </motion.div>
                     )}
                   </div>
                   <h1 className="text-2xl font-heading text-white mt-2">{dispute.title}</h1>
