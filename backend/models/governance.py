@@ -206,3 +206,99 @@ class FinalizeRequest(BaseModel):
 
 class AmendmentRequest(BaseModel):
     reason: str = ""
+
+
+
+# ============ DISTRIBUTIONS MODELS ============
+
+class DistributionRecipient(BaseModel):
+    """Individual recipient in a distribution"""
+    recipient_id: str = Field(default_factory=lambda: f"rcpt_{uuid.uuid4().hex[:8]}")
+    party_id: Optional[str] = None  # Link to Party if exists
+    name: str
+    role: str = "beneficiary"  # beneficiary, trustee, charity, other
+    share_percentage: float = 0.0  # Percentage of total distribution
+    amount: float = 0.0  # Fixed amount if not percentage-based
+    status: str = "pending"  # pending, approved, paid, cancelled
+    payment_method: str = ""  # check, wire, ach, crypto, in_kind
+    payment_reference: str = ""  # Check number, wire reference, etc.
+    paid_at: Optional[str] = None
+    notes: str = ""
+
+
+class DistributionApproval(BaseModel):
+    """Approval record for a distribution"""
+    approval_id: str = Field(default_factory=lambda: f"appr_{uuid.uuid4().hex[:8]}")
+    approver_party_id: Optional[str] = None
+    approver_name: str
+    approver_role: str = "trustee"
+    status: str = "pending"  # pending, approved, rejected
+    approved_at: Optional[str] = None
+    signature_data: str = ""
+    notes: str = ""
+
+
+class Distribution(BaseModel):
+    """Trust Distribution record"""
+    distribution_id: str = Field(default_factory=lambda: f"dist_{uuid.uuid4().hex[:12]}")
+    trust_id: Optional[str] = None
+    portfolio_id: str
+    user_id: str
+    
+    # Distribution details
+    title: str
+    distribution_type: str = "regular"  # regular, special, final, emergency
+    description: str = ""
+    
+    # RM-ID for internal recordkeeping
+    rm_id: str = ""
+    
+    # Financial details
+    total_amount: float = 0.0
+    currency: str = "USD"
+    asset_type: str = "cash"  # cash, securities, property, mixed
+    source_account: str = ""  # Which trust account the funds come from
+    
+    # Recipients
+    recipients: List[DistributionRecipient] = []
+    
+    # Approval workflow
+    requires_approval: bool = True
+    approval_threshold: int = 1  # Number of approvals needed
+    approvals: List[DistributionApproval] = []
+    
+    # Status and workflow
+    status: str = "draft"  # draft, pending_approval, approved, in_progress, completed, cancelled
+    locked: bool = False
+    locked_at: Optional[str] = None
+    
+    # Related meeting (if distribution was authorized in a meeting)
+    authorized_meeting_id: Optional[str] = None
+    authorization_notes: str = ""
+    
+    # Dates
+    scheduled_date: Optional[str] = None  # When distribution is planned
+    execution_date: Optional[str] = None  # When distribution was executed
+    
+    # Attachments/Evidence
+    supporting_documents: List[str] = []  # Document IDs
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    deleted_at: Optional[str] = None
+
+
+class DistributionCreate(BaseModel):
+    """Create distribution request"""
+    title: str
+    distribution_type: str = "regular"
+    description: str = ""
+    total_amount: float = 0.0
+    currency: str = "USD"
+    asset_type: str = "cash"
+    source_account: str = ""
+    scheduled_date: Optional[str] = None
+    requires_approval: bool = True
+    approval_threshold: int = 1
+    recipients: List[dict] = []
