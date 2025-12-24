@@ -603,7 +603,7 @@ export default function VaultPage({ user, initialView }) {
                           <span className={`px-2 py-0.5 rounded shrink-0 ${
                             doc.status === 'completed' ? 'bg-green-500/20 text-green-400' :
                             doc.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
-                            doc.is_locked ? 'bg-blue-500/20 text-blue-400' :
+                            doc.is_locked ? 'bg-green-500/20 text-green-400' :
                             'bg-white/10 text-white/50'
                           }`}>
                             {doc.is_locked ? 'Finalized' : doc.status}
