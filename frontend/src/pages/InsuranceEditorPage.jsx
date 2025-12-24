@@ -15,6 +15,7 @@ import {
   Lock,
   PencilSimple,
   Plus,
+  PlusCircle,
   ShieldCheck,
   Timer,
   Trash,
