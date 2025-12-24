@@ -1044,7 +1044,7 @@ export default function GovernancePage({ user }) {
                             <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-vault-muted">
                               {distribution.scheduled_date && (
                                 <div className="flex items-center gap-1">
-                                  <Calendar className="w-4 h-4" />
+                                  <CyberDateIcon className="w-4 h-4" />
                                   <span>{new Date(distribution.scheduled_date).toLocaleDateString()}</span>
                                 </div>
                               )}
