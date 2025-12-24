@@ -801,6 +801,102 @@ export default function DocumentEditorPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Amendment Dialog */}
+      <Dialog open={showAmendDialog} onOpenChange={setShowAmendDialog}>
+        <DialogContent className="bg-vault-navy border-white/10 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-white font-heading flex items-center gap-2">
+              <GitBranch className="w-5 h-5 text-amber-400" weight="duotone" />
+              Create Amendment
+            </DialogTitle>
+            <DialogDescription className="text-white/60">
+              Create an official amendment to this finalized document
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            {/* Current Document Info */}
+            <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Amending Document</p>
+              <p className="text-white font-medium">{document?.title}</p>
+              <p className="text-vault-gold font-mono text-sm mt-1">{document?.sub_record_id}</p>
+            </div>
+
+            {/* Amendment Chain Info */}
+            {amendments && amendments.total_amendments > 0 && (
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+                <p className="text-amber-400 text-sm font-medium mb-2">Amendment History</p>
+                <p className="text-white/60 text-sm">
+                  This document has {amendments.total_amendments} existing amendment{amendments.total_amendments > 1 ? 's' : ''}.
+                  {amendments.controlling_document_id !== documentId && (
+                    <span className="text-amber-400"> A newer version exists.</span>
+                  )}
+                </p>
+              </div>
+            )}
+
+            {/* Amendment Title */}
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Amendment Title</label>
+              <Input
+                value={amendmentTitle}
+                onChange={(e) => setAmendmentTitle(e.target.value)}
+                placeholder="Amendment to [Document Name]"
+                className="bg-white/5 border-white/10"
+              />
+            </div>
+
+            {/* Amendment Notes */}
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Amendment Notes (Optional)</label>
+              <Textarea
+                value={amendmentNotes}
+                onChange={(e) => setAmendmentNotes(e.target.value)}
+                placeholder="Briefly describe the purpose of this amendment..."
+                className="bg-white/5 border-white/10 min-h-[80px]"
+              />
+            </div>
+
+            {/* Info Box */}
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <Hash className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" weight="duotone" />
+                <div className="text-sm">
+                  <p className="text-blue-400 font-medium mb-1">New RM-ID Assignment</p>
+                  <p className="text-white/60">
+                    The amendment will receive the next sequential RM-ID 
+                    (e.g., if original is .001, amendment will be .002).
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowAmendDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={createAmendment} 
+              disabled={creatingAmendment}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              {creatingAmendment ? (
+                <>
+                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" weight="duotone" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <GitBranch className="w-4 h-4 mr-2" weight="duotone" />
+                  Create Amendment
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
