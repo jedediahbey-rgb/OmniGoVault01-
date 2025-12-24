@@ -107,6 +107,7 @@ const distributionStatusConfig = {
   pending_approval: { label: 'Pending Approval', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30' },
   approved: { label: 'Approved', color: 'bg-blue-500/30 text-blue-400 border-blue-400/30' },
   in_progress: { label: 'In Progress', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
+  finalized: { label: 'Finalized', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30' },
   completed: { label: 'Completed', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   cancelled: { label: 'Cancelled', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
 };
