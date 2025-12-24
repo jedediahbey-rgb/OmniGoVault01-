@@ -1682,6 +1682,77 @@ async def finalize_distribution(distribution_id: str, data: dict, request: Reque
         return error_response("FINALIZE_ERROR", "Failed to finalize distribution", status_code=500)
 
 
+@router.post("/distributions/{distribution_id}/amend")
+async def create_distribution_amendment(distribution_id: str, data: dict, request: Request):
+    """Create an amendment to a finalized distribution"""
+    try:
+        user = await get_current_user(request)
+    except Exception as e:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        original = await db.distributions.find_one(
+            {"distribution_id": distribution_id, "user_id": user.user_id}
+        )
+        
+        if not original:
+            return error_response("NOT_FOUND", "Distribution not found", status_code=404)
+        
+        if not original.get("locked"):
+            return error_response("NOT_FINALIZED", "Cannot amend an unlocked distribution. Edit it directly instead.")
+        
+        # Count existing amendments
+        amendment_count = await db.distributions.count_documents({
+            "parent_distribution_id": distribution_id,
+            "user_id": user.user_id
+        })
+        
+        new_revision = original.get("revision", 1) + amendment_count + 1
+        
+        rm_id = ""
+        try:
+            rm_id, _, _, _ = await generate_subject_rm_id(
+                original.get("portfolio_id"), user.user_id, "21", "Distribution Amendment"
+            )
+        except Exception as e:
+            print(f"Warning: Could not generate RM-ID: {e}")
+        
+        new_id = f"dist_{uuid.uuid4().hex[:12]}"
+        
+        amendment = {
+            "distribution_id": new_id,
+            "portfolio_id": original.get("portfolio_id"),
+            "trust_id": original.get("trust_id"),
+            "user_id": user.user_id,
+            "title": f"{original.get('title', '')} (Amendment v{new_revision})",
+            "distribution_type": original.get("distribution_type", "income"),
+            "total_amount": original.get("total_amount", 0),
+            "currency": original.get("currency", "USD"),
+            "recipients": original.get("recipients", []),
+            "rm_id": rm_id,
+            "revision": new_revision,
+            "parent_distribution_id": distribution_id,
+            "is_amendment": True,
+            "status": "draft",
+            "locked": False,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "deleted_at": None
+        }
+        
+        await db.distributions.insert_one(amendment)
+        
+        await db.distributions.update_one(
+            {"distribution_id": distribution_id},
+            {"$set": {"amended_by_id": new_id, "status": "amended"}}
+        )
+        
+        return success_message("Amendment created", {"item": normalize_distribution(amendment)})
+    except Exception as e:
+        print(f"Error creating amendment: {e}")
+        return error_response("AMEND_ERROR", "Failed to create amendment", status_code=500)
+
+
 # ============ DISPUTES ============
 
 def normalize_dispute(dispute: dict) -> dict:
