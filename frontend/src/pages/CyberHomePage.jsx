@@ -340,8 +340,51 @@ export default function CyberHomePage() {
   const navigate = useNavigate();
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [demoMode, setDemoMode] = useState(true);
+  const [liveSignals, setLiveSignals] = useState([]);
+  const [signalsLoading, setSignalsLoading] = useState(false);
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
+  
+  // Map activity types to icons
+  const typeIcons = {
+    meeting: Notebook,
+    distribution: CurrencyDollar,
+    dispute: Gavel,
+    insurance: ShieldCheck,
+    compensation: Users,
+  };
+  
+  // Fetch live activity feed
+  const fetchLiveSignals = async () => {
+    setSignalsLoading(true);
+    try {
+      const res = await axios.get(`${API}/governance/activity-feed`, {
+        params: { limit: 8 }
+      });
+      const data = res.data;
+      if (data.ok && data.items && data.items.length > 0) {
+        // Transform to signal format with icons
+        const signals = data.items.map((item, idx) => ({
+          id: item.id || idx,
+          type: item.type,
+          message: item.message,
+          detail: item.detail,
+          time: item.time,
+          icon: typeIcons[item.type] || Notebook
+        }));
+        setLiveSignals(signals);
+        setDemoMode(false);
+      } else {
+        // No data, stay in demo mode
+        setDemoMode(true);
+      }
+    } catch (error) {
+      console.log('Activity feed requires auth, using demo data');
+      setDemoMode(true);
+    } finally {
+      setSignalsLoading(false);
+    }
+  };
   
   // Keyboard shortcut for command palette
   useEffect(() => {
@@ -356,6 +399,11 @@ export default function CyberHomePage() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+  
+  // Try to fetch live signals on mount
+  useEffect(() => {
+    fetchLiveSignals();
   }, []);
   
   return (
