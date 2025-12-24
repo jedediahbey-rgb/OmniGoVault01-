@@ -76,14 +76,14 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled || !editor.can().undo()}
         title="ArrowCounterClockwise"
       >
-        <ArrowCounterClockwise className="w-4 h-4" />
+        <ArrowCounterClockwise className="w-4 h-4" weight="duotone" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().redo().run()}
         disabled={disabled || !editor.can().redo()}
         title="ArrowClockwise"
       >
-        <ArrowClockwise className="w-4 h-4" />
+        <ArrowClockwise className="w-4 h-4" weight="duotone" />
       </ToolbarButton>
 
       <div className="w-px h-6 bg-white/10 mx-2" />
@@ -95,7 +95,7 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled}
         title="Heading 1"
       >
-        <TextHOne className="w-4 h-4" />
+        <TextHOne className="w-4 h-4" weight="duotone" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -103,7 +103,7 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled}
         title="Heading 2"
       >
-        <TextHTwo className="w-4 h-4" />
+        <TextHTwo className="w-4 h-4" weight="duotone" />
       </ToolbarButton>
 
       <div className="w-px h-6 bg-white/10 mx-2" />
@@ -115,7 +115,7 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled}
         title="TextB"
       >
-        <TextB className="w-4 h-4" />
+        <TextB className="w-4 h-4" weight="duotone" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -123,7 +123,7 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled}
         title="TextItalic"
       >
-        <TextItalic className="w-4 h-4" />
+        <TextItalic className="w-4 h-4" weight="duotone" />
       </ToolbarButton>
 
       <div className="w-px h-6 bg-white/10 mx-2" />
@@ -135,7 +135,7 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled}
         title="Bullet List"
       >
-        <List className="w-4 h-4" />
+        <List className="w-4 h-4" weight="duotone" />
       </ToolbarButton>
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -143,7 +143,7 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled}
         title="Numbered List"
       >
-        <ListNumbers className="w-4 h-4" />
+        <ListNumbers className="w-4 h-4" weight="duotone" />
       </ToolbarButton>
     </div>
   );
@@ -175,7 +175,7 @@ const DocumentView = ({ document, content }) => {
       {document.is_locked && (
         <div className="flex justify-center -mt-4 relative z-10">
           <div className="bg-green-600 text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full flex items-center gap-2 shadow-lg text-xs sm:text-sm">
-            <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+            <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" weight="duotone" />
             <span className="font-semibold">FINALIZED</span>
           </div>
         </div>
@@ -442,7 +442,7 @@ export default function DocumentEditorPage({ user }) {
           onClick={() => navigate('/vault/documents')}
           className="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-colors shrink-0"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5" weight="duotone" />
         </button>
 
         <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-4">
@@ -450,9 +450,9 @@ export default function DocumentEditorPage({ user }) {
             document?.is_locked ? 'bg-green-500/20' : 'bg-vault-gold/10'
           }`}>
             {document?.is_locked ? (
-              <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" weight="duotone" />
             ) : (
-              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-vault-gold" />
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-vault-gold" weight="duotone" />
             )}
           </div>
           
@@ -461,7 +461,7 @@ export default function DocumentEditorPage({ user }) {
               <h2 className="text-white font-heading text-sm sm:text-base truncate">{title}</h2>
               <div className="flex items-center gap-2 text-xs sm:text-sm">
                 <span className="text-green-400 flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3" /> <span className="hidden sm:inline">Finalized</span>
+                  <CheckCircle className="w-3 h-3" weight="duotone" /> <span className="hidden sm:inline">Finalized</span>
                 </span>
                 {document.sub_record_id && (
                   <span className="text-vault-gold/60 font-mono text-xs truncate max-w-[100px] sm:max-w-none">{document.sub_record_id}</span>
@@ -487,7 +487,7 @@ export default function DocumentEditorPage({ user }) {
         <div className="hidden sm:flex items-center gap-2 shrink-0">
           {lastSaved && !document?.is_locked && (
             <span className="text-white/30 text-sm flex items-center gap-1">
-              <Clock className="w-3 h-3" />
+              <Clock className="w-3 h-3" weight="duotone" />
               Saved {lastSaved.toLocaleTimeString()}
             </span>
           )}
@@ -505,7 +505,7 @@ export default function DocumentEditorPage({ user }) {
                 viewMode === 'edit' ? 'bg-vault-gold/20 text-vault-gold' : 'text-white/50 hover:text-white'
               }`}
             >
-              <PencilSimple className="w-4 h-4" /> Edit
+              <PencilSimple className="w-4 h-4" weight="duotone" /> Edit
             </button>
             <button
               onClick={() => setViewMode('preview')}
@@ -513,7 +513,7 @@ export default function DocumentEditorPage({ user }) {
                 viewMode === 'preview' ? 'bg-vault-gold/20 text-vault-gold' : 'text-white/50 hover:text-white'
               }`}
             >
-              <Eye className="w-4 h-4" /> Preview
+              <Eye className="w-4 h-4" weight="duotone" /> Preview
             </button>
           </div>
         )}
@@ -523,15 +523,15 @@ export default function DocumentEditorPage({ user }) {
           {document?.is_locked ? (
             <>
               <Button onClick={() => setShowUnlockDialog(true)} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
-                <LockOpen className="w-4 h-4 sm:mr-2" />
+                <LockOpen className="w-4 h-4 sm:mr-2" weight="duotone" />
                 <span className="hidden sm:inline">LockOpen</span>
               </Button>
               <Button onClick={exportToPDF} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
-                <Download className="w-4 h-4 sm:mr-2" />
+                <Download className="w-4 h-4 sm:mr-2" weight="duotone" />
                 <span className="hidden sm:inline">Export</span>
               </Button>
               <Button onClick={printDocument} className="btn-primary text-xs sm:text-sm px-2 sm:px-4">
-                <Printer className="w-4 h-4 sm:mr-2" />
+                <Printer className="w-4 h-4 sm:mr-2" weight="duotone" />
                 <span className="hidden sm:inline">Print</span>
               </Button>
             </>
@@ -541,7 +541,7 @@ export default function DocumentEditorPage({ user }) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="hidden sm:flex btn-secondary">
-                    <Sparkle className="w-4 h-4 mr-2" />
+                    <Sparkle className="w-4 h-4 mr-2" weight="duotone" />
                     AI Tools
                   </Button>
                 </DropdownMenuTrigger>
@@ -550,7 +550,7 @@ export default function DocumentEditorPage({ user }) {
                     onClick={() => setShowAiUpdateDialog(true)}
                     className="text-white hover:bg-white/10 cursor-pointer"
                   >
-                    <MagicWand className="w-4 h-4 mr-2" />
+                    <MagicWand className="w-4 h-4 mr-2" weight="duotone" />
                     Update with AI
                   </DropdownMenuItem>
                   <DropdownMenuItem 
@@ -558,22 +558,22 @@ export default function DocumentEditorPage({ user }) {
                     disabled={aiProcessing}
                     className="text-white hover:bg-white/10 cursor-pointer"
                   >
-                    <FileMagnifyingGlass className="w-4 h-4 mr-2" />
+                    <FileMagnifyingGlass className="w-4 h-4 mr-2" weight="duotone" />
                     {aiProcessing ? 'Summarizing...' : 'Summarize Document'}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
               <Button onClick={saveDocument} disabled={saving || !hasChanges} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
-                <FloppyDisk className="w-4 h-4 sm:mr-2" />
+                <FloppyDisk className="w-4 h-4 sm:mr-2" weight="duotone" />
                 <span className="hidden sm:inline">{saving ? 'Saving...' : 'FloppyDisk'}</span>
               </Button>
               <Button onClick={exportToPDF} variant="outline" className="hidden sm:flex btn-secondary">
-                <Download className="w-4 h-4 mr-2" />
+                <Download className="w-4 h-4 mr-2" weight="duotone" />
                 Export
               </Button>
               <Button onClick={() => setShowFinalizeDialog(true)} className="btn-primary text-xs sm:text-sm px-2 sm:px-4">
-                <Lock className="w-4 h-4 sm:mr-2" />
+                <Lock className="w-4 h-4 sm:mr-2" weight="duotone" />
                 <span className="hidden sm:inline">Finalize</span>
               </Button>
             </>
@@ -621,7 +621,7 @@ export default function DocumentEditorPage({ user }) {
         <DialogContent className="bg-vault-navy border-white/10">
           <DialogHeader>
             <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <Lock className="w-5 h-5 text-vault-gold" />
+              <Lock className="w-5 h-5 text-vault-gold" weight="duotone" />
               Finalize Document
             </DialogTitle>
             <DialogDescription className="text-white/60">
@@ -631,7 +631,7 @@ export default function DocumentEditorPage({ user }) {
           <div className="py-4">
             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <WarningCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                <WarningCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" weight="duotone" />
                 <div className="text-sm">
                   <p className="text-yellow-400 font-medium mb-1">Before finalizing:</p>
                   <ul className="text-white/60 space-y-1 list-disc list-inside">
@@ -646,7 +646,7 @@ export default function DocumentEditorPage({ user }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowFinalizeDialog(false)}>Cancel</Button>
             <Button onClick={finalizeDocument} className="bg-green-600 hover:bg-green-700">
-              <CheckCircle className="w-4 h-4 mr-2" />
+              <CheckCircle className="w-4 h-4 mr-2" weight="duotone" />
               Finalize Document
             </Button>
           </DialogFooter>
@@ -658,7 +658,7 @@ export default function DocumentEditorPage({ user }) {
         <DialogContent className="bg-vault-navy border-white/10">
           <DialogHeader>
             <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <LockOpen className="w-5 h-5 text-vault-gold" />
+              <LockOpen className="w-5 h-5 text-vault-gold" weight="duotone" />
               LockOpen Document
             </DialogTitle>
             <DialogDescription className="text-white/60">
@@ -668,7 +668,7 @@ export default function DocumentEditorPage({ user }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowUnlockDialog(false)}>Cancel</Button>
             <Button onClick={unlockDocument} className="btn-primary">
-              <LockOpen className="w-4 h-4 mr-2" />
+              <LockOpen className="w-4 h-4 mr-2" weight="duotone" />
               LockOpen for Editing
             </Button>
           </DialogFooter>
@@ -680,7 +680,7 @@ export default function DocumentEditorPage({ user }) {
         <DialogContent className="bg-vault-navy border-white/10 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <MagicWand className="w-5 h-5 text-vault-gold" />
+              <MagicWand className="w-5 h-5 text-vault-gold" weight="duotone" />
               Update with AI
             </DialogTitle>
             <DialogDescription className="text-white/60">
@@ -705,12 +705,12 @@ export default function DocumentEditorPage({ user }) {
             <Button onClick={aiUpdateDocument} disabled={aiProcessing || !aiInstructions.trim()} className="btn-primary">
               {aiProcessing ? (
                 <>
-                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
+                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" weight="duotone" />
                   Processing...
                 </>
               ) : (
                 <>
-                  <Sparkle className="w-4 h-4 mr-2" />
+                  <Sparkle className="w-4 h-4 mr-2" weight="duotone" />
                   Apply Changes
                 </>
               )}
@@ -724,7 +724,7 @@ export default function DocumentEditorPage({ user }) {
         <DialogContent className="bg-vault-navy border-white/10 max-w-xl">
           <DialogHeader>
             <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <FileMagnifyingGlass className="w-5 h-5 text-vault-gold" />
+              <FileMagnifyingGlass className="w-5 h-5 text-vault-gold" weight="duotone" />
               Document Summary
             </DialogTitle>
             <DialogDescription className="text-white/60">
@@ -738,7 +738,7 @@ export default function DocumentEditorPage({ user }) {
               </div>
             ) : (
               <div className="flex items-center justify-center py-8">
-                <CircleNotch className="w-6 h-6 text-vault-gold animate-spin" />
+                <CircleNotch className="w-6 h-6 text-vault-gold animate-spin" weight="duotone" />
               </div>
             )}
           </div>

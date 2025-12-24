@@ -31,7 +31,7 @@ export default function LoginPage() {
           onClick={() => navigate('/')}
           className="flex items-center gap-2 text-white/40 hover:text-white mb-8 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4" weight="duotone" />
           <span>Back to home</span>
         </button>
 
@@ -39,7 +39,7 @@ export default function LoginPage() {
         <div className="glass-panel rounded-2xl p-8">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-vault-gold to-vault-gold-dim flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-vault-navy" />
+              <Shield className="w-8 h-8 text-vault-navy" weight="duotone" />
             </div>
             <h1 className="text-2xl font-heading text-white mb-2">Welcome Back</h1>
             <p className="text-white/50">

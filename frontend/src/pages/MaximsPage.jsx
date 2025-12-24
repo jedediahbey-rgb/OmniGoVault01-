@@ -380,7 +380,7 @@ export default function MaximsPage({ user }) {
                   variant="outline"
                   className="border-red-500/50 text-red-400 hover:bg-red-500/20"
                 >
-                  <X className="w-4 h-4 mr-2" />
+                  <X className="w-4 h-4 mr-2" weight="duotone" />
                   Didn't Know
                 </Button>
                 <Button
@@ -413,7 +413,7 @@ export default function MaximsPage({ user }) {
                   }}
                   className="btn-primary"
                 >
-                  <Check className="w-4 h-4 mr-2" />
+                  <Check className="w-4 h-4 mr-2" weight="duotone" />
                   Easy
                 </Button>
               </div>
@@ -431,7 +431,7 @@ export default function MaximsPage({ user }) {
               variant="ghost"
               className="text-white/60"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-2" weight="duotone" />
               Previous
             </Button>
             <Button
@@ -444,7 +444,7 @@ export default function MaximsPage({ user }) {
               className="text-white/60"
             >
               Next
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ArrowRight className="w-4 h-4 ml-2" weight="duotone" />
             </Button>
           </div>
         </div>
@@ -517,7 +517,7 @@ export default function MaximsPage({ user }) {
                 disabled={currentStudyIndex === filteredMaxims.length - 1}
                 className="btn-primary"
               >
-                Next <ArrowRight className="w-4 h-4 ml-2" />
+                Next <ArrowRight className="w-4 h-4 ml-2" weight="duotone" />
               </Button>
             </div>
           </GlassCard>
@@ -540,7 +540,7 @@ export default function MaximsPage({ user }) {
             ← Back to Maxims
           </button>
           <GlassCard className="max-w-2xl mx-auto text-center py-12">
-            <Trophy className="w-16 h-16 text-vault-gold mx-auto mb-4" />
+            <Trophy className="w-16 h-16 text-vault-gold mx-auto mb-4" weight="duotone" />
             <h3 className="text-2xl font-heading text-white mb-2">All Caught Up!</h3>
             <p className="text-white/50 mb-6">You have no maxims due for review right now.</p>
             <Button onClick={() => setStudyMode('flashcard')} className="btn-primary">
@@ -565,7 +565,7 @@ export default function MaximsPage({ user }) {
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2 text-vault-gold">
-              <Clock className="w-5 h-5" />
+              <Clock className="w-5 h-5" weight="duotone" />
               <span>{dueMaxims.length} cards due for review</span>
             </div>
             <span className="text-white/40">Card {(currentStudyIndex % dueMaxims.length) + 1} of {dueMaxims.length}</span>
@@ -660,7 +660,7 @@ export default function MaximsPage({ user }) {
                 variant="outline"
                 className="btn-secondary"
               >
-                <Clock className="w-4 h-4 mr-2" />
+                <Clock className="w-4 h-4 mr-2" weight="duotone" />
                 Review ({dueForReview.length})
               </Button>
             )}
@@ -669,14 +669,14 @@ export default function MaximsPage({ user }) {
               variant="outline"
               className="btn-secondary"
             >
-              <Brain className="w-4 h-4 mr-2" />
+              <Brain className="w-4 h-4 mr-2" weight="duotone" />
               Flashcards
             </Button>
             <Button 
               onClick={() => { setStudyMode('study'); setCurrentStudyIndex(0); }} 
               className="btn-primary"
             >
-              <BookOpen className="w-4 h-4 mr-2" />
+              <BookOpen className="w-4 h-4 mr-2" weight="duotone" />
               Study Mode
             </Button>
           </div>
@@ -708,7 +708,7 @@ export default function MaximsPage({ user }) {
       {/* MagnifyingGlass and Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         <div className="relative flex-1">
-          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" weight="duotone" />
           <Input
             placeholder="MagnifyingGlass maxims..."
             value={searchTerm}
@@ -756,7 +756,7 @@ export default function MaximsPage({ user }) {
                     progress ? 'bg-vault-gold/20' : 'bg-vault-gold/10'
                   }`}>
                     {progress?.correct_streak >= 3 ? (
-                      <Flame className="w-5 h-5 text-green-400" />
+                      <Flame className="w-5 h-5 text-green-400" weight="duotone" />
                     ) : (
                       <span className="text-vault-gold font-mono text-sm">{maxim.id}</span>
                     )}
@@ -779,9 +779,9 @@ export default function MaximsPage({ user }) {
                     />
                   </div>
                   {expandedId === maxim.id ? (
-                    <CaretUp className="w-5 h-5 text-vault-gold" />
+                    <CaretUp className="w-5 h-5 text-vault-gold" weight="duotone" />
                   ) : (
-                    <CaretDown className="w-5 h-5 text-white/30" />
+                    <CaretDown className="w-5 h-5 text-white/30" weight="duotone" />
                   )}
                 </div>
 
@@ -832,7 +832,7 @@ export default function MaximsPage({ user }) {
 
       {filteredMaxims.length === 0 && (
         <div className="text-center py-16">
-          <Sparkle className="w-12 h-12 text-white/10 mx-auto mb-4" />
+          <Sparkle className="w-12 h-12 text-white/10 mx-auto mb-4" weight="duotone" />
           <p className="text-white/40">No maxims match your search</p>
         </div>
       )}

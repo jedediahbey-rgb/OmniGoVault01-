@@ -88,7 +88,7 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
         >
           <div className="p-4 border-b border-white/10">
             <div className="relative">
-              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" weight="duotone" />
               <Input
                 autoFocus
                 placeholder="Type a command or search..."
@@ -117,7 +117,7 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
               >
                 <cmd.icon className="w-4 h-4" />
                 <span className="flex-1">{cmd.name}</span>
-                {idx === selectedIndex && <ArrowRight className="w-4 h-4" />}
+                {idx === selectedIndex && <ArrowRight className="w-4 h-4" weight="duotone" />}
               </button>
             ))}
             {filteredCommands.length === 0 && (

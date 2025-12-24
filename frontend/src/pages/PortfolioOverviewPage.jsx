@@ -418,7 +418,7 @@ export default function PortfolioOverviewPage({ user }) {
         onClick={() => navigate('/vault')}
         className="flex items-center gap-2 text-white/40 hover:text-white mb-4 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4" weight="duotone" />
         Back to Dashboard
       </button>
 
@@ -437,7 +437,7 @@ export default function PortfolioOverviewPage({ user }) {
               }}
               className="btn-secondary"
             >
-              <PencilSimple className="w-4 h-4 mr-2" />
+              <PencilSimple className="w-4 h-4 mr-2" weight="duotone" />
               Edit
             </Button>
             <Button
@@ -445,7 +445,7 @@ export default function PortfolioOverviewPage({ user }) {
               onClick={deletePortfolio}
               className="border-red-500/30 text-red-400 hover:bg-red-500/10"
             >
-              <Trash className="w-4 h-4" />
+              <Trash className="w-4 h-4" weight="duotone" />
             </Button>
           </div>
         }
@@ -457,7 +457,7 @@ export default function PortfolioOverviewPage({ user }) {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center flex-shrink-0">
-                <Hash className="w-5 h-5 text-vault-gold" />
+                <Hash className="w-5 h-5 text-vault-gold" weight="duotone" />
               </div>
               <div className="sm:hidden">
                 <p className="text-white/40 text-xs uppercase tracking-wider">
@@ -540,9 +540,9 @@ export default function PortfolioOverviewPage({ user }) {
                     doc.is_locked ? 'bg-green-500/20' : 'bg-vault-gold/10'
                   }`}>
                     {doc.is_locked ? (
-                      <Lock className="w-4 h-4 text-green-400" />
+                      <Lock className="w-4 h-4 text-green-400" weight="duotone" />
                     ) : (
-                      <FileText className="w-4 h-4 text-vault-gold" />
+                      <FileText className="w-4 h-4 text-vault-gold" weight="duotone" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -671,7 +671,7 @@ export default function PortfolioOverviewPage({ user }) {
               <h3 className="font-heading text-lg text-white">Documents</h3>
               <Link to="/templates">
                 <Button className="btn-primary">
-                  <Plus className="w-4 h-4 mr-2" /> New Document
+                  <Plus className="w-4 h-4 mr-2" weight="duotone" /> New Document
                 </Button>
               </Link>
             </div>
@@ -703,7 +703,7 @@ export default function PortfolioOverviewPage({ user }) {
                     }`}>
                       {doc.is_locked ? 'Finalized' : doc.status}
                     </span>
-                    <CaretRight className="w-4 h-4 text-white/30" />
+                    <CaretRight className="w-4 h-4 text-white/30" weight="duotone" />
                   </div>
                 </Link>
               ))}
@@ -720,7 +720,7 @@ export default function PortfolioOverviewPage({ user }) {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Assets Ledger</h3>
               <Button onClick={() => { resetAssetForm(); setShowAssetDialog(true); }} className="btn-primary">
-                <Plus className="w-4 h-4 mr-2" /> Add Asset
+                <Plus className="w-4 h-4 mr-2" weight="duotone" /> Add Asset
               </Button>
             </div>
 
@@ -768,10 +768,10 @@ export default function PortfolioOverviewPage({ user }) {
                       <td className="py-3 px-2 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button onClick={() => openEditAsset(asset)} className="text-white/40 hover:text-white p-1">
-                            <PencilSimple className="w-4 h-4" />
+                            <PencilSimple className="w-4 h-4" weight="duotone" />
                           </button>
                           <button onClick={() => setDeleteAssetId(asset.asset_id)} className="text-red-400 hover:text-red-300 p-1">
-                            <Trash className="w-4 h-4" />
+                            <Trash className="w-4 h-4" weight="duotone" />
                           </button>
                         </div>
                       </td>
@@ -792,10 +792,10 @@ export default function PortfolioOverviewPage({ user }) {
                     </div>
                     <div className="flex items-center gap-1 ml-2">
                       <button onClick={() => openEditAsset(asset)} className="text-white/40 hover:text-white p-1">
-                        <PencilSimple className="w-4 h-4" />
+                        <PencilSimple className="w-4 h-4" weight="duotone" />
                       </button>
                       <button onClick={() => setDeleteAssetId(asset.asset_id)} className="text-red-400 hover:text-red-300 p-1">
-                        <Trash className="w-4 h-4" />
+                        <Trash className="w-4 h-4" weight="duotone" />
                       </button>
                     </div>
                   </div>
@@ -823,7 +823,7 @@ export default function PortfolioOverviewPage({ user }) {
                 <p className="text-white/40 text-sm">Track all res (property) movements in and out of the trust</p>
               </div>
               <Button onClick={() => { resetLedgerForm(); setShowLedgerDialog(true); }} className="btn-primary">
-                <Plus className="w-4 h-4 mr-2" /> Add Entry
+                <Plus className="w-4 h-4 mr-2" weight="duotone" /> Add Entry
               </Button>
             </div>
 
@@ -849,7 +849,7 @@ export default function PortfolioOverviewPage({ user }) {
 
             {/* Filters */}
             <div className="flex items-center gap-3 mb-4">
-              <Funnel className="w-4 h-4 text-white/40" />
+              <Funnel className="w-4 h-4 text-white/40" weight="duotone" />
               <Select value={ledgerFilter} onValueChange={setLedgerFilter}>
                 <SelectTrigger className="w-40 bg-white/5 border-white/10">
                   <SelectValue placeholder="Funnel" />
@@ -929,7 +929,7 @@ export default function PortfolioOverviewPage({ user }) {
                             className="text-white/40 hover:text-white p-1"
                             title="Edit entry"
                           >
-                            <PencilSimple className="w-4 h-4" />
+                            <PencilSimple className="w-4 h-4" weight="duotone" />
                           </button>
                           {!entry.asset_id && (
                             <button
@@ -937,7 +937,7 @@ export default function PortfolioOverviewPage({ user }) {
                               className="text-red-400 hover:text-red-300 p-1"
                               title="Delete entry"
                             >
-                              <Trash className="w-4 h-4" />
+                              <Trash className="w-4 h-4" weight="duotone" />
                             </button>
                           )}
                         </div>
@@ -959,7 +959,7 @@ export default function PortfolioOverviewPage({ user }) {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Trust Parties</h3>
               <Button onClick={() => { resetPartyForm(); setShowPartyDialog(true); }} className="btn-primary">
-                <Plus className="w-4 h-4 mr-2" /> Add Party
+                <Plus className="w-4 h-4 mr-2" weight="duotone" /> Add Party
               </Button>
             </div>
             {parties.length > 0 ? (
@@ -967,7 +967,7 @@ export default function PortfolioOverviewPage({ user }) {
                 {parties.map(party => (
                   <div key={party.party_id} className="flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
                     <div className="w-10 h-10 rounded-full bg-vault-gold/20 flex items-center justify-center flex-shrink-0">
-                      <Users className="w-5 h-5 text-vault-gold" />
+                      <Users className="w-5 h-5 text-vault-gold" weight="duotone" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-medium">{party.name}</p>
@@ -980,14 +980,14 @@ export default function PortfolioOverviewPage({ user }) {
                         className="text-white/40 hover:text-white p-2"
                         title="Edit party"
                       >
-                        <PencilSimple className="w-4 h-4" />
+                        <PencilSimple className="w-4 h-4" weight="duotone" />
                       </button>
                       <button
                         onClick={() => setDeletePartyId(party.party_id)}
                         className="text-red-400 hover:text-red-300 p-2"
                         title="Delete party"
                       >
-                        <Trash className="w-4 h-4" />
+                        <Trash className="w-4 h-4" weight="duotone" />
                       </button>
                     </div>
                   </div>

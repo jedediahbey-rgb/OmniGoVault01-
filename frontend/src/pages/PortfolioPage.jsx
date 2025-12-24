@@ -169,7 +169,7 @@ const PortfolioPage = ({ user, logout }) => {
       <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0F172A] border-r border-white/5 p-6 flex flex-col z-40">
         <Link to="/" className="flex items-center gap-3 mb-10">
           <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-            <Scales className="w-5 h-5 text-[#C6A87C]" />
+            <Scales className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
           </div>
           <span className="font-serif text-xl font-semibold text-[#F8FAFC] tracking-tight">
             Portfolio Vault
@@ -181,7 +181,7 @@ const PortfolioPage = ({ user, logout }) => {
             to="/vault"
             className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-[#F8FAFC] hover:bg-white/5 rounded-sm transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5" weight="duotone" />
             <span className="font-sans text-sm font-medium">Back to Dashboard</span>
           </Link>
           <div className="border-t border-white/5 pt-4 mt-4">
@@ -190,28 +190,28 @@ const PortfolioPage = ({ user, logout }) => {
               onClick={() => setActiveTab("profile")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${activeTab === "profile" ? "bg-[#C6A87C]/10 text-[#C6A87C]" : "text-slate-400 hover:text-[#F8FAFC] hover:bg-white/5"}`}
             >
-              <Briefcase className="w-5 h-5" />
+              <Briefcase className="w-5 h-5" weight="duotone" />
               <span className="font-sans text-sm font-medium">Trust Profile</span>
             </button>
             <button
               onClick={() => setActiveTab("assets")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${activeTab === "assets" ? "bg-[#C6A87C]/10 text-[#C6A87C]" : "text-slate-400 hover:text-[#F8FAFC] hover:bg-white/5"}`}
             >
-              <Wallet className="w-5 h-5" />
+              <Wallet className="w-5 h-5" weight="duotone" />
               <span className="font-sans text-sm font-medium">Assets / Res</span>
             </button>
             <button
               onClick={() => setActiveTab("notices")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${activeTab === "notices" ? "bg-[#C6A87C]/10 text-[#C6A87C]" : "text-slate-400 hover:text-[#F8FAFC] hover:bg-white/5"}`}
             >
-              <Bell className="w-5 h-5" />
+              <Bell className="w-5 h-5" weight="duotone" />
               <span className="font-sans text-sm font-medium">Notices</span>
             </button>
             <button
               onClick={() => setActiveTab("documents")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${activeTab === "documents" ? "bg-[#C6A87C]/10 text-[#C6A87C]" : "text-slate-400 hover:text-[#F8FAFC] hover:bg-white/5"}`}
             >
-              <FileText className="w-5 h-5" />
+              <FileText className="w-5 h-5" weight="duotone" />
               <span className="font-sans text-sm font-medium">Documents</span>
             </button>
           </div>
@@ -223,7 +223,7 @@ const PortfolioPage = ({ user, logout }) => {
               <img src={user.picture} alt="" className="w-10 h-10 rounded-full" />
             ) : (
               <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-[#C6A87C]" />
+                <User className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
               </div>
             )}
             <div className="flex-1 min-w-0">
@@ -231,7 +231,7 @@ const PortfolioPage = ({ user, logout }) => {
             </div>
           </div>
           <Button onClick={handleLogout} variant="ghost" className="w-full justify-start text-slate-400 hover:text-[#F8FAFC]">
-            <SignOut className="w-4 h-4 mr-2" />
+            <SignOut className="w-4 h-4 mr-2" weight="duotone" />
             Sign Out
           </Button>
         </div>
@@ -243,7 +243,7 @@ const PortfolioPage = ({ user, logout }) => {
         <div className="mb-8">
           <div className="flex items-center gap-2 text-slate-400 text-sm mb-4">
             <Link to="/vault" className="hover:text-[#C6A87C]">Dashboard</Link>
-            <CaretRight className="w-4 h-4" />
+            <CaretRight className="w-4 h-4" weight="duotone" />
             <span className="text-[#C6A87C]">{portfolio?.name}</span>
           </div>
           <h1 className="font-serif text-3xl text-[#F8FAFC]" data-testid="portfolio-title">
@@ -259,7 +259,7 @@ const PortfolioPage = ({ user, logout }) => {
           <div className="space-y-6">
             {!trustProfile ? (
               <div className="bg-[#111827] border border-white/5 rounded-sm p-12 text-center">
-                <Briefcase className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+                <Briefcase className="w-16 h-16 text-slate-700 mx-auto mb-4" weight="duotone" />
                 <h3 className="font-serif text-xl text-[#F8FAFC] mb-2">No Trust Profile</h3>
                 <p className="font-sans text-slate-400 mb-6">Create a trust profile to store trust details</p>
                 <Button onClick={handleCreateTrustProfile} className="bg-[#C6A87C] text-[#0B1221]">
@@ -421,7 +421,7 @@ const PortfolioPage = ({ user, logout }) => {
               <Dialog open={showAssetDialog} onOpenChange={setShowAssetDialog}>
                 <DialogTrigger asChild>
                   <Button className="bg-[#C6A87C] text-[#0B1221]">
-                    <Plus className="w-4 h-4 mr-2" />
+                    <Plus className="w-4 h-4 mr-2" weight="duotone" />
                     Add Asset
                   </Button>
                 </DialogTrigger>
@@ -489,7 +489,7 @@ const PortfolioPage = ({ user, logout }) => {
 
             {assets.length === 0 ? (
               <div className="bg-[#111827] border border-white/5 rounded-sm p-12 text-center">
-                <Wallet className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+                <Wallet className="w-16 h-16 text-slate-700 mx-auto mb-4" weight="duotone" />
                 <h3 className="font-serif text-xl text-[#F8FAFC] mb-2">No assets yet</h3>
                 <p className="font-sans text-slate-400">Add assets to track the trust corpus</p>
               </div>
@@ -505,7 +505,7 @@ const PortfolioPage = ({ user, logout }) => {
                       {asset.value && <span className="ml-4 text-slate-400">Value: {asset.value}</span>}
                     </div>
                     <Button variant="ghost" size="sm" onClick={() => handleDeleteAsset(asset.asset_id)} className="text-slate-500 hover:text-red-500">
-                      <Trash className="w-4 h-4" />
+                      <Trash className="w-4 h-4" weight="duotone" />
                     </Button>
                   </div>
                 ))}
@@ -522,7 +522,7 @@ const PortfolioPage = ({ user, logout }) => {
               <Dialog open={showNoticeDialog} onOpenChange={setShowNoticeDialog}>
                 <DialogTrigger asChild>
                   <Button className="bg-[#C6A87C] text-[#0B1221]">
-                    <Plus className="w-4 h-4 mr-2" />
+                    <Plus className="w-4 h-4 mr-2" weight="duotone" />
                     Add Notice
                   </Button>
                 </DialogTrigger>
@@ -591,7 +591,7 @@ const PortfolioPage = ({ user, logout }) => {
 
             {notices.length === 0 ? (
               <div className="bg-[#111827] border border-white/5 rounded-sm p-12 text-center">
-                <Bell className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+                <Bell className="w-16 h-16 text-slate-700 mx-auto mb-4" weight="duotone" />
                 <h3 className="font-serif text-xl text-[#F8FAFC] mb-2">No notices yet</h3>
                 <p className="font-sans text-slate-400">Track important events and notices</p>
               </div>
@@ -627,7 +627,7 @@ const PortfolioPage = ({ user, logout }) => {
               <Dialog open={showDocDialog} onOpenChange={setShowDocDialog}>
                 <DialogTrigger asChild>
                   <Button className="bg-[#C6A87C] text-[#0B1221]">
-                    <Plus className="w-4 h-4 mr-2" />
+                    <Plus className="w-4 h-4 mr-2" weight="duotone" />
                     New Document
                   </Button>
                 </DialogTrigger>
@@ -686,7 +686,7 @@ const PortfolioPage = ({ user, logout }) => {
 
             {documents.length === 0 ? (
               <div className="bg-[#111827] border border-white/5 rounded-sm p-12 text-center">
-                <FileText className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+                <FileText className="w-16 h-16 text-slate-700 mx-auto mb-4" weight="duotone" />
                 <h3 className="font-serif text-xl text-[#F8FAFC] mb-2">No documents yet</h3>
                 <p className="font-sans text-slate-400">Create documents from templates</p>
               </div>
@@ -699,7 +699,7 @@ const PortfolioPage = ({ user, logout }) => {
                     className="bg-[#111827] border border-white/5 rounded-sm p-4 flex items-center justify-between cursor-pointer hover:border-[#C6A87C]/30"
                   >
                     <div className="flex items-center gap-4">
-                      <FileText className="w-6 h-6 text-[#C6A87C]" />
+                      <FileText className="w-6 h-6 text-[#C6A87C]" weight="duotone" />
                       <div>
                         <span className="font-sans text-[#F8FAFC]">{doc.title}</span>
                         <div className="flex items-center gap-3 mt-1">
@@ -712,7 +712,7 @@ const PortfolioPage = ({ user, logout }) => {
                       <span className={`px-2 py-1 text-xs rounded-sm ${doc.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-[#C6A87C]/10 text-[#C6A87C]'}`}>
                         {doc.status}
                       </span>
-                      <CaretRight className="w-4 h-4 text-slate-500" />
+                      <CaretRight className="w-4 h-4 text-slate-500" weight="duotone" />
                     </div>
                   </div>
                 ))}

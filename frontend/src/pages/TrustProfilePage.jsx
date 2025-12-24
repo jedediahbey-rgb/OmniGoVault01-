@@ -168,7 +168,7 @@ export default function TrustProfilePage({ user }) {
         onClick={() => navigate(`/vault/portfolio/${portfolioId}`)}
         className="flex items-center gap-2 text-white/40 hover:text-white mb-4 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" /> Back to Portfolio
+        <ArrowLeft className="w-4 h-4" weight="duotone" /> Back to Portfolio
       </button>
 
       <PageHeader
@@ -177,7 +177,7 @@ export default function TrustProfilePage({ user }) {
         subtitle="Configure trust details, RM-ID tracking, and tax identifiers"
         actions={
           <Button onClick={saveProfile} disabled={saving} className="btn-primary">
-            <FloppyDisk className="w-4 h-4 mr-2" />
+            <FloppyDisk className="w-4 h-4 mr-2" weight="duotone" />
             {saving ? 'Saving...' : 'FloppyDisk Profile'}
           </Button>
         }
@@ -366,7 +366,7 @@ export default function TrustProfilePage({ user }) {
         <TabsContent value="rm-id" className="mt-6">
           <GlassCard>
             <div className="flex items-start gap-3 mb-6">
-              <Envelope className="w-6 h-6 text-vault-gold flex-shrink-0" />
+              <Envelope className="w-6 h-6 text-vault-gold flex-shrink-0" weight="duotone" />
               <div>
                 <h3 className="font-heading text-lg text-white">Registered Envelope ID System</h3>
                 <p className="text-white/50 text-sm">
@@ -392,7 +392,7 @@ export default function TrustProfilePage({ user }) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Question className="w-3 h-3 text-white/30" />
+                        <Question className="w-3 h-3 text-white/30" weight="duotone" />
                       </TooltipTrigger>
                       <TooltipContent className="bg-vault-navy border-white/10 max-w-xs">
                         <p className="text-sm">Enter the registered mail sticker number from your physical sticker/receipt (e.g., RF 123 456 789 US). This becomes the base for all sub-record IDs.</p>
@@ -452,7 +452,7 @@ export default function TrustProfilePage({ user }) {
               <div className="md:col-span-2">
                 <Label className="text-white/60">Evidence Files</Label>
                 <div className="mt-2 border-2 border-dashed border-white/10 rounded-lg p-6 text-center hover:border-vault-gold/30 transition-colors cursor-pointer">
-                  <Upload className="w-8 h-8 text-white/30 mx-auto mb-2" />
+                  <Upload className="w-8 h-8 text-white/30 mx-auto mb-2" weight="duotone" />
                   <p className="text-white/40 text-sm">Upload sticker photo or receipt</p>
                   <p className="text-white/20 text-xs">Click or drag files here</p>
                 </div>
@@ -491,7 +491,7 @@ export default function TrustProfilePage({ user }) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Question className="w-3 h-3 text-white/30" />
+                        <Question className="w-3 h-3 text-white/30" weight="duotone" />
                       </TooltipTrigger>
                       <TooltipContent className="bg-vault-navy border-white/10 max-w-xs">
                         <p className="text-sm">Domestic vs Foreign trust classification depends on the court test and control test under IRC §7701(a)(30). This is fact-dependent—consult qualified tax counsel.</p>
@@ -531,7 +531,7 @@ export default function TrustProfilePage({ user }) {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Envelope Event Log</h3>
               <Button className="btn-secondary" disabled={!profile}>
-                <Plus className="w-4 h-4 mr-2" /> Log Event
+                <Plus className="w-4 h-4 mr-2" weight="duotone" /> Log Event
               </Button>
             </div>
 

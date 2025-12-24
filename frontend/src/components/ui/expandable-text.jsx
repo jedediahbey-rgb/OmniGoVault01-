@@ -66,7 +66,7 @@ export function ExpandableText({
           animate={{ rotate: isExpanded ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-3 h-3" />
+          <ChevronDown className="w-3 h-3" weight="duotone" />
         </motion.span>
       </button>
     </div>

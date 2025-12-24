@@ -47,7 +47,7 @@ export default function MainLayout({ children, user, onLogout }) {
             className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             aria-label="Open menu"
           >
-            <List className="w-5 h-5" />
+            <List className="w-5 h-5" weight="duotone" />
           </button>
           <span className="font-heading text-lg text-white">Equity Trust</span>
           <div className="w-9" /> {/* Spacer for centering */}

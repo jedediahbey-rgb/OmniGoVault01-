@@ -116,7 +116,7 @@ export default function AssistantPage({ user }) {
         actions={
           messages.length > 0 && (
             <Button onClick={resetChat} variant="outline" className="btn-secondary">
-              <ArrowsClockwise className="w-4 h-4 mr-2" />
+              <ArrowsClockwise className="w-4 h-4 mr-2" weight="duotone" />
               New Chat
             </Button>
           )
@@ -135,7 +135,7 @@ export default function AssistantPage({ user }) {
                   className="h-full flex flex-col items-center justify-center text-center"
                 >
                   <div className="w-20 h-20 rounded-2xl bg-vault-gold/10 flex items-center justify-center mb-6">
-                    <Sparkle className="w-10 h-10 text-vault-gold" />
+                    <Sparkle className="w-10 h-10 text-vault-gold" weight="duotone" />
                   </div>
                   <h3 className="text-2xl font-heading text-white mb-3">
                     Equity Trust Assistant
@@ -176,11 +176,11 @@ export default function AssistantPage({ user }) {
                         : 'bg-vault-gold/20'
                     }`}>
                       {message.role === 'user' ? (
-                        <User className="w-5 h-5 text-vault-blue" />
+                        <User className="w-5 h-5 text-vault-blue" weight="duotone" />
                       ) : message.isError ? (
-                        <Warning className="w-5 h-5 text-red-400" />
+                        <Warning className="w-5 h-5 text-red-400" weight="duotone" />
                       ) : (
-                        <Robot className="w-5 h-5 text-vault-gold" />
+                        <Robot className="w-5 h-5 text-vault-gold" weight="duotone" />
                       )}
                     </div>
                     
@@ -213,7 +213,7 @@ export default function AssistantPage({ user }) {
                           onClick={() => copyMessage(message.content)}
                           className="mt-2 text-xs text-white/30 hover:text-white/60 flex items-center gap-1"
                         >
-                          <Copy className="w-3 h-3" /> Copy
+                          <Copy className="w-3 h-3" weight="duotone" /> Copy
                         </button>
                       )}
                     </div>
@@ -228,7 +228,7 @@ export default function AssistantPage({ user }) {
                   className="flex gap-4"
                 >
                   <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center">
-                    <Robot className="w-5 h-5 text-vault-gold" />
+                    <Robot className="w-5 h-5 text-vault-gold" weight="duotone" />
                   </div>
                   <div className="flex items-center gap-2 text-white/40">
                     <div className="w-2 h-2 bg-vault-gold rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -257,7 +257,7 @@ export default function AssistantPage({ user }) {
                   disabled={!input.trim() || loading}
                   className="btn-primary h-auto"
                 >
-                  <PaperPlaneTilt className="w-5 h-5" />
+                  <PaperPlaneTilt className="w-5 h-5" weight="duotone" />
                 </Button>
               </div>
               <p className="text-xs text-white/30 mt-2">
@@ -275,7 +275,7 @@ export default function AssistantPage({ user }) {
             <div className="space-y-4">
               <div className="p-3 rounded-lg bg-vault-gold/5 border border-vault-gold/20">
                 <div className="flex items-center gap-2 mb-2">
-                  <BookOpen className="w-4 h-4 text-vault-gold" />
+                  <BookOpen className="w-4 h-4 text-vault-gold" weight="duotone" />
                   <span className="text-white text-sm">Kingdom vs Empire</span>
                 </div>
                 <p className="text-white/40 text-xs">
@@ -285,7 +285,7 @@ export default function AssistantPage({ user }) {
               
               <div className="p-3 rounded-lg bg-white/5 border border-white/10">
                 <div className="flex items-center gap-2 mb-2">
-                  <FileText className="w-4 h-4 text-white/60" />
+                  <FileText className="w-4 h-4 text-white/60" weight="duotone" />
                   <span className="text-white text-sm">Pure Trust Under Equity</span>
                 </div>
                 <p className="text-white/40 text-xs">

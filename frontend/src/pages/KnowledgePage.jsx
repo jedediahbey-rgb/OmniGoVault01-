@@ -46,7 +46,7 @@ const KnowledgePage = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3" data-testid="logo-link">
               <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-                <Scales className="w-5 h-5 text-[#C6A87C]" />
+                <Scales className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
               </div>
               <span className="font-serif text-2xl font-semibold text-[#F8FAFC] tracking-tight">
                 Equity Trust Portfolio
@@ -72,7 +72,7 @@ const KnowledgePage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2 text-slate-400 text-sm mb-6">
             <Link to="/" className="hover:text-[#C6A87C]">Home</Link>
-            <CaretRight className="w-4 h-4" />
+            <CaretRight className="w-4 h-4" weight="duotone" />
             <span className="text-[#C6A87C]">Knowledge Base</span>
           </div>
           <div className="flex items-start justify-between gap-8">
@@ -87,7 +87,7 @@ const KnowledgePage = () => {
             </div>
             <div className="w-96">
               <div className="relative">
-                <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" weight="duotone" />
                 <Input
                   type="text"
                   placeholder="MagnifyingGlass topics..."
@@ -119,7 +119,7 @@ const KnowledgePage = () => {
                 >
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
-                      <BookOpen className="w-8 h-8 text-[#C6A87C]" />
+                      <BookOpen className="w-8 h-8 text-[#C6A87C]" weight="duotone" />
                       <span className="font-mono text-xs text-slate-500">{String(index + 1).padStart(2, '0')}</span>
                     </div>
                     <h3 className="font-serif text-xl text-[#F8FAFC] mb-3">{topic.title}</h3>
@@ -141,7 +141,7 @@ const KnowledgePage = () => {
                     
                     {/* Source Citation */}
                     <div className="flex items-center gap-2 text-xs text-slate-500 border-t border-white/5 pt-4">
-                      <FileText className="w-3 h-3" />
+                      <FileText className="w-3 h-3" weight="duotone" />
                       <span>{topic.source}</span>
                     </div>
                   </div>
@@ -151,7 +151,7 @@ const KnowledgePage = () => {
                       className="inline-flex items-center gap-2 text-[#C6A87C] font-sans text-sm font-medium"
                     >
                       Ask Assistant About This
-                      <ArrowSquareOut className="w-3 h-3" />
+                      <ArrowSquareOut className="w-3 h-3" weight="duotone" />
                     </Link>
                   </div>
                 </div>
@@ -161,7 +161,7 @@ const KnowledgePage = () => {
 
           {filteredTopics.length === 0 && !loading && (
             <div className="text-center py-20">
-              <BookOpen className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+              <BookOpen className="w-16 h-16 text-slate-700 mx-auto mb-4" weight="duotone" />
               <h3 className="font-serif text-xl text-[#F8FAFC] mb-2">No topics found</h3>
               <p className="font-sans text-slate-400">Try adjusting your search terms</p>
             </div>
@@ -174,7 +174,7 @@ const KnowledgePage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <FileText className="w-8 h-8 text-[#C6A87C]" />
+              <FileText className="w-8 h-8 text-[#C6A87C]" weight="duotone" />
               <div>
                 <h3 className="font-serif text-lg text-[#F8FAFC]">View Original Sources</h3>
                 <p className="font-sans text-sm text-slate-400">Access the PDF documents that power this knowledge base</p>
@@ -183,7 +183,7 @@ const KnowledgePage = () => {
             <Link to="/sources">
               <Button variant="outline" className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10">
                 Source Library
-                <CaretRight className="w-4 h-4 ml-2" />
+                <CaretRight className="w-4 h-4 ml-2" weight="duotone" />
               </Button>
             </Link>
           </div>

@@ -122,7 +122,7 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
           <div className="p-4 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-vault-gold/20 flex items-center justify-center">
-                <Robot className="w-4 h-4 text-vault-gold" />
+                <Robot className="w-4 h-4 text-vault-gold" weight="duotone" />
               </div>
               <div>
                 <h3 className="text-white font-medium">AI Assistant</h3>
@@ -132,11 +132,11 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
             <div className="flex items-center gap-2">
               {messages.length > 0 && (
                 <button onClick={resetChat} className="p-2 text-white/40 hover:text-white rounded-lg hover:bg-white/5">
-                  <ArrowsClockwise className="w-4 h-4" />
+                  <ArrowsClockwise className="w-4 h-4" weight="duotone" />
                 </button>
               )}
               <button onClick={onClose} className="p-2 text-white/40 hover:text-white rounded-lg hover:bg-white/5">
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" weight="duotone" />
               </button>
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
                         onClick={() => copyMessage(msg.content)}
                         className="mt-2 text-[10px] text-white/30 hover:text-white/50 flex items-center gap-1"
                       >
-                        <Copy className="w-3 h-3" /> Copy
+                        <Copy className="w-3 h-3" weight="duotone" /> Copy
                       </button>
                     </div>
                   ) : (
@@ -197,7 +197,7 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
 
             {loading && (
               <div className="flex gap-2 items-center text-white/40">
-                <CircleNotch className="w-4 h-4 animate-spin" />
+                <CircleNotch className="w-4 h-4 animate-spin" weight="duotone" />
                 <span className="text-sm">Thinking...</span>
               </div>
             )}
@@ -225,7 +225,7 @@ export default function AssistantDrawer({ isOpen, onClose, context }) {
                 disabled={!input.trim() || loading}
                 className="btn-primary h-auto px-3"
               >
-                <PaperPlaneTilt className="w-4 h-4" />
+                <PaperPlaneTilt className="w-4 h-4" weight="duotone" />
               </Button>
             </div>
           </div>

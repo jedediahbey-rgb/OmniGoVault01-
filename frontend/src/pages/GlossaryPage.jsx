@@ -629,7 +629,7 @@ export default function GlossaryPage({ user }) {
               {selectedTerm.relatedTerms && selectedTerm.relatedTerms.length > 0 && (
                 <div>
                   <h4 className="text-vault-gold uppercase tracking-wider text-sm mb-3 flex items-center gap-2">
-                    <LinkSimple className="w-4 h-4" />
+                    <LinkSimple className="w-4 h-4" weight="duotone" />
                     Related Terms
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -653,7 +653,7 @@ export default function GlossaryPage({ user }) {
               {selectedTerm.relatedMaxims && selectedTerm.relatedMaxims.length > 0 && (
                 <div>
                   <h4 className="text-vault-gold uppercase tracking-wider text-sm mb-3 flex items-center gap-2">
-                    <Sparkle className="w-4 h-4" />
+                    <Sparkle className="w-4 h-4" weight="duotone" />
                     Related Maxims
                   </h4>
                   <div className="space-y-2">
@@ -667,7 +667,7 @@ export default function GlossaryPage({ user }) {
                           <span className="text-white/70 group-hover:text-white text-sm">
                             Maxim #{maximId}
                           </span>
-                          <ArrowRight className="w-4 h-4 text-vault-gold opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <ArrowRight className="w-4 h-4 text-vault-gold opacity-0 group-hover:opacity-100 transition-opacity" weight="duotone" />
                         </div>
                       </button>
                     ))}
@@ -679,7 +679,7 @@ export default function GlossaryPage({ user }) {
               {selectedTerm.relatedLessons && selectedTerm.relatedLessons.length > 0 && (
                 <div>
                   <h4 className="text-vault-gold uppercase tracking-wider text-sm mb-3 flex items-center gap-2">
-                    <BookOpen className="w-4 h-4" />
+                    <BookOpen className="w-4 h-4" weight="duotone" />
                     Related Lessons
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -689,7 +689,7 @@ export default function GlossaryPage({ user }) {
                         onClick={() => handleLessonClick(lessonId)}
                         className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-500/40 rounded-lg text-sm text-blue-400 hover:text-blue-300 transition-all flex items-center gap-2"
                       >
-                        <BookOpen className="w-3 h-3" />
+                        <BookOpen className="w-3 h-3" weight="duotone" />
                         {lessonId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                       </button>
                     ))}
@@ -701,7 +701,7 @@ export default function GlossaryPage({ user }) {
               {selectedTerm.relatedTemplates && selectedTerm.relatedTemplates.length > 0 && (
                 <div>
                   <h4 className="text-vault-gold uppercase tracking-wider text-sm mb-3 flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
+                    <FileText className="w-4 h-4" weight="duotone" />
                     Related Templates
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -711,7 +711,7 @@ export default function GlossaryPage({ user }) {
                         onClick={() => navigate('/templates')}
                         className="px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 hover:border-green-500/40 rounded-lg text-sm text-green-400 hover:text-green-300 transition-all flex items-center gap-2"
                       >
-                        <FileText className="w-3 h-3" />
+                        <FileText className="w-3 h-3" weight="duotone" />
                         {templateId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                       </button>
                     ))}
@@ -737,7 +737,7 @@ export default function GlossaryPage({ user }) {
       {/* MagnifyingGlass and Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         <div className="relative flex-1">
-          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" weight="duotone" />
           <Input
             placeholder="MagnifyingGlass terms..."
             value={searchTerm}
@@ -839,7 +839,7 @@ export default function GlossaryPage({ user }) {
                       )}
                     </div>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors" />
+                  <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors" weight="duotone" />
                 </div>
               </GlassCard>
             </motion.div>
@@ -849,7 +849,7 @@ export default function GlossaryPage({ user }) {
 
       {filteredTerms.length === 0 && (
         <div className="text-center py-16">
-          <BookOpen className="w-12 h-12 text-white/10 mx-auto mb-4" />
+          <BookOpen className="w-12 h-12 text-white/10 mx-auto mb-4" weight="duotone" />
           <p className="text-white/40">No terms match your search</p>
         </div>
       )}

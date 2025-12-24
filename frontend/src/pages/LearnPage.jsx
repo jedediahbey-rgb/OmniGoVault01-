@@ -839,7 +839,7 @@ export default function LearnPage({ user }) {
             ← Back to Lesson
           </button>
           <GlassCard className="max-w-2xl mx-auto text-center py-12">
-            <Brain className="w-16 h-16 text-white/20 mx-auto mb-4" />
+            <Brain className="w-16 h-16 text-white/20 mx-auto mb-4" weight="duotone" />
             <h3 className="text-xl text-white mb-2">Quiz Coming Soon</h3>
             <p className="text-white/50">Quiz questions for this lesson are being developed.</p>
           </GlassCard>
@@ -892,17 +892,17 @@ export default function LearnPage({ user }) {
                         <div className="flex items-center gap-3">
                           {showResult ? (
                             isCorrect ? (
-                              <CheckCircle className="w-5 h-5 text-green-400" />
+                              <CheckCircle className="w-5 h-5 text-green-400" weight="duotone" />
                             ) : isSelected ? (
-                              <X className="w-5 h-5 text-red-400" />
+                              <X className="w-5 h-5 text-red-400" weight="duotone" />
                             ) : (
-                              <Circle className="w-5 h-5 text-white/30" />
+                              <Circle className="w-5 h-5 text-white/30" weight="duotone" />
                             )
                           ) : (
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                               isSelected ? 'border-vault-gold bg-vault-gold' : 'border-white/30'
                             }`}>
-                              {isSelected && <Check className="w-3 h-3 text-vault-navy" />}
+                              {isSelected && <Check className="w-3 h-3 text-vault-navy" weight="duotone" />}
                             </div>
                           )}
                           <span className={showResult && isCorrect ? 'text-green-400' : 'text-white/80'}>
@@ -941,7 +941,7 @@ export default function LearnPage({ user }) {
             ) : (
               <>
                 <Button onClick={resetQuiz} variant="outline" className="btn-secondary">
-                  <ArrowCounterClockwise className="w-4 h-4 mr-2" /> Try Again
+                  <ArrowCounterClockwise className="w-4 h-4 mr-2" weight="duotone" /> Try Again
                 </Button>
                 <Button onClick={() => { setShowQuiz(false); resetQuiz(); }} className="btn-primary">
                   Continue Learning
@@ -989,7 +989,7 @@ export default function LearnPage({ user }) {
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-vault-gold">{moduleProgress}%</span>
                         {moduleProgress === 100 && (
-                          <Trophy className="w-4 h-4 text-vault-gold" />
+                          <Trophy className="w-4 h-4 text-vault-gold" weight="duotone" />
                         )}
                       </div>
                     )}
@@ -1064,7 +1064,7 @@ export default function LearnPage({ user }) {
                     isComplete ? 'bg-green-500/20' : 'bg-vault-gold/10'
                   }`}>
                     {isComplete ? (
-                      <CheckCircle className="w-5 h-5 text-green-400" />
+                      <CheckCircle className="w-5 h-5 text-green-400" weight="duotone" />
                     ) : (
                       <span className="text-vault-gold font-mono">{idx + 1}</span>
                     )}
@@ -1083,7 +1083,7 @@ export default function LearnPage({ user }) {
                         {quizScore ? `${quizScore}%` : 'Quiz'}
                       </div>
                     )}
-                    <CaretRight className="w-5 h-5 text-white/30" />
+                    <CaretRight className="w-5 h-5 text-white/30" weight="duotone" />
                   </div>
                 </GlassCard>
               );
@@ -1109,7 +1109,7 @@ export default function LearnPage({ user }) {
                 <h2 className="text-3xl font-heading text-white">{selectedLesson.title}</h2>
                 {isLessonComplete(selectedModule.id, selectedLesson.id) && (
                   <div className="flex items-center gap-2 px-3 py-1 bg-green-500/20 rounded-full">
-                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <CheckCircle className="w-4 h-4 text-green-400" weight="duotone" />
                     <span className="text-green-400 text-sm">Completed</span>
                   </div>
                 )}
@@ -1129,7 +1129,7 @@ export default function LearnPage({ user }) {
                 <ul className="space-y-2">
                   {selectedLesson.keyPoints.map((point, idx) => (
                     <li key={idx} className="flex items-start gap-3 text-white/60">
-                      <CheckCircle className="w-5 h-5 text-vault-gold flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-5 h-5 text-vault-gold flex-shrink-0 mt-0.5" weight="duotone" />
                       <span>{point}</span>
                     </li>
                   ))}
@@ -1158,7 +1158,7 @@ export default function LearnPage({ user }) {
                     onClick={() => markComplete(selectedModule.id, selectedLesson.id)}
                     className="btn-primary"
                   >
-                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <CheckCircle className="w-4 h-4 mr-2" weight="duotone" />
                     Mark Complete
                   </Button>
                 )}
@@ -1168,7 +1168,7 @@ export default function LearnPage({ user }) {
                     variant="outline"
                     className="btn-secondary"
                   >
-                    <Brain className="w-4 h-4 mr-2" />
+                    <Brain className="w-4 h-4 mr-2" weight="duotone" />
                     Take Quiz
                   </Button>
                 )}
@@ -1186,7 +1186,7 @@ export default function LearnPage({ user }) {
                   variant="ghost"
                   className="text-white/60 hover:text-white"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  <ArrowLeft className="w-4 h-4 mr-2" weight="duotone" />
                   Previous Lesson
                 </Button>
               )}
@@ -1201,7 +1201,7 @@ export default function LearnPage({ user }) {
                   className="text-white/60 hover:text-white"
                 >
                   Next Lesson
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-2" weight="duotone" />
                 </Button>
               )}
             </div>

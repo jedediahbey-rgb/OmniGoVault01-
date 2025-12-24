@@ -84,7 +84,7 @@ export default function Sidebar({ user, onLogout, isOpen, onClose }) {
               className="absolute top-4 right-4 p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               aria-label="Close menu"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" weight="duotone" />
             </button>
             <SidebarContent 
               user={user} 
@@ -106,7 +106,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-vault-gold to-vault-gold-dim flex items-center justify-center flex-shrink-0">
-            <Shield className="w-5 h-5 text-vault-navy" />
+            <Shield className="w-5 h-5 text-vault-navy" weight="duotone" />
           </div>
           <div className="min-w-0">
             <h1 className="font-heading text-lg text-white tracking-tight">Equity Trust</h1>
@@ -145,7 +145,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
                       )} />
                       <span className="text-sm font-medium">{item.name}</span>
                       {isActive && (
-                        <CaretRight className="w-3 h-3 ml-auto text-vault-gold flex-shrink-0" />
+                        <CaretRight className="w-3 h-3 ml-auto text-vault-gold flex-shrink-0" weight="duotone" />
                       )}
                     </>
                   )}
@@ -174,7 +174,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
               className="p-2 text-white/40 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors flex-shrink-0"
               title="Sign out"
             >
-              <SignOut className="w-4 h-4" />
+              <SignOut className="w-4 h-4" weight="duotone" />
             </button>
           </div>
         ) : (

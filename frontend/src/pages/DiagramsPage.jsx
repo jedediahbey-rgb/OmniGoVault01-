@@ -405,7 +405,7 @@ export default function DiagramsPage() {
               size="sm"
               className="btn-secondary"
             >
-              <Info className="w-4 h-4 mr-2" />
+              <Info className="w-4 h-4 mr-2" weight="duotone" />
               {showInfo ? 'Hide' : 'Show'} Info
             </Button>
           </div>
@@ -459,7 +459,7 @@ export default function DiagramsPage() {
                   onClick={() => setShowInfo(false)}
                   className="absolute top-2 right-2 text-white/40 hover:text-white"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" weight="duotone" />
                 </button>
                 <h3 className="font-heading text-lg text-white mb-4">{selectedDiagram.title}</h3>
                 <div className="prose prose-sm prose-invert">
@@ -507,7 +507,7 @@ export default function DiagramsPage() {
               <p className="text-white/50 text-sm mb-4">{diagram.description}</p>
               <div className="flex items-center text-vault-gold text-sm">
                 <span>Explore Diagram</span>
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <ArrowRight className="w-4 h-4 ml-2" weight="duotone" />
               </div>
             </GlassCard>
           </motion.div>

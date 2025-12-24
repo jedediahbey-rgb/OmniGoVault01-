@@ -43,7 +43,7 @@ const RelationshipsPage = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3">
               <div className="w-10 h-10 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-                <Scales className="w-5 h-5 text-[#C6A87C]" />
+                <Scales className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
               </div>
               <span className="font-serif text-2xl font-semibold text-[#F8FAFC] tracking-tight">
                 Equity Trust Portfolio
@@ -69,7 +69,7 @@ const RelationshipsPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2 text-slate-400 text-sm mb-6">
             <Link to="/" className="hover:text-[#C6A87C]">Home</Link>
-            <CaretRight className="w-4 h-4" />
+            <CaretRight className="w-4 h-4" weight="duotone" />
             <span className="text-[#C6A87C]">Duty ↔ Right Relationships</span>
           </div>
           <h1 className="font-serif text-5xl text-[#F8FAFC] mb-4" data-testid="relationships-title">
@@ -128,15 +128,15 @@ const RelationshipsPage = () => {
                     <div className="flex items-center justify-center gap-8">
                       <div className="text-center">
                         <div className="w-16 h-16 bg-[#C6A87C]/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <Users className="w-8 h-8 text-[#C6A87C]" />
+                          <Users className="w-8 h-8 text-[#C6A87C]" weight="duotone" />
                         </div>
                         <h3 className="font-serif text-xl text-[#F8FAFC]">{selectedRelationship.left_party}</h3>
                         <span className="font-sans text-xs text-slate-500 uppercase tracking-wider">Duty Bearer</span>
                       </div>
-                      <ArrowLeftRight className="w-8 h-8 text-[#C6A87C]" />
+                      <ArrowLeftRight className="w-8 h-8 text-[#C6A87C]" weight="duotone" />
                       <div className="text-center">
                         <div className="w-16 h-16 bg-[#C6A87C]/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <Users className="w-8 h-8 text-[#C6A87C]" />
+                          <Users className="w-8 h-8 text-[#C6A87C]" weight="duotone" />
                         </div>
                         <h3 className="font-serif text-xl text-[#F8FAFC]">{selectedRelationship.right_party}</h3>
                         <span className="font-sans text-xs text-slate-500 uppercase tracking-wider">Right Holder</span>
@@ -190,7 +190,7 @@ const RelationshipsPage = () => {
 
                     {/* Source Citation */}
                     <div className="flex items-center justify-center gap-2 text-xs text-slate-500 mt-8 pt-6 border-t border-white/5">
-                      <FileText className="w-3 h-3" />
+                      <FileText className="w-3 h-3" weight="duotone" />
                       <span>{selectedRelationship.source}</span>
                     </div>
                   </div>

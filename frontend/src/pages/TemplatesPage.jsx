@@ -519,7 +519,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
                 className="h-full"
               >
                 <div className="w-12 h-12 rounded-xl bg-vault-gold/10 flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-vault-gold" />
+                  <Icon className="w-6 h-6 text-vault-gold" weight="duotone" />
                 </div>
                 <h3 className="text-xl font-heading text-white mb-2">{template.name}</h3>
                 <p className="text-white/50 text-sm mb-4">{template.description}</p>
@@ -529,7 +529,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-white/30">{template.fields?.length || 0} fields</span>
                   <span className="text-vault-gold text-sm flex items-center gap-1">
-                    Use Template <ArrowRight className="w-4 h-4" />
+                    Use Template <ArrowRight className="w-4 h-4" weight="duotone" />
                   </span>
                 </div>
               </GlassCard>
@@ -545,7 +545,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
             className="h-full border-dashed"
           >
             <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4">
-              <Plus className="w-6 h-6 text-white/40" />
+              <Plus className="w-6 h-6 text-white/40" weight="duotone" />
             </div>
             <h3 className="text-xl font-heading text-white mb-2">Blank Document</h3>
             <p className="text-white/50 text-sm">Start from scratch with a blank document</p>
@@ -629,7 +629,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
               disabled={!selectedPortfolio || selectedPortfolio === '__none__'}
               className="btn-secondary"
             >
-              <Sparkle className="w-4 h-4 mr-2" />
+              <Sparkle className="w-4 h-4 mr-2" weight="duotone" />
               Generate with AI
             </Button>
             <Button onClick={createDocument} disabled={creating} className="btn-primary">
@@ -644,7 +644,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
         <DialogContent className="bg-vault-navy border-white/10 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <Sparkle className="w-5 h-5 text-vault-gold" />
+              <Sparkle className="w-5 h-5 text-vault-gold" weight="duotone" />
               Generate Document with AI
             </DialogTitle>
             <DialogDescription className="text-white/60">
@@ -681,12 +681,12 @@ C/o: <strong>[ADDRESS]</strong><br/>
             <Button onClick={aiGenerateDocument} disabled={aiGenerating || !aiInstructions.trim()} className="btn-primary">
               {aiGenerating ? (
                 <>
-                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
+                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" weight="duotone" />
                   Generating...
                 </>
               ) : (
                 <>
-                  <Sparkle className="w-4 h-4 mr-2" />
+                  <Sparkle className="w-4 h-4 mr-2" weight="duotone" />
                   Generate Document
                 </>
               )}

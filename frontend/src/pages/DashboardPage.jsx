@@ -151,7 +151,7 @@ export default function DashboardPage({ user }) {
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline text-white/30 text-xs">Ctrl+K for commands</span>
             <Button onClick={() => setShowNewPortfolio(true)} className="btn-primary">
-              <Plus className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">New Portfolio</span>
+              <Plus className="w-4 h-4 sm:mr-2" weight="duotone" /> <span className="hidden sm:inline">New Portfolio</span>
             </Button>
           </div>
         }
@@ -230,7 +230,7 @@ export default function DashboardPage({ user }) {
                 size="sm"
                 className="text-vault-gold hover:text-vault-gold"
               >
-                <Plus className="w-4 h-4 mr-1" /> Add
+                <Plus className="w-4 h-4 mr-1" weight="duotone" /> Add
               </Button>
             </div>
             
@@ -243,7 +243,7 @@ export default function DashboardPage({ user }) {
                     className="flex items-center gap-4 p-4 rounded-lg border border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5 cursor-pointer transition-all group"
                   >
                     <div className="w-12 h-12 rounded-lg bg-vault-gold/10 flex items-center justify-center">
-                      <FolderSimple className="w-6 h-6 text-vault-gold" />
+                      <FolderSimple className="w-6 h-6 text-vault-gold" weight="duotone" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-medium truncate">{portfolio.name}</p>
@@ -261,7 +261,7 @@ export default function DashboardPage({ user }) {
                             onClick={e => e.stopPropagation()}
                             className="p-1.5 text-white/30 hover:text-white hover:bg-white/10 rounded"
                           >
-                            <DotsThreeVertical className="w-4 h-4" />
+                            <DotsThreeVertical className="w-4 h-4" weight="duotone" />
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-vault-navy border-white/10">
@@ -269,27 +269,27 @@ export default function DashboardPage({ user }) {
                             onClick={(e) => openEditDialog(portfolio, e)}
                             className="text-white/70 hover:text-white focus:text-white"
                           >
-                            <PencilSimple className="w-4 h-4 mr-2" /> Edit
+                            <PencilSimple className="w-4 h-4 mr-2" weight="duotone" /> Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={(e) => { e.stopPropagation(); deletePortfolio(portfolio); }}
                             className="text-red-400 hover:text-red-300 focus:text-red-300"
                           >
-                            <Trash className="w-4 h-4 mr-2" /> Delete
+                            <Trash className="w-4 h-4 mr-2" weight="duotone" /> Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                      <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-vault-gold transition-colors" />
+                      <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-vault-gold transition-colors" weight="duotone" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
-                <FolderSimple className="w-16 h-16 text-white/10 mx-auto mb-4" />
+                <FolderSimple className="w-16 h-16 text-white/10 mx-auto mb-4" weight="duotone" />
                 <p className="text-white/40 mb-4">No portfolios yet</p>
                 <Button onClick={() => setShowNewPortfolio(true)} className="btn-primary">
-                  <Plus className="w-4 h-4 mr-2" /> Create Your First Portfolio
+                  <Plus className="w-4 h-4 mr-2" weight="duotone" /> Create Your First Portfolio
                 </Button>
               </div>
             )}
@@ -311,7 +311,7 @@ export default function DashboardPage({ user }) {
                 className="p-4 rounded-lg bg-vault-gold/5 border border-vault-gold/20 hover:border-vault-gold/40 cursor-pointer transition-all"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <BookOpen className="w-5 h-5 text-vault-gold" />
+                  <BookOpen className="w-5 h-5 text-vault-gold" weight="duotone" />
                   <span className="text-white">Foundations of Equity</span>
                 </div>
                 <p className="text-white/40 text-sm">5 modules • Interactive lessons</p>
@@ -322,7 +322,7 @@ export default function DashboardPage({ user }) {
                 className="p-4 rounded-lg bg-vault-blue/5 border border-vault-blue/20 hover:border-vault-blue/40 cursor-pointer transition-all"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <Sparkle className="w-5 h-5 text-vault-blue" />
+                  <Sparkle className="w-5 h-5 text-vault-blue" weight="duotone" />
                   <span className="text-white">Maxims of Equity</span>
                 </div>
                 <p className="text-white/40 text-sm">20+ principles • Study mode</p>
@@ -347,7 +347,7 @@ export default function DashboardPage({ user }) {
                 size="sm"
                 className="text-vault-gold hover:text-vault-gold"
               >
-                View All <ArrowRight className="w-4 h-4 ml-1" />
+                View All <ArrowRight className="w-4 h-4 ml-1" weight="duotone" />
               </Button>
             </div>
             
@@ -360,12 +360,12 @@ export default function DashboardPage({ user }) {
                     className="flex items-center gap-4 p-3 rounded-lg border border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5 cursor-pointer transition-all"
                   >
                     <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-white/40" />
+                      <FileText className="w-5 h-5 text-white/40" weight="duotone" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white truncate">{doc.title}</p>
                       <p className="text-xs text-white/40 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
+                        <Clock className="w-3 h-3" weight="duotone" />
                         {new Date(doc.updated_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -374,7 +374,7 @@ export default function DashboardPage({ user }) {
               </div>
             ) : (
               <div className="text-center py-8">
-                <FileText className="w-12 h-12 text-white/10 mx-auto mb-3" />
+                <FileText className="w-12 h-12 text-white/10 mx-auto mb-3" weight="duotone" />
                 <p className="text-white/40">No documents yet</p>
               </div>
             )}
