@@ -619,17 +619,22 @@ export default function VaultPage({ user }) {
                           <p className="text-white line-clamp-2 text-sm">{doc.title}</p>
                           <p className="text-white/40 text-xs mt-0.5">{humanizeSlug(doc.document_type)}</p>
                           {doc.rm_id && (
-                            <p className="text-vault-gold/60 text-xs font-mono break-words mt-0.5 sm:hidden">
+                            <p className="text-vault-gold/60 text-[10px] font-mono truncate mt-0.5 sm:hidden max-w-[120px]">
                               {doc.sub_record_id || doc.rm_id}
                             </p>
                           )}
                         </div>
-                        <div className="flex flex-col items-end gap-1 shrink-0">
+                        <div className="flex flex-col items-end gap-1 shrink-0 min-w-[70px]">
                           <span className="text-white/30 text-xs">
                             {new Date(doc.updated_at).toLocaleDateString()}
                           </span>
+                          {doc.is_locked && (
+                            <span className="text-blue-400 text-[10px] sm:text-xs bg-blue-500/20 px-1.5 py-0.5 rounded">
+                              Finalized
+                            </span>
+                          )}
                           {doc.rm_id && (
-                            <span className="hidden sm:block text-vault-gold/60 text-xs font-mono">
+                            <span className="hidden sm:block text-vault-gold/60 text-xs font-mono truncate max-w-[150px]">
                               {doc.sub_record_id || doc.rm_id}
                             </span>
                           )}
