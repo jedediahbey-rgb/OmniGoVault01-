@@ -3300,6 +3300,11 @@ async def health_check():
 # Include router and middleware
 app.include_router(api_router)
 
+# Initialize and include Governance routes
+from backend.routes.governance import router as governance_router, init_governance_routes
+init_governance_routes(db, get_current_user, generate_subject_rm_id)
+app.include_router(governance_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
