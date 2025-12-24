@@ -544,6 +544,13 @@ export default function DisputeEditorPage({ user }) {
                   </Button>
                 )}
                 
+                {!isLocked && (
+                  <Button onClick={() => setShowFinalizeConfirm(true)} variant="outline" className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10">
+                    <Lock className="w-4 h-4 mr-2" />
+                    Finalize
+                  </Button>
+                )}
+                
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="border-vault-gold/30">
