@@ -635,7 +635,7 @@ export default function VaultPage({ user, initialView }) {
                             {new Date(doc.updated_at).toLocaleDateString()}
                           </span>
                           {doc.is_locked && (
-                            <span className="text-blue-400 text-[10px] sm:text-xs bg-blue-500/20 px-1.5 py-0.5 rounded">
+                            <span className="text-green-400 text-[10px] sm:text-xs bg-green-500/20 px-1.5 py-0.5 rounded">
                               Finalized
                             </span>
                           )}
