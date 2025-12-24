@@ -61,6 +61,10 @@ export default function TemplatesPage({ user }) {
   const [selectedPortfolio, setSelectedPortfolio] = useState('');
   const [creating, setCreating] = useState(false);
   
+  // Controlled Select state to fix mobile auto-collapse bug
+  const [portfolioSelectOpen, setPortfolioSelectOpen] = useState(false);
+  const titleInputRef = useRef(null);
+  
   // AI Generation state
   const [showAiGenerateDialog, setShowAiGenerateDialog] = useState(false);
   const [aiInstructions, setAiInstructions] = useState('');
