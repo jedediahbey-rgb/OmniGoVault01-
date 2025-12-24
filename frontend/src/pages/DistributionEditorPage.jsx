@@ -541,33 +541,8 @@ export default function DistributionEditorPage({ user }) {
           </div>
         </GlassCard>
       </motion.div>
-                <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setEditingHeader(true)}
-                    className="border-vault-gold/30 text-white"
-                  >
-                    <PencilSimple className="w-4 h-4 mr-2" />
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => setShowSubmit(true)}
-                    className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
-                    disabled={!distribution.recipients?.length}
-                  >
-                    <Check className="w-4 h-4 mr-2" />
-                    Submit
-                  </Button>
-                </>
-              )}
-              
-              {isPendingApproval && (
-                <Button
-                  size="sm"
-                  onClick={() => setShowApprove(true)}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white"
+
+      {/* Recipients Section */}
                 >
                   <Seal className="w-4 h-4 mr-2" />
                   Approve
