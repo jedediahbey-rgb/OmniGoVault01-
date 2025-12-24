@@ -555,24 +555,24 @@ export default function DisputeEditorPage({ user }) {
                 </div>
               )}
               
-              {/* Action buttons */}
-              <div className="flex items-center gap-2 flex-wrap">
+              {/* Action buttons - properly aligned */}
+              <div className="flex items-center gap-2 justify-end mt-4">
                 {isOpen && (
-                  <Button onClick={() => setShowResolve(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+                  <Button size="sm" onClick={() => setShowResolve(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white">
                     <CheckCircle className="w-4 h-4 mr-2" />
                     Resolve
                   </Button>
                 )}
                 
                 {!isLocked && (
-                  <Button onClick={() => setShowFinalizeConfirm(true)} variant="outline" className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10">
+                  <Button size="sm" onClick={() => setShowFinalizeConfirm(true)} variant="outline" className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10">
                     <Lock className="w-4 h-4 mr-2" />
                     Finalize
                   </Button>
                 )}
                 
                 {isLocked && (
-                  <Button onClick={handleAmend} variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
+                  <Button size="sm" onClick={handleAmend} variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
                     <PlusCircle className="w-4 h-4 mr-2" />
                     Amend
                   </Button>
