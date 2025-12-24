@@ -714,17 +714,21 @@ export default function MeetingEditorPage({ user }) {
           
           {/* Hash verification for finalized meetings */}
           {isFinalized && meeting.finalized_hash && (
-            <div className="mt-4 pt-4 border-t border-vault-gold/20">
-              <div className="flex items-center gap-2 text-xs text-vault-muted">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Tamper-evident hash:</span>
-                <code className="bg-vault-dark/50 px-2 py-0.5 rounded font-mono">
+            <div className="mt-4 pt-4 border-t border-vault-gold/20 space-y-2">
+              {/* Tamper-evident hash - on its own line */}
+              <div className="flex flex-wrap items-center gap-2 text-xs text-vault-muted">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="shrink-0">Tamper-evident hash:</span>
+                <code className="bg-vault-dark/50 px-2 py-0.5 rounded font-mono break-all">
                   {meeting.finalized_hash.slice(0, 16)}...{meeting.finalized_hash.slice(-16)}
                 </code>
-                {meeting.finalized_by && (
-                  <span className="ml-2">Finalized by {meeting.finalized_by} on {formatDate(meeting.finalized_at)}</span>
-                )}
               </div>
+              {/* Finalized by - on its own line */}
+              {meeting.finalized_by && (
+                <div className="text-xs text-vault-muted pl-6">
+                  Finalized by <span className="text-white">{meeting.finalized_by}</span> on {formatDate(meeting.finalized_at)}
+                </div>
+              )}
             </div>
           )}
         </GlassCard>
