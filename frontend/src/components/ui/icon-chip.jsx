@@ -66,13 +66,14 @@ export default function IconChip({
 }
 
 /**
- * CurrencyDisplay - Properly formatted currency with overflow handling
- * Never adds extra "$" - uses Intl.NumberFormat only
+ * CurrencyDisplay - Properly formatted currency with compact notation for mobile
+ * Uses compact notation (e.g., $50k, $2.2M) when space is limited
  */
 export function CurrencyDisplay({ 
   value, 
   variant = 'default',
   size = 'md',
+  compact = true, // Use compact notation by default on mobile
   className 
 }) {
   const colorVariants = {
@@ -88,8 +89,37 @@ export function CurrencyDisplay({
     lg: 'text-xl sm:text-2xl'
   };
 
-  // Format using Intl.NumberFormat - this includes the "$" symbol
-  const formatted = (value === null || value === undefined || value === '') 
+  // Format currency - use compact notation for mobile
+  const formatValue = (val) => {
+    if (val === null || val === undefined || val === '') return '-';
+    
+    const num = Number(val);
+    const absNum = Math.abs(num);
+    
+    // Use compact notation for values >= 1000
+    if (compact && absNum >= 1000) {
+      const sign = num < 0 ? '-' : '';
+      if (absNum >= 1000000) {
+        const formatted = (absNum / 1000000).toFixed(absNum % 1000000 === 0 ? 0 : 1);
+        return `${sign}$${formatted}M`;
+      } else {
+        const formatted = (absNum / 1000).toFixed(absNum % 1000 === 0 ? 0 : 1);
+        return `${sign}$${formatted}k`;
+      }
+    }
+    
+    // Full format for smaller values
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(val);
+  };
+
+  // Mobile: compact, Desktop: full
+  const mobileFormatted = formatValue(value);
+  const desktopFormatted = (value === null || value === undefined || value === '') 
     ? '-' 
     : new Intl.NumberFormat('en-US', { 
         style: 'currency', 
@@ -99,16 +129,29 @@ export function CurrencyDisplay({
       }).format(value);
 
   return (
-    <span 
-      className={cn(
-        'inline-flex max-w-full font-heading tabular-nums',
-        'overflow-hidden',
-        colorVariants[variant],
-        sizeVariants[size],
-        className
-      )}
-    >
-      <span className="min-w-0 truncate">{formatted}</span>
-    </span>
+    <>
+      {/* Mobile: compact notation */}
+      <span 
+        className={cn(
+          'sm:hidden font-heading tabular-nums',
+          colorVariants[variant],
+          sizeVariants[size],
+          className
+        )}
+      >
+        {mobileFormatted}
+      </span>
+      {/* Desktop: full notation */}
+      <span 
+        className={cn(
+          'hidden sm:inline font-heading tabular-nums',
+          colorVariants[variant],
+          sizeVariants[size],
+          className
+        )}
+      >
+        {desktopFormatted}
+      </span>
+    </>
   );
 }
