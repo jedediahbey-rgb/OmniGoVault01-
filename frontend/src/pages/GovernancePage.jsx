@@ -539,7 +539,7 @@ export default function GovernancePage({ user }) {
 
       {/* New Meeting Dialog */}
       <Dialog open={showNewMeeting} onOpenChange={setShowNewMeeting}>
-        <DialogContent ref={newMeetingDialogRef} className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
               <Newspaper className="w-5 h-5" />
