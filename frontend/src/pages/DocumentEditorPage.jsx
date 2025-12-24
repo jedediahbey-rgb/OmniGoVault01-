@@ -230,6 +230,13 @@ export default function DocumentEditorPage({ user }) {
   const [aiInstructions, setAiInstructions] = useState('');
   const [aiProcessing, setAiProcessing] = useState(false);
   const [aiSummary, setAiSummary] = useState('');
+  
+  // Amendment State
+  const [showAmendDialog, setShowAmendDialog] = useState(false);
+  const [amendmentTitle, setAmendmentTitle] = useState('');
+  const [amendmentNotes, setAmendmentNotes] = useState('');
+  const [creatingAmendment, setCreatingAmendment] = useState(false);
+  const [amendments, setAmendments] = useState(null);
 
   const editor = useEditor({
     extensions: [
