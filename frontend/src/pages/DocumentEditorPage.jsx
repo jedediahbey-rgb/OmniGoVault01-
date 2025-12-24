@@ -21,7 +21,7 @@ import {
   FloppyDisk,
   Hash,
   List,
-  ListOrdered,
+  ListNumbers,
   Lock,
   MagicWand,
   PencilSimple,
@@ -143,7 +143,7 @@ const EditorToolbar = ({ editor, disabled }) => {
         disabled={disabled}
         title="Numbered List"
       >
-        <ListOrdered className="w-4 h-4" />
+        <ListNumbers className="w-4 h-4" />
       </ToolbarButton>
     </div>
   );
