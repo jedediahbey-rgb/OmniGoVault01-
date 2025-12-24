@@ -538,6 +538,24 @@ def normalize_rm_id(rm_id_raw: str) -> str:
     return normalized
 
 
+def parse_currency_value(value) -> Optional[float]:
+    """Parse a currency value that may contain formatting like $, commas, etc."""
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        # Remove currency symbols, commas, and whitespace
+        cleaned = re.sub(r'[$,\s]', '', value.strip())
+        if not cleaned:
+            return None
+        try:
+            return float(cleaned)
+        except ValueError:
+            return None
+    return None
+
+
 # ============ AUTH HELPERS ============
 
 async def get_current_user(request: Request) -> User:
