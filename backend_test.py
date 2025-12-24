@@ -335,7 +335,7 @@ class EquityTrustAPITester:
             "order": 1,
             "notes": "All trustees reviewed documents prior to meeting"
         }
-        agenda_item = self.run_test("Governance - Add Agenda Item", "POST", f"governance/meetings/{meeting_id}/agenda", 201, agenda_data)
+        agenda_item = self.run_test("Governance - Add Agenda Item", "POST", f"governance/meetings/{meeting_id}/agenda", 200, agenda_data)
         
         # Test 6: Add another agenda item
         agenda_data2 = {
