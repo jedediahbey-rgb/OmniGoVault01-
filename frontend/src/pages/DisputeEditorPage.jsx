@@ -580,7 +580,7 @@ export default function DisputeEditorPage({ user }) {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="border-vault-gold/30">
+                    <Button variant="outline" size="sm" className="border-vault-gold/30">
                       <DotsThreeVertical className="w-5 h-5" />
                     </Button>
                   </DropdownMenuTrigger>
