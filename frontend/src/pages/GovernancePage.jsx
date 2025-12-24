@@ -85,8 +85,8 @@ export default function GovernancePage({ user }) {
   const [searchParams] = useSearchParams();
   const portfolioIdParam = searchParams.get('portfolio');
   
-  // Refs for mobile dropdown fix
-  const meetingTitleInputRef = useRef(null);
+  // Ref for dialog container (for Select portal)
+  const newMeetingDialogRef = useRef(null);
   
   const [activeTab, setActiveTab] = useState('meetings');
   const [meetings, setMeetings] = useState([]);
@@ -107,16 +107,6 @@ export default function GovernancePage({ user }) {
     called_by: '',
   });
   const [creating, setCreating] = useState(false);
-
-  // Mobile dropdown fix - blur input before opening select
-  const handleSelectPointerDown = (inputRef) => (e) => {
-    if (inputRef?.current && document.activeElement === inputRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      inputRef.current.blur();
-      return;
-    }
-  };
 
   useEffect(() => {
     fetchPortfolios();
