@@ -318,6 +318,20 @@ export default function DistributionEditorPage({ user }) {
     }
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await axios.delete(`${API}/governance/distributions/${distributionId}`);
+      toast.success('Distribution deleted successfully');
+      navigate('/vault/governance?tab=distributions');
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to delete distribution');
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
