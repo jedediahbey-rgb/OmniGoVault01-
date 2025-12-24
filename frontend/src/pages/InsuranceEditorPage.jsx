@@ -287,7 +287,7 @@ export default function InsuranceEditorPage({ user }) {
         <GlassCard className="p-12 text-center">
           <ShieldCheck className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
           <h3 className="text-xl font-heading text-white mb-2">Policy Not Found</h3>
-          <p className="text-vault-muted mb-6">The insurance policy you're looking for doesn't exist.</p>
+          <p className="text-vault-muted mb-6">The insurance policy you are looking for does not exist.</p>
           <Link to="/vault/governance?tab=insurance">
             <Button className="bg-vault-gold text-vault-dark">
               <ArrowLeft className="w-4 h-4 mr-2" />
