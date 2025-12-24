@@ -93,6 +93,10 @@ export default function PortfolioOverviewPage({ user }) {
   const [partyPhone, setPartyPhone] = useState('');
   const [partyNotes, setPartyNotes] = useState('');
   const [deletePartyId, setDeletePartyId] = useState(null);
+  
+  // Trust Profile Edit
+  const [showTrustDateDialog, setShowTrustDateDialog] = useState(false);
+  const [editTrustDate, setEditTrustDate] = useState('');
 
   useEffect(() => {
     fetchPortfolioData();
