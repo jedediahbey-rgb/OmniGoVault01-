@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight,
   BookOpen,
-  BookText,
+  BookOpen,
   CaretDown,
   CaretUp,
   FileText,
@@ -527,14 +527,14 @@ The BFP doctrine reflects the maxim "Where there is equal equity, the law must p
 ];
 
 const categories = [
-  { id: 'all', label: 'All Terms', icon: BookText },
-  { id: 'parties', label: 'Parties', icon: BookText },
-  { id: 'trusts', label: 'Trusts', icon: BookText },
-  { id: 'doctrines', label: 'Doctrines', icon: BookText },
-  { id: 'interests', label: 'Interests', icon: BookText },
-  { id: 'remedies', label: 'Remedies', icon: BookText },
-  { id: 'documents', label: 'Documents', icon: BookText },
-  { id: 'jurisdiction', label: 'Jurisdiction', icon: BookText },
+  { id: 'all', label: 'All Terms', icon: BookOpen },
+  { id: 'parties', label: 'Parties', icon: BookOpen },
+  { id: 'trusts', label: 'Trusts', icon: BookOpen },
+  { id: 'doctrines', label: 'Doctrines', icon: BookOpen },
+  { id: 'interests', label: 'Interests', icon: BookOpen },
+  { id: 'remedies', label: 'Remedies', icon: BookOpen },
+  { id: 'documents', label: 'Documents', icon: BookOpen },
+  { id: 'jurisdiction', label: 'Jurisdiction', icon: BookOpen },
 ];
 
 export default function GlossaryPage({ user }) {
@@ -730,7 +730,7 @@ export default function GlossaryPage({ user }) {
   return (
     <div className="p-8">
       <PageHeader
-        icon={BookText}
+        icon={BookOpen}
         title="Glossary"
         subtitle="Comprehensive definitions with cross-links to lessons, maxims, and templates"
       />
@@ -850,7 +850,7 @@ export default function GlossaryPage({ user }) {
 
       {filteredTerms.length === 0 && (
         <div className="text-center py-16">
-          <BookText className="w-12 h-12 text-white/10 mx-auto mb-4" />
+          <BookOpen className="w-12 h-12 text-white/10 mx-auto mb-4" />
           <p className="text-white/40">No terms match your search</p>
         </div>
       )}
