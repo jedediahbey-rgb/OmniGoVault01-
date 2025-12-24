@@ -487,15 +487,13 @@ export default function CyberHomePage() {
           </div>
         </div>
         
-        {/* Scroll indicator */}
+        {/* Scroll indicator - subtle chevron */}
         <motion.div 
           className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 8, 0] }}
+          animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center pt-2">
-            <div className="w-1.5 h-1.5 bg-[#C6A87C] rounded-full" />
-          </div>
+          <CaretRight className="w-6 h-6 text-[#C6A87C]/50 rotate-90" weight="bold" />
         </motion.div>
       </section>
       
