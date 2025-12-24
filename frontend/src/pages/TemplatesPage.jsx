@@ -558,32 +558,8 @@ C/o: <strong>[ADDRESS]</strong><br/>
       </motion.div>
 
       {/* Create Document Dialog */}
-      <Dialog open={showCreateDialog} onOpenChange={(open) => {
-        // Only close if the select dropdown is not open
-        if (!open && portfolioSelectOpen) return;
-        setShowCreateDialog(open);
-      }}>
-        <DialogContent 
-          className="bg-vault-navy border-white/10"
-          onOpenAutoFocus={(e) => e.preventDefault()}
-          onInteractOutside={(e) => {
-            // Prevent dialog from closing when interacting with Select dropdown
-            const target = e.target;
-            if (target?.closest?.('[data-radix-select-content]') || 
-                target?.closest?.('[role="listbox"]') ||
-                target?.closest?.('[data-radix-popper-content-wrapper]')) {
-              e.preventDefault();
-            }
-          }}
-          onPointerDownOutside={(e) => {
-            const target = e.target;
-            if (target?.closest?.('[data-radix-select-content]') || 
-                target?.closest?.('[role="listbox"]') ||
-                target?.closest?.('[data-radix-popper-content-wrapper]')) {
-              e.preventDefault();
-            }
-          }}
-        >
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="bg-vault-navy border-white/10">
           <DialogHeader>
             <DialogTitle className="text-white font-heading">
               Create {selectedTemplate?.name}
@@ -609,47 +585,22 @@ C/o: <strong>[ADDRESS]</strong><br/>
               <div>
                 <label className="text-white/60 text-sm mb-2 block">Portfolio (Optional)</label>
                 <Select 
-                  open={portfolioSelectOpen}
-                  onOpenChange={setPortfolioSelectOpen}
                   value={selectedPortfolio} 
-                  onValueChange={(value) => {
-                    setSelectedPortfolio(value);
-                    setPortfolioSelectOpen(false);
+                  onValueChange={setSelectedPortfolio}
+                  onOpenChange={(open) => {
+                    // Blur input when opening to dismiss mobile keyboard first
+                    if (open && titleInputRef.current) {
+                      titleInputRef.current.blur();
+                    }
                   }}
                 >
-                  <SelectTrigger 
-                    className="bg-white/5 border-white/10"
-                    onPointerDown={(e) => {
-                      // Fix A: Force open on pointerdown, prevent blur race
-                      e.preventDefault();
-                      e.stopPropagation();
-                      // Blur the title input to dismiss keyboard on mobile
-                      titleInputRef.current?.blur();
-                      // Always set to true (don't toggle)
-                      setPortfolioSelectOpen(true);
-                    }}
-                  >
+                  <SelectTrigger className="bg-white/5 border-white/10">
                     <SelectValue placeholder="Select a portfolio" />
                   </SelectTrigger>
                   <SelectContent 
                     className="bg-vault-navy border-white/10 z-[9999]"
                     position="popper"
                     sideOffset={4}
-                    onCloseAutoFocus={(e) => e.preventDefault()}
-                    onPointerDownOutside={(e) => {
-                      // Fix C: Keep dropdown open if tapped inside dialog
-                      const target = e.target;
-                      if (target?.closest?.('[role="dialog"]')) {
-                        e.preventDefault();
-                      }
-                    }}
-                    onInteractOutside={(e) => {
-                      // Keep dropdown open if interacting within dialog
-                      const target = e.target;
-                      if (target?.closest?.('[role="dialog"]')) {
-                        e.preventDefault();
-                      }
-                    }}
                   >
                     <SelectItem value="__none__" className="text-white/70">No Portfolio</SelectItem>
                     {portfolios.map(p => (
