@@ -570,9 +570,13 @@ export default function DocumentEditorPage({ user }) {
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {document?.is_locked ? (
             <>
+              <Button onClick={openAmendDialog} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4 border-amber-500/50 text-amber-400 hover:bg-amber-500/10">
+                <GitBranch className="w-4 h-4 sm:mr-2" weight="duotone" />
+                <span className="hidden sm:inline">Amend</span>
+              </Button>
               <Button onClick={() => setShowUnlockDialog(true)} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
                 <LockOpen className="w-4 h-4 sm:mr-2" weight="duotone" />
-                <span className="hidden sm:inline">LockOpen</span>
+                <span className="hidden sm:inline">Unlock</span>
               </Button>
               <Button onClick={exportToPDF} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
                 <Download className="w-4 h-4 sm:mr-2" weight="duotone" />
