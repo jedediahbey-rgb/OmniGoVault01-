@@ -1784,6 +1784,179 @@ export default function GovernancePage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* New Insurance Policy Dialog */}
+      <Dialog open={showNewInsurance} onOpenChange={setShowNewInsurance}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5" />
+              New Insurance Policy
+            </DialogTitle>
+            <DialogDescription className="text-vault-muted">
+              Track a life insurance policy owned by or for the trust
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Policy Name *</label>
+              <Input
+                value={newInsurance.title}
+                onChange={(e) => setNewInsurance(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="e.g., John Doe Life Insurance"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Policy Type</label>
+                <Select 
+                  value={newInsurance.policy_type} 
+                  onValueChange={(v) => setNewInsurance(prev => ({ ...prev, policy_type: v }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <SelectItem value="whole_life" className="text-white hover:bg-vault-gold/20">Whole Life</SelectItem>
+                    <SelectItem value="term" className="text-white hover:bg-vault-gold/20">Term Life</SelectItem>
+                    <SelectItem value="universal" className="text-white hover:bg-vault-gold/20">Universal Life</SelectItem>
+                    <SelectItem value="variable" className="text-white hover:bg-vault-gold/20">Variable Life</SelectItem>
+                    <SelectItem value="group" className="text-white hover:bg-vault-gold/20">Group Life</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Policy Number</label>
+                <Input
+                  value={newInsurance.policy_number}
+                  onChange={(e) => setNewInsurance(prev => ({ ...prev, policy_number: e.target.value }))}
+                  placeholder="e.g., POL-123456"
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Insurance Carrier</label>
+              <Input
+                value={newInsurance.carrier_name}
+                onChange={(e) => setNewInsurance(prev => ({ ...prev, carrier_name: e.target.value }))}
+                placeholder="e.g., Northwestern Mutual"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Insured Person</label>
+              <Input
+                value={newInsurance.insured_name}
+                onChange={(e) => setNewInsurance(prev => ({ ...prev, insured_name: e.target.value }))}
+                placeholder="Name of person insured"
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Death Benefit</label>
+                <Input
+                  type="number"
+                  value={newInsurance.death_benefit}
+                  onChange={(e) => setNewInsurance(prev => ({ ...prev, death_benefit: e.target.value }))}
+                  placeholder="e.g., 500000"
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Currency</label>
+                <Select 
+                  value={newInsurance.currency} 
+                  onValueChange={(v) => setNewInsurance(prev => ({ ...prev, currency: v }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <SelectItem value="USD" className="text-white hover:bg-vault-gold/20">USD</SelectItem>
+                    <SelectItem value="EUR" className="text-white hover:bg-vault-gold/20">EUR</SelectItem>
+                    <SelectItem value="GBP" className="text-white hover:bg-vault-gold/20">GBP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Premium Amount</label>
+                <Input
+                  type="number"
+                  value={newInsurance.premium_amount}
+                  onChange={(e) => setNewInsurance(prev => ({ ...prev, premium_amount: e.target.value }))}
+                  placeholder="e.g., 500"
+                  className="bg-[#05080F] border-vault-gold/20 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-vault-muted mb-1 block">Frequency</label>
+                <Select 
+                  value={newInsurance.premium_frequency} 
+                  onValueChange={(v) => setNewInsurance(prev => ({ ...prev, premium_frequency: v }))}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <SelectItem value="monthly" className="text-white hover:bg-vault-gold/20">Monthly</SelectItem>
+                    <SelectItem value="quarterly" className="text-white hover:bg-vault-gold/20">Quarterly</SelectItem>
+                    <SelectItem value="semi_annual" className="text-white hover:bg-vault-gold/20">Semi-Annual</SelectItem>
+                    <SelectItem value="annual" className="text-white hover:bg-vault-gold/20">Annual</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-vault-muted mb-1 block">Effective Date</label>
+              <Input
+                type="date"
+                value={newInsurance.effective_date}
+                onChange={(e) => setNewInsurance(prev => ({ ...prev, effective_date: e.target.value }))}
+                className="bg-[#05080F] border-vault-gold/20 text-white"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowNewInsurance(false)}
+              className="border-vault-gold/30 text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateInsurance}
+              disabled={creatingInsurance || !newInsurance.title.trim()}
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+            >
+              {creatingInsurance ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-vault-dark border-t-transparent rounded-full animate-spin mr-2" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Policy
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
