@@ -597,19 +597,13 @@ C/o: <strong>[ADDRESS]</strong><br/>
               <div>
                 <label className="text-white/60 text-sm mb-2 block">Portfolio (Optional)</label>
                 <Select 
-                  open={portfolioOpen}
-                  onOpenChange={setPortfolioOpen}
                   value={selectedPortfolio} 
-                  onValueChange={(value) => {
-                    setSelectedPortfolio(value);
-                    setPortfolioOpen(false);
-                  }}
+                  onValueChange={setSelectedPortfolio}
                 >
                   <SelectTrigger 
                     ref={triggerRef}
                     className="bg-white/5 border-white/10"
                     onPointerDown={handlePortfolioPointerDown}
-                    onClick={(e) => e.preventDefault()}
                   >
                     <SelectValue placeholder="Select a portfolio" />
                   </SelectTrigger>
@@ -617,13 +611,6 @@ C/o: <strong>[ADDRESS]</strong><br/>
                     className="bg-vault-navy border-white/10 z-[9999]"
                     position="popper"
                     sideOffset={4}
-                    onCloseAutoFocus={(e) => e.preventDefault()}
-                    onPointerDownOutside={(e) => {
-                      // If the tap is on the trigger, don't treat it as outside
-                      if (triggerRef.current?.contains(e.target)) {
-                        e.preventDefault();
-                      }
-                    }}
                   >
                     <SelectItem value="__none__" className="text-white/70">No Portfolio</SelectItem>
                     {portfolios.map(p => (
