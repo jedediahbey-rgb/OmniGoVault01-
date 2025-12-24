@@ -9,6 +9,7 @@ import {
   Check,
   CheckCircle,
   Clock,
+  CurrencyDollar,
   FileText,
   Gavel,
   HandCoins,
