@@ -4,11 +4,12 @@ import { X } from "@phosphor-icons/react"
 
 import { cn } from "@/lib/utils"
 
-// Track if a select is currently open
+// Track if a select is currently open globally
 let selectOpenCount = 0;
 
 export const registerSelectOpen = () => { selectOpenCount++; };
 export const registerSelectClose = () => { selectOpenCount = Math.max(0, selectOpenCount - 1); };
+export const isSelectOpen = () => selectOpenCount > 0;
 
 const Dialog = DialogPrimitive.Root
 
@@ -29,16 +30,26 @@ const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
 ))
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
-const DialogContent = React.forwardRef(({ className, children, onPointerDownOutside, onInteractOutside, ...props }, ref) => {
-  // Track pointer down to distinguish between click-outside and focus changes
-  const isPointerDownRef = React.useRef(false);
+/**
+ * Helper to check if an element is part of a Radix Select dropdown
+ */
+const isSelectElement = (target) => {
+  if (!target || !(target instanceof Element)) return false;
   
+  // Check if target is within select content or is a select trigger
+  const selectContent = target.closest('[data-radix-select-content]');
+  const selectViewport = target.closest('[data-radix-select-viewport]');
+  const selectTrigger = target.closest('[data-radix-select-trigger]');
+  const selectItem = target.closest('[data-radix-select-item]');
+  const selectPortal = target.closest('[data-radix-popper-content-wrapper]');
+  
+  return !!(selectContent || selectViewport || selectTrigger || selectItem || selectPortal);
+};
+
+const DialogContent = React.forwardRef(({ className, children, onPointerDownOutside, onInteractOutside, ...props }, ref) => {
   return (
     <DialogPortal>
-      <DialogOverlay 
-        onPointerDown={() => { isPointerDownRef.current = true; }}
-        onPointerUp={() => { setTimeout(() => { isPointerDownRef.current = false; }, 100); }}
-      />
+      <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
@@ -50,17 +61,31 @@ const DialogContent = React.forwardRef(({ className, children, onPointerDownOuts
           e.preventDefault();
         }}
         onPointerDownOutside={(e) => {
-          // ALWAYS prevent - user must use X button
+          // Check if interaction is with a select dropdown (portaled outside dialog)
+          const target = e.target;
+          if (isSelectElement(target) || isSelectOpen()) {
+            e.preventDefault();
+            return;
+          }
+          // ALWAYS prevent closing - user must use X button
           e.preventDefault();
           if (onPointerDownOutside) onPointerDownOutside(e);
         }}
         onInteractOutside={(e) => {
-          // ALWAYS prevent - user must use X button
+          // Check if interaction is with a select dropdown
+          const target = e.target;
+          if (isSelectElement(target) || isSelectOpen()) {
+            e.preventDefault();
+            return;
+          }
+          // ALWAYS prevent closing - user must use X button
           e.preventDefault();
           if (onInteractOutside) onInteractOutside(e);
         }}
         onFocusOutside={(e) => {
-          // Prevent focus outside from closing
+          // Prevent focus outside from closing dialog
+          // This is critical for mobile where tapping another input
+          // causes focus to change
           e.preventDefault();
         }}
         onCloseAutoFocus={(e) => {
