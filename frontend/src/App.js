@@ -8,7 +8,7 @@ import CommandPalette from './components/shared/CommandPalette';
 import AssistantDrawer from './components/shared/AssistantDrawer';
 
 // Pages
-import LandingPage from './pages/LandingPage';
+import CyberHomePage from './pages/CyberHomePage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import LearnPage from './pages/LearnPage';
