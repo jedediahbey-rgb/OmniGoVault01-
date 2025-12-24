@@ -502,13 +502,6 @@ export default function DistributionEditorPage({ user }) {
                 
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  {isDraft && (
-                    <Button variant="outline" size="sm" onClick={() => setEditingHeader(true)} className="border-vault-gold/30 text-white">
-                      <PencilSimple className="w-4 h-4 mr-2" />
-                      Edit
-                    </Button>
-                  )}
-                  
                   {!isLocked && (
                     <Button variant="outline" size="sm" onClick={() => setShowFinalizeConfirm(true)} className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10">
                       <Lock className="w-4 h-4 mr-2" />
@@ -530,6 +523,15 @@ export default function DistributionEditorPage({ user }) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                      {isDraft && (
+                        <>
+                          <DropdownMenuItem onClick={() => setEditingHeader(true)} className="text-white hover:bg-vault-gold/20">
+                            <PencilSimple className="w-4 h-4 mr-2" />
+                            Edit Details
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="bg-vault-gold/20" />
+                        </>
+                      )}
                       <DropdownMenuItem className="text-vault-muted hover:bg-vault-gold/20">
                         <Download className="w-4 h-4 mr-2" />
                         Export PDF
@@ -542,7 +544,7 @@ export default function DistributionEditorPage({ user }) {
                             className="text-red-400 hover:bg-red-500/20 hover:text-red-300"
                           >
                             <Trash className="w-4 h-4 mr-2" />
-                            Delete
+                            Delete Distribution
                           </DropdownMenuItem>
                         </>
                       )}
