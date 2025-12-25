@@ -784,13 +784,6 @@ export default function MeetingEditorPage({ user }) {
                           <PencilSimple className="w-4 h-4 mr-2" />
                           Edit Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          className="text-vault-gold hover:bg-vault-gold/20"
-                          onClick={() => setShowFinalize(true)}
-                        >
-                          <Lock className="w-4 h-4 mr-2" />
-                          Finalize Minutes
-                        </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-vault-gold/20" />
                       </>
                     )}
