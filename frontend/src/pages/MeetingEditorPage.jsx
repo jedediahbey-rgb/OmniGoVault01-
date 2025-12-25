@@ -1289,6 +1289,27 @@ export default function MeetingEditorPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Amendment Studio V2 */}
+      <AmendmentStudio
+        open={showAmendmentStudio}
+        onOpenChange={setShowAmendmentStudio}
+        recordTitle={meeting?.title || 'Meeting Minutes'}
+        currentVersion={meeting?.revision || 1}
+        moduleType="minutes"
+        onCreateAmendment={handleAmendV2}
+        isLoading={amendLoading}
+      />
+
+      {/* Revision History */}
+      <RevisionHistory
+        open={showRevisionHistory}
+        onOpenChange={setShowRevisionHistory}
+        recordTitle={meeting?.title || 'Meeting Minutes'}
+        revisions={revisions}
+        currentRevisionId={meeting?.meeting_id}
+        onViewRevision={handleViewRevision}
+      />
     </motion.div>
   );
 }
