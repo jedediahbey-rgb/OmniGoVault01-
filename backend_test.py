@@ -1616,6 +1616,9 @@ class EquityTrustAPITester:
         # NEW: Test RM Subject (Ledger Thread) API
         self.test_rm_subjects_api(portfolio_id)
         
+        # NEW: Test V1/V2 Compatibility
+        self.test_v1_v2_compatibility(portfolio_id)
+        
         # Print summary
         print("\n" + "=" * 50)
         print(f"📊 Test Summary: {self.tests_passed}/{self.tests_run} tests passed")
