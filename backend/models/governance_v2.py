@@ -399,14 +399,26 @@ class CompensationEntry(BaseModel):
 
 class CompensationPayload(BaseModel):
     """Payload schema for Trustee Compensation"""
+    title: str = ""
     trustee_id: Optional[str] = None
     trustee_name: str = ""
+    recipient_name: str = ""  # Alternative from frontend
+    recipient_role: str = "trustee"  # Alternative from frontend
     period: str = ""  # e.g., "Q1 2024"
+    period_start: str = ""
+    period_end: str = ""
+    fiscal_year: str = ""
     compensation_type: str = "hourly"  # no_compensation, fixed_annual, hourly, percent_assets, custom
+    basis_of_calculation: str = ""
+    amount: float = 0.0
+    currency: str = "USD"
     entries: List[CompensationEntry] = []
     total_amount: float = 0.0
     approval_status: str = "pending"  # pending, approved, paid, cancelled
     notes: str = ""
+    
+    class Config:
+        extra = "allow"
 
 
 # ============ API REQUEST MODELS ============
