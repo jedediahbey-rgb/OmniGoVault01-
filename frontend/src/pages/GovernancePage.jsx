@@ -513,22 +513,34 @@ export default function GovernancePage({ user }) {
       
       const data = res.data;
       if (data.ok && data.data?.items) {
-        const transformedPolicies = data.data.items.map(record => ({
-          policy_id: record.id,
-          id: record.id,
-          title: record.title,
-          rm_id: record.rm_id,
-          status: record.status === 'finalized' ? 'active' : record.status,
-          locked: record.status === 'finalized',
-          created_at: record.created_at,
-          finalized_at: record.finalized_at,
-          // Default values
-          policy_type: 'whole_life',
-          death_benefit: 0,
-          cash_value: 0,
-          currency: 'USD',
-          carrier_name: ''
-        }));
+        const transformedPolicies = data.data.items.map(record => {
+          // Extract payload data if available
+          const payload = record.payload_json || {};
+          
+          // Keep original status for derived badge logic
+          const policy = {
+            policy_id: record.id,
+            id: record.id,
+            title: record.title,
+            rm_id: record.rm_id,
+            status: record.status, // Keep as-is: "draft" | "finalized" | "voided"
+            policy_state: payload.policy_state || 'pending', // Policy operational state
+            locked: record.status === 'finalized',
+            created_at: record.created_at,
+            finalized_at: record.finalized_at,
+            // Extract from payload or use defaults
+            policy_type: payload.policy_type || 'whole_life',
+            death_benefit: payload.death_benefit || payload.face_value || 0,
+            cash_value: payload.cash_value || 0,
+            currency: payload.currency || 'USD',
+            carrier_name: payload.carrier_name || payload.insurer || ''
+          };
+          
+          // Runtime assertion
+          assertNoActiveOnDraft(policy);
+          
+          return policy;
+        });
         setInsurancePolicies(transformedPolicies);
       } else {
         setInsurancePolicies([]);
