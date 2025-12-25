@@ -548,7 +548,7 @@ class GovernanceV2MigrationTester:
 def main():
     # Get backend URL from environment
     import os
-    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://vault-mobile.preview.emergentagent.com')
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://omnigovault-1.preview.emergentagent.com')
     
     print(f"Testing Governance V2 Migration at: {backend_url}")
     

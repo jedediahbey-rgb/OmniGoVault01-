@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Use the public URL from frontend .env
-BASE_URL = "https://vault-mobile.preview.emergentagent.com"
+BASE_URL = "https://omnigovault-1.preview.emergentagent.com"
 API_V2_URL = f"{BASE_URL}/api/governance/v2"
 
 class GovernanceV2Tester:
