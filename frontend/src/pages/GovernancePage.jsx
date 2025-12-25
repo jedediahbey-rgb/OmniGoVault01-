@@ -1295,7 +1295,7 @@ export default function GovernancePage({ user }) {
                         <span>Generate unique RM-ID for each record</span>
                       </li>
                     </ul>
-                    <Button onClick={() => setShowNewRecordDialog(true)} className="btn-primary">
+                    <Button onClick={() => setShowNewMeeting(true)} className="btn-primary">
                       <Plus className="w-4 h-4 mr-2" />
                       New Meeting Minutes
                     </Button>
@@ -1425,7 +1425,7 @@ export default function GovernancePage({ user }) {
                         <span>Maintain tax and compliance records</span>
                       </li>
                     </ul>
-                    <Button onClick={() => { setActiveTab('distributions'); setShowNewRecordDialog(true); }} className="btn-primary">
+                    <Button onClick={() => setShowNewDistribution(true)} className="btn-primary">
                       <Plus className="w-4 h-4 mr-2" />
                       New Distribution
                     </Button>
@@ -1553,7 +1553,7 @@ export default function GovernancePage({ user }) {
                         <span>Record settlements and resolutions</span>
                       </li>
                     </ul>
-                    <Button onClick={() => { setActiveTab('disputes'); setShowNewRecordDialog(true); }} className="btn-primary">
+                    <Button onClick={() => setShowNewDispute(true)} className="btn-primary">
                       <Plus className="w-4 h-4 mr-2" />
                       New Dispute Record
                     </Button>
@@ -1685,7 +1685,7 @@ export default function GovernancePage({ user }) {
                         <span>Monitor premium payments and cash values</span>
                       </li>
                     </ul>
-                    <Button onClick={() => { setActiveTab('insurance'); setShowNewRecordDialog(true); }} className="btn-primary">
+                    <Button onClick={() => setShowNewInsurance(true)} className="btn-primary">
                       <Plus className="w-4 h-4 mr-2" />
                       New Insurance Policy
                     </Button>
@@ -1822,7 +1822,7 @@ export default function GovernancePage({ user }) {
                         <span>Generate reports for tax filings</span>
                       </li>
                     </ul>
-                    <Button onClick={() => { setActiveTab('compensation'); setShowNewRecordDialog(true); }} className="btn-primary">
+                    <Button onClick={() => setShowNewCompensation(true)} className="btn-primary">
                       <Plus className="w-4 h-4 mr-2" />
                       New Compensation Entry
                     </Button>
