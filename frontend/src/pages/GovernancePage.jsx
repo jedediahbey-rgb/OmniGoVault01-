@@ -715,11 +715,15 @@ export default function GovernancePage({ user }) {
       toast.error('Please select a portfolio');
       return;
     }
+    if (!disputeThread) {
+      toast.error('Please select or create a Ledger Thread (RM-ID)');
+      return;
+    }
     
     setCreatingDispute(true);
     try {
-      // Use V2 API for creating disputes
-      const res = await axios.post(`${API_V2}/records`, {
+      // Build request with ledger thread info
+      const requestData = {
         module_type: MODULE_TYPES.disputes,
         portfolio_id: selectedPortfolio,
         title: newDispute.title,
@@ -735,7 +739,19 @@ export default function GovernancePage({ user }) {
           parties: [],
           events: []
         }
-      });
+      };
+      
+      // Add ledger thread info
+      if (disputeThread.is_new) {
+        requestData.create_new_subject = true;
+        requestData.new_subject_title = disputeThread.title;
+        requestData.new_subject_party_name = disputeThread.primary_party_name;
+        requestData.new_subject_external_ref = disputeThread.external_ref;
+      } else {
+        requestData.rm_subject_id = disputeThread.id;
+      }
+      
+      const res = await axios.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
       if (data.ok && data.data?.record) {
@@ -751,6 +767,7 @@ export default function GovernancePage({ user }) {
           case_number: '',
           jurisdiction: '',
         });
+        setDisputeThread(null);
         
         navigate(`/vault/governance/disputes/${data.data.record.id}`);
       } else {
