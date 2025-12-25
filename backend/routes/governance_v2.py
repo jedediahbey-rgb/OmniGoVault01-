@@ -1055,7 +1055,7 @@ async def create_amendment(record_id: str, data: RecordAmendRequest, request: Re
         
         # Update record to point to new draft
         await db.governance_records.update_one(
-            {"id": record_id},
+            {"id": actual_id},
             {"$set": {
                 "current_revision_id": new_revision.id,
                 "status": RecordStatus.DRAFT.value  # Back to draft until new revision finalized
@@ -1065,7 +1065,7 @@ async def create_amendment(record_id: str, data: RecordAmendRequest, request: Re
         # Log event
         await log_event(
             event_type=EventType.AMENDMENT_CREATED,
-            record_id=record_id,
+            record_id=actual_id,
             actor_id=user.user_id,
             portfolio_id=record.get("portfolio_id", ""),
             trust_id=record.get("trust_id"),
@@ -1080,7 +1080,7 @@ async def create_amendment(record_id: str, data: RecordAmendRequest, request: Re
         )
         
         return success_response({
-            "record_id": record_id,
+            "record_id": actual_id,
             "revision_id": new_revision.id,
             "version": new_version,
             "parent_revision_id": current_revision["id"],
