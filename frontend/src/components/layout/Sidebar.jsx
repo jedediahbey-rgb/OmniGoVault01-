@@ -4,6 +4,7 @@ import {
   BookOpen,
   CaretRight,
   ChartLine,
+  FilePdf,
   FileText,
   FolderSimple,
   Gavel,
@@ -38,6 +39,7 @@ const navItems = [
   { name: 'Trust Health', href: '/health', icon: Heartbeat, section: 'tools' },
   { name: 'Diagnostics', href: '/diagnostics', icon: ShieldCheck, section: 'tools' },
   { name: 'Thread Manager', href: '/ledger-threads', icon: GitBranch, section: 'tools' },
+  { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
   { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
 ];
 
