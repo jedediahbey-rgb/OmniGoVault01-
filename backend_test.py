@@ -12,7 +12,7 @@ import time
 import uuid
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://ledger-keeper-5.preview.emergentagent.com/api"
+BASE_URL = "https://portfolio-sync-10.preview.emergentagent.com/api"
 
 class LedgerThreadAPITester:
     def __init__(self):
