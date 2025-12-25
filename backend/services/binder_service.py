@@ -962,7 +962,7 @@ class BinderService:
             "integrity_summary": "Integrity Summary"
         }
         
-        html_parts.append(f"""
+        html_parts.append("""
         <div class="toc-page" id="toc">
             <h1 class="bookmark-l1" data-bookmark="Table of Contents" style="visibility: hidden; height: 0; margin: 0;">TOC</h1>
             <div class="toc-header">Table of Contents</div>
