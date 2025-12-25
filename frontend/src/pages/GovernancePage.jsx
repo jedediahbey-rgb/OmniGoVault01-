@@ -687,7 +687,7 @@ export default function GovernancePage({ user }) {
     
     setCreatingDispute(true);
     try {
-      // Build request with optional ledger thread info
+      // Build request
       const requestData = {
         module_type: MODULE_TYPES.disputes,
         portfolio_id: selectedPortfolio,
@@ -706,18 +706,6 @@ export default function GovernancePage({ user }) {
         }
       };
       
-      // Add ledger thread info if selected
-      if (disputeThread) {
-        if (disputeThread.is_new) {
-          requestData.create_new_subject = true;
-          requestData.new_subject_title = disputeThread.title;
-          requestData.new_subject_party_name = disputeThread.primary_party_name;
-          requestData.new_subject_external_ref = disputeThread.external_ref;
-        } else {
-          requestData.rm_subject_id = disputeThread.id;
-        }
-      }
-      
       const res = await axios.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
@@ -734,7 +722,6 @@ export default function GovernancePage({ user }) {
           case_number: '',
           jurisdiction: '',
         });
-        setDisputeThread(null);
         
         navigate(`/vault/governance/disputes/${data.data.record.id}`);
       } else {
