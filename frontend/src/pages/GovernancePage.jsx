@@ -799,32 +799,6 @@ export default function GovernancePage({ user }) {
     } finally {
       setCreatingInsurance(false);
     }
-  };ata = data.item || data;
-      
-      toast.success('Insurance policy created');
-      setShowNewInsurance(false);
-      setNewInsurance({
-        title: '',
-        policy_type: 'whole_life',
-        policy_number: '',
-        carrier_name: '',
-        insured_name: '',
-        death_benefit: '',
-        cash_value: '',
-        currency: 'USD',
-        premium_amount: '',
-        premium_frequency: 'monthly',
-        effective_date: '',
-        notes: '',
-      });
-      
-      navigate(`/vault/governance/insurance/${policyData.policy_id}`);
-    } catch (error) {
-      console.error('Failed to create insurance policy:', error);
-      toast.error(error.response?.data?.error?.message || 'Failed to create insurance policy');
-    } finally {
-      setCreatingInsurance(false);
-    }
   };
 
   const handleDeleteInsurance = async (policyId) => {
