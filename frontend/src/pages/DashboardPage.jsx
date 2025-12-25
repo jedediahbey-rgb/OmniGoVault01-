@@ -11,6 +11,7 @@ import {
   DotsThreeVertical,
   FileText,
   FolderSimple,
+  FolderSimplePlus,
   MagnifyingGlass,
   PencilSimple,
   Plus,
