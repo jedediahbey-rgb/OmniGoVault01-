@@ -1316,28 +1316,10 @@ export default function GovernancePage({ user }) {
               <GlassCard className="p-8 sm:p-12 text-center">
                 <HandCoins className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
                 <h3 className="text-lg sm:text-xl font-heading text-white mb-2">No Distributions Yet</h3>
-                <p className="text-sm sm:text-base text-vault-muted mb-6">Track beneficiary distributions, payout history, and approvals</p>
-                <Button
-                  onClick={() => setShowNewDistribution(true)}
-                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Distribution
-                </Button>
+                <p className="text-sm sm:text-base text-vault-muted">Tap the "New" button above to track beneficiary distributions</p>
               </GlassCard>
             ) : (
               <div className="space-y-4">
-                {/* New Distribution Button */}
-                <div className="flex justify-end mb-4">
-                  <Button
-                    onClick={() => setShowNewDistribution(true)}
-                    className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Distribution
-                  </Button>
-                </div>
-                
                 {filteredDistributions.map((distribution, index) => {
                   const typeConfig = distributionTypeConfig[distribution.distribution_type] || distributionTypeConfig.regular;
                   const TypeIcon = typeConfig.icon;
