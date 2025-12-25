@@ -588,7 +588,13 @@ export default function CyberHomePage() {
       <nav className="fixed top-0 left-0 right-0 z-40 bg-[#05080F]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Nav Links - Left side */}
+            {/* Logo */}
+            <div className="flex items-center gap-2">
+              <Vault className="w-7 h-7 text-[#C6A87C]" weight="duotone" />
+              <span className="text-lg font-semibold text-white">OMNIGOVAULT</span>
+            </div>
+            
+            {/* Nav Links - Hidden on mobile */}
             <div className="hidden lg:flex items-center gap-6 text-sm">
               {['Learn', 'Tools', 'Templates', 'Governance', 'Scenarios', 'Pricing'].map((item) => (
                 <a key={item} href={`#${item.toLowerCase()}`} className="text-slate-400 hover:text-white transition-colors">
@@ -597,7 +603,7 @@ export default function CyberHomePage() {
               ))}
             </div>
             
-            {/* Right side - Logo + Actions */}
+            {/* Right side */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Command palette hint */}
               <button
@@ -613,12 +619,6 @@ export default function CyberHomePage() {
                 <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 text-xs sm:text-sm px-3 sm:px-4">
                   Vault
                 </Button>
-              </Link>
-              
-              {/* Logo - Top Right */}
-              <Link to="/vault/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <Key className="w-6 h-6 text-[#C6A87C]" weight="duotone" />
-                <span className="text-lg font-semibold text-white">Exclusive Equity Trust</span>
               </Link>
             </div>
           </div>
