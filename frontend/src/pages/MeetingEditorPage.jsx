@@ -1178,30 +1178,28 @@ export default function MeetingEditorPage({ user }) {
         <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-vault-gold flex items-center gap-2">
-              <Lock className="w-5 h-5" />
+              <CheckCircle className="w-5 h-5" />
               Finalize Meeting Minutes
             </DialogTitle>
             <DialogDescription className="text-vault-muted">
-              This will lock the meeting minutes and generate a tamper-evident hash. 
-              You will not be able to edit the content after finalization.
+              Once finalized, this record will be permanent and can only be amended.
+              A tamper-evident hash will be generated.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <label className="text-sm text-vault-muted mb-1 block">Your Name (for record)</label>
-            <Input
-              value={finalizeBy}
-              onChange={(e) => setFinalizeBy(e.target.value)}
-              placeholder="Enter your full name"
-              className="bg-[#05080F] border-vault-gold/20 text-white"
-            />
+            <div className="p-4 bg-vault-gold/10 border border-vault-gold/30 rounded-lg">
+              <p className="text-sm text-vault-gold">
+                <strong>{meeting?.title}</strong> will be finalized. Make sure all details are correct before proceeding.
+              </p>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFinalize(false)} className="border-vault-gold/30">
               Cancel
             </Button>
             <Button onClick={handleFinalize} className="bg-vault-gold text-vault-dark">
-              <Lock className="w-4 h-4 mr-2" />
-              Finalize Minutes
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Finalize
             </Button>
           </DialogFooter>
         </DialogContent>
