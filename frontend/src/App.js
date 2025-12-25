@@ -35,30 +35,26 @@ const API = `${BACKEND_URL}/api`;
 axios.defaults.withCredentials = true;
 
 // Auth Hook
+// Default user - NO AUTH REQUIRED
+const DEFAULT_USER = {
+  user_id: "default_user",
+  email: "user@omnigovault.com",
+  name: "Default User",
+  picture: ""
+};
+
 export const useAuth = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Always return default user - no authentication
+  const [user, setUser] = useState(DEFAULT_USER);
+  const [loading, setLoading] = useState(false);
 
   const checkAuth = async () => {
-    try {
-      const response = await axios.get(`${API}/auth/me`);
-      setUser(response.data);
-      return response.data;
-    } catch (error) {
-      setUser(null);
-      return null;
-    } finally {
-      setLoading(false);
-    }
+    // Always return default user
+    return DEFAULT_USER;
   };
 
   const logout = async () => {
-    try {
-      await axios.post(`${API}/auth/logout`);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-    setUser(null);
+    // No-op - no logout needed
   };
 
   return { user, setUser, loading, setLoading, checkAuth, logout };
