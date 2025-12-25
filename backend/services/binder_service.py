@@ -1023,17 +1023,21 @@ class BinderService:
         </div>
         """)
         
-        # 2. Manifest / Index Page
+        # 3. Manifest / Index Page (now numbered Section 0 equivalent)
         html_parts.append("""
-        <div class="record-page">
+        <div class="record-page" id="manifest">
+            <h1 class="bookmark-l1" data-bookmark="Document Manifest" style="visibility: hidden; height: 0; margin: 0;">Manifest</h1>
             <h2 style="color: #d4af37; border-bottom: 2px solid #d4af37; padding-bottom: 8px;">
                 Document Manifest
             </h2>
+            <p style="font-size: 10pt; color: #666; margin-bottom: 16px;">
+                Complete index of all items included in this binder
+            </p>
             <table class="manifest-table">
                 <thead>
                     <tr>
+                        <th style="width: 50px;">#</th>
                         <th>Section</th>
-                        <th>Type</th>
                         <th>Title</th>
                         <th>RM-ID</th>
                         <th>Status</th>
@@ -1043,16 +1047,17 @@ class BinderService:
                 <tbody>
         """)
         
-        for item in manifest:
+        for idx, item in enumerate(manifest, 1):
             section_display = item["section"].replace("_", " ").title()
             rm_id = item.get("rm_id_display") or "—"
             finalized = item.get("finalized_at", "")[:10] if item.get("finalized_at") else "—"
+            item_id = item.get("db_id", f"item-{idx}")
             
             html_parts.append(f"""
                 <tr>
+                    <td style="text-align: center;">{idx}</td>
                     <td>{section_display}</td>
-                    <td>{item.get('item_type', '').replace('_', ' ').title()}</td>
-                    <td>{item.get('title', 'Untitled')}</td>
+                    <td><a href="#item-{item_id}" style="color: #1a1a1a;">{item.get('title', 'Untitled')}</a></td>
                     <td><code>{rm_id}</code></td>
                     <td>{item.get('status', 'unknown').title()}</td>
                     <td>{finalized}</td>
