@@ -126,7 +126,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
             <Shield className="w-5 h-5 text-vault-navy" weight="duotone" />
           </div>
           <div className="min-w-0">
-            <Link to="/" className="font-heading text-lg text-white tracking-tight hover:text-vault-gold transition-colors">Exclusive Equity Trust</Link>
+            <span className="font-heading text-lg text-white tracking-tight">Exclusive Equity & Trust</span>
             <p className="text-xs text-vault-gold uppercase tracking-widest">Portfolio</p>
           </div>
         </div>

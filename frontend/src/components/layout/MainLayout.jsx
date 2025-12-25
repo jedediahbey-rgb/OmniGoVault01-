@@ -87,7 +87,7 @@ export default function MainLayout({ children, user, onLogout }) {
             isOpen={sidebarOpen} 
             onClick={() => setSidebarOpen(!sidebarOpen)} 
           />
-          <Link to="/" className="font-heading text-lg text-white hover:text-vault-gold transition-colors">Exclusive Equity Trust</Link>
+          <Link to="/" className="font-heading text-lg text-white hover:text-vault-gold transition-colors">Exclusive Equity & Trust</Link>
           <div className="w-10" /> {/* Spacer for centering */}
         </div>
       </header>
