@@ -495,10 +495,6 @@ export default function MeetingEditorPage({ user }) {
 
   // Delete meeting handler
   const handleDeleteMeeting = async () => {
-    if (!window.confirm('Are you sure you want to delete this meeting? This action cannot be undone.')) {
-      return;
-    }
-    
     try {
       await axios.post(`${API}/governance/v2/records/${meetingId}/void`, {
         void_reason: 'Deleted by user'
