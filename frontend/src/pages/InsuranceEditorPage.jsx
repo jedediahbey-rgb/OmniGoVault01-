@@ -98,6 +98,10 @@ export default function InsuranceEditorPage({ user }) {
   const [deleting, setDeleting] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
   
+  // Amendment Studio V2
+  const [showAmendmentStudio, setShowAmendmentStudio] = useState(false);
+  const [amendLoading, setAmendLoading] = useState(false);
+  
   // New beneficiary
   const [newBeneficiary, setNewBeneficiary] = useState({
     name: '',
