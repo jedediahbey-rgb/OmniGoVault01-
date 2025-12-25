@@ -1285,10 +1285,7 @@ async def finalize_amendment(revision_id: str, request: Request):
 async def void_record(record_id: str, data: RecordVoidRequest, request: Request):
     """
     Void (soft-delete) a record.
-    
-    - Creates a void audit event
-    - NEVER removes history
-    - Record becomes read-only voided state
+    Accepts either record `id` or `rm_id` for lookup.
     """
     try:
         user = await get_current_user(request)
@@ -1299,12 +1296,15 @@ async def void_record(record_id: str, data: RecordVoidRequest, request: Request)
         return error_response("VALIDATION_ERROR", "Void reason is required")
     
     try:
-        record = await db.governance_records.find_one(
-            {"id": record_id, "user_id": user.user_id}
-        )
+        # Resolve by id or rm_id
+        record, resolver_path = await resolve_record_by_id_or_rm(record_id, user.user_id)
         
         if not record:
+            print(f"[VOID_RECORD] NOT_FOUND: record_id={record_id}, user_id={user.user_id}")
             return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # Use resolved record ID
+        actual_id = record["id"]
         
         if record.get("status") == RecordStatus.VOIDED.value:
             return error_response("ALREADY_VOIDED", "Record is already voided", status_code=409)
@@ -1313,7 +1313,7 @@ async def void_record(record_id: str, data: RecordVoidRequest, request: Request)
         voided_by = user.name if hasattr(user, 'name') else user.user_id
         
         await db.governance_records.update_one(
-            {"id": record_id},
+            {"id": actual_id},
             {"$set": {
                 "status": RecordStatus.VOIDED.value,
                 "voided_at": voided_at.isoformat(),
@@ -1325,7 +1325,7 @@ async def void_record(record_id: str, data: RecordVoidRequest, request: Request)
         # Log event
         await log_event(
             event_type=EventType.VOIDED,
-            record_id=record_id,
+            record_id=actual_id,
             actor_id=user.user_id,
             portfolio_id=record.get("portfolio_id", ""),
             trust_id=record.get("trust_id"),
@@ -1334,7 +1334,7 @@ async def void_record(record_id: str, data: RecordVoidRequest, request: Request)
         )
         
         return success_response({
-            "record_id": record_id,
+            "record_id": actual_id,
             "voided_at": voided_at.isoformat(),
             "voided_by": voided_by
         }, message="Record voided successfully")
