@@ -74,26 +74,31 @@ export default function LedgerThreadSelector({
     [moduleType]
   );
 
-  // Fetch subjects for dropdown
+  // Fetch subjects for dropdown - use new ledger-threads API
   const fetchSubjects = useCallback(async () => {
     if (!portfolioId) return;
     
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/rm/subjects`, {
-        params: {
-          portfolio_id: portfolioId,
-          category: category,
-          search: searchQuery || undefined,
-          limit: 50,
-        },
+      const params = new URLSearchParams({
+        portfolio_id: portfolioId,
+        limit: '50',
       });
+      
+      if (category) {
+        params.append('category', category);
+      }
+      if (searchQuery) {
+        params.append('search', searchQuery);
+      }
+      
+      const res = await axios.get(`${API}/ledger-threads?${params.toString()}`);
       
       if (res.data.ok) {
         setSubjects(res.data.data.items || []);
       }
     } catch (error) {
-      console.error('Failed to fetch subjects:', error);
+      console.error('Failed to fetch threads:', error);
     } finally {
       setLoading(false);
     }
