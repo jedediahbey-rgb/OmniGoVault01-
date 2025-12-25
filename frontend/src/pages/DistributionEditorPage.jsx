@@ -369,6 +369,27 @@ export default function DistributionEditorPage({ user }) {
     }
   };
 
+  // V2 Amendment Studio handler
+  const handleAmendV2 = async (amendData) => {
+    setAmendLoading(true);
+    try {
+      const res = await axios.post(`${API}/governance/distributions/${distributionId}/amend`, {
+        reason: amendData.change_reason,
+        change_type: amendData.change_type,
+        effective_at: amendData.effective_at
+      });
+      const data = res.data;
+      const amendmentData = data.item || data;
+      toast.success('Amendment draft created');
+      setShowAmendmentStudio(false);
+      navigate(`/vault/governance/distributions/${amendmentData.distribution_id}`);
+    } catch (error) {
+      throw new Error(error.response?.data?.error?.message || 'Failed to create amendment');
+    } finally {
+      setAmendLoading(false);
+    }
+  };
+
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
