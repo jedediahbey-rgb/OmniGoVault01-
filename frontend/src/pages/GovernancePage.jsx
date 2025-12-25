@@ -628,11 +628,15 @@ export default function GovernancePage({ user }) {
       toast.error('Please select a portfolio');
       return;
     }
+    if (!distributionThread) {
+      toast.error('Please select or create a Ledger Thread (RM-ID)');
+      return;
+    }
     
     setCreatingDistribution(true);
     try {
-      // Use V2 API for creating distributions
-      const res = await axios.post(`${API_V2}/records`, {
+      // Build request with ledger thread info
+      const requestData = {
         module_type: MODULE_TYPES.distributions,
         portfolio_id: selectedPortfolio,
         title: newDistribution.title,
@@ -646,7 +650,19 @@ export default function GovernancePage({ user }) {
           scheduled_date: newDistribution.scheduled_date,
           recipients: []
         }
-      });
+      };
+      
+      // Add ledger thread info
+      if (distributionThread.is_new) {
+        requestData.create_new_subject = true;
+        requestData.new_subject_title = distributionThread.title;
+        requestData.new_subject_party_name = distributionThread.primary_party_name;
+        requestData.new_subject_external_ref = distributionThread.external_ref;
+      } else {
+        requestData.rm_subject_id = distributionThread.id;
+      }
+      
+      const res = await axios.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
       if (data.ok && data.data?.record) {
@@ -661,6 +677,7 @@ export default function GovernancePage({ user }) {
           asset_type: 'cash',
           scheduled_date: new Date().toISOString().slice(0, 10),
         });
+        setDistributionThread(null);
         
         navigate(`/vault/governance/distributions/${data.data.record.id}`);
       } else {
