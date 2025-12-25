@@ -421,13 +421,15 @@ const GovernanceMatrixSection = () => {
           viewport={{ once: true, margin: '-100px' }}
           variants={staggerContainer}
         >
-          {/* Header */}
-          <motion.div variants={fadeInUp} className="mb-10">
-            <IconChip icon={Gear} label="Governance Matrix" variant="gold" />
+          {/* Header - Centered on mobile */}
+          <motion.div variants={fadeInUp} className="mb-10 text-center lg:text-left">
+            <div className="flex justify-center lg:justify-start">
+              <IconChip icon={Gear} label="Governance Matrix" variant="gold" />
+            </div>
             <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">
               The console for trust operations.
             </h2>
-            <p className="mt-3 text-slate-400 max-w-2xl">
+            <p className="mt-3 text-slate-400 max-w-2xl mx-auto lg:mx-0">
               Minutes, distributions, disputes, policies, compensation—linked to a living ledger.
             </p>
           </motion.div>
@@ -442,10 +444,10 @@ const GovernanceMatrixSection = () => {
               return (
                 <HoloCard 
                   key={module.id} 
-                  className="p-5 cursor-pointer"
+                  className="p-5 cursor-pointer text-center sm:text-left"
                   onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
                 >
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between mb-3 gap-2">
                     <div className="w-10 h-10 rounded-xl bg-[#C6A87C]/10 flex items-center justify-center">
                       <Icon className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
                     </div>
@@ -460,8 +462,8 @@ const GovernanceMatrixSection = () => {
             })}
           </motion.div>
           
-          {/* CTA Row */}
-          <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap items-center gap-4">
+          {/* CTA Row - Centered on mobile */}
+          <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4">
             <Link to="/vault/governance">
               <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
                 Open Governance Console
