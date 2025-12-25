@@ -2315,6 +2315,14 @@ export default function GovernancePage({ user }) {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
+            {/* Ledger Thread Selector - TOP of form */}
+            <LedgerThreadSelector
+              portfolioId={selectedPortfolio}
+              moduleType="insurance"
+              selectedSubject={insuranceThread}
+              onSubjectChange={setInsuranceThread}
+            />
+            
             <div>
               <label className="text-sm text-vault-muted mb-1 block">Policy Name *</label>
               <Input
