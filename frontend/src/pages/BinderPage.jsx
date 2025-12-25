@@ -88,6 +88,29 @@ export default function BinderPage() {
   const [manifestData, setManifestData] = useState(null);
   const [configProfile, setConfigProfile] = useState(null);
 
+  // Check for default portfolio in localStorage
+  useEffect(() => {
+    if (!portfolioIdFromUrl) {
+      const defaultPortfolio = localStorage.getItem('defaultPortfolioId');
+      if (defaultPortfolio) {
+        setPortfolioId(defaultPortfolio);
+        setSearchParams({ portfolio: defaultPortfolio });
+      }
+    }
+  }, [portfolioIdFromUrl, setSearchParams]);
+  
+  // Set portfolio as default
+  const setAsDefault = (pid) => {
+    localStorage.setItem('defaultPortfolioId', pid);
+    toast({
+      title: 'Default Set',
+      description: 'This portfolio will be auto-selected on future visits'
+    });
+  };
+  
+  // Check if current portfolio is default
+  const isDefaultPortfolio = portfolioId === localStorage.getItem('defaultPortfolioId');
+
   // Fetch portfolios on mount
   useEffect(() => {
     const fetchPortfolios = async () => {
@@ -96,10 +119,14 @@ export default function BinderPage() {
         const data = await res.json();
         if (Array.isArray(data)) {
           setPortfolios(data);
-          // Auto-select first portfolio if none selected
+          // Auto-select default portfolio if exists, else first portfolio
           if (!portfolioId && data.length > 0) {
-            setPortfolioId(data[0].portfolio_id);
-            setSearchParams({ portfolio: data[0].portfolio_id });
+            const defaultId = localStorage.getItem('defaultPortfolioId');
+            const targetId = defaultId && data.some(p => p.portfolio_id === defaultId) 
+              ? defaultId 
+              : data[0].portfolio_id;
+            setPortfolioId(targetId);
+            setSearchParams({ portfolio: targetId });
           }
         }
       } catch (error) {
