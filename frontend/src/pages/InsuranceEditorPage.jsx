@@ -1101,6 +1101,16 @@ export default function InsuranceEditorPage({ user }) {
         onCreateAmendment={handleAmendV2}
         isLoading={amendLoading}
       />
+
+      {/* Revision History */}
+      <RevisionHistory
+        open={showRevisionHistory}
+        onOpenChange={setShowRevisionHistory}
+        recordTitle={policy?.policy_name || 'Insurance Policy'}
+        revisions={revisions}
+        currentRevisionId={policy?.policy_id}
+        onViewRevision={handleViewRevision}
+      />
     </motion.div>
   );
 }
