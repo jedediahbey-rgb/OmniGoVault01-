@@ -341,6 +341,18 @@ const AppRouter = ({ auth }) => {
         }
       />
       
+      {/* V2 Unified Governance Record Page (Amendment Studio) */}
+      <Route 
+        path="/vault/governance/record/:recordId"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <GovernanceRecordPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
