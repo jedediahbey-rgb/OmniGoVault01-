@@ -440,7 +440,7 @@ Arise by operation of law from the circumstances:
 - Secret profits made by fiduciaries
 - Mutual wills cases
 
-**Pure Trust Under Equity**
+**Exclusive Trust Under Equity**
 A trust operating purely under equitable principles, often used for asset protection and estate planning. These trusts emphasize the distinction between legal and equitable title and rely heavily on the maxims of equity for interpretation and enforcement.`,
         keyPoints: [
           'Express trusts created by explicit declaration',

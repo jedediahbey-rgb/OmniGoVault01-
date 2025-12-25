@@ -286,7 +286,7 @@ export default function AssistantPage({ user }) {
               <div className="p-3 rounded-lg bg-white/5 border border-white/10">
                 <div className="flex items-center gap-2 mb-2">
                   <FileText className="w-4 h-4 text-white/60" weight="duotone" />
-                  <span className="text-white text-sm">Pure Trust Under Equity</span>
+                  <span className="text-white text-sm">Exclusive Trust Under Equity</span>
                 </div>
                 <p className="text-white/40 text-xs">
                   Template documents and forms for establishing exclusive equity trusts.
