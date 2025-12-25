@@ -19,11 +19,11 @@ class ConfigAPITester:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'DataIntegrity-Tester/1.0'
+            'User-Agent': 'Config-API-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
-        self.scan_result = None  # Store scan result for testing
+        self.failed_tests = []
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
