@@ -832,9 +832,11 @@ export default function CyberHomePage() {
                   <Lightning className="w-4 h-4 text-emerald-400" />
                   <span className="text-sm text-emerald-400">3-day streak</span>
                 </div>
-                <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F]">
-                  Start Learning
-                </Button>
+                <Link to="/learn">
+                  <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F]">
+                    Start Learning
+                  </Button>
+                </Link>
               </div>
             </motion.div>
             
