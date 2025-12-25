@@ -240,6 +240,7 @@ export default function LedgerTimelinePage() {
         icon={Scroll}
         title="Governance Ledger"
         subtitle="Unified timeline of all trust governance activities"
+        helpKey="ledger"
       />
 
       {/* Stats Bar */}

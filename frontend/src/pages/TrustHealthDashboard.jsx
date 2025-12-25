@@ -303,6 +303,7 @@ export default function TrustHealthDashboard() {
         <PageHeader
           title="Trust Health Dashboard"
           subtitle="Comprehensive health analysis, timeline, and audit readiness"
+          helpKey="health"
           breadcrumbs={[
             { label: 'Dashboard', href: '/vault' },
             { label: 'Trust Health' }
