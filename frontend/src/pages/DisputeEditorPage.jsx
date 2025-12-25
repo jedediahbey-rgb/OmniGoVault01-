@@ -476,33 +476,27 @@ export default function DisputeEditorPage({ user }) {
     }
   };
 
-  const handleAmend = async () => {
-    try {
-      const res = await axios.post(`${API}/governance/disputes/${disputeId}/amend`, {});
-      const data = res.data;
-      const amendmentData = data.item || data;
-      toast.success('Amendment created');
-      navigate(`/vault/governance/disputes/${amendmentData.dispute_id}`);
-    } catch (error) {
-      toast.error(error.response?.data?.error?.message || 'Failed to create amendment');
-    }
-  };
-
-  // V2 Amendment Studio handler
+  // V2 Amendment Studio handler - uses unified V2 API
   const handleAmendV2 = async (amendData) => {
     setAmendLoading(true);
     try {
-      const res = await axios.post(`${API}/governance/disputes/${disputeId}/amend`, {
-        reason: amendData.change_reason,
-        change_type: amendData.change_type,
+      const res = await axios.post(`${API}/governance/v2/records/${disputeId}/amend`, {
+        change_reason: amendData.change_reason,
+        change_type: amendData.change_type || 'amendment',
         effective_at: amendData.effective_at
       });
+      
       const data = res.data;
-      const amendmentData = data.item || data;
-      toast.success('Amendment draft created');
-      setShowAmendmentStudio(false);
-      navigate(`/vault/governance/disputes/${amendmentData.dispute_id}`);
+      if (data.ok) {
+        toast.success('Amendment draft created - you can now edit the new version');
+        setShowAmendmentStudio(false);
+        // Refetch to show the new draft version
+        await fetchDispute();
+      } else {
+        throw new Error(data.error?.message || 'Failed to create amendment');
+      }
     } catch (error) {
+      console.error('Amendment error:', error);
       throw new Error(error.response?.data?.error?.message || 'Failed to create amendment');
     } finally {
       setAmendLoading(false);
