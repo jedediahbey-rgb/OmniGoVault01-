@@ -1216,7 +1216,7 @@ export default function GovernancePage({ user }) {
 
       {/* Tabs for different governance modules */}
       <motion.div variants={fadeInUp}>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Scrollable tabs on mobile */}
           <div className="w-full overflow-x-auto overscroll-x-contain -mx-4 px-4 md:mx-0 md:px-0 mb-6">
             <TabsList className="bg-vault-dark/50 border border-vault-gold/20 w-max md:w-auto">
