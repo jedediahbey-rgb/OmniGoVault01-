@@ -209,65 +209,199 @@ const SignalFeed = ({ signals }) => (
   </div>
 );
 
-// Trust Health Card
+// Trust Health Card - LIVE VERSION
 const TrustHealthCard = () => {
-  const score = 87;
-  const nextActions = [
-    { task: 'Review Q4 distribution schedule', priority: 'high' },
-    { task: 'Update insurance beneficiaries', priority: 'medium' },
-    { task: 'Approve trustee compensation', priority: 'low' },
-  ];
+  const navigate = useNavigate();
+  const [healthData, setHealthData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [scanning, setScanning] = useState(false);
+
+  useEffect(() => {
+    fetchHealthSummary();
+  }, []);
+
+  const fetchHealthSummary = async () => {
+    try {
+      const res = await axios.get(`${API}/health/summary`);
+      if (res.data.ok) {
+        setHealthData(res.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch health summary:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const runScan = async () => {
+    setScanning(true);
+    try {
+      const res = await axios.post(`${API}/health/scan`);
+      if (res.data.ok) {
+        setHealthData({
+          score: res.data.data.overall_score,
+          trend: null,
+          next_actions: res.data.data.next_actions?.slice(0, 3) || [],
+          history: [],
+          scanned_at: res.data.data.scanned_at,
+          findings_count: res.data.data.findings_count
+        });
+      }
+    } catch (error) {
+      console.error('Failed to run scan:', error);
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  const score = healthData?.score ?? 0;
+  const trend = healthData?.trend ?? 0;
+  const nextActions = healthData?.next_actions || [];
+  const history = healthData?.history || [];
+  const needsScan = healthData?.needs_scan;
+  const findingsCount = healthData?.findings_count || {};
+
+  // Calculate health status color
+  const getScoreColor = (s) => {
+    if (s >= 80) return 'text-emerald-400';
+    if (s >= 60) return 'text-amber-400';
+    return 'text-red-400';
+  };
+
+  const getScoreLabel = (s) => {
+    if (s >= 90) return 'Excellent';
+    if (s >= 80) return 'Good';
+    if (s >= 60) return 'Fair';
+    if (s >= 40) return 'Needs Attention';
+    return 'Critical';
+  };
+
+  // Build trend bars from history
+  const trendBars = history.length > 0 
+    ? history.map(h => h.score || 0)
+    : [65, 70, 68, 75, 80, 85, score]; // Fallback trend
   
   return (
     <HoloCard className="p-4 sm:p-6">
       <div className="flex items-start justify-between gap-2 mb-4 sm:mb-6">
         <div className="min-w-0 flex-1">
           <h3 className="text-base sm:text-lg font-semibold text-white mb-1">Trust Health</h3>
-          <p className="text-xs sm:text-sm text-slate-400">Overall governance score</p>
+          <p className="text-xs sm:text-sm text-slate-400">
+            {loading ? 'Loading...' : getScoreLabel(score)}
+          </p>
         </div>
-        <IconChip icon={Pulse} label="Live" variant="green" />
+        <div className="flex items-center gap-2">
+          {findingsCount.critical > 0 && (
+            <span className="px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded-full">
+              {findingsCount.critical} critical
+            </span>
+          )}
+          <IconChip icon={Pulse} label="Live" variant="green" />
+        </div>
       </div>
       
       {/* Score */}
-      <div className="flex items-end gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <div className="text-4xl sm:text-5xl font-bold text-[#C6A87C]">{score}</div>
-        <div className="pb-1 sm:pb-2">
-          <span className="text-xs sm:text-sm text-emerald-400">+3</span>
-          <span className="text-[10px] sm:text-xs text-slate-500 ml-1">this week</span>
+      {loading ? (
+        <div className="flex items-end gap-3 sm:gap-4 mb-4 sm:mb-6 animate-pulse">
+          <div className="h-12 w-16 bg-white/10 rounded"></div>
         </div>
-      </div>
+      ) : needsScan ? (
+        <div className="text-center py-4 mb-4">
+          <p className="text-slate-400 text-sm mb-3">No health data yet</p>
+          <Button 
+            onClick={runScan}
+            disabled={scanning}
+            size="sm"
+            className="bg-[#C6A87C] text-vault-dark hover:bg-[#C6A87C]/90"
+          >
+            {scanning ? 'Scanning...' : 'Run First Scan'}
+          </Button>
+        </div>
+      ) : (
+        <div className="flex items-end gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className={`text-4xl sm:text-5xl font-bold ${getScoreColor(score)}`}>
+            {Math.round(score)}
+          </div>
+          <div className="pb-1 sm:pb-2 flex items-center gap-1">
+            {trend !== null && trend !== 0 && (
+              <>
+                {trend > 0 ? (
+                  <ArrowUp className="w-4 h-4 text-emerald-400" weight="bold" />
+                ) : (
+                  <ArrowDown className="w-4 h-4 text-red-400" weight="bold" />
+                )}
+                <span className={`text-xs sm:text-sm ${trend > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {trend > 0 ? '+' : ''}{trend}
+                </span>
+                <span className="text-[10px] sm:text-xs text-slate-500 ml-1">this week</span>
+              </>
+            )}
+          </div>
+        </div>
+      )}
       
       {/* Mini trend */}
-      <div className="h-10 sm:h-12 mb-4 sm:mb-6 flex items-end gap-1">
-        {[65, 70, 68, 75, 80, 85, 87].map((val, i) => (
-          <div
-            key={i}
-            className="flex-1 bg-[#C6A87C]/20 rounded-t"
-            style={{ height: `${val}%` }}
-          />
-        ))}
-      </div>
+      {!loading && !needsScan && (
+        <div className="h-10 sm:h-12 mb-4 sm:mb-6 flex items-end gap-1">
+          {trendBars.map((val, i) => (
+            <motion.div
+              key={i}
+              initial={{ height: 0 }}
+              animate={{ height: `${Math.max(val, 10)}%` }}
+              transition={{ delay: i * 0.05, duration: 0.3 }}
+              className={`flex-1 rounded-t ${
+                i === trendBars.length - 1 
+                  ? 'bg-[#C6A87C]' 
+                  : 'bg-[#C6A87C]/20'
+              }`}
+            />
+          ))}
+        </div>
+      )}
       
       {/* Next Actions */}
-      <div className="space-y-2 mb-4">
-        <p className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">Next Actions</p>
-        {nextActions.map((action, i) => (
-          <div key={i} className="flex items-center gap-2 text-xs sm:text-sm">
-            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-              action.priority === 'high' ? 'bg-red-400' :
-              action.priority === 'medium' ? 'bg-amber-400' : 'bg-slate-400'
-            }`} />
-            <span className="text-slate-300 truncate">{action.task}</span>
+      {!loading && nextActions.length > 0 && (
+        <div className="space-y-2 mb-4">
+          <p className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">Next Actions</p>
+          {nextActions.map((action, i) => (
+            <div key={i} className="flex items-center gap-2 text-xs sm:text-sm">
+              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                action.priority === 'high' ? 'bg-red-400' :
+                action.priority === 'medium' ? 'bg-amber-400' : 'bg-slate-400'
+              }`} />
+              <span className="text-slate-300 truncate flex-1">{action.title}</span>
+              <span className="text-[#C6A87C] text-xs">+{action.impact_points}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty state for actions */}
+      {!loading && !needsScan && nextActions.length === 0 && (
+        <div className="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+          <div className="flex items-center gap-2 text-emerald-400 text-sm">
+            <CheckCircle className="w-4 h-4" weight="fill" />
+            <span>All clear! No actions needed.</span>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
       
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" className="flex-1 border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 text-xs sm:text-sm">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => navigate('/vault')}
+          className="flex-1 border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 text-xs sm:text-sm"
+        >
           Dashboard
         </Button>
-        <Button variant="outline" size="sm" className="border-white/10 text-slate-400 hover:bg-white/5 text-xs sm:text-sm">
-          Digest
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => navigate('/diagnostics')}
+          className="border-white/10 text-slate-400 hover:bg-white/5 text-xs sm:text-sm"
+        >
+          Details
         </Button>
       </div>
     </HoloCard>
