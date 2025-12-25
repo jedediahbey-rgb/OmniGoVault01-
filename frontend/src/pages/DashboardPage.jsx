@@ -46,6 +46,8 @@ export default function DashboardPage({ user }) {
   const [newPortfolioName, setNewPortfolioName] = useState('');
   const [newPortfolioDesc, setNewPortfolioDesc] = useState('');
   const [defaultPortfolioId, setDefaultPortfolioId] = useState(localStorage.getItem('defaultPortfolioId') || '');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [portfolioToDelete, setPortfolioToDelete] = useState(null);
 
   // Set a portfolio as the global default
   const setAsDefault = (portfolioId, e) => {
