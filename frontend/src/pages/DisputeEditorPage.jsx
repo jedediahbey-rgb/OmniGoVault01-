@@ -774,6 +774,19 @@ export default function DisputeEditorPage({ user }) {
             {/* Action buttons - properly aligned */}
             {!editingHeader && (
               <div className="flex items-center gap-2 justify-end mt-4">
+                {/* Change Status Button - visible for non-locked records */}
+                {!isLocked && (
+                  <Button 
+                    size="sm" 
+                    onClick={() => setShowChangeStatus(true)} 
+                    variant="outline" 
+                    className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                  >
+                    <ArrowsClockwise className="w-4 h-4 mr-2" />
+                    Status
+                  </Button>
+                )}
+                
                 {isOpen && (
                   <Button size="sm" onClick={() => setShowResolve(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white">
                     <CheckCircle className="w-4 h-4 mr-2" />
