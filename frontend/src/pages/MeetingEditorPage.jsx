@@ -163,6 +163,7 @@ export default function MeetingEditorPage({ user }) {
   
   const [showFinalize, setShowFinalize] = useState(false);
   const [finalizeBy, setFinalizeBy] = useState('');
+  const [finalizeLoading, setFinalizeLoading] = useState(false);
   
   const [showAttest, setShowAttest] = useState(false);
   const [attestation, setAttestation] = useState({ party_name: '', party_role: 'trustee', signature_data: '' });
