@@ -2,6 +2,27 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { fadeInUp } from '../../lib/motion';
 
+// Helper to safely convert any value to a renderable string
+const safeString = (value) => {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (typeof value === 'object') {
+    // If it's a React element, return it as-is
+    if (value.$$typeof) return value;
+    // If it has a label or name property, use that
+    if (value.label) return String(value.label);
+    if (value.name) return String(value.name);
+    // Otherwise, try to convert to JSON or fall back to empty string
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return '';
+    }
+  }
+  return String(value);
+};
+
 export default function PageHeader({ 
   title, 
   subtitle, 
@@ -18,7 +39,7 @@ export default function PageHeader({
     
     // If crumb is an object with label/href
     if (crumb && typeof crumb === 'object') {
-      const label = crumb.label || crumb.name || String(crumb);
+      const label = safeString(crumb.label || crumb.name || crumb);
       const href = crumb.href || crumb.link;
       
       if (href && !isLast) {
@@ -37,6 +58,10 @@ export default function PageHeader({
     // Fallback for any other type
     return <span className={isLast ? 'text-vault-gold' : ''}>--</span>;
   };
+
+  // Safely render title and subtitle
+  const safeTitle = safeString(title);
+  const safeSubtitle = subtitle ? safeString(subtitle) : null;
 
   return (
     <motion.div 
@@ -63,10 +88,10 @@ export default function PageHeader({
           )}
           <div>
             <h1 className="text-3xl font-heading text-white tracking-tight">
-              {title}
+              {safeTitle || 'Untitled'}
             </h1>
-            {subtitle && (
-              <p className="text-white/60 mt-1">{subtitle}</p>
+            {safeSubtitle && (
+              <p className="text-white/60 mt-1">{safeSubtitle}</p>
             )}
           </div>
         </div>
