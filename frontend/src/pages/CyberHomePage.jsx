@@ -4,6 +4,8 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import axios from 'axios';
 import {
   ArrowRight,
+  ArrowUp,
+  ArrowDown,
   BookOpen,
   CaretRight,
   Certificate,
@@ -33,6 +35,7 @@ import {
   Vault,
   Eye,
   ClockCounterClockwise,
+  Warning,
   X
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
