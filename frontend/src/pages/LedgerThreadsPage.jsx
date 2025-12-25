@@ -750,7 +750,7 @@ export default function LedgerThreadsPage() {
                   <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                     <SelectValue placeholder="Select target thread" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 max-h-48">
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 max-h-48 z-[100]" position="popper" sideOffset={5}>
                     {threads.filter(t => t.id !== activeThread?.id).map((thread) => (
                       <SelectItem key={thread.id} value={thread.id} className="text-white hover:bg-vault-gold/20">
                         <span className="font-mono text-xs text-vault-gold mr-2">{thread.rm_id_preview}</span>
