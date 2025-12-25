@@ -614,12 +614,6 @@ export default function CyberHomePage() {
                 <span className="hidden md:inline">Search</span>
                 <kbd className="ml-2 px-1.5 py-0.5 bg-white/5 rounded text-[10px]">⌘K</kbd>
               </button>
-              
-              <Link to="/login">
-                <Button variant="outline" className="border-white/20 text-white hover:bg-white/5 text-xs sm:text-sm px-3 sm:px-4">
-                  Vault
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
