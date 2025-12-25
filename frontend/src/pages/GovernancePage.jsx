@@ -212,13 +212,6 @@ export default function GovernancePage({ user }) {
     called_by: '',
   });
   const [creating, setCreating] = useState(false);
-  
-  // Ledger Thread State (RM-ID Subject Linking)
-  const [meetingThread, setMeetingThread] = useState(null);
-  const [distributionThread, setDistributionThread] = useState(null);
-  const [disputeThread, setDisputeThread] = useState(null);
-  const [insuranceThread, setInsuranceThread] = useState(null);
-  const [compensationThread, setCompensationThread] = useState(null);
 
   // Distributions State
   const [distributions, setDistributions] = useState([]);
