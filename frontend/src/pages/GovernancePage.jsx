@@ -2182,14 +2182,6 @@ export default function GovernancePage({ user }) {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
-            {/* Ledger Thread Selector - At the top per requirements */}
-            <LedgerThreadSelector
-              portfolioId={selectedPortfolio}
-              moduleType="dispute"
-              selectedSubject={disputeThread}
-              onSubjectChange={setDisputeThread}
-            />
-            
             <div>
               <label className="text-sm text-vault-muted mb-1 block">Dispute Title *</label>
               <Input
