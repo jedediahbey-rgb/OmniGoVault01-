@@ -505,8 +505,8 @@ export default function InsuranceEditorPage({ user }) {
           <div className="flex flex-col gap-4">
             {/* Top row - Icon, badges, status */}
             <div className="flex items-start gap-3 sm:gap-4">
-              <div className={`p-3 sm:p-4 rounded-xl ${typeConfig.bg} shrink-0`}>
-                <TypeIcon className={`w-6 h-6 sm:w-8 sm:h-8 ${typeConfig.color}`} />
+              <div className={`p-3 rounded-xl ${typeConfig.bg} shrink-0`}>
+                <TypeIcon className={`w-6 h-6 ${typeConfig.color}`} weight="duotone" />
               </div>
               
               {editingHeader && isDraft ? (
@@ -514,7 +514,7 @@ export default function InsuranceEditorPage({ user }) {
                   <Input
                     value={editedHeader.title}
                     onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
-                    className="text-lg sm:text-2xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
+                    className="text-lg sm:text-xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
                   />
                   <div className="grid grid-cols-2 gap-3">
                     <div>
