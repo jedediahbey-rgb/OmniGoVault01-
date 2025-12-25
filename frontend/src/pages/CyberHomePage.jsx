@@ -639,7 +639,7 @@ export default function CyberHomePage() {
                 <img 
                   src="/omnigovault-logo.png" 
                   alt="OMNIGOVAULT" 
-                  className="h-28 sm:h-36 lg:h-44 w-auto object-contain"
+                  className="h-56 sm:h-72 lg:h-80 w-auto object-contain"
                 />
               </motion.div>
               
