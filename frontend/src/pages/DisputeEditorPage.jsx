@@ -390,8 +390,16 @@ export default function DisputeEditorPage({ user }) {
     }
     
     try {
-      await axios.post(`${API}/governance/disputes/${disputeId}/parties`, newParty);
-      await refetchDispute();
+      // Use V2 API - add party to array and save
+      const partyWithId = {
+        ...newParty,
+        party_id: `party-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        added_at: new Date().toISOString()
+      };
+      
+      const updatedParties = [...(dispute.parties || []), partyWithId];
+      await saveDispute({ parties: updatedParties });
+      
       setShowAddParty(false);
       setNewParty({
         name: '',
@@ -408,8 +416,9 @@ export default function DisputeEditorPage({ user }) {
 
   const handleDeleteParty = async (partyId) => {
     try {
-      await axios.delete(`${API}/governance/disputes/${disputeId}/parties/${partyId}`);
-      await refetchDispute();
+      // Use V2 API - remove party from array and save
+      const updatedParties = (dispute.parties || []).filter(p => p.party_id !== partyId);
+      await saveDispute({ parties: updatedParties });
       toast.success('Party removed');
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to remove party');
@@ -423,8 +432,16 @@ export default function DisputeEditorPage({ user }) {
     }
     
     try {
-      await axios.post(`${API}/governance/disputes/${disputeId}/events`, newEvent);
-      await refetchDispute();
+      // Use V2 API - add event to array and save
+      const eventWithId = {
+        ...newEvent,
+        event_id: `event-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        created_at: new Date().toISOString()
+      };
+      
+      const updatedEvents = [...(dispute.events || []), eventWithId];
+      await saveDispute({ events: updatedEvents });
+      
       setShowAddEvent(false);
       setNewEvent({
         event_type: 'filing',
