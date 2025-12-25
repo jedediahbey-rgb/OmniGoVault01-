@@ -561,18 +561,14 @@ export default function DistributionEditorPage({ user }) {
                         <Download className="w-4 h-4 mr-2" />
                         Export PDF
                       </DropdownMenuItem>
-                      {isDraft && (
-                        <>
-                          <DropdownMenuSeparator className="bg-vault-gold/20" />
-                          <DropdownMenuItem 
-                            onClick={() => setShowDeleteConfirm(true)} 
-                            className="text-red-400 hover:bg-red-500/20 hover:text-red-300"
-                          >
-                            <Trash className="w-4 h-4 mr-2" />
-                            Delete Distribution
-                          </DropdownMenuItem>
-                        </>
-                      )}
+                      <DropdownMenuSeparator className="bg-vault-gold/20" />
+                      <DropdownMenuItem 
+                        onClick={() => setShowDeleteConfirm(true)} 
+                        className="text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                      >
+                        <Trash className="w-4 h-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
