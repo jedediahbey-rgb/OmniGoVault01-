@@ -68,8 +68,9 @@ const insuranceTypeConfig = {
 
 // Status config
 const statusConfig = {
+  draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30', icon: PencilSimple },
   active: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30', icon: Check },
-  finalized: { label: 'Finalized', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30', icon: Lock },
+  finalized: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30', icon: Check },
   lapsed: { label: 'Lapsed', color: 'bg-red-500/30 text-red-400 border-red-400/30', icon: X },
   paid_up: { label: 'Paid Up', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30', icon: Check },
   surrendered: { label: 'Surrendered', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30', icon: X },
