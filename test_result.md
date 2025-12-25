@@ -55,3 +55,36 @@ In /app/backend/routes/governance_v2.py, the PUT endpoint's log_event() call had
 - All governance module types (minutes, insurance, dispute) update successfully
 - Testing agent verified: 9/9 backend tests passed (100%)
 
+
+## Consistent Amendments System - IMPLEMENTED
+Date: Thu Dec 25 08:25:56 UTC 2025
+
+### Changes Made
+1. **Unified V2 API for Amendments:**
+   - All 5 editor pages now use POST /api/governance/v2/records/{id}/amend
+   - Removed legacy V1 amendment endpoints from frontend code
+
+2. **Added RevisionHistory to all pages:**
+   - InsuranceEditorPage.jsx - Added RevisionHistory component
+   - DisputeEditorPage.jsx - Added RevisionHistory component
+   - CompensationEditorPage.jsx - Added RevisionHistory component
+   - MeetingEditorPage.jsx - Already had RevisionHistory
+   - DistributionEditorPage.jsx - Already had RevisionHistory
+
+3. **Consistent Amendment Flow:**
+   - All pages stay on current record after creating amendment
+   - Pages refetch data to show new draft version (instead of navigating away)
+   - Version button shows v{n} when record has multiple versions
+
+### Files Modified
+- /app/frontend/src/pages/MeetingEditorPage.jsx
+- /app/frontend/src/pages/DistributionEditorPage.jsx
+- /app/frontend/src/pages/DisputeEditorPage.jsx
+- /app/frontend/src/pages/InsuranceEditorPage.jsx
+- /app/frontend/src/pages/CompensationEditorPage.jsx
+
+### Verification
+- Backend tests: 34/34 passed (100%)
+- All 5 module types tested for amendment creation
+- Revision history retrieval verified
+
