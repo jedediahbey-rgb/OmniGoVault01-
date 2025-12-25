@@ -3519,7 +3519,7 @@ app.include_router(api_router)
 import sys
 sys.path.insert(0, str(ROOT_DIR))
 from routes.governance import router as governance_router, init_governance_routes
-init_governance_routes(db, get_current_user, generate_subject_rm_id)
+init_governance_routes(db, get_current_user, generate_subject_rm_id, generate_subject_rm_id_v2)
 app.include_router(governance_router)
 
 # Initialize and include Governance V2 routes (Amendment Studio)
