@@ -84,11 +84,10 @@ async def run_integrity_scan(request: Request):
     }
     
     # Store scan result for later reference
-    await db.integrity_scans.insert_one({
-        **result_dict,
-        "user_id": user.user_id,
-        "_id": None  # Let MongoDB generate
-    })
+    scan_doc = {**result_dict, "user_id": user.user_id}
+    # Remove _id if present to let MongoDB generate one
+    scan_doc.pop("_id", None)
+    await db.integrity_scans.insert_one(scan_doc)
     
     return success_response(result_dict)
 
