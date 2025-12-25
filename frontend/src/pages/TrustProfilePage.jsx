@@ -231,34 +231,34 @@ export default function TrustProfilePage({ user }) {
                   type="date"
                   value={form.creation_date}
                   onChange={e => handleChange('creation_date', e.target.value)}
-                  className="mt-1 bg-white/5 border-white/10"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <Label className="text-white/60">Trust Term</Label>
                 <Input
                   value={form.trust_term}
                   onChange={e => handleChange('trust_term', e.target.value)}
                   placeholder="e.g., 21 years, Perpetual"
-                  className="mt-1 bg-white/5 border-white/10"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
                 />
               </div>
-              <div className="md:col-span-2">
+              <div className="md:col-span-2 min-w-0">
                 <Label className="text-white/60">Governing Statements</Label>
                 <Textarea
                   value={form.governing_statements}
                   onChange={e => handleChange('governing_statements', e.target.value)}
                   placeholder="Key governing principles..."
-                  className="mt-1 bg-white/5 border-white/10 min-h-[100px]"
+                  className="mt-1 bg-white/5 border-white/10 text-white min-h-[100px] w-full"
                 />
               </div>
-              <div className="md:col-span-2">
+              <div className="md:col-span-2 min-w-0">
                 <Label className="text-white/60">Additional Notes</Label>
                 <Textarea
                   value={form.additional_notes}
                   onChange={e => handleChange('additional_notes', e.target.value)}
                   placeholder="Any additional notes..."
-                  className="mt-1 bg-white/5 border-white/10"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
                 />
               </div>
             </div>
