@@ -575,7 +575,7 @@ async def create_record(data: RecordCreateRequest, request: Request):
             except Exception as e:
                 print(f"Warning: Could not generate RM-ID: {e}")
         
-        # Create record
+        # Create record with RM Subject linking
         record = GovernanceRecord(
             trust_id=data.trust_id,
             portfolio_id=data.portfolio_id,
@@ -583,6 +583,8 @@ async def create_record(data: RecordCreateRequest, request: Request):
             module_type=data.module_type,
             title=data.title,
             rm_id=rm_id,
+            rm_subject_id=rm_subject_id,  # Link to subject
+            rm_sub=rm_sub,  # Subnumber within subject
             created_by=user.name if hasattr(user, 'name') else user.user_id
         )
         
@@ -608,7 +610,7 @@ async def create_record(data: RecordCreateRequest, request: Request):
         await db.governance_records.insert_one(record_doc)
         await db.governance_revisions.insert_one(revision_doc)
         
-        # Log event
+        # Log event with subject info
         await log_event(
             event_type=EventType.CREATED,
             record_id=record.id,
@@ -617,7 +619,13 @@ async def create_record(data: RecordCreateRequest, request: Request):
             trust_id=data.trust_id,
             revision_id=revision.id,
             actor_name=record.created_by,
-            meta={"module_type": data.module_type.value, "title": data.title}
+            meta={
+                "module_type": data.module_type.value,
+                "title": data.title,
+                "rm_subject_id": rm_subject_id,
+                "rm_sub": rm_sub,
+                "rm_id": rm_id
+            }
         )
         
         return success_response({
