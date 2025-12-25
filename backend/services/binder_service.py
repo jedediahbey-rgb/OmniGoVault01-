@@ -178,7 +178,7 @@ class BinderService:
                 name = {
                     BinderProfile.AUDIT: "Audit Binder",
                     BinderProfile.COURT: "Court / Litigation Binder",
-                    BinderProfile.OMNI: "Omni Physical Binder"
+                    BinderProfile.OMNI: "Omni Binder"
                 }[profile_type]
                 
                 profile = await self.create_profile(

@@ -308,7 +308,7 @@ export default function BinderPage() {
                 <FilePdf className="w-6 h-6 text-vault-gold" />
                 Portfolio Binder
               </h1>
-              <p className="text-vault-muted text-sm">Court / Audit / Omni Physical</p>
+              <p className="text-vault-muted text-sm">Court / Audit / Omni</p>
             </div>
           </div>
 
