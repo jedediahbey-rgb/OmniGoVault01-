@@ -495,8 +495,8 @@ export default function GovernancePage({ user }) {
       const data = res.data;
       if (data.ok && data.data?.items) {
         const transformedDisputes = data.data.items.map(record => {
-          // Extract payload data
-          const payload = record.current_revision?.payload_json || {};
+          // Extract payload data directly from the list response
+          const payload = record.payload_json || {};
           return {
             dispute_id: record.id,
             id: record.id,
