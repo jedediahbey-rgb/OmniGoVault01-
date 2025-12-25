@@ -980,6 +980,82 @@ export default function PortfolioOverviewPage({ user }) {
 
         {/* Ledger Tab */}
         <TabsContent value="ledger" className="mt-6">
+          {/* Governance Activity Section */}
+          {governanceRecords.length > 0 && (
+            <GlassCard className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-heading text-lg text-white">Governance Activity</h3>
+                  <p className="text-white/40 text-sm">Records linked to this portfolio</p>
+                </div>
+                <Link to="/ledger">
+                  <Button variant="ghost" className="text-vault-gold text-sm">
+                    View Full Ledger →
+                  </Button>
+                </Link>
+              </div>
+              <div className="space-y-3">
+                {governanceRecords.map(record => {
+                  const config = moduleConfig[record.module_type] || moduleConfig.minutes;
+                  const status = statusConfig[record.status] || statusConfig.draft;
+                  const Icon = config.icon;
+                  const moduleMap = {
+                    minutes: 'meetings',
+                    distribution: 'distributions',
+                    dispute: 'disputes',
+                    insurance: 'insurance',
+                    compensation: 'compensation',
+                  };
+                  const module = moduleMap[record.module_type] || record.module_type;
+                  const recordLink = `/vault/governance/${module}/${record.id}`;
+
+                  return (
+                    <Link key={record.id} to={recordLink}>
+                      <div className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-vault-gold/30 transition-all group">
+                        {/* Icon */}
+                        <div className={`w-10 h-10 rounded-lg ${config.bgClass} ${config.borderClass} border flex items-center justify-center flex-shrink-0`}>
+                          <Icon className={`w-5 h-5 ${config.textClass}`} weight="duotone" />
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0 overflow-hidden">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-2">
+                            <div className="min-w-0 flex-1">
+                              <h4 className="text-white font-medium truncate group-hover:text-vault-gold transition-colors pr-2">
+                                {record.title}
+                              </h4>
+                              <div className="flex items-center gap-2 mt-1 text-sm flex-wrap">
+                                <span className={`${config.textClass} flex-shrink-0`}>{config.label}</span>
+                                {record.rm_id && (
+                                  <>
+                                    <span className="text-white/20">•</span>
+                                    <span className="text-white/40 font-mono text-xs truncate max-w-[120px] sm:max-w-none">{record.rm_id}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0 mt-2 sm:mt-0">
+                              <Badge className={`${status.bgClass} ${status.textClass} ${status.borderClass} border text-xs`}>
+                                {status.label}
+                              </Badge>
+                              <span className="text-white/40 text-xs whitespace-nowrap">
+                                {new Date(record.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Arrow */}
+                        <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors flex-shrink-0" />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </GlassCard>
+          )}
+
+          {/* Financial Ledger Section */}
           <GlassCard>
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -1110,8 +1186,11 @@ export default function PortfolioOverviewPage({ user }) {
                   ))}
                 </tbody>
               </table>
-              {filteredLedgerEntries.length === 0 && (
+              {filteredLedgerEntries.length === 0 && governanceRecords.length === 0 && (
                 <p className="text-white/30 text-center py-8">No ledger entries match filter</p>
+              )}
+              {filteredLedgerEntries.length === 0 && governanceRecords.length > 0 && (
+                <p className="text-white/30 text-center py-8">No financial entries yet. Governance activity shown above.</p>
               )}
             </div>
           </GlassCard>
