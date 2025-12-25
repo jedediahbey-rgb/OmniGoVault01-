@@ -11,7 +11,7 @@ from datetime import datetime
 import time
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://omnigovault-1.preview.emergentagent.com/api"
+BASE_URL = "https://omnihub-22.preview.emergentagent.com/api"
 
 class GovernanceV2Tester:
     def __init__(self):

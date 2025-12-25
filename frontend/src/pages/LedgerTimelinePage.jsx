@@ -403,27 +403,27 @@ export default function LedgerTimelinePage() {
                             </div>
 
                             {/* Content */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2">
-                                <div>
-                                  <h3 className="text-white font-medium truncate group-hover:text-vault-gold transition-colors">
+                            <div className="flex-1 min-w-0 overflow-hidden">
+                              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-2">
+                                <div className="min-w-0 flex-1">
+                                  <h3 className="text-white font-medium truncate group-hover:text-vault-gold transition-colors pr-2">
                                     {record.title}
                                   </h3>
-                                  <div className="flex items-center gap-2 mt-1 text-sm">
-                                    <span className={config.textClass}>{config.label}</span>
+                                  <div className="flex items-center gap-2 mt-1 text-sm flex-wrap">
+                                    <span className={`${config.textClass} flex-shrink-0`}>{config.label}</span>
                                     {record.rm_id && (
                                       <>
                                         <span className="text-white/20">•</span>
-                                        <span className="text-white/40 font-mono text-xs">{record.rm_id}</span>
+                                        <span className="text-white/40 font-mono text-xs truncate max-w-[120px] sm:max-w-none">{record.rm_id}</span>
                                       </>
                                     )}
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                  <Badge className={`${status.bgClass} ${status.textClass} ${status.borderClass} border`}>
+                                <div className="flex items-center gap-2 flex-shrink-0 mt-2 sm:mt-0">
+                                  <Badge className={`${status.bgClass} ${status.textClass} ${status.borderClass} border text-xs`}>
                                     {status.label}
                                   </Badge>
-                                  <span className="text-white/40 text-xs">
+                                  <span className="text-white/40 text-xs whitespace-nowrap">
                                     {formatTime(record.created_at)}
                                   </span>
                                 </div>
