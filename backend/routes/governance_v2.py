@@ -540,13 +540,19 @@ async def create_record(request: Request):
         print(f"[CREATE_RECORD] Traceback: {traceback.format_exc()}")
         return error_response("VALIDATION_ERROR", f"Invalid request fields: {str(e)}", status_code=422)
     
+    # Step 5: Process the create request
     try:
+        print(f"[CREATE_RECORD] Step 5: Processing create request...")
+        
         # Validate payload
         is_valid, error_msg, normalized_payload = validate_payload(
             data.module_type, data.payload_json
         )
         if not is_valid:
-            return error_response("VALIDATION_ERROR", f"Invalid payload: {error_msg}")
+            print(f"[CREATE_RECORD] Payload validation failed: {error_msg}")
+            return error_response("VALIDATION_ERROR", f"Invalid payload: {error_msg}", status_code=422)
+        
+        print(f"[CREATE_RECORD] Payload validated successfully")
         
         # RM-ID and Subject handling
         rm_id = ""
@@ -564,8 +570,10 @@ async def create_record(request: Request):
                     user.user_id
                 )
                 rm_subject_id = data.rm_subject_id
+                print(f"[CREATE_RECORD] Linked to subject {rm_subject_id}, rm_id={rm_id}")
             except ValueError as e:
-                return error_response("SUBJECT_ERROR", str(e))
+                print(f"[CREATE_RECORD] Subject allocation error: {e}")
+                return error_response("SUBJECT_ERROR", str(e), status_code=400)
                 
         elif data.create_new_subject:
             # Create new subject (spawn new thread)
@@ -587,12 +595,14 @@ async def create_record(request: Request):
                     external_ref=data.new_subject_external_ref,
                     created_by=user.name if hasattr(user, 'name') else user.user_id
                 )
+                print(f"[CREATE_RECORD] Created new subject {rm_subject_id}, rm_id={rm_id}")
             except ValueError as e:
-                return error_response("SUBJECT_ERROR", str(e))
+                print(f"[CREATE_RECORD] New subject creation error: {e}")
+                return error_response("SUBJECT_ERROR", str(e), status_code=400)
                 
         else:
             # Legacy fallback - generate RM-ID without subject linking
-            # This path is DEPRECATED but maintained for backward compatibility
+            print(f"[CREATE_RECORD] Using legacy RM-ID generation...")
             try:
                 subject_code, subject_name = MODULE_SUBJECT_CODES.get(
                     data.module_type, ("00", "General")
@@ -600,10 +610,12 @@ async def create_record(request: Request):
                 rm_id, _, _, _ = await generate_subject_rm_id(
                     data.portfolio_id, user.user_id, subject_code, subject_name
                 )
+                print(f"[CREATE_RECORD] Legacy RM-ID generated: {rm_id}")
             except Exception as e:
-                print(f"Warning: Could not generate RM-ID: {e}")
+                print(f"[CREATE_RECORD] Warning: Could not generate RM-ID: {e}")
         
         # Create record with RM Subject linking
+        print(f"[CREATE_RECORD] Creating GovernanceRecord...")
         record = GovernanceRecord(
             trust_id=data.trust_id,
             portfolio_id=data.portfolio_id,
@@ -617,6 +629,7 @@ async def create_record(request: Request):
         )
         
         # Create initial revision (v1, draft)
+        print(f"[CREATE_RECORD] Creating GovernanceRevision...")
         revision = GovernanceRevision(
             record_id=record.id,
             version=1,
@@ -629,6 +642,7 @@ async def create_record(request: Request):
         record.current_revision_id = revision.id
         
         # Save to database
+        print(f"[CREATE_RECORD] Saving to database...")
         record_doc = record.model_dump()
         record_doc["created_at"] = record_doc["created_at"].isoformat()
         
@@ -636,7 +650,10 @@ async def create_record(request: Request):
         revision_doc["created_at"] = revision_doc["created_at"].isoformat()
         
         await db.governance_records.insert_one(record_doc)
+        print(f"[CREATE_RECORD] Record inserted: {record.id}")
+        
         await db.governance_revisions.insert_one(revision_doc)
+        print(f"[CREATE_RECORD] Revision inserted: {revision.id}")
         
         # Log event with subject info
         await log_event(
@@ -655,6 +672,7 @@ async def create_record(request: Request):
                 "rm_id": rm_id
             }
         )
+        print(f"[CREATE_RECORD] SUCCESS - Record {record.id} created")
         
         return success_response({
             "record": serialize_doc(record_doc),
