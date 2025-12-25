@@ -520,40 +520,25 @@ export default function MeetingEditorPage({ user }) {
     }
   };
 
-  // Legacy amendment handler (V1 API)
-  const handleAmend = async () => {
-    try {
-      const res = await axios.post(`${API}/governance/meetings/${meetingId}/amend`, {
-        reason: amendReason
-      });
-      // Handle envelope format: { ok: true, message: "...", item: {...} }
-      const data = res.data;
-      const amendmentData = data.item || data.amendment || data;
-      
-      toast.success('Amendment created');
-      navigate(`/vault/governance/meetings/${amendmentData.meeting_id}`);
-    } catch (error) {
-      toast.error(error.response?.data?.error?.message || 'Failed to create amendment');
-    }
-  };
-
-  // V2 Amendment Studio handler
+  // V2 Amendment Studio handler - uses unified V2 API
   const handleAmendV2 = async (amendData) => {
     setAmendLoading(true);
     try {
-      // First try V2 API if record exists there
-      const res = await axios.post(`${API}/governance/meetings/${meetingId}/amend`, {
-        reason: amendData.change_reason,
-        change_type: amendData.change_type,
+      const res = await axios.post(`${API}/governance/v2/records/${meetingId}/amend`, {
+        change_reason: amendData.change_reason,
+        change_type: amendData.change_type || 'amendment',
         effective_at: amendData.effective_at
       });
       
       const data = res.data;
-      const amendmentData = data.item || data.amendment || data;
-      
-      toast.success('Amendment draft created');
-      setShowAmendmentStudio(false);
-      navigate(`/vault/governance/meetings/${amendmentData.meeting_id}`);
+      if (data.ok) {
+        toast.success('Amendment draft created - you can now edit the new version');
+        setShowAmendmentStudio(false);
+        // Refetch to show the new draft version
+        await refetchMeeting();
+      } else {
+        throw new Error(data.error?.message || 'Failed to create amendment');
+      }
     } catch (error) {
       console.error('Amendment error:', error);
       throw new Error(error.response?.data?.error?.message || 'Failed to create amendment');
