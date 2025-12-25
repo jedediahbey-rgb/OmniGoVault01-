@@ -208,6 +208,8 @@ export default function ScenariosPage() {
     });
     setVariables(defaults);
     setResults(null);
+    // Scroll to top when selecting a scenario
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const updateVariable = (name, value) => {
