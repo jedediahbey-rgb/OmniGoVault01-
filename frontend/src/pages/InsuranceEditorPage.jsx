@@ -275,7 +275,9 @@ export default function InsuranceEditorPage({ user }) {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await axios.delete(`${API}/governance/insurance-policies/${policyId}`);
+      await axios.post(`${API}/governance/v2/records/${policyId}/void`, {
+        void_reason: 'Deleted by user'
+      });
       toast.success('Insurance policy deleted successfully');
       navigate('/vault/governance?tab=insurance');
     } catch (error) {
