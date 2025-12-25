@@ -309,22 +309,37 @@ export default function GovernancePage({ user }) {
     if (!selectedPortfolio) return;
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/governance/meetings`, {
-        params: { portfolio_id: selectedPortfolio, sort_by: 'rm_id', sort_dir: 'asc' }
+      // Use V2 API for meetings (module_type: minutes)
+      const res = await axios.get(`${API_V2}/records`, {
+        params: { 
+          portfolio_id: selectedPortfolio, 
+          module_type: MODULE_TYPES.meetings
+        }
       });
-      // Handle new envelope format: { ok, items, count, total, sort, empty_state }
+      
       const data = res.data;
-      if (data.ok && data.items) {
-        setMeetings(data.items);
-      } else if (Array.isArray(data)) {
-        // Fallback for old format
-        setMeetings(data);
+      if (data.ok && data.data?.items) {
+        // Transform V2 records to V1 meeting format for backward compatibility
+        const transformedMeetings = data.data.items.map(record => ({
+          meeting_id: record.id,
+          id: record.id,
+          title: record.title,
+          rm_id: record.rm_id,
+          status: record.status,
+          locked: record.status === 'finalized',
+          revision: record.current_version || 1,
+          created_at: record.created_at,
+          finalized_at: record.finalized_at,
+          // Default values for display
+          meeting_type: 'regular',
+          attendees: []
+        }));
+        setMeetings(transformedMeetings);
       } else {
         setMeetings([]);
       }
     } catch (error) {
       console.error('Failed to fetch meetings list:', error);
-      // Only show error if it's not a "no meetings" situation
       if (error.response?.data?.error?.code !== 'NOT_FOUND') {
         toast.error('Failed to load meetings list');
       }
