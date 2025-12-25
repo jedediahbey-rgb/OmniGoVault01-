@@ -111,6 +111,12 @@ export default function DistributionEditorPage({ user }) {
   const [deleting, setDeleting] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
   
+  // Amendment Studio V2
+  const [showAmendmentStudio, setShowAmendmentStudio] = useState(false);
+  const [showRevisionHistory, setShowRevisionHistory] = useState(false);
+  const [revisions, setRevisions] = useState([]);
+  const [amendLoading, setAmendLoading] = useState(false);
+  
   // New recipient form
   const [newRecipient, setNewRecipient] = useState({
     name: '',
