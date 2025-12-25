@@ -51,6 +51,7 @@ import {
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { AmendmentStudio } from '../components/governance';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
