@@ -77,6 +77,7 @@ import { staggerContainer, fadeInUp, paneTransition } from '../lib/motion';
 import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API_V2 = `${process.env.REACT_APP_BACKEND_URL}/api/governance/v2`;
 
 // Meeting type icons and colors
 const meetingTypeConfig = {
