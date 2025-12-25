@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { fadeInUp } from '../../lib/motion';
+import PageHelpTooltip from './PageHelpTooltip';
 
 // Helper to safely convert any value to a renderable string
 const safeString = (value) => {
