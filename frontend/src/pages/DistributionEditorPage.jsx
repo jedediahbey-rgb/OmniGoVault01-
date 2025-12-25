@@ -133,14 +133,47 @@ export default function DistributionEditorPage({ user }) {
 
     const fetchDistribution = async () => {
       try {
-        const res = await axios.get(`${API}/governance/distributions/${distributionId}`, {
+        // Use V2 API
+        const res = await axios.get(`${API}/governance/v2/records/${distributionId}`, {
           signal: abortController.signal
         });
         
         if (!isMounted) return;
         
         const data = res.data;
-        const distData = data.item || data;
+        if (!data.ok || !data.data?.record) {
+          throw new Error(data.error?.message || 'Failed to load distribution');
+        }
+        
+        const record = data.data.record;
+        const revision = data.data.current_revision;
+        const payload = revision?.payload_json || {};
+        
+        // Transform V2 record to expected format
+        const distData = {
+          id: record.id,
+          distribution_id: record.id,
+          title: record.title,
+          rm_id: record.rm_id,
+          status: record.status,
+          locked: record.status === 'finalized',
+          portfolio_id: record.portfolio_id,
+          created_at: record.created_at,
+          finalized_at: record.finalized_at,
+          // Extract from payload
+          distribution_type: payload.distribution_type || 'regular',
+          description: payload.description || '',
+          total_amount: payload.total_amount || 0,
+          currency: payload.currency || 'USD',
+          asset_type: payload.asset_type || 'cash',
+          scheduled_date: payload.scheduled_date || '',
+          source_account: payload.source_account || '',
+          recipients: payload.recipients || [],
+          notes: payload.notes || '',
+          // V2 specific
+          current_version: revision?.version || 1,
+          current_revision_id: record.current_revision_id
+        };
         
         setDistribution(distData);
         setEditedHeader({
@@ -164,25 +197,18 @@ export default function DistributionEditorPage({ user }) {
               setParties(partiesRes.data || []);
             }
           } catch (partiesError) {
-            // Silently ignore abort errors
-            if (partiesError?.name === 'CanceledError' || partiesError?.code === 'ERR_CANCELED' || partiesError?.message === 'canceled') {
+            if (partiesError?.name === 'CanceledError' || partiesError?.code === 'ERR_CANCELED') {
               return;
             }
             console.warn('Failed to fetch parties:', partiesError);
           }
         }
       } catch (error) {
-        // Silently ignore any errors if component is unmounting or request was aborted
-        if (!isMounted) return;
-        if (abortController.signal.aborted) return;
-        if (error?.name === 'CanceledError') return;
-        if (error?.name === 'AbortError') return;
-        if (error?.code === 'ERR_CANCELED') return;
-        if (error?.message?.includes('canceled')) return;
-        if (error?.message?.includes('aborted')) return;
+        if (!isMounted || abortController.signal.aborted || error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED') {
+          return;
+        }
         
         console.error('Failed to fetch distribution:', error);
-        // Only show error and navigate if still mounted
         if (isMounted && !abortController.signal.aborted) {
           toast.error('Failed to load distribution details');
           navigate('/vault/governance');
@@ -208,9 +234,33 @@ export default function DistributionEditorPage({ user }) {
     if (!distributionId) return;
     
     try {
-      const res = await axios.get(`${API}/governance/distributions/${distributionId}`);
+      const res = await axios.get(`${API}/governance/v2/records/${distributionId}`);
       const data = res.data;
-      const distData = data.item || data;
+      if (!data.ok || !data.data?.record) return;
+      
+      const record = data.data.record;
+      const revision = data.data.current_revision;
+      const payload = revision?.payload_json || {};
+      
+      const distData = {
+        id: record.id,
+        distribution_id: record.id,
+        title: record.title,
+        rm_id: record.rm_id,
+        status: record.status,
+        locked: record.status === 'finalized',
+        portfolio_id: record.portfolio_id,
+        distribution_type: payload.distribution_type || 'regular',
+        description: payload.description || '',
+        total_amount: payload.total_amount || 0,
+        currency: payload.currency || 'USD',
+        asset_type: payload.asset_type || 'cash',
+        scheduled_date: payload.scheduled_date || '',
+        source_account: payload.source_account || '',
+        recipients: payload.recipients || [],
+        notes: payload.notes || '',
+        current_version: revision?.version || 1,
+      };
       
       setDistribution(distData);
       setEditedHeader({
@@ -228,10 +278,28 @@ export default function DistributionEditorPage({ user }) {
     }
   };
 
+  // Save using V2 API
   const saveDistribution = async (updates) => {
     setSaving(true);
     try {
-      await axios.put(`${API}/governance/distributions/${distributionId}`, updates);
+      const payload = {
+        title: updates.title || distribution.title,
+        distribution_type: updates.distribution_type || distribution.distribution_type,
+        description: updates.description !== undefined ? updates.description : distribution.description,
+        total_amount: updates.total_amount !== undefined ? updates.total_amount : distribution.total_amount,
+        currency: updates.currency || distribution.currency,
+        asset_type: updates.asset_type || distribution.asset_type,
+        scheduled_date: updates.scheduled_date || distribution.scheduled_date,
+        source_account: updates.source_account !== undefined ? updates.source_account : distribution.source_account,
+        recipients: updates.recipients || distribution.recipients || [],
+        notes: updates.notes !== undefined ? updates.notes : distribution.notes,
+      };
+      
+      await axios.put(`${API}/governance/v2/records/${distributionId}`, {
+        title: payload.title,
+        payload_json: payload
+      });
+      
       await refetchDistribution();
       toast.success('Changes saved');
     } catch (error) {
