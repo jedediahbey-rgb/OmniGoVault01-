@@ -122,3 +122,38 @@
 
 ### Full Amendment Lifecycle Tested:
 `create → finalize → attempt edit (409 BLOCKED) → amend → edit amendment → finalize amendment`
+
+## Phase 2: Amendment Studio Integration - Complete
+
+### Updated Editor Pages
+All 5 governance editor pages now include:
+- **AmendmentStudio component** - Opens when clicking "Amend" button
+- **V2-style amendment handler** - Uses the enhanced amendment flow with change type and reason
+- **State management** - Added `showAmendmentStudio` and `amendLoading` state variables
+
+### Files Updated:
+1. `/app/frontend/src/pages/MeetingEditorPage.jsx`
+   - Added AmendmentStudio import and integration
+   - Added RevisionHistory support with version fetching
+   - Enhanced "Amend" button to open Amendment Studio modal
+
+2. `/app/frontend/src/pages/DistributionEditorPage.jsx`
+   - Added AmendmentStudio integration
+   - Updated Amend button handler
+
+3. `/app/frontend/src/pages/DisputeEditorPage.jsx`
+   - Added AmendmentStudio integration  
+   - Updated Amend button handler
+
+4. `/app/frontend/src/pages/InsuranceEditorPage.jsx`
+   - Added AmendmentStudio integration
+   - Updated Amend button handler
+
+5. `/app/frontend/src/pages/CompensationEditorPage.jsx`
+   - Added AmendmentStudio integration
+   - Updated Amend button handler
+
+### New Hook Created:
+- `/app/frontend/src/hooks/useGovernanceRecord.js` - Reusable hook for V2 API operations
+
+### Linting Status: ✅ All 5 editor pages pass ESLint
