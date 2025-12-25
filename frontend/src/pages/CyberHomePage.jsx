@@ -779,7 +779,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== SCENARIOS SECTION ===== */}
-      <section id="scenarios" className="py-16 lg:py-24 bg-[#05080F]">
+      <section id="scenarios" className="py-10 lg:py-24 bg-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -787,18 +787,20 @@ export default function CyberHomePage() {
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="text-center mb-10">
+            <motion.div variants={fadeInUp} className="text-center mb-8">
               <IconChip icon={BookOpen} label="Case Studies" variant="gold" />
-              <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">Real-World Scenarios</h2>
-              <p className="mt-3 text-slate-400">See how OMNIGOVAULT solves common governance challenges</p>
+              <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">Real-World Scenarios</h2>
+              <p className="mt-2 text-slate-400">See how OMNIGOVAULT solves common governance challenges</p>
             </motion.div>
             
             <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {SCENARIOS.map((scenario) => {
                 const Icon = scenario.icon;
                 return (
-                  <HoloCard key={scenario.id} className="p-5 cursor-pointer">
-                    <Icon className="w-8 h-8 text-[#C6A87C] mb-4" weight="duotone" />
+                  <HoloCard key={scenario.id} className="p-5 cursor-pointer text-center">
+                    <div className="flex justify-center">
+                      <Icon className="w-8 h-8 text-[#C6A87C] mb-3" weight="duotone" />
+                    </div>
                     <h3 className="text-white font-semibold mb-2">{scenario.title}</h3>
                     <p className="text-sm text-slate-400">{scenario.desc}</p>
                   </HoloCard>
