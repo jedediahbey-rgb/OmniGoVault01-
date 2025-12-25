@@ -459,11 +459,22 @@ export default function ScenariosPage() {
         <TabsContent value="explore" className="space-y-6">
           {!selectedScenario ? (
             // Scenario Selection Grid
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {scenarioTemplates.map((scenario) => {
+            <motion.div 
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-4"
+              initial="initial"
+              animate="animate"
+              variants={staggerContainer}
+            >
+              {scenarioTemplates.map((scenario, index) => {
                 const Icon = scenario.icon;
                 return (
-                  <motion.div key={scenario.id} variants={fadeInUp}>
+                  <motion.div 
+                    key={scenario.id} 
+                    variants={fadeInUp}
+                    initial="initial"
+                    animate="animate"
+                    transition={{ delay: index * 0.05 }}
+                  >
                     <GlassCard
                       interactive
                       glow
@@ -488,7 +499,7 @@ export default function ScenariosPage() {
                   </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           ) : (
             // Scenario Calculator
             <div className="grid lg:grid-cols-2 gap-6">
