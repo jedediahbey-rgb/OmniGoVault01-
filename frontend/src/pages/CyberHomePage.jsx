@@ -834,9 +834,11 @@ export default function CyberHomePage() {
             
             <motion.div variants={fadeInUp} className="grid sm:grid-cols-3 gap-4">
               {MAXIMS.map((maxim) => (
-                <HoloCard key={maxim.id} className="p-6 cursor-pointer group" hover>
-                  <IconChip label={maxim.category} variant="default" />
-                  <div className="mt-4 h-24 flex items-center">
+                <HoloCard key={maxim.id} className="p-6 cursor-pointer group text-center" hover>
+                  <div className="flex justify-center">
+                    <IconChip label={maxim.category} variant="default" />
+                  </div>
+                  <div className="mt-4 h-24 flex items-center justify-center">
                     <p className="text-xl font-semibold text-white group-hover:text-[#C6A87C] transition-colors">
                       {maxim.front}
                     </p>
