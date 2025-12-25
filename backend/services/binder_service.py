@@ -1070,19 +1070,32 @@ class BinderService:
         </div>
         """)
         
-        # 3. Trust Profile Section
+        # Section counter for numbering
+        section_counter = 1
+        
+        # 4. Trust Profile Section
         if content.get("trust_profile"):
             tp = content["trust_profile"][0].get("data", {})
+            tp_id = content["trust_profile"][0].get("id", "trust-profile")
             
-            html_parts.append("""
-            <div class="section-divider">
+            html_parts.append(f"""
+            <div class="section-divider" id="section-trust_profile">
+                <h1 class="bookmark-l1" data-bookmark="Section {section_counter}: Trust Profile &amp; Authority" style="visibility: hidden; height: 0; margin: 0;">Trust Profile</h1>
+                <div class="section-icon">
+                    <span class="section-icon-text">📋</span>
+                </div>
+                <div class="section-number">Section {section_counter}</div>
                 <div class="section-title">Trust Profile & Authority</div>
                 <div class="section-subtitle">Formation and Governance Structure</div>
+                <div class="section-meta">
+                    1 Document in this section
+                </div>
             </div>
             """)
             
-            html_parts.append("""
-            <div class="record-page">
+            html_parts.append(f"""
+            <div class="record-page" id="item-{tp_id}">
+                <h2 class="bookmark-l2" data-bookmark="Trust Profile Summary" style="visibility: hidden; height: 0; margin: 0;">Trust Profile</h2>
                 <h2 style="color: #d4af37;">Trust Profile Summary</h2>
                 <div class="trust-profile-summary">
             """)
@@ -1105,6 +1118,7 @@ class BinderService:
                 """)
             
             html_parts.append("</div></div>")
+            section_counter += 1
         
         # 4. Governance Sections
         governance_sections = [
