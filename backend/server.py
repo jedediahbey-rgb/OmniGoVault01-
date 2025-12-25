@@ -588,56 +588,20 @@ def parse_currency_value(value) -> Optional[float]:
 # ============ AUTH HELPERS ============
 
 async def get_current_user(request: Request) -> User:
-    """Get current user from session token"""
-    session_token = request.cookies.get("session_token")
-    print(f"[AUTH] Checking session_token from cookie: {session_token[:20] if session_token else 'NONE'}...")
-    
-    if not session_token:
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            session_token = auth_header.split(" ")[1]
-            print(f"[AUTH] Got token from Authorization header: {session_token[:20]}...")
-    
-    if not session_token:
-        print("[AUTH] FAIL: No session token found")
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    session_doc = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-    print(f"[AUTH] Session lookup result: {session_doc is not None}")
-    
-    if not session_doc:
-        # Debug: list all sessions
-        all_sessions = await db.user_sessions.find({}, {"session_token": 1, "_id": 0}).to_list(10)
-        print(f"[AUTH] All sessions in DB: {[s.get('session_token', '')[:20] for s in all_sessions]}")
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    expires_at = session_doc["expires_at"]
-    if isinstance(expires_at, str):
-        expires_at = datetime.fromisoformat(expires_at)
-    if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=timezone.utc)
-    if expires_at < datetime.now(timezone.utc):
-        print(f"[AUTH] FAIL: Session expired at {expires_at}")
-        raise HTTPException(status_code=401, detail="Session expired")
-    
-    user_doc = await db.users.find_one({"user_id": session_doc["user_id"]}, {"_id": 0})
-    if not user_doc:
-        print(f"[AUTH] FAIL: User not found for user_id={session_doc['user_id']}")
-        raise HTTPException(status_code=401, detail="User not found")
-    
-    if isinstance(user_doc.get('created_at'), str):
-        user_doc['created_at'] = datetime.fromisoformat(user_doc['created_at'])
-    
-    print(f"[AUTH] SUCCESS: User authenticated - {user_doc.get('email', 'unknown')}")
-    return User(**user_doc)
+    """Get current user - AUTH DISABLED, returns mock user"""
+    # Return a default user for all requests
+    return User(
+        user_id="default_user",
+        email="user@omnigovault.com",
+        name="Default User",
+        picture="",
+        created_at=datetime.now(timezone.utc)
+    )
 
 
 async def get_optional_user(request: Request) -> Optional[User]:
-    """Get user if authenticated, otherwise None"""
-    try:
-        return await get_current_user(request)
-    except HTTPException:
-        return None
+    """Get user - always returns default user"""
+    return await get_current_user(request)
 
 
 # ============ AUTH ENDPOINTS ============
