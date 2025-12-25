@@ -906,7 +906,7 @@ export default function LedgerThreadsPage() {
                   <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0B1221] border-vault-gold/30">
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]" position="popper" sideOffset={5}>
                     {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
                       <SelectItem key={key} value={key} className="text-white hover:bg-vault-gold/20">
                         {label}
