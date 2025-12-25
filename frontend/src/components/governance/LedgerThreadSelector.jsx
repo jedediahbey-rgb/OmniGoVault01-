@@ -104,51 +104,49 @@ export default function LedgerThreadSelector({
     }
   }, [portfolioId, category, searchQuery]);
 
-  // Auto-suggest based on party
+  // Auto-suggest based on party - use new ledger-threads suggest API
   const autoSuggest = useCallback(async () => {
     if (!portfolioId || !partyId || autoSuggestApplied || userManuallyChanged) return;
     
     try {
-      const res = await axios.get(`${API}/rm/subjects/suggest`, {
-        params: {
-          portfolio_id: portfolioId,
-          category: category,
-          party_id: partyId,
-          module_type: moduleType,
-        },
+      const params = new URLSearchParams({
+        portfolio_id: portfolioId,
       });
       
+      if (category) {
+        params.append('category', category);
+      }
+      if (partyId) {
+        params.append('party_id', partyId);
+      }
+      
+      const res = await axios.get(`${API}/ledger-threads/suggest?${params.toString()}`);
+      
       if (res.data.ok) {
-        const { exact_match, suggestions, should_create_new, match_type } = res.data.data;
+        const items = res.data.data.items || [];
         
-        if (match_type === 'exact' && exact_match) {
-          // Auto-fill with exact match
-          onSubjectChange({
-            id: exact_match.id,
-            title: exact_match.title,
-            rm_group: exact_match.rm_group,
-            next_sub_preview: exact_match.next_sub_preview,
-            rm_id_preview: exact_match.rm_id_preview,
-            is_new: false,
-          });
-          setAutoSuggestApplied(true);
-        } else if (match_type === 'multiple' && suggestions.length > 0) {
-          // Show dropdown with suggestions
-          setSubjects(suggestions);
+        if (items.length === 1) {
+          // Single match - still show picker for confirmation (per user spec)
+          setSubjects(items);
           setShowDropdown(true);
-        } else if (should_create_new) {
-          // Switch to create mode
+        } else if (items.length > 1) {
+          // Multiple matches - show dropdown
+          setSubjects(items);
+          setShowDropdown(true);
+        } else {
+          // No matches - switch to create mode
           setMode('create');
           setNewSubject(prev => ({
             ...prev,
             primary_party_name: partyName || '',
           }));
         }
+        setAutoSuggestApplied(true);
       }
     } catch (error) {
       console.error('Auto-suggest failed:', error);
     }
-  }, [portfolioId, partyId, partyName, category, moduleType, autoSuggestApplied, userManuallyChanged, onSubjectChange]);
+  }, [portfolioId, partyId, partyName, category, autoSuggestApplied, userManuallyChanged]);
 
   // Fetch next RM-ID preview when subject is selected
   const fetchNextRmIdPreview = useCallback(async (subjectId) => {
