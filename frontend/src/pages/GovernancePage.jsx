@@ -733,7 +733,7 @@ export default function GovernancePage({ user }) {
       return;
     }
     if (!selectedPortfolio) {
-      toast.error('Please select a portfolio');
+      toast.error('Please select a portfolio first');
       return;
     }
     
@@ -758,7 +758,11 @@ export default function GovernancePage({ user }) {
         }
       };
       
+      console.log('[CREATE_DISPUTE] Sending:', JSON.stringify(requestData, null, 2));
+      
       const res = await axios.post(`${API_V2}/records`, requestData);
+      
+      console.log('[CREATE_DISPUTE] Response:', res.status, JSON.stringify(res.data, null, 2));
       
       const data = res.data;
       if (data.ok && data.data?.record) {
@@ -777,11 +781,13 @@ export default function GovernancePage({ user }) {
         
         navigate(`/vault/governance/disputes/${data.data.record.id}`);
       } else {
-        throw new Error(data.error?.message || 'Failed to create dispute');
+        const errMsg = data.error?.message || 'Failed to create dispute';
+        console.error('[CREATE_DISPUTE] Server error:', data.error);
+        throw new Error(errMsg);
       }
     } catch (error) {
-      console.error('Failed to create dispute:', error);
-      toast.error(error.response?.data?.error?.message || error.message || 'Failed to create dispute');
+      const { status, code, message } = extractError(error);
+      toast.error(`[${status}/${code}] ${message}`);
     } finally {
       setCreatingDispute(false);
     }
