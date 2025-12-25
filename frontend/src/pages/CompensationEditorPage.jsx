@@ -98,6 +98,8 @@ export default function CompensationEditorPage({ user }) {
   
   // Amendment Studio V2
   const [showAmendmentStudio, setShowAmendmentStudio] = useState(false);
+  const [showRevisionHistory, setShowRevisionHistory] = useState(false);
+  const [revisions, setRevisions] = useState([]);
   const [amendLoading, setAmendLoading] = useState(false);
 
   const fetchCompensation = useCallback(async () => {
