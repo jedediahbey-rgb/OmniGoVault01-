@@ -239,3 +239,45 @@ V2 records have:
 - Verify migrated records display correctly
 - Test Amendment Studio modal on finalized records
 - Verify revision history displays properly
+
+## RM-ID V2 Allocator Implementation Complete
+
+### What Was Built
+1. **New V2 Allocator** (`/app/backend/services/rmid_v2.py`)
+   - Random group number generation (10-999 range)
+   - Atomic allocation with retry loop (25 max attempts)
+   - Database constraints for uniqueness
+   - Support for related items sharing same group
+   - Audit logging in `rm_allocations` collection
+
+2. **Database Collections**
+   - `rm_groups`: Tracks group numbers and next subnumber
+   - `rm_allocations`: Audit log of all allocations
+   - `rm_relation_map`: Maps relation keys to group numbers
+
+3. **Database Constraints Added**
+   - `governance_records.rm_id`: unique sparse index
+   - `disputes.rm_id`: unique sparse index
+   - `distributions.rm_id`: unique sparse index
+   - `meetings.rm_id`: unique sparse index
+   - `insurance_policies.rm_id`: unique sparse index
+   - `compensation_entries.rm_id`: unique sparse index
+
+4. **API Endpoints**
+   - `GET /api/rm/preview`: Preview next RM-ID without allocating
+
+### Bug Fixes
+- Fixed 13 duplicate RM-IDs in governance_records
+- Fixed 5 duplicate RM-IDs in disputes
+- Fixed 2 duplicate RM-IDs in distributions
+- Fixed 2 duplicate RM-IDs in meetings
+- Fixed 4 duplicate RM-IDs in insurance_policies
+
+### Test Results
+- ✅ 10 disputes created rapidly - all unique RM-IDs
+- ✅ RM-ID format: RF123456789US-768.001 (BASE-NN.SSS)
+- ✅ Random group numbers: 127, 169, 292, 340, 411, 423, 500, 670, 768, 964
+- ✅ rm_groups collection working
+- ✅ rm_allocations collection logging
+- ✅ Preview endpoint working
+- ✅ Database unique constraints enforced
