@@ -160,10 +160,14 @@ export default function DashboardPage({ user }) {
     );
   }
 
+  // Get the default portfolio name
+  const defaultPortfolio = portfolios.find(p => p.portfolio_id === defaultPortfolioId);
+  const welcomeName = defaultPortfolio?.name || user?.name?.split(' ')[0] || 'User';
+
   return (
     <div className="p-8">
       <PageHeader
-        title={`Welcome back, ${user?.name?.split(' ')[0] || 'User'}`}
+        title={`Welcome back, ${welcomeName}`}
         subtitle="Your trust portfolio dashboard"
         helpKey="dashboard"
         actions={
