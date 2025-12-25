@@ -991,13 +991,13 @@ export default function GovernancePage({ user }) {
                                 </div>
                               </div>
                               
-                              <div className="text-right shrink-0">
-                                <div className="text-sm text-vault-muted flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
-                                  {formatDate(meeting.date_time)}
+                              <div className="text-right shrink-0 pl-4">
+                                <div className="text-sm text-vault-muted flex items-center gap-1 justify-end">
+                                  <Clock className="w-4 h-4 flex-shrink-0" />
+                                  <span className="truncate">{formatDate(meeting.date_time)}</span>
                                 </div>
                                 {meeting.location && (
-                                  <div className="text-xs text-vault-muted mt-1 truncate max-w-[200px]">
+                                  <div className="text-xs text-vault-muted mt-1 truncate max-w-[180px] text-right">
                                     📍 {meeting.location}
                                   </div>
                                 )}
