@@ -384,9 +384,11 @@ export default function GovernancePage({ user }) {
     try {
       const res = await axios.get(`${API}/portfolios`);
       setPortfolios(res.data || []);
-      // Auto-select first portfolio if none selected
+      // Auto-select portfolio: URL param > default portfolio > first portfolio
       if (!selectedPortfolio && res.data?.length > 0) {
-        setSelectedPortfolio(portfolioIdParam || res.data[0].portfolio_id);
+        const defaultId = localStorage.getItem('defaultPortfolioId');
+        const hasDefault = defaultId && res.data.some(p => p.portfolio_id === defaultId);
+        setSelectedPortfolio(portfolioIdParam || (hasDefault ? defaultId : res.data[0].portfolio_id));
       }
     } catch (error) {
       console.error('Failed to fetch portfolios:', error);
