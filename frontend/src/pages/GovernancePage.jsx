@@ -1719,90 +1719,88 @@ export default function GovernancePage({ user }) {
 
                 {filteredCompensation.map((entry, index) => {
                   const compId = entry.compensation_id;
+                  // Unified status colors - Draft = Amber
                   const statusColors = {
-                    draft: 'bg-slate-500/30 text-slate-300 border-slate-400/30',
-                    pending_approval: 'bg-amber-500/30 text-amber-400 border-amber-400/30',
-                    approved: 'bg-blue-500/30 text-blue-400 border-blue-400/30',
+                    draft: 'bg-amber-500/20 text-amber-400 border-amber-400/30',
+                    pending_approval: 'bg-blue-500/30 text-blue-400 border-blue-400/30',
+                    approved: 'bg-cyan-500/30 text-cyan-400 border-cyan-400/30',
                     paid: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30',
+                    finalized: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30',
                     cancelled: 'bg-red-500/30 text-red-400 border-red-400/30',
                   };
-                  const typeLabels = {
-                    annual_fee: 'Annual Fee',
-                    transaction_fee: 'Transaction Fee',
-                    hourly: 'Hourly',
-                    special: 'Special',
-                    reimbursement: 'Reimbursement',
+                  const typeConfig = {
+                    annual_fee: { label: 'Annual Fee', bg: 'bg-vault-gold/20', color: 'text-vault-gold' },
+                    transaction_fee: { label: 'Transaction Fee', bg: 'bg-emerald-500/20', color: 'text-emerald-400' },
+                    hourly: { label: 'Hourly', bg: 'bg-blue-500/20', color: 'text-blue-400' },
+                    special: { label: 'Special', bg: 'bg-purple-500/20', color: 'text-purple-400' },
+                    reimbursement: { label: 'Reimbursement', bg: 'bg-amber-500/20', color: 'text-amber-400' },
                   };
+                  const type = typeConfig[entry.compensation_type] || typeConfig.annual_fee;
+                  const effectiveStatus = entry.locked ? 'finalized' : (entry.status || 'draft');
                   
                   return (
                     <motion.div
                       key={compId}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                       onClick={() => navigate(`/vault/governance/compensation/${compId}`)}
                     >
-                      <GlassCard className="p-4 hover:border-vault-gold/40 transition-colors cursor-pointer group">
+                      <GlassCard className="p-4 cursor-pointer hover:border-vault-gold/50 transition-all group">
                         <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-4 flex-1 min-w-0">
-                            <div className="w-10 h-10 rounded-xl bg-vault-gold/20 flex items-center justify-center shrink-0">
-                              <CurrencyDollar className="w-5 h-5 text-vault-gold" weight="duotone" />
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            {/* Icon - consistent p-2 rounded-lg */}
+                            <div className={`p-2 rounded-lg ${type.bg} shrink-0`}>
+                              <CurrencyDollar className={`w-5 h-5 ${type.color}`} weight="duotone" />
                             </div>
+                            
                             <div className="flex-1 min-w-0">
+                              {/* Badges row - status first, then type */}
                               <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <h4 className="font-semibold text-white truncate">{entry.title}</h4>
-                                <Badge className={`text-xs border ${statusColors[entry.status] || statusColors.draft}`}>
-                                  {entry.status?.replace('_', ' ')}
+                                <Badge className={`${statusColors[effectiveStatus] || statusColors.draft} border text-xs`}>
+                                  {effectiveStatus === 'draft' ? 'Draft' : effectiveStatus?.replace('_', ' ')}
+                                </Badge>
+                                <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
+                                  {type.label}
                                 </Badge>
                               </div>
-                              <p className="text-sm text-vault-muted mb-2">
-                                {entry.recipient_name} • {typeLabels[entry.compensation_type] || entry.compensation_type}
-                              </p>
-                              <div className="flex items-center gap-4 text-xs text-vault-muted flex-wrap">
-                                <span className="font-mono text-vault-gold">{entry.rm_id}</span>
-                                <span className="text-lg font-bold text-white">{formatCurrency(entry.amount)}</span>
+                              
+                              {/* Title */}
+                              <h3 className="text-white font-medium truncate">{entry.title}</h3>
+                              
+                              {/* RM-ID */}
+                              {entry.rm_id && (
+                                <span className="text-xs font-mono text-vault-muted">{entry.rm_id}</span>
+                              )}
+                              
+                              {/* Amount */}
+                              {entry.amount > 0 && (
+                                <div className="text-lg font-heading text-vault-gold mt-1">
+                                  {formatCurrency(entry.amount)}
+                                  <span className="text-xs text-vault-muted ml-2">compensation</span>
+                                </div>
+                              )}
+                              
+                              {/* Details row */}
+                              <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-vault-muted">
+                                {entry.recipient_name && (
+                                  <div className="flex items-center gap-1">
+                                    <Users className="w-4 h-4" />
+                                    <span>{entry.recipient_name}</span>
+                                  </div>
+                                )}
                                 {entry.fiscal_year && (
-                                  <span>FY {entry.fiscal_year}</span>
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="w-4 h-4" />
+                                    <span>FY {entry.fiscal_year}</span>
+                                  </div>
                                 )}
                               </div>
                             </div>
                           </div>
                           
-                          {/* 3-dot dropdown menu for actions */}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <DotsThreeVertical className="w-5 h-5 text-vault-muted" weight="bold" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-700">
-                              <DropdownMenuItem
-                                className="text-white hover:bg-zinc-800 cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate(`/vault/governance/compensation/${compId}`);
-                                }}
-                              >
-                                <PencilSimple className="w-4 h-4 mr-2" />
-                                View / Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="text-red-400 hover:bg-red-500/10 cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteCompensation(compId);
-                                }}
-                              >
-                                <Trash className="w-4 h-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          {/* Arrow */}
+                          <CaretRight className="w-5 h-5 text-vault-muted shrink-0" />
                         </div>
                       </GlassCard>
                     </motion.div>
