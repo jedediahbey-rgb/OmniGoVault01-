@@ -920,10 +920,10 @@ export default function CyberHomePage() {
             <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3">
               Ready to Transform Your Trust Governance?
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-base sm:text-lg text-slate-400 mb-8">
+            <motion.p variants={fadeInUp} className="text-base sm:text-lg text-slate-400 mb-6">
               Start with our demo or create your secure vault today.
             </motion.p>
-            <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row justify-center gap-4">
+            <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row justify-center gap-3">
               <Link to="/login">
                 <Button size="lg" className="w-full sm:w-auto bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
                   Enter the Vault
@@ -940,15 +940,15 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== FOOTER ===== */}
-      <footer className="py-12 bg-[#05080F] border-t border-white/5">
+      <footer className="py-8 bg-[#05080F] border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex flex-col items-center md:flex-row md:justify-between gap-4 text-center md:text-left">
             <div className="flex items-center gap-2">
               <Vault className="w-6 h-6 text-[#C6A87C]" weight="duotone" />
               <span className="font-semibold text-white">OMNIGOVAULT</span>
             </div>
             
-            <div className="flex flex-wrap gap-6 text-sm text-slate-500">
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
               <a href="#" className="hover:text-white transition-colors">Privacy</a>
               <a href="#" className="hover:text-white transition-colors">Security</a>
               <a href="#" className="hover:text-white transition-colors">Changelog</a>
@@ -956,7 +956,7 @@ export default function CyberHomePage() {
             </div>
           </div>
           
-          <div className="mt-8 pt-8 border-t border-white/5">
+          <div className="mt-6 pt-6 border-t border-white/5">
             <p className="text-xs text-slate-600 text-center">
               OMNIGOVAULT is for informational purposes only and does not constitute legal advice. 
               Consult a qualified attorney for legal matters.
