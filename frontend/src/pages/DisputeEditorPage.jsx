@@ -775,8 +775,8 @@ export default function DisputeEditorPage({ user }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-            </>
-          )}
+            )}
+          </div>
         </GlassCard>
       </motion.div>
 
