@@ -861,7 +861,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== TEMPLATE VAULT SECTION ===== */}
-      <section id="templates" className="py-16 lg:py-24 bg-[#0B1221]">
+      <section id="templates" className="py-10 lg:py-24 bg-[#0B1221]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -869,19 +869,19 @@ export default function CyberHomePage() {
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="text-center mb-10">
+            <motion.div variants={fadeInUp} className="text-center mb-8">
               <IconChip icon={FileText} label="Templates" variant="gold" />
-              <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">Template Studio</h2>
-              <p className="mt-3 text-slate-400">Professional trust document templates ready for customization</p>
+              <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">Template Studio</h2>
+              <p className="mt-2 text-slate-400">Professional trust document templates ready for customization</p>
             </motion.div>
             
             <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {TEMPLATES.map((template) => {
                 const Icon = template.icon;
                 return (
-                  <HoloCard key={template.id} className="p-5 cursor-pointer">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center shrink-0">
+                  <HoloCard key={template.id} className="p-5 cursor-pointer text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center">
                         <Icon className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
                       </div>
                       <div>
@@ -894,7 +894,7 @@ export default function CyberHomePage() {
               })}
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="mt-8 text-center">
+            <motion.div variants={fadeInUp} className="mt-6 text-center">
               <Link to="/templates">
                 <Button variant="outline" className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10">
                   Browse All Templates <ArrowRight className="w-4 h-4 ml-2" />
