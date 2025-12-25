@@ -376,7 +376,7 @@ export default function BinderPage() {
                 Generate Binder
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                 {profiles.map((profile) => {
                   const Icon = PROFILE_ICONS[profile.profile_type] || FileText;
                   const colorClass = PROFILE_COLORS[profile.profile_type] || 'text-vault-gold bg-vault-gold/10';
@@ -386,33 +386,31 @@ export default function BinderPage() {
                     <button
                       key={profile.id}
                       onClick={() => setSelectedProfile(profile.id)}
-                      className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      className={`p-4 rounded-lg border-2 transition-all ${
                         isSelected
                           ? 'border-vault-gold bg-vault-gold/10'
                           : 'border-vault-gold/20 hover:border-vault-gold/40'
                       }`}
                     >
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className={`p-2 rounded-lg ${colorClass}`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg shrink-0 ${colorClass}`}>
                           <Icon className="w-5 h-5" weight="fill" />
                         </div>
-                        <div>
-                          <h3 className="font-medium text-white text-sm">{profile.name}</h3>
-                          <p className="text-xs text-vault-muted capitalize">{profile.profile_type}</p>
+                        <div className="flex-1 text-left min-w-0">
+                          <h3 className="font-medium text-white text-sm truncate">{profile.name}</h3>
                         </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleConfigProfile(profile);
+                          }}
+                          className="text-vault-muted hover:text-white text-xs shrink-0 p-1"
+                        >
+                          <Gear className="w-4 h-4" />
+                        </Button>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleConfigProfile(profile);
-                        }}
-                        className="text-vault-muted hover:text-white text-xs w-full mt-2"
-                      >
-                        <Gear className="w-3 h-3 mr-1" />
-                        Configure
-                      </Button>
                     </button>
                   );
                 })}
