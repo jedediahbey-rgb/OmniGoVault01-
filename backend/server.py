@@ -3563,6 +3563,11 @@ from routes.rm_subject import router as rm_subject_router, init_rm_subject_route
 init_rm_subject_routes(db, get_current_user)
 app.include_router(rm_subject_router)
 
+# Initialize and include Ledger Threads routes (Global RM-ID management)
+from routes.ledger_threads import router as ledger_threads_router, init_ledger_thread_routes
+init_ledger_thread_routes(db, get_current_user)
+app.include_router(ledger_threads_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
