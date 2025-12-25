@@ -3619,6 +3619,11 @@ from routes.config import router as config_router, set_db as set_config_db
 set_config_db(db)
 app.include_router(config_router)
 
+# Initialize and include Binder routes
+from routes.binder import router as binder_router, init_binder_routes
+init_binder_routes(db, get_current_user)
+app.include_router(binder_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
