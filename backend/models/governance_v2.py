@@ -331,8 +331,17 @@ class DisputeClaim(BaseModel):
 
 class DisputePayload(BaseModel):
     """Payload schema for Disputes"""
+    title: str = ""
     dispute_type: str = ""  # trustee/beneficiary, distribution, accounting, interpretation
+    description: str = ""
+    amount_claimed: float = 0.0
+    currency: str = "USD"
+    priority: str = "medium"
+    case_number: str = ""
+    jurisdiction: str = ""
     parties_involved: List[str] = []
+    parties: List[Dict[str, Any]] = []  # Alternative from frontend
+    events: List[Dict[str, Any]] = []  # Alternative from frontend
     status: str = "open"  # open, review, mediation, resolved, archived
     outcome: str = ""  # settled, litigation, dismissed, etc.
     claims: List[DisputeClaim] = []
@@ -340,6 +349,9 @@ class DisputePayload(BaseModel):
     resolution_summary: str = ""
     permissions_scope: str = "trustee_only"  # trustee_only, shared_with_beneficiaries
     notes: str = ""
+    
+    class Config:
+        extra = "allow"
 
 
 class InsuranceBeneficiary(BaseModel):
