@@ -3527,6 +3527,11 @@ from routes.governance_v2 import router as governance_v2_router, init_governance
 init_governance_v2_routes(db, get_current_user, generate_subject_rm_id)
 app.include_router(governance_v2_router)
 
+# Initialize and include RM Subject routes (Ledger Thread management)
+from routes.rm_subject import router as rm_subject_router, init_rm_subject_routes, ensure_rm_subject_indexes
+init_rm_subject_routes(db, get_current_user)
+app.include_router(rm_subject_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -3546,6 +3551,13 @@ async def startup_init():
         logger.info("✅ RM-ID V2 Allocator initialized with indexes")
     except Exception as e:
         logger.error(f"❌ Failed to initialize RM-ID V2 Allocator: {e}")
+    
+    # Initialize RM Subject indexes
+    try:
+        await ensure_rm_subject_indexes(db)
+        logger.info("✅ RM Subject indexes initialized")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize RM Subject indexes: {e}")
 
 
 @app.on_event("shutdown")
