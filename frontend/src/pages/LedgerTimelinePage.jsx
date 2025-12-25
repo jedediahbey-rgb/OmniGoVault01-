@@ -322,7 +322,7 @@ export default function LedgerTimelinePage() {
                 onClick={() => setViewMode('timeline')}
                 className={`px-3 py-2 ${viewMode === 'timeline' ? 'bg-vault-gold text-vault-dark' : 'text-white/60 hover:bg-white/5'}`}
               >
-                <TimelineIcon className="w-4 h-4" />
+                <Clock className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
