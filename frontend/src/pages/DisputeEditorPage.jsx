@@ -171,14 +171,53 @@ export default function DisputeEditorPage({ user }) {
       }
       
       try {
-        const res = await axios.get(`${API}/governance/disputes/${disputeId}`, {
+        // Use V2 API
+        const res = await axios.get(`${API}/governance/v2/records/${disputeId}`, {
           signal: abortController.signal
         });
         
         if (!isMounted) return;
         
         const data = res.data;
-        const dispData = data.item || data;
+        if (!data.ok || !data.data?.record) {
+          throw new Error(data.error?.message || 'Failed to load dispute');
+        }
+        
+        const record = data.data.record;
+        const revision = data.data.current_revision;
+        const payload = revision?.payload_json || {};
+        
+        // Transform V2 record to expected format
+        const dispData = {
+          id: record.id,
+          dispute_id: record.id,
+          title: record.title,
+          rm_id: record.rm_id,
+          status: record.status,
+          locked: record.status === 'finalized',
+          portfolio_id: record.portfolio_id,
+          created_at: record.created_at,
+          finalized_at: record.finalized_at,
+          // Extract from payload
+          dispute_type: payload.dispute_type || 'beneficiary',
+          description: payload.description || '',
+          case_number: payload.case_number || '',
+          jurisdiction: payload.jurisdiction || '',
+          amount_claimed: payload.amount_claimed || 0,
+          currency: payload.currency || 'USD',
+          estimated_exposure: payload.estimated_exposure || 0,
+          priority: payload.priority || 'medium',
+          primary_counsel: payload.primary_counsel || '',
+          counsel_firm: payload.counsel_firm || '',
+          next_deadline: payload.next_deadline || '',
+          next_hearing_date: payload.next_hearing_date || '',
+          parties: payload.parties || [],
+          events: payload.events || [],
+          notes: payload.notes || '',
+          // V2 specific
+          current_version: revision?.version || 1,
+          current_revision_id: record.current_revision_id
+        };
         
         setDispute(dispData);
         setEditedHeader({
@@ -197,12 +236,10 @@ export default function DisputeEditorPage({ user }) {
           next_hearing_date: dispData.next_hearing_date?.slice(0, 10) || '',
         });
       } catch (error) {
-        // Silently ignore aborted requests (happens on navigation)
         if (error?.name === 'CanceledError' || error?.code === 'ERR_CANCELED' || !isMounted) {
           return;
         }
         console.error('Failed to fetch dispute:', error);
-        // Only show error and navigate if still mounted AND not a cancellation
         if (isMounted && error?.response?.status !== 0) {
           toast.error('Failed to load dispute details');
           navigate('/vault/governance?tab=disputes');
@@ -226,9 +263,39 @@ export default function DisputeEditorPage({ user }) {
     if (!disputeId) return;
     
     try {
-      const res = await axios.get(`${API}/governance/disputes/${disputeId}`);
+      const res = await axios.get(`${API}/governance/v2/records/${disputeId}`);
       const data = res.data;
-      const dispData = data.item || data;
+      if (!data.ok || !data.data?.record) return;
+      
+      const record = data.data.record;
+      const revision = data.data.current_revision;
+      const payload = revision?.payload_json || {};
+      
+      const dispData = {
+        id: record.id,
+        dispute_id: record.id,
+        title: record.title,
+        rm_id: record.rm_id,
+        status: record.status,
+        locked: record.status === 'finalized',
+        portfolio_id: record.portfolio_id,
+        dispute_type: payload.dispute_type || 'beneficiary',
+        description: payload.description || '',
+        case_number: payload.case_number || '',
+        jurisdiction: payload.jurisdiction || '',
+        amount_claimed: payload.amount_claimed || 0,
+        currency: payload.currency || 'USD',
+        estimated_exposure: payload.estimated_exposure || 0,
+        priority: payload.priority || 'medium',
+        primary_counsel: payload.primary_counsel || '',
+        counsel_firm: payload.counsel_firm || '',
+        next_deadline: payload.next_deadline || '',
+        next_hearing_date: payload.next_hearing_date || '',
+        parties: payload.parties || [],
+        events: payload.events || [],
+        notes: payload.notes || '',
+        current_version: revision?.version || 1,
+      };
       
       setDispute(dispData);
       setEditedHeader({
@@ -251,10 +318,34 @@ export default function DisputeEditorPage({ user }) {
     }
   };
 
+  // Save using V2 API
   const saveDispute = async (updates) => {
     setSaving(true);
     try {
-      await axios.put(`${API}/governance/disputes/${disputeId}`, updates);
+      const payload = {
+        title: updates.title || dispute.title,
+        dispute_type: updates.dispute_type || dispute.dispute_type,
+        description: updates.description !== undefined ? updates.description : dispute.description,
+        case_number: updates.case_number !== undefined ? updates.case_number : dispute.case_number,
+        jurisdiction: updates.jurisdiction !== undefined ? updates.jurisdiction : dispute.jurisdiction,
+        amount_claimed: updates.amount_claimed !== undefined ? updates.amount_claimed : dispute.amount_claimed,
+        currency: updates.currency || dispute.currency,
+        estimated_exposure: updates.estimated_exposure !== undefined ? updates.estimated_exposure : dispute.estimated_exposure,
+        priority: updates.priority || dispute.priority,
+        primary_counsel: updates.primary_counsel !== undefined ? updates.primary_counsel : dispute.primary_counsel,
+        counsel_firm: updates.counsel_firm !== undefined ? updates.counsel_firm : dispute.counsel_firm,
+        next_deadline: updates.next_deadline || dispute.next_deadline,
+        next_hearing_date: updates.next_hearing_date || dispute.next_hearing_date,
+        parties: updates.parties || dispute.parties || [],
+        events: updates.events || dispute.events || [],
+        notes: updates.notes !== undefined ? updates.notes : dispute.notes,
+      };
+      
+      await axios.put(`${API}/governance/v2/records/${disputeId}`, {
+        title: payload.title,
+        payload_json: payload
+      });
+      
       await refetchDispute();
       toast.success('Changes saved');
     } catch (error) {
