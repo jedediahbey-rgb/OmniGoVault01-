@@ -431,13 +431,28 @@ export default function LedgerThreadsPage() {
     setShowDeleteModal(true);
   };
 
-  if (!portfolioId) {
+  const currentPortfolio = portfolios.find(p => p.portfolio_id === portfolioId);
+
+  // Show loading state while fetching portfolios
+  if (portfolios.length === 0 && loading) {
     return (
       <div className="min-h-screen bg-vault-dark p-6">
         <div className="max-w-4xl mx-auto text-center py-20">
-          <GitBranch className="w-16 h-16 text-vault-gold mx-auto mb-4" />
-          <h1 className="text-2xl font-heading text-white mb-2">Ledger Thread Manager</h1>
-          <p className="text-vault-muted mb-6">Select a portfolio to manage ledger threads</p>
+          <ArrowClockwise className="w-12 h-12 text-vault-gold mx-auto mb-4 animate-spin" />
+          <p className="text-vault-muted">Loading portfolios...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no portfolios exist
+  if (portfolios.length === 0) {
+    return (
+      <div className="min-h-screen bg-vault-dark p-6">
+        <div className="max-w-4xl mx-auto text-center py-20">
+          <FolderSimple className="w-16 h-16 text-vault-gold mx-auto mb-4" />
+          <h1 className="text-2xl font-heading text-white mb-2">No Portfolios Found</h1>
+          <p className="text-vault-muted mb-6">Create a portfolio first to manage ledger threads</p>
           <Button onClick={() => navigate('/vault')} className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark">
             Go to Vault
           </Button>
@@ -449,7 +464,7 @@ export default function LedgerThreadsPage() {
   return (
     <div className="min-h-screen bg-vault-dark p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {/* Header with Portfolio Selector */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Button
@@ -470,15 +485,49 @@ export default function LedgerThreadsPage() {
             </div>
           </div>
 
-          <Button
-            onClick={() => setShowNewModal(true)}
-            className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Thread
-          </Button>
+          <div className="flex items-center gap-4">
+            {/* Portfolio Selector */}
+            <div className="flex items-center gap-2">
+              <FolderSimple className="w-4 h-4 text-vault-muted" />
+              <Select value={portfolioId} onValueChange={handlePortfolioChange}>
+                <SelectTrigger className="w-56 bg-[#05080F] border-vault-gold/30 text-white">
+                  <SelectValue placeholder="Select portfolio">
+                    {currentPortfolio?.name || 'Select portfolio'}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                  {portfolios.map((p) => (
+                    <SelectItem 
+                      key={p.portfolio_id} 
+                      value={p.portfolio_id}
+                      className="text-white hover:bg-vault-gold/20"
+                    >
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              onClick={() => setShowNewModal(true)}
+              disabled={!portfolioId}
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Thread
+            </Button>
+          </div>
         </div>
 
+        {!portfolioId ? (
+          <div className="text-center py-20 bg-[#0B1221]/50 rounded-xl border border-vault-gold/10">
+            <FolderSimple className="w-12 h-12 text-vault-muted mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">Select a Portfolio</h3>
+            <p className="text-vault-muted">Choose a portfolio from the dropdown above to manage threads</p>
+          </div>
+        ) : (
+        <>
         {/* Filters */}
         <div className="flex gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
