@@ -68,8 +68,8 @@
   }
   
   body {
-    @apply bg-[#0B1221] text-foreground font-body antialiased;
-    font-family: 'Manrope', sans-serif;
+    @apply bg-[#0B1221] text-foreground antialiased;
+    font-family: 'Inter', 'Manrope', sans-serif;
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
@@ -86,9 +86,16 @@
     overflow-x: hidden;
   }
   
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cormorant Garamond', serif;
+  /* Typography - Display/Headlines */
+  h1, h2, h3 {
+    font-family: 'Instrument Serif', 'Fraunces', serif;
     letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  
+  h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
   }
   
   /* Prevent iOS input zoom */
