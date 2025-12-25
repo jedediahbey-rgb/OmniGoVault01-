@@ -516,6 +516,11 @@ class BinderService:
         """
         Generate the consolidated PDF binder.
         Returns PDF bytes.
+        
+        Phase 2 Features:
+        - Clickable Table of Contents with anchor links
+        - PDF Bookmarks for navigation
+        - Enhanced section dividers with icons
         """
         from weasyprint import HTML, CSS
         from weasyprint.text.fonts import FontConfiguration
@@ -535,7 +540,7 @@ class BinderService:
         # Build HTML document
         html_parts = []
         
-        # CSS Styling
+        # CSS Styling with PDF Bookmark support
         css = """
         @page {
             size: letter;
@@ -559,17 +564,50 @@ class BinderService:
             color: #1a1a1a;
         }
         
+        /* PDF Bookmark styles - Level 1 for major sections */
+        h1.bookmark-l1 {
+            bookmark-level: 1;
+            bookmark-label: attr(data-bookmark);
+        }
+        
+        /* PDF Bookmark styles - Level 2 for individual records */
+        h2.bookmark-l2 {
+            bookmark-level: 2;
+            bookmark-label: attr(data-bookmark);
+        }
+        
         .cover-page {
             page-break-after: always;
+        }
+        
+        .cover-container {
             text-align: center;
-            padding-top: 3in;
+            padding-top: 2in;
+        }
+        
+        .cover-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 0.5in auto;
+            border: 3px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0B1221 0%, #1a2744 100%);
+        }
+        
+        .cover-logo-text {
+            font-size: 32pt;
+            color: #d4af37;
+            font-weight: bold;
         }
         
         .cover-title {
             font-size: 28pt;
             font-weight: bold;
             color: #0a0a0a;
-            margin-bottom: 0.5in;
+            margin-bottom: 0.3in;
         }
         
         .cover-subtitle {
@@ -581,44 +619,182 @@ class BinderService:
         .cover-meta {
             font-size: 11pt;
             color: #666;
-            margin-top: 2in;
+            margin-top: 1.5in;
         }
         
         .cover-badge {
             display: inline-block;
             background: linear-gradient(135deg, #d4af37 0%, #f4e4bc 50%, #d4af37 100%);
             color: #1a1a1a;
-            padding: 8px 24px;
+            padding: 10px 32px;
             font-weight: bold;
+            font-size: 14pt;
             border-radius: 4px;
-            margin-top: 1in;
+            margin-top: 0.75in;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         
+        .cover-footer {
+            position: absolute;
+            bottom: 1in;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 9pt;
+            color: #999;
+        }
+        
+        /* Table of Contents Styles */
+        .toc-page {
+            page-break-after: always;
+        }
+        
+        .toc-header {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #0B1221;
+            text-align: center;
+            margin-bottom: 0.5in;
+            padding-bottom: 0.25in;
+            border-bottom: 3px solid #d4af37;
+        }
+        
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .toc-section {
+            margin-bottom: 0.25in;
+        }
+        
+        .toc-section-link {
+            display: flex;
+            align-items: baseline;
+            text-decoration: none;
+            color: #1a1a1a;
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+        
+        .toc-section-link:hover {
+            color: #d4af37;
+        }
+        
+        .toc-icon {
+            width: 24px;
+            margin-right: 12px;
+            text-align: center;
+            color: #d4af37;
+            font-size: 14pt;
+        }
+        
+        .toc-title {
+            flex: 1;
+            font-size: 12pt;
+            font-weight: 600;
+        }
+        
+        .toc-count {
+            font-size: 10pt;
+            color: #666;
+            margin-left: 8px;
+        }
+        
+        .toc-page-ref {
+            font-size: 10pt;
+            color: #666;
+            text-align: right;
+        }
+        
+        .toc-subsection {
+            margin-left: 36px;
+        }
+        
+        .toc-subsection-link {
+            display: flex;
+            align-items: baseline;
+            text-decoration: none;
+            color: #555;
+            padding: 4px 0;
+            font-size: 10pt;
+        }
+        
+        .toc-subsection-link:hover {
+            color: #d4af37;
+        }
+        
+        /* Section Divider - Enhanced */
         .section-divider {
             page-break-before: always;
             page-break-after: always;
             text-align: center;
-            padding-top: 3in;
+            padding-top: 2.5in;
             background: linear-gradient(135deg, #0B1221 0%, #1a2744 100%);
             color: white;
             margin: -0.75in;
             padding-left: 0.75in;
             padding-right: 0.75in;
             min-height: 100vh;
+            position: relative;
+        }
+        
+        .section-divider::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #d4af37 0%, #f4e4bc 50%, #d4af37 100%);
+        }
+        
+        .section-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 0.5in auto;
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .section-icon-text {
+            font-size: 36pt;
+            color: #d4af37;
+        }
+        
+        .section-number {
+            font-size: 14pt;
+            color: #d4af37;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 0.25in;
         }
         
         .section-title {
-            font-size: 24pt;
+            font-size: 28pt;
             font-weight: bold;
             color: #d4af37;
-            border-bottom: 2px solid #d4af37;
-            padding-bottom: 0.25in;
-            margin-bottom: 0.5in;
+            margin-bottom: 0.25in;
         }
         
         .section-subtitle {
             font-size: 14pt;
             color: #999;
+            margin-bottom: 0.5in;
+        }
+        
+        .section-meta {
+            font-size: 11pt;
+            color: #666;
+            border-top: 1px solid #333;
+            padding-top: 0.25in;
+            margin-top: 1in;
         }
         
         .manifest-table {
@@ -723,6 +899,12 @@ class BinderService:
         .profile-value {
             flex: 1;
             color: #1a1a1a;
+        }
+        
+        /* Link styles for TOC */
+        a {
+            color: inherit;
+            text-decoration: none;
         }
         """
         
