@@ -45,6 +45,23 @@ export default function DashboardPage({ user }) {
   const [editingPortfolio, setEditingPortfolio] = useState(null);
   const [newPortfolioName, setNewPortfolioName] = useState('');
   const [newPortfolioDesc, setNewPortfolioDesc] = useState('');
+  const [defaultPortfolioId, setDefaultPortfolioId] = useState(localStorage.getItem('defaultPortfolioId') || '');
+
+  // Set a portfolio as the global default
+  const setAsDefault = (portfolioId, e) => {
+    e.stopPropagation();
+    localStorage.setItem('defaultPortfolioId', portfolioId);
+    setDefaultPortfolioId(portfolioId);
+    toast.success('Default portfolio set - will be auto-selected across the app');
+  };
+
+  // Clear default portfolio
+  const clearDefault = (e) => {
+    e.stopPropagation();
+    localStorage.removeItem('defaultPortfolioId');
+    setDefaultPortfolioId('');
+    toast.success('Default portfolio cleared');
+  };
 
   useEffect(() => {
     fetchDashboardData();
