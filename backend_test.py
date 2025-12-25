@@ -637,13 +637,13 @@ class EquityTrustAPITester:
         return compensation_id
 
     def test_governance_v2_api(self, portfolio_id):
-        """Test the NEW V2 API for Amendment Studio - IMMUTABILITY TESTING"""
+        """Test the NEW V2 API for GovernancePage V2 refactor - FOCUSED TESTING"""
         if not portfolio_id:
             print("\n⚠️ Skipping V2 API tests - no portfolio ID")
             return None
             
-        print("\n📋 Testing Governance V2 API - Amendment Studio...")
-        print("   🔒 TESTING IMMUTABILITY RULES")
+        print("\n📋 Testing Governance V2 API - GovernancePage V2 Refactor...")
+        print("   🎯 TESTING V2 API ENDPOINTS USED BY FRONTEND")
         
         # Test 1: Create new record with draft v1
         record_data = {
