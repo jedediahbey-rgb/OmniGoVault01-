@@ -1,176 +1,136 @@
 {
-  "identity": {
-    "name": "E1",
-    "role": "The Anti-AI Designer",
-    "mission": "Create a Neo-noir Cyber-Futuristic Command Console for Equity Trust",
-    "principles": [
-      "Fusion over Imitation: Mix Fintech Trust with Cyberpunk Command Console",
-      "Emotion First: Every interaction feels like operating high-stakes machinery",
-      "Content is King: Data is the hero, presented with cinematic clarity",
-      "Zoom In: High-fidelity details on data points and signals",
-      "Negative Space: Deep void backgrounds to make gold/neon pop",
-      "Contrast: High-contrast text against deep dark backgrounds"
-    ]
-  },
-  "aesthetic": {
-    "theme": "Neo-noir Cyber",
-    "base_vibe": "Premium Command Console",
-    "visual_motifs": [
-      "Signal",
-      "Scan",
-      "Vault",
-      "Ledger",
-      "Relay",
-      "Node Map"
-    ],
-    "rules": [
-      "NO generic gradients. Use noise/grain textures.",
-      "NO 'Inter' for headings. Use 'Unbounded' or 'Rajdhani'.",
-      "NO center-everything. Use asymmetry and tension.",
-      "Glassmorphism must be 'Crystal' (high blur, subtle border), not 'Muddy'.",
-      "Borders must be 'Tracing Beams' or 'Holographic' (glowing, moving)."
-    ]
+  "meta": {
+    "version": "2.0",
+    "theme": "Dark Vault Luxury",
+    "persona": "E1: The Anti-AI Designer",
+    "last_updated": "2024-05-22"
   },
   "typography": {
-    "strategy": "The Editorial Future",
-    "fonts": {
-      "heading": {
-        "family": "Unbounded, sans-serif",
-        "usage": "Hero titles, Section headers, Big numbers",
-        "weights": ["Light (300)", "Bold (700)"],
-        "letter_spacing": "tracking-tighter"
+    "roles": {
+      "display": {
+        "font_family": "Instrument Serif, serif",
+        "fallback": "Fraunces, serif",
+        "usage": "Landing hero, section headlines, page titles, major card headers (H1/H2)",
+        "settings": {
+          "letter_spacing": "-0.02em",
+          "line_height": "1.05"
+        }
       },
       "body": {
-        "family": "Manrope, sans-serif",
-        "usage": "Paragraphs, UI labels, Navigation",
-        "weights": ["Regular (400)", "Medium (500)"],
-        "letter_spacing": "tracking-normal"
+        "font_family": "Inter, sans-serif",
+        "fallback": "Manrope, sans-serif",
+        "usage": "Standard UI text, labels, descriptions, buttons, navigation, table text",
+        "settings": {
+          "line_height": "1.5"
+        }
       },
       "mono": {
-        "family": "JetBrains Mono, monospace",
-        "usage": "Data values, Timestamps, Signal feeds, Code snippets",
-        "weights": ["Regular (400)"],
-        "letter_spacing": "tracking-wide"
+        "font_family": "IBM Plex Mono, monospace",
+        "fallback": "JetBrains Mono, monospace",
+        "usage": "RM-IDs, TEMP IDs, hashes, ledger refs, audit metadata",
+        "style": "Smaller than body, slightly muted, often within a chip"
       }
+    },
+    "scale": {
+      "h1": "font-display text-5xl md:text-7xl font-medium tracking-tight leading-[1.1] text-white",
+      "h2": "font-display text-3xl md:text-4xl font-medium tracking-tight text-white/90",
+      "h3": "font-display text-2xl font-medium text-white/90",
+      "body_lg": "font-body text-lg text-slate-300 leading-relaxed",
+      "body": "font-body text-base text-slate-400 leading-relaxed",
+      "small": "font-body text-sm text-slate-500",
+      "mono_id": "font-mono text-xs text-gold-400/80 bg-gold-400/10 px-1.5 py-0.5 rounded-[2px] tracking-wide"
     }
   },
   "colors": {
     "palette": {
       "background": {
-        "void": "#05080F",
-        "navy": "#0B1221",
-        "paper": "#1A202C"
+        "void": "#020408",
+        "navy": "#0B0F19",
+        "surface": "#111623",
+        "surface_highlight": "#1A2130"
       },
-      "primary": {
-        "gold": "#C6A87C",
+      "accent": {
+        "gold_primary": "#D4AF37",
+        "gold_light": "#F3E5AB",
         "gold_dim": "#8C7350",
-        "gold_glow": "rgba(198, 168, 124, 0.4)"
-      },
-      "cyber": {
-        "blue": "#3B82F6",
-        "cyan": "#06B6D4",
-        "signal_green": "#10B981",
-        "alert_red": "#EF4444"
+        "neon_green": "#39FF14",
+        "critical_red": "#FF3333"
       },
       "text": {
-        "primary": "#F8FAFC",
+        "primary": "#FFFFFF",
         "secondary": "#94A3B8",
-        "muted": "#475569"
+        "muted": "#64748B"
       }
     },
-    "gradients": {
-      "gold_rush": "linear-gradient(135deg, #C6A87C 0%, #E8D5B5 50%, #C6A87C 100%)",
-      "void_fade": "linear-gradient(to bottom, transparent, #05080F)",
-      "hologram": "linear-gradient(180deg, rgba(59, 130, 246, 0) 0%, rgba(59, 130, 246, 0.1) 100%)"
+    "tokens": {
+      "border_subtle": "border-white/5",
+      "border_gold": "border-[#D4AF37]/30",
+      "status_live": "text-[#39FF14] drop-shadow-[0_0_8px_rgba(57,255,20,0.3)]",
+      "status_error": "text-[#FF3333]"
+    }
+  },
+  "icons": {
+    "library": "Phosphor Icons (React)",
+    "style": "Regular/Thin (Monoline)",
+    "settings": {
+      "stroke_width": "1.75",
+      "size_default": "20px",
+      "size_lg": "24px"
+    },
+    "container_recipe": "flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] group-hover:border-[#D4AF37]/40 group-hover:shadow-[0_0_15px_rgba(212,175,55,0.1)] transition-all duration-300",
+    "mapping": {
+      "Minutes": "FileText",
+      "Distributions": "Coins",
+      "Disputes": "Scales",
+      "Insurance": "ShieldCheck",
+      "Compensation": "Wallet",
+      "Assets": "Vault",
+      "Parties": "Users",
+      "Ledger": "Book",
+      "Documents": "Files",
+      "Templates": "Stamp",
+      "Learning": "Brain",
+      "Trust Health": "Pulse",
+      "Binder": "Binder"
+    }
+  },
+  "components": {
+    "card": {
+      "base": "bg-[#0B0F19]/80 backdrop-blur-md border border-white/5 rounded-2xl p-6",
+      "hover": "hover:border-[#D4AF37]/20 hover:bg-[#0B0F19] transition-all duration-500"
+    },
+    "button": {
+      "primary": "bg-[#D4AF37] text-[#020408] font-medium px-6 py-2.5 rounded-lg hover:bg-[#F3E5AB] hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all duration-300",
+      "outline": "border border-[#D4AF37]/40 text-[#D4AF37] px-6 py-2.5 rounded-lg hover:bg-[#D4AF37]/10 transition-all duration-300"
+    },
+    "input": {
+      "base": "bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder:text-white/20 focus:border-[#D4AF37]/50 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all"
     }
   },
   "layout": {
-    "grid_system": {
-      "marketing": "Bento Grid Mode A (Tetris) - Asymmetric, Artistic",
-      "dashboard": "Control Room Grid Mode B - Dense, Data-heavy"
-    },
     "spacing": {
-      "container_padding": "p-6 md:p-12 lg:p-24",
-      "element_gap": "gap-4 md:gap-8"
+      "section_gap": "py-24 md:py-32",
+      "container_padding": "px-6 md:px-12 lg:px-24"
     },
-    "mobile_rules": [
-      "No horizontal scroll",
-      "Stack grids to col-span-1",
-      "Use dvh for full-screen sections",
-      "Touch targets min 44px"
-    ]
-  },
-  "components": {
-    "IconChip": {
-      "description": "A small, pill-shaped component combining an icon and a label, used for tags or status indicators.",
-      "style": "bg-white/5 border border-white/10 rounded-full px-3 py-1 flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-gold-500"
-    },
-    "TrustRadar": {
-      "description": "A circular visualization showing trust metrics. Must look like a radar sweep.",
-      "implementation": "Custom SVG with framer-motion rotation. Segments light up on 'scan'.",
-      "style": "Stroke-width: 1px, Color: Cyber Blue/Gold mix. Glow effects essential."
-    },
-    "SignalFeed": {
-      "description": "A scrolling terminal-like feed of activities.",
-      "implementation": "Vertical list with AnimatePresence. New items slide in from top. Fade out at bottom.",
-      "style": "Font-mono, text-xs, green/gold status indicators. Background: Black/50 with blur."
-    },
-    "HolographicCard": {
-      "description": "Standard container for features and content.",
-      "style": "bg-[#0B1221]/70 backdrop-blur-xl border border-white/10 hover:border-gold/50 transition-all duration-500 group relative overflow-hidden",
-      "effect": "Add a 'scanline' div overlay with low opacity."
-    },
-    "TracingBeam": {
-      "description": "A glowing line that follows the border of a container.",
-      "implementation": "Framer Motion layoutId or absolute positioned div animating along path."
+    "grid": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-6",
+      "bento": "grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(200px,auto)]"
     }
   },
-  "motion": {
-    "transitions": {
-      "default": "transition-all duration-300 ease-out",
-      "slow": "transition-all duration-700 ease-in-out"
-    },
-    "animations": {
-      "fade_in_up": {
-        "initial": { "opacity": 0, "y": 20 },
-        "animate": { "opacity": 1, "y": 0 },
-        "transition": { "duration": 0.5 }
-      },
-      "radar_spin": {
-        "animate": { "rotate": 360 },
-        "transition": { "duration": 4, "repeat": "Infinity", "ease": "linear" }
-      }
-    }
-  },
-  "assets": {
-    "images": {
-      "hero_bg": "https://images.pexels.com/photos/31587202/pexels-photo-31587202.jpeg",
-      "trust_radar_ref": "https://images.pexels.com/photos/25630341/pexels-photo-25630341.jpeg",
-      "vault_icon": "https://images.pexels.com/photos/7098114/pexels-photo-7098114.jpeg",
-      "node_map_bg": "https://images.pexels.com/photos/1635927/pexels-photo-1635927.jpeg"
-    },
-    "icons": "Use Lucide React (already installed). Fallback to Heroicons if needed."
-  },
-  "instructions_to_main_agent": [
-    "1. SETUP: Install 'framer-motion', 'clsx', 'tailwind-merge' if not present.",
-    "2. FONTS: Configure 'Unbounded' and 'JetBrains Mono' in tailwind.config.js.",
-    "3. COMPONENTS: Build 'IconChip', 'HolographicCard', 'SignalFeed' first as reusable UI.",
-    "4. LAYOUT: Implement the Homepage sections in order (Nav -> Hero -> Signal -> Radar -> Grid -> Map -> Scenarios -> Learn -> Vault -> Footer).",
-    "5. MOTION: Apply entrance animations to ALL sections. No static scrolling.",
-    "6. MOBILE: Test every section on mobile width. Ensure no overflow.",
-    "7. DATA-TESTID: Add data-testid to all interactive elements (buttons, inputs, cards)."
+  "universal_guidelines": [
+    "Use 'Instrument Serif' for all H1-H3 headings. No exceptions.",
+    "Use 'IBM Plex Mono' for any data that represents an ID, Hash, or Financial Value.",
+    "Primary Gold (#D4AF37) is for accents only. Do not use it for large backgrounds.",
+    "All interactive elements must have a hover state that increases brightness or adds a subtle glow.",
+    "Avoid pure black (#000000). Use Void (#020408) or Navy (#0B0F19) for depth.",
+    "Glassmorphism should be subtle (dark glass), not frosty white.",
+    "Always use the defined Icon Container for module icons to maintain the 'Badge' aesthetic."
   ],
-  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
-    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
-    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
-    "Create depth through layered design elements with z-index hierarchy",
-    "Use glass-morphism effects with backdrop filters (12-24px blur)",
-    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms.",
-    "You MUST NOT center align the app container.",
-    "Always use modern button styles like pill-shaped, or sharp button with interaction animations.",
-    "NEVER: use AI assistant Emoji characters.",
-    "Every interaction needs micro-animations.",
-    "Use 2-3x more spacing than feels comfortable.",
-    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary."
+  "instructions_to_main_agent": [
+    "1. Install fonts: @fontsource/instrument-serif, @fontsource/inter, @fontsource/ibm-plex-mono.",
+    "2. Update tailwind.config.js with the new color palette and font families.",
+    "3. Create a reusable 'IconBadge' component using the container_recipe.",
+    "4. Refactor the Sidebar/Navigation to use the new Icon Mapping and Typography.",
+    "5. Ensure all text contrast meets APCA standards (Gold on Dark Navy is tricky, check opacity)."
   ]
 }
