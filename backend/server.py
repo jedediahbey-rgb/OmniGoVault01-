@@ -3614,6 +3614,11 @@ from routes.search import router as search_router, set_db as set_search_db
 set_search_db(db)
 app.include_router(search_router)
 
+# Initialize and include Config routes
+from routes.config import router as config_router, set_db as set_config_db
+set_config_db(db)
+app.include_router(config_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
