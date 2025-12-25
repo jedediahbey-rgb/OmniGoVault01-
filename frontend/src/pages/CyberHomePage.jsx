@@ -705,9 +705,9 @@ export default function CyberHomePage() {
       <GovernanceMatrixSection />
       
       {/* ===== SIGNAL FEED SECTION ===== */}
-      <section id="signals" className="py-16 lg:py-24 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
+      <section id="signals" className="py-10 lg:py-24 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-12">
             {/* Signal Feed */}
             <motion.div
               initial="hidden"
@@ -715,10 +715,12 @@ export default function CyberHomePage() {
               viewport={{ once: true, margin: '-100px' }}
               variants={staggerContainer}
             >
-              <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <motion.div variants={fadeInUp} className="flex flex-col items-center lg:items-start sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 text-center lg:text-left">
                 <div>
-                  <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
-                  <h2 className="mt-4 text-xl sm:text-2xl font-bold text-white">Signal Console</h2>
+                  <div className="flex justify-center lg:justify-start">
+                    <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
+                  </div>
+                  <h2 className="mt-3 text-xl sm:text-2xl font-bold text-white">Signal Console</h2>
                   <p className="text-sm sm:text-base text-slate-400">Real-time governance activity</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
