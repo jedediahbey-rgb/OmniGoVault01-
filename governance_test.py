@@ -11,7 +11,7 @@ from datetime import datetime
 import subprocess
 
 class GovernanceFeatureTester:
-    def __init__(self, base_url="https://trustscore-manager.preview.emergentagent.com"):
+    def __init__(self, base_url="https://fiduciary-vault.preview.emergentagent.com"):
         self.base_url = base_url
         self.session_token = None
         self.user_id = None
