@@ -185,6 +185,13 @@ const AppRouter = ({ auth }) => {
         </AuthLayout>
       } />
       
+      {/* Diagnostics Page - Admin Tools */}
+      <Route path="/diagnostics" element={
+        <AuthLayout auth={auth}>
+          <DiagnosticsPage />
+        </AuthLayout>
+      } />
+      
       {/* Protected Vault Routes */}
       <Route
         path="/vault"
