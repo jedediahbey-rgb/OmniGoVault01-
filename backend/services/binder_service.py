@@ -1255,17 +1255,27 @@ class BinderService:
             
             section_counter += 1
         
-        # 6. Ledger Section
+        # 7. Ledger Section
         if content.get("ledger"):
-            html_parts.append("""
-            <div class="section-divider">
+            ledger_items = content["ledger"]
+            html_parts.append(f"""
+            <div class="section-divider" id="section-ledger">
+                <h1 class="bookmark-l1" data-bookmark="Section {section_counter}: Ledger &amp; Financial" style="visibility: hidden; height: 0; margin: 0;">Ledger</h1>
+                <div class="section-icon">
+                    <span class="section-icon-text">📊</span>
+                </div>
+                <div class="section-number">Section {section_counter}</div>
                 <div class="section-title">Ledger & Financial</div>
-                <div class="section-subtitle">Transaction Records</div>
+                <div class="section-subtitle">Transaction Records ({len(ledger_items)} entries)</div>
+                <div class="section-meta">
+                    Financial transaction history and audit trail
+                </div>
             </div>
             """)
             
             html_parts.append("""
-            <div class="record-page">
+            <div class="record-page" id="ledger-entries">
+                <h2 class="bookmark-l2" data-bookmark="Ledger Entries" style="visibility: hidden; height: 0; margin: 0;">Ledger</h2>
                 <h2 style="color: #d4af37;">Ledger Entries</h2>
                 <table class="manifest-table">
                     <thead>
