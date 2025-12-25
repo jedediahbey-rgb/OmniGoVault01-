@@ -35,6 +35,7 @@ import DiagnosticsPage from './pages/DiagnosticsPage';
 import TrustHealthDashboard from './pages/TrustHealthDashboard';
 import SettingsPage from './pages/SettingsPage';
 import LedgerThreadsPage from './pages/LedgerThreadsPage';
+import BinderPage from './pages/BinderPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -213,6 +214,13 @@ const AppRouter = ({ auth }) => {
       <Route path="/ledger-threads" element={
         <AuthLayout auth={auth}>
           <LedgerThreadsPage />
+        </AuthLayout>
+      } />
+      
+      {/* Portfolio Binder */}
+      <Route path="/binder" element={
+        <AuthLayout auth={auth}>
+          <BinderPage />
         </AuthLayout>
       } />
       
