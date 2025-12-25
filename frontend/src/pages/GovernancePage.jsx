@@ -676,32 +676,47 @@ export default function GovernancePage({ user }) {
     
     setCreatingDispute(true);
     try {
-      const res = await axios.post(`${API}/governance/disputes`, {
-        ...newDispute,
+      // Use V2 API for creating disputes
+      const res = await axios.post(`${API_V2}/records`, {
+        module_type: MODULE_TYPES.disputes,
         portfolio_id: selectedPortfolio,
-        amount_claimed: parseFloat(newDispute.amount_claimed) || 0,
+        title: newDispute.title,
+        payload_json: {
+          title: newDispute.title,
+          dispute_type: newDispute.dispute_type,
+          description: newDispute.description,
+          amount_claimed: parseFloat(newDispute.amount_claimed) || 0,
+          currency: newDispute.currency,
+          priority: newDispute.priority,
+          case_number: newDispute.case_number,
+          jurisdiction: newDispute.jurisdiction,
+          parties: [],
+          events: []
+        }
       });
       
       const data = res.data;
-      const disputeData = data.item || data;
-      
-      toast.success('Dispute created');
-      setShowNewDispute(false);
-      setNewDispute({
-        title: '',
-        dispute_type: 'beneficiary',
-        description: '',
-        amount_claimed: '',
-        currency: 'USD',
-        priority: 'medium',
-        case_number: '',
-        jurisdiction: '',
-      });
-      
-      navigate(`/vault/governance/disputes/${disputeData.dispute_id}`);
+      if (data.ok && data.data?.record) {
+        toast.success('Dispute created');
+        setShowNewDispute(false);
+        setNewDispute({
+          title: '',
+          dispute_type: 'beneficiary',
+          description: '',
+          amount_claimed: '',
+          currency: 'USD',
+          priority: 'medium',
+          case_number: '',
+          jurisdiction: '',
+        });
+        
+        navigate(`/vault/governance/disputes/${data.data.record.id}`);
+      } else {
+        throw new Error(data.error?.message || 'Failed to create dispute');
+      }
     } catch (error) {
       console.error('Failed to create dispute:', error);
-      toast.error(error.response?.data?.error?.message || 'Failed to create dispute');
+      toast.error(error.response?.data?.error?.message || error.message || 'Failed to create dispute');
     } finally {
       setCreatingDispute(false);
     }
