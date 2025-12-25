@@ -731,6 +731,55 @@ async def logout(request: Request, response: Response):
     return {"message": "Logged out successfully"}
 
 
+# ============ USER PREFERENCES ENDPOINTS ============
+
+@api_router.get("/user/preferences")
+async def get_user_preferences(user: User = Depends(get_current_user)):
+    """Get user preferences including default portfolio"""
+    prefs = await db.user_preferences.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    )
+    if not prefs:
+        # Return default preferences if none exist
+        return {
+            "user_id": user.user_id,
+            "default_portfolio_id": None,
+            "settings": {}
+        }
+    return prefs
+
+@api_router.put("/user/preferences")
+async def update_user_preferences(request: Request, user: User = Depends(get_current_user)):
+    """Update user preferences"""
+    body = await request.json()
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    update_data = {
+        "user_id": user.user_id,
+        "updated_at": now
+    }
+    
+    if "default_portfolio_id" in body:
+        update_data["default_portfolio_id"] = body["default_portfolio_id"]
+    
+    if "settings" in body:
+        update_data["settings"] = body["settings"]
+    
+    await db.user_preferences.update_one(
+        {"user_id": user.user_id},
+        {"$set": update_data, "$setOnInsert": {"created_at": now}},
+        upsert=True
+    )
+    
+    prefs = await db.user_preferences.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    )
+    return prefs
+
+
 # ============ PORTFOLIO ENDPOINTS ============
 
 @api_router.get("/portfolios")
