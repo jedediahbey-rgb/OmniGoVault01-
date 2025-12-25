@@ -464,43 +464,49 @@ export default function LedgerTimelinePage() {
               >
                 <Link to={getRecordLink(record)}>
                   <GlassCard interactive className="group">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                       {/* Icon */}
                       <div className={`w-10 h-10 rounded-lg ${config.bgClass} ${config.borderClass} border flex items-center justify-center flex-shrink-0`}>
                         <Icon className={`w-5 h-5 ${config.textClass}`} weight="duotone" />
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-white font-medium truncate group-hover:text-vault-gold transition-colors">
-                          {record.title}
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-white/40">
-                          <span>{config.label}</span>
-                          {record.rm_id && (
-                            <>
-                              <span className="text-white/20">•</span>
-                              <span className="font-mono text-xs">{record.rm_id}</span>
-                            </>
-                          )}
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-white font-medium truncate group-hover:text-vault-gold transition-colors">
+                              {record.title}
+                            </h3>
+                            <div className="flex items-center gap-2 text-sm text-white/40 flex-wrap">
+                              <span className="flex-shrink-0">{config.label}</span>
+                              {record.rm_id && (
+                                <>
+                                  <span className="text-white/20">•</span>
+                                  <span className="font-mono text-xs truncate max-w-[120px] sm:max-w-none">{record.rm_id}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Status & Date */}
+                          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                            <Badge className={`${status.bgClass} ${status.textClass} ${status.borderClass} border text-xs`}>
+                              {status.label}
+                            </Badge>
+                            <div className="text-right">
+                              <div className="text-white/60 text-xs sm:text-sm">
+                                {new Date(record.created_at).toLocaleDateString()}
+                              </div>
+                              <div className="text-white/40 text-xs">
+                                {formatTime(record.created_at)}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Status & Date */}
-                      <div className="flex items-center gap-4 flex-shrink-0">
-                        <Badge className={`${status.bgClass} ${status.textClass} ${status.borderClass} border`}>
-                          {status.label}
-                        </Badge>
-                        <div className="text-right">
-                          <div className="text-white/60 text-sm">
-                            {new Date(record.created_at).toLocaleDateString()}
-                          </div>
-                          <div className="text-white/40 text-xs">
-                            {formatTime(record.created_at)}
-                          </div>
-                        </div>
-                        <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors" />
-                      </div>
+                      {/* Arrow */}
+                      <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors flex-shrink-0 hidden sm:block" />
                     </div>
                   </GlassCard>
                 </Link>
