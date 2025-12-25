@@ -457,14 +457,21 @@ export default function LedgerTimelinePage() {
               </div>
             </motion.div>
           ))}
-        </div>
-      ) : (
-        // List View
-        <div className="space-y-2">
-          {filteredRecords.map((record, idx) => {
-            const config = moduleConfig[record.module_type] || moduleConfig.minutes;
-            const status = statusConfig[record.status] || statusConfig.draft;
-            const Icon = config.icon;
+            </motion.div>
+          ) : (
+            // List View
+            <motion.div 
+              key="list-view"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-2"
+            >
+              {filteredRecords.map((record, idx) => {
+                const config = moduleConfig[record.module_type] || moduleConfig.minutes;
+                const status = statusConfig[record.status] || statusConfig.draft;
+                const Icon = config.icon;
 
             return (
               <motion.div
