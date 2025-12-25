@@ -612,39 +612,40 @@ export default function CyberHomePage() {
       <section className="relative min-h-[100dvh] flex items-center pt-16">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
-          <div className="max-w-3xl">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-24">
+          <div className="max-w-3xl mx-auto lg:mx-0">
             <motion.div
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
+              className="text-center lg:text-left"
             >
-              <motion.div variants={fadeInUp}>
+              <motion.div variants={fadeInUp} className="flex justify-center lg:justify-start">
                 <IconChip icon={Key} label="Exclusive Equity" variant="gold" />
               </motion.div>
               
               <motion.h1 
                 variants={fadeInUp}
-                className="mt-6 text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]"
+                className="mt-4 text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]"
               >
                 <span className="text-[#C6A87C]">OMNIGOVAULT</span>
               </motion.h1>
               
               <motion.h2
                 variants={fadeInUp}
-                className="mt-4 text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light"
+                className="mt-3 text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light"
               >
                 A matrix system for trust governance.
               </motion.h2>
               
               <motion.p 
                 variants={fadeInUp}
-                className="mt-6 text-base sm:text-lg text-slate-400 max-w-xl leading-relaxed"
+                className="mt-4 text-base sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed"
               >
                 Every decision. Every distribution. Every signature—tracked in a living ledger with immutable audit trails.
               </motion.p>
               
-              <motion.div variants={fadeInUp} className="mt-8 flex flex-col sm:flex-row gap-4">
+              <motion.div variants={fadeInUp} className="mt-6 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Link to="/login">
                   <Button size="lg" className="w-full sm:w-auto bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
                     Enter the Vault
@@ -659,19 +660,19 @@ export default function CyberHomePage() {
               </motion.div>
               
               {/* Microcopy */}
-              <motion.p variants={fadeInUp} className="mt-4 text-xs text-slate-500 flex items-center gap-2">
+              <motion.p variants={fadeInUp} className="mt-3 text-xs text-slate-500 flex items-center gap-2 justify-center lg:justify-start">
                 <ClockCounterClockwise className="w-3.5 h-3.5" />
                 Draft → Finalize → Amend (with traceable history).
               </motion.p>
               
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="mt-12 flex flex-wrap gap-6 sm:gap-8">
+              <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap gap-6 sm:gap-8 justify-center lg:justify-start">
                 {[
                   { value: '500+', label: 'Trusts Managed' },
                   { value: '10k+', label: 'Documents Filed' },
                   { value: '99.9%', label: 'Uptime' },
                 ].map((stat) => (
-                  <div key={stat.label}>
+                  <div key={stat.label} className="text-center lg:text-left">
                     <div className="text-2xl font-bold text-white">{stat.value}</div>
                     <div className="text-sm text-slate-500">{stat.label}</div>
                   </div>
