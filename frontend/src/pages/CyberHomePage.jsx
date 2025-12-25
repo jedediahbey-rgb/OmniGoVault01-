@@ -626,7 +626,7 @@ export default function CyberHomePage() {
       </nav>
       
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-[100dvh] flex items-start pt-20 sm:items-center sm:pt-16">
+      <section className="relative flex items-start pt-20 pb-8 sm:min-h-[100dvh] sm:items-center sm:pt-16 sm:pb-0">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 lg:py-16">
