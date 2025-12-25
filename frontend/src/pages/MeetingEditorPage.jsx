@@ -575,8 +575,9 @@ export default function MeetingEditorPage({ user }) {
   const StatusIcon = status.icon;
   // Use locked field from backend (more reliable than status check)
   const isLocked = meeting.locked === true || meeting.locked_at !== null;
-  const isDraft = meeting.status === 'draft' && !isLocked;
-  const isFinalized = ['finalized', 'attested', 'amended'].includes(meeting.status) || isLocked;
+  // Status checks - based only on status field, not locked flag
+  const isDraft = meeting.status === 'draft';
+  const isFinalized = meeting.status === 'finalized' || meeting.status === 'attested' || meeting.status === 'amended';
 
   return (
     <motion.div 
