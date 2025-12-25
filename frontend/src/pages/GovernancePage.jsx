@@ -1702,16 +1702,6 @@ export default function GovernancePage({ user }) {
                     </motion.div>
                   );
                 })}
-                            <CaretRight 
-                              className="w-5 h-5 text-vault-muted cursor-pointer" 
-                              onClick={() => navigate(`/vault/governance/disputes/${disputeId}`)}
-                            />
-                          </div>
-                        </div>
-                      </GlassCard>
-                    </motion.div>
-                  );
-                })}
               </div>
             )}
           </TabsContent>
