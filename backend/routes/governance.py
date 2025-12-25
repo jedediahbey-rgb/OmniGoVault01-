@@ -2886,7 +2886,7 @@ async def update_insurance_policy(policy_id: str, data: dict, request: Request):
 
 @router.delete("/insurance-policies/{policy_id}")
 async def delete_insurance_policy(policy_id: str, request: Request):
-    """Soft delete an insurance policy"""
+    """Delete an insurance policy - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -2899,6 +2899,29 @@ async def delete_insurance_policy(policy_id: str, request: Request):
         
         if not policy:
             return error_response("NOT_FOUND", "Insurance policy not found", status_code=404)
+        
+        # Allow deletion of drafts and amendments
+        is_finalized = policy.get("locked") or policy.get("status") == "finalized"
+        if is_finalized and not policy.get("is_amendment"):
+            return error_response("CANNOT_DELETE", "Cannot delete finalized policy. Create an amendment instead.")
+        
+        # If this is an amendment, clean up the parent's amended_by_id
+        parent_id = policy.get("amends_policy_id") or policy.get("parent_policy_id")
+        if parent_id and policy.get("is_amendment"):
+            other_amendments = await db.insurance_policies.count_documents({
+                "policy_id": {"$ne": policy_id},
+                "$or": [
+                    {"amends_policy_id": parent_id},
+                    {"parent_policy_id": parent_id}
+                ],
+                "deleted_at": None
+            })
+            
+            if other_amendments == 0:
+                await db.insurance_policies.update_one(
+                    {"policy_id": parent_id},
+                    {"$set": {"amended_by_id": None}}
+                )
         
         await db.insurance_policies.update_one(
             {"policy_id": policy_id},
