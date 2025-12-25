@@ -462,10 +462,10 @@ export default function LedgerTimelinePage() {
             // List View
             <motion.div 
               key="list-view"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              variants={staggerContainer}
+              initial="initial"
+              animate="animate"
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
               className="space-y-2"
             >
               {filteredRecords.map((record, idx) => {
@@ -473,11 +473,11 @@ export default function LedgerTimelinePage() {
                 const status = statusConfig[record.status] || statusConfig.draft;
                 const Icon = config.icon;
 
-            return (
-              <motion.div
-                key={record.id}
-                variants={fadeInUp}
-              >
+                return (
+                  <motion.div
+                    key={record.id}
+                    variants={fadeInUp}
+                  >
                 <Link to={getRecordLink(record)}>
                   <GlassCard interactive className="group">
                     <div className="flex items-start sm:items-center gap-3 sm:gap-4">
