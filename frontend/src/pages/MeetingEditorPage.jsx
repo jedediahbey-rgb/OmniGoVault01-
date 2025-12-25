@@ -798,15 +798,6 @@ export default function MeetingEditorPage({ user }) {
                           <Seal className="w-4 h-4 mr-2" />
                           Add Attestation
                         </DropdownMenuItem>
-                        {!meeting.amended_by_id && (
-                          <DropdownMenuItem 
-                            className="text-purple-400 hover:bg-purple-500/20"
-                            onClick={() => setShowAmend(true)}
-                          >
-                            <FileText className="w-4 h-4 mr-2" />
-                            Create Amendment
-                          </DropdownMenuItem>
-                        )}
                         <DropdownMenuSeparator className="bg-vault-gold/20" />
                       </>
                     )}
