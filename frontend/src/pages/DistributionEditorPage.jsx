@@ -1056,56 +1056,16 @@ export default function DistributionEditorPage({ user }) {
         </DialogContent>
       </Dialog>
 
-      {/* Finalize Confirmation Dialog */}
-      <Dialog open={showFinalizeConfirm} onOpenChange={setShowFinalizeConfirm}>
-        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
-              <CheckCircle className="w-5 h-5" />
-              Finalize Distribution
-            </DialogTitle>
-            <DialogDescription className="text-vault-muted">
-              Once finalized, this distribution record will be permanent and can only be amended.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
-            <div className="p-4 bg-vault-gold/10 border border-vault-gold/30 rounded-lg">
-              <p className="text-sm text-vault-gold">
-                <strong>{distribution?.title}</strong> will be finalized. Make sure all details are correct before proceeding.
-              </p>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowFinalizeConfirm(false)}
-              className="border-vault-gold/30 text-white"
-              disabled={finalizing}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleFinalize}
-              disabled={finalizing}
-              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
-            >
-              {finalizing ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-vault-dark border-t-transparent rounded-full animate-spin mr-2" />
-                  Finalizing...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Finalize
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Finalize Confirmation Modal */}
+      <FinalizeConfirmationModal
+        open={showFinalizeConfirm}
+        onOpenChange={setShowFinalizeConfirm}
+        onConfirm={handleFinalize}
+        recordTitle={distribution?.title}
+        moduleType="distribution"
+        rmId={distribution?.rm_id}
+        isLoading={finalizing}
+      />
 
       {/* Amendment Studio V2 */}
       <AmendmentStudio
