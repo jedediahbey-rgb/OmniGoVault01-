@@ -284,6 +284,10 @@ export default function DisputeEditorPage({ user }) {
         status: record.status,
         locked: record.status === 'finalized',
         portfolio_id: record.portfolio_id,
+        created_at: record.created_at,
+        finalized_at: record.finalized_at,
+        // CRITICAL: Include dispute_status from payload
+        dispute_status: payload.dispute_status || 'open',
         dispute_type: payload.dispute_type || 'beneficiary',
         description: payload.description || '',
         case_number: payload.case_number || '',
@@ -300,6 +304,7 @@ export default function DisputeEditorPage({ user }) {
         events: payload.events || [],
         notes: payload.notes || '',
         current_version: revision?.version || 1,
+        current_revision_id: record.current_revision_id
       };
       
       setDispute(dispData);
