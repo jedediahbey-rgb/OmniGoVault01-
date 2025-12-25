@@ -973,12 +973,7 @@ export default function CyberHomePage() {
       {/* ===== FOOTER ===== */}
       <footer className="py-8 bg-[#05080F] border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center md:flex-row md:justify-between gap-4 text-center md:text-left">
-            <div className="flex items-center gap-2">
-              <Vault className="w-6 h-6 text-[#C6A87C]" weight="duotone" />
-              <span className="font-semibold text-white">OMNIGOVAULT</span>
-            </div>
-            
+          <div className="flex flex-col items-center md:flex-row md:justify-center gap-4 text-center">
             <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
               <a href="#" className="hover:text-white transition-colors">Privacy</a>
               <a href="#" className="hover:text-white transition-colors">Security</a>
@@ -989,7 +984,7 @@ export default function CyberHomePage() {
           
           <div className="mt-6 pt-6 border-t border-white/5">
             <p className="text-xs text-slate-600 text-center">
-              OMNIGOVAULT is for informational purposes only and does not constitute legal advice. 
+              For informational purposes only and does not constitute legal advice. 
               Consult a qualified attorney for legal matters.
             </p>
           </div>
