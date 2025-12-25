@@ -46,6 +46,7 @@ import {
   SelectValue
 } from '../components/ui/select';
 import { Switch } from '../components/ui/switch';
+import { Input } from '../components/ui/input';
 import { useToast } from '../hooks/use-toast';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
