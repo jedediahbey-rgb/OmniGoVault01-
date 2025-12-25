@@ -194,7 +194,7 @@ export default function RevisionHistory({
                     {/* Reason */}
                     {revision.change_reason && (
                       <p className="text-sm text-slate-300 mb-2 line-clamp-2">
-                        "{revision.change_reason}"
+                        &ldquo;{revision.change_reason}&rdquo;
                       </p>
                     )}
 

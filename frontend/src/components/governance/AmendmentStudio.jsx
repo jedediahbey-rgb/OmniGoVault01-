@@ -116,7 +116,7 @@ export default function AmendmentStudio({
             </div>
           </DialogTitle>
           <DialogDescription className="text-slate-400 mt-2">
-            Create a new revision of <span className="text-vault-gold">"{recordTitle}"</span>
+            Create a new revision of <span className="text-vault-gold">&ldquo;{recordTitle}&rdquo;</span>
           </DialogDescription>
         </DialogHeader>
 
