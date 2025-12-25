@@ -603,41 +603,37 @@ export default function DisputeEditorPage({ user }) {
       {/* Dispute Header Card */}
       <motion.div variants={fadeInUp} className="mb-6">
         <GlassCard className="p-4 sm:p-6">
-          {/* Status badges - mobile first */}
-          <div className="flex items-center gap-2 flex-wrap mb-3">
-            <Badge className={`${status.color} border`}>
-              <StatusIcon className="w-3 h-3 mr-1" />
-              {status.label}
-            </Badge>
-            <Badge className={`${priority.color} border`}>
-              {priority.label} Priority
-            </Badge>
-          </div>
-          
-          {editingHeader && isOpen ? (
-            <div className="space-y-4">
-              <Input
-                value={editedHeader.title}
-                onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
-                className="text-xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs text-vault-muted">Amount Claimed</label>
+          <div className="flex flex-col gap-4">
+            {/* Top row - Icon, badges, content */}
+            <div className="flex items-start gap-3">
+              <div className={`p-3 rounded-xl ${typeConfig.bg} shrink-0`}>
+                <TypeIcon className={`w-6 h-6 ${typeConfig.color}`} weight="duotone" />
+              </div>
+              
+              {editingHeader && isOpen ? (
+                <div className="flex-1 min-w-0 space-y-4">
                   <Input
-                    type="number"
-                    value={editedHeader.amount_claimed}
-                    onChange={(e) => setEditedHeader(prev => ({ ...prev, amount_claimed: e.target.value }))}
-                    className="bg-[#05080F] border-vault-gold/20 text-white"
+                    value={editedHeader.title}
+                    onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
+                    className="text-lg sm:text-xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
                   />
-                </div>
-                <div>
-                  <label className="text-xs text-vault-muted">Priority</label>
-                  <Select 
-                    value={editedHeader.priority} 
-                    onValueChange={(v) => setEditedHeader(prev => ({ ...prev, priority: v }))}
-                  >
-                    <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-vault-muted">Amount Claimed</label>
+                      <Input
+                        type="number"
+                        value={editedHeader.amount_claimed}
+                        onChange={(e) => setEditedHeader(prev => ({ ...prev, amount_claimed: e.target.value }))}
+                        className="bg-[#05080F] border-vault-gold/20 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-vault-muted">Priority</label>
+                      <Select 
+                        value={editedHeader.priority} 
+                        onValueChange={(v) => setEditedHeader(prev => ({ ...prev, priority: v }))}
+                      >
+                        <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
