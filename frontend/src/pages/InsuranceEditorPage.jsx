@@ -409,6 +409,24 @@ export default function InsuranceEditorPage({ user }) {
     }
   };
 
+  // Fetch revision history
+  const fetchRevisions = async () => {
+    try {
+      const res = await axios.get(`${API}/governance/v2/records/${policyId}/revisions`);
+      const data = res.data;
+      if (data.ok && data.data?.revisions) {
+        setRevisions(data.data.revisions);
+      }
+    } catch (error) {
+      console.error('Failed to fetch revisions:', error);
+    }
+  };
+
+  const handleViewRevision = (revision) => {
+    // For now, just show revision info - can be enhanced to show full read-only view
+    toast.info(`Viewing v${revision.version} - ${revision.change_type}`);
+  };
+
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
