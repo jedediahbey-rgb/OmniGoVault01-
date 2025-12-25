@@ -825,10 +825,10 @@ async def update_record(record_id: str, request: Request):
             if new_title:
                 revision_updates["payload_json"]["title"] = new_title.strip()
         
-        # Apply record updates
+        # Apply record updates (use actual_id from resolved record)
         if record_updates:
             await db.governance_records.update_one(
-                {"id": record_id},
+                {"id": actual_id},
                 {"$set": record_updates}
             )
         
@@ -842,17 +842,17 @@ async def update_record(record_id: str, request: Request):
         # Log audit event
         await log_event(
             event_type=EventType.UPDATED,
-            record_id=record_id,
+            record_id=actual_id,
             revision_id=revision["id"] if revision else None,
             portfolio_id=record.get("portfolio_id"),
             actor_id=user.user_id,
             actor_name=user.name if hasattr(user, 'name') else user.user_id,
-            details={"updated_fields": list(body.keys())}
+            details={"updated_fields": list(body.keys()), "resolver_path": resolver_path}
         )
         
         # Refetch and return updated record
         updated_record = await db.governance_records.find_one(
-            {"id": record_id}, {"_id": 0}
+            {"id": actual_id}, {"_id": 0}
         )
         updated_revision = None
         if updated_record.get("current_revision_id"):
