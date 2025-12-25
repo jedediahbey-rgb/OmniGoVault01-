@@ -1,17 +1,10 @@
 /**
  * Diagnostics Page - Admin UI for Integrity Tools
- * 
- * Provides:
- * - Run integrity scans
- * - View scan results and issues
- * - Execute repair actions
- * - Monitor system health
  */
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -27,7 +20,6 @@ import {
   Warning,
   Wrench,
 } from '@phosphor-icons/react';
-import toast from 'react-hot-toast';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -58,7 +50,6 @@ export default function DiagnosticsPage() {
   const [scanning, setScanning] = useState(false);
   const [currentScan, setCurrentScan] = useState(null);
   const [previousScans, setPreviousScans] = useState([]);
-  const [selectedIssue, setSelectedIssue] = useState(null);
   const [repairing, setRepairing] = useState(false);
 
   // Fetch previous scans on load
@@ -83,14 +74,10 @@ export default function DiagnosticsPage() {
       const res = await axios.post(`${API}/api/integrity/scan`);
       if (res.data.ok) {
         setCurrentScan(res.data.data);
-        toast.success(`Scan complete: ${res.data.data.total_issues_found} issues found`);
         fetchPreviousScans();
-      } else {
-        toast.error('Scan failed');
       }
     } catch (error) {
       console.error('Scan failed:', error);
-      toast.error('Failed to run scan');
     } finally {
       setScanning(false);
     }
@@ -104,7 +91,6 @@ export default function DiagnosticsPage() {
       }
     } catch (error) {
       console.error('Failed to load scan:', error);
-      toast.error('Failed to load scan details');
     }
   };
 
@@ -120,22 +106,17 @@ export default function DiagnosticsPage() {
       } else if (issue.issue_type === 'orphan_revision') {
         endpoint = `${API}/api/integrity/repair/orphan-revision/${issue.record_id}`;
       } else {
-        toast.error('This issue requires manual repair');
+        console.log('This issue requires manual repair');
         setRepairing(false);
         return;
       }
 
       const res = await axios.post(endpoint);
       if (res.data.ok) {
-        toast.success(res.data.data.message || 'Issue repaired');
-        // Re-run scan to verify fix
         await runScan();
-      } else {
-        toast.error(res.data.error?.message || 'Repair failed');
       }
     } catch (error) {
       console.error('Repair failed:', error);
-      toast.error('Failed to repair issue');
     } finally {
       setRepairing(false);
     }
@@ -143,11 +124,20 @@ export default function DiagnosticsPage() {
 
   return (
     <div className="min-h-screen bg-vault-void">
-      <PageHeader 
-        title="System Diagnostics" 
-        subtitle="Data integrity monitoring and repair tools"
-        icon={Activity}
-      />
+      {/* Header */}
+      <div className="border-b border-vault-gold/20 bg-vault-navy/50 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-vault-gold/20">
+              <Activity className="w-8 h-8 text-vault-gold" weight="duotone" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-heading text-white">System Diagnostics</h1>
+              <p className="text-sm text-vault-muted">Data integrity monitoring and repair tools</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         {/* Action Bar */}
@@ -250,7 +240,7 @@ export default function DiagnosticsPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <Badge className={`${severityColors[issue.severity]} border text-xs`}>
                             {issue.severity}
                           </Badge>
@@ -305,7 +295,7 @@ export default function DiagnosticsPage() {
           <GlassCard className="p-4">
             <h3 className="text-lg font-heading text-white mb-4">Scan History</h3>
             <div className="space-y-2">
-              {previousScans.slice(0, 5).map((scan, idx) => (
+              {previousScans.slice(0, 5).map((scan) => (
                 <div
                   key={scan.scan_id}
                   onClick={() => loadScan(scan.scan_id)}
@@ -335,7 +325,6 @@ export default function DiagnosticsPage() {
             <Button
               variant="outline"
               className="border-vault-gold/30 text-white hover:bg-vault-gold/10 justify-start"
-              onClick={() => toast.info('Feature coming soon')}
             >
               <Database className="w-4 h-4 mr-2 text-vault-gold" />
               Export Scan Report
@@ -343,7 +332,6 @@ export default function DiagnosticsPage() {
             <Button
               variant="outline"
               className="border-vault-gold/30 text-white hover:bg-vault-gold/10 justify-start"
-              onClick={() => toast.info('Feature coming soon')}
             >
               <Lightning className="w-4 h-4 mr-2 text-vault-gold" />
               Auto-Fix All Safe Issues
@@ -351,7 +339,6 @@ export default function DiagnosticsPage() {
             <Button
               variant="outline"
               className="border-vault-gold/30 text-white hover:bg-vault-gold/10 justify-start"
-              onClick={() => toast.info('Feature coming soon')}
             >
               <Bug className="w-4 h-4 mr-2 text-vault-gold" />
               View API Errors
