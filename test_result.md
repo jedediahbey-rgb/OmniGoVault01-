@@ -234,3 +234,44 @@ The Learn section is already fully implemented with:
 
 No additional work needed - proceeding to next task.
 
+
+## Task 4: Governance Ledger Timeline - IMPLEMENTED
+Date: Thu Dec 25 09:05:52 UTC 2025
+
+### Features Built
+1. **Unified Timeline View** (/ledger)
+   - Chronological display of all governance records
+   - Grouped by date with relative time labels
+   - Visual timeline with connecting dots
+
+2. **Stats Dashboard:**
+   - Total Records count
+   - Drafts count
+   - Finalized count
+   - This Month count
+
+3. **Filtering & Search:**
+   - Search by title or RM-ID
+   - Filter by module type (Minutes, Distributions, Disputes, Insurance, Compensation)
+   - Filter by status (Draft, Finalized, Voided)
+   - Sort by newest/oldest
+
+4. **Dual View Modes:**
+   - Timeline view with date grouping and visual timeline
+   - Compact list view
+
+5. **Record Cards:**
+   - Color-coded by module type
+   - Shows title, module type, RM-ID, status badge, timestamp
+   - Click to navigate to record editor
+
+### Files Created/Modified
+- /app/frontend/src/pages/LedgerTimelinePage.jsx (NEW)
+- /app/frontend/src/App.js (Updated routes)
+- /app/frontend/src/components/layout/Sidebar.jsx (Added nav item)
+
+### Verification
+- Page loads correctly at /ledger
+- Timeline displays all 13 governance records
+- Filtering and search work correctly
+
