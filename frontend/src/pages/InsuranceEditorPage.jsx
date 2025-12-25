@@ -653,7 +653,7 @@ export default function InsuranceEditorPage({ user }) {
               <Users className="w-5 h-5 text-vault-gold" />
               Beneficiaries
             </h3>
-            {!isLocked && (
+            {isDraft && (
               <Button
                 size="sm"
                 onClick={() => setShowAddBeneficiary(true)}
