@@ -627,7 +627,7 @@ export default function GovernancePage({ user }) {
       return;
     }
     if (!selectedPortfolio) {
-      toast.error('Please select a portfolio');
+      toast.error('Please select a portfolio first');
       return;
     }
     
@@ -650,7 +650,11 @@ export default function GovernancePage({ user }) {
         }
       };
       
+      console.log('[CREATE_DISTRIBUTION] Sending:', JSON.stringify(requestData, null, 2));
+      
       const res = await axios.post(`${API_V2}/records`, requestData);
+      
+      console.log('[CREATE_DISTRIBUTION] Response:', res.status, JSON.stringify(res.data, null, 2));
       
       const data = res.data;
       if (data.ok && data.data?.record) {
