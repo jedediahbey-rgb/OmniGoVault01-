@@ -354,11 +354,22 @@ export default function InsuranceEditorPage({ user }) {
     setFinalizing(true);
     try {
       await axios.post(`${API}/governance/v2/records/${policyId}/finalize`, {});
-      // Refetch policy data
+      // Refetch policy data with proper transformation
       const res = await axios.get(`${API}/governance/v2/records/${policyId}`);
       const data = res.data;
       if (data.ok && data.data?.record) {
-        setPolicy(data.data.record);
+        const record = data.data.record;
+        const revision = data.data.current_revision;
+        const payload = revision?.payload_json || {};
+        
+        // Update policy with finalized data
+        setPolicy(prev => ({
+          ...prev,
+          status: record.status,
+          policy_state: payload.policy_state || 'pending',
+          locked: record.status === 'finalized',
+          finalized_at: record.finalized_at
+        }));
       }
       setShowFinalizeConfirm(false);
       toast.success('Insurance policy finalized');
