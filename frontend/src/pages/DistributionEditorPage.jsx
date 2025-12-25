@@ -1009,6 +1009,17 @@ export default function DistributionEditorPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Amendment Studio V2 */}
+      <AmendmentStudio
+        open={showAmendmentStudio}
+        onOpenChange={setShowAmendmentStudio}
+        recordTitle={distribution?.title || 'Distribution'}
+        currentVersion={distribution?.revision || 1}
+        moduleType="distribution"
+        onCreateAmendment={handleAmendV2}
+        isLoading={amendLoading}
+      />
     </motion.div>
   );
 }
