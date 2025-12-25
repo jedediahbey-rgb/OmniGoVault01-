@@ -113,43 +113,9 @@ const AuthCallback = ({ setUser, setLoading }) => {
   );
 };
 
-// Protected Route Component
+// Protected Route Component - NO AUTH REQUIRED, always allow access
 const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState(location.state?.user ? true : null);
-
-  useEffect(() => {
-    if (location.state?.user) {
-      setIsAuthenticated(true);
-      return;
-    }
-
-    const verifyAuth = async () => {
-      const userData = await checkAuth();
-      if (userData) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-        navigate('/login');
-      }
-    };
-
-    verifyAuth();
-  }, [checkAuth, navigate, location.state]);
-
-  if (isAuthenticated === null || loading) {
-    return (
-      <div className="min-h-screen bg-vault-navy flex items-center justify-center">
-        <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (isAuthenticated === false) {
-    return <Navigate to="/login" replace />;
-  }
-
+  // Always render children - no authentication check
   return children;
 };
 
