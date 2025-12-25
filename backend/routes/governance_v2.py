@@ -7,6 +7,7 @@ Core Rules:
 2. Amendments create NEW revisions linked to prior
 3. All actions logged to audit trail
 4. Hash chain ensures tamper evidence
+5. RM-ID linking via RMSubject (Ledger Thread)
 """
 
 from fastapi import APIRouter, HTTPException, Request, Query
@@ -14,6 +15,7 @@ from fastapi.responses import JSONResponse
 from typing import Optional, List
 from datetime import datetime, timezone
 import json
+import re
 
 from models.governance_v2 import (
     GovernanceRecord, GovernanceRevision, GovernanceEvent,
@@ -25,6 +27,10 @@ from models.governance_v2 import (
     MinutesPayload, DistributionPayload, DisputePayload,
     InsurancePayload, CompensationPayload,
     compute_content_hash, generate_id
+)
+from models.rm_subject import (
+    RMSubject, SubjectCategory, MODULE_TO_CATEGORY,
+    generate_subject_id
 )
 
 router = APIRouter(prefix="/api/governance/v2", tags=["governance-v2"])
@@ -41,6 +47,126 @@ def init_governance_v2_routes(database, auth_func, rmid_func):
     db = database
     get_current_user = auth_func
     generate_subject_rm_id = rmid_func
+
+
+# ============ RM SUBJECT HELPERS ============
+
+def format_rm_id(rm_base: str, rm_group: int, rm_sub: int) -> str:
+    """Format full RM-ID from components"""
+    return f"{rm_base}-{rm_group}.{rm_sub:03d}"
+
+
+async def get_rm_base_for_portfolio(portfolio_id: str, user_id: str) -> str:
+    """Get base RM-ID for a portfolio from trust profile"""
+    trust_profile = await db.trust_profiles.find_one(
+        {"portfolio_id": portfolio_id, "user_id": user_id},
+        {"rm_id_normalized": 1, "rm_id_raw": 1, "rm_record_id": 1}
+    )
+    
+    if trust_profile:
+        if trust_profile.get("rm_id_normalized"):
+            return re.sub(r'\s+', '', trust_profile["rm_id_normalized"].strip().upper())
+        if trust_profile.get("rm_record_id"):
+            return re.sub(r'\s+', '', trust_profile["rm_record_id"].strip().upper())
+    
+    # Generate a placeholder if no trust profile
+    import uuid
+    return f"RF{uuid.uuid4().hex[:9].upper()}US"
+
+
+async def allocate_rm_id_from_subject(
+    subject_id: str,
+    user_id: str
+) -> tuple:
+    """
+    Atomically allocate the next subnumber from an RM Subject.
+    Returns (rm_id, rm_sub, rm_base, rm_group, subject_title)
+    """
+    # Atomic increment of next_sub
+    result = await db.rm_subjects.find_one_and_update(
+        {
+            "id": subject_id,
+            "user_id": user_id,
+            "deleted_at": None
+        },
+        {
+            "$inc": {"next_sub": 1},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        },
+        return_document=True
+    )
+    
+    if not result:
+        raise ValueError(f"Subject {subject_id} not found")
+    
+    # The allocated subnumber is (next_sub - 1) since we just incremented
+    allocated_sub = result["next_sub"] - 1
+    
+    if allocated_sub > 999:
+        raise ValueError(f"Maximum subnumber (999) exceeded for subject {subject_id}")
+    
+    rm_id = format_rm_id(result["rm_base"], result["rm_group"], allocated_sub)
+    
+    return (rm_id, allocated_sub, result["rm_base"], result["rm_group"], result["title"])
+
+
+async def create_new_subject_and_allocate(
+    portfolio_id: str,
+    user_id: str,
+    trust_id: str,
+    title: str,
+    category: SubjectCategory,
+    party_id: str = None,
+    party_name: str = None,
+    external_ref: str = None,
+    created_by: str = ""
+) -> tuple:
+    """
+    Create a new RM Subject and allocate the first subnumber (.001).
+    Returns (subject_id, rm_id, rm_sub, rm_base, rm_group)
+    """
+    import random
+    
+    rm_base = await get_rm_base_for_portfolio(portfolio_id, user_id)
+    
+    # Get available group number
+    used_groups = await db.rm_subjects.distinct(
+        "rm_group",
+        {"portfolio_id": portfolio_id, "rm_base": rm_base, "deleted_at": None}
+    )
+    used_set = set(used_groups)
+    available = [g for g in range(1, 100) if g not in used_set]
+    
+    if not available:
+        raise ValueError(f"No available group numbers for {rm_base}")
+    
+    rm_group = random.choice(available)
+    
+    # Create subject
+    subject = RMSubject(
+        trust_id=trust_id,
+        portfolio_id=portfolio_id,
+        user_id=user_id,
+        rm_base=rm_base,
+        rm_group=rm_group,
+        title=title,
+        category=category,
+        primary_party_id=party_id,
+        primary_party_name=party_name,
+        external_ref=external_ref,
+        next_sub=2,  # First allocation is .001, next will be .002
+        created_by=created_by
+    )
+    
+    doc = subject.model_dump()
+    doc["created_at"] = doc["created_at"].isoformat()
+    doc["updated_at"] = doc["updated_at"].isoformat()
+    
+    await db.rm_subjects.insert_one(doc)
+    
+    rm_id = format_rm_id(rm_base, rm_group, 1)
+    
+    return (subject.id, rm_id, 1, rm_base, rm_group)
 
 
 # ============ RESPONSE HELPERS ============
