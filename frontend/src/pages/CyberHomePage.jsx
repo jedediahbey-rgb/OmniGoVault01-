@@ -725,8 +725,8 @@ export default function CyberHomePage() {
           >
             <motion.div variants={fadeInUp} className="text-center mb-10">
               <IconChip icon={FileText} label="Templates" variant="gold" />
-              <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">Template Vault</h2>
-              <p className="mt-3 text-slate-400">Professional document templates for every governance need</p>
+              <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">Template Studio</h2>
+              <p className="mt-3 text-slate-400">Professional trust document templates ready for customization</p>
             </motion.div>
             
             <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
