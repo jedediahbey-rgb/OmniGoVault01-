@@ -30,6 +30,14 @@ const CATEGORY_CONFIG = {
   trustee_compensation: { label: 'Trustee Compensation', icon: '💵' },
   policy: { label: 'Policy', icon: '📄' },
   misc: { label: 'Miscellaneous', icon: '📁' },
+  // Asset categories
+  asset_real_property: { label: 'Real Property', icon: '🏠' },
+  asset_personal_property: { label: 'Personal Property', icon: '📦' },
+  asset_financial_account: { label: 'Financial Account', icon: '🏦' },
+  asset_securities: { label: 'Securities', icon: '📈' },
+  asset_vehicle: { label: 'Vehicle', icon: '🚗' },
+  asset_intellectual_property: { label: 'Intellectual Property', icon: '📝' },
+  asset_other: { label: 'Other Asset', icon: '💼' },
 };
 
 // Map module types to categories
@@ -39,6 +47,14 @@ const MODULE_TO_CATEGORY = {
   dispute: 'dispute',
   insurance: 'insurance',
   compensation: 'trustee_compensation',
+  // Asset type mappings
+  asset_real_property: 'asset_real_property',
+  asset_personal_property: 'asset_personal_property',
+  asset_financial_account: 'asset_financial_account',
+  asset_securities: 'asset_securities',
+  asset_vehicle: 'asset_vehicle',
+  asset_intellectual_property: 'asset_intellectual_property',
+  asset_other: 'asset_other',
 };
 
 export default function LedgerThreadSelector({
