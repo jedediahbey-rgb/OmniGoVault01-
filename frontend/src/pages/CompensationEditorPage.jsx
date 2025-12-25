@@ -810,6 +810,16 @@ export default function CompensationEditorPage({ user }) {
         onCreateAmendment={handleAmendV2}
         isLoading={amendLoading}
       />
+
+      {/* Revision History */}
+      <RevisionHistory
+        open={showRevisionHistory}
+        onOpenChange={setShowRevisionHistory}
+        recordTitle={compensation?.title || 'Trustee Compensation'}
+        revisions={revisions}
+        currentRevisionId={compensation?.compensation_id}
+        onViewRevision={handleViewRevision}
+      />
     </div>
   );
 }
