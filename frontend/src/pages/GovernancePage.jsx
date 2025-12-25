@@ -122,11 +122,15 @@ const meetingTypeConfig = {
   emergency: { icon: Warning, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Emergency Meeting' },
 };
 
+// ============ UNIFIED STATUS COLORS ============
+// Consistent color scheme across ALL governance tabs
+// Draft = Amber, Finalized = Emerald, etc.
+
 // Meeting status badges
 const statusConfig = {
-  draft: { label: 'Draft', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' },
-  finalized: { label: 'Finalized', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30' },
-  attested: { label: 'Attested', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
+  draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30' },
+  finalized: { label: 'Finalized', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
+  attested: { label: 'Attested', color: 'bg-blue-500/30 text-blue-400 border-blue-400/30' },
   amended: { label: 'Amended', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
 };
 
@@ -138,13 +142,13 @@ const distributionTypeConfig = {
   emergency: { icon: Warning, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Emergency Distribution' },
 };
 
-// Distribution status badges
+// Distribution status badges - UNIFIED
 const distributionStatusConfig = {
-  draft: { label: 'Draft', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' },
-  pending_approval: { label: 'Pending Approval', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30' },
-  approved: { label: 'Approved', color: 'bg-blue-500/30 text-blue-400 border-blue-400/30' },
+  draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30' },
+  pending_approval: { label: 'Pending', color: 'bg-blue-500/30 text-blue-400 border-blue-400/30' },
+  approved: { label: 'Approved', color: 'bg-cyan-500/30 text-cyan-400 border-cyan-400/30' },
   in_progress: { label: 'In Progress', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
-  finalized: { label: 'Finalized', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30' },
+  finalized: { label: 'Finalized', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   completed: { label: 'Completed', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   cancelled: { label: 'Cancelled', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
 };
@@ -158,15 +162,16 @@ const disputeTypeConfig = {
   regulatory: { icon: ShieldCheck, color: 'text-red-400', bg: 'bg-red-500/20', label: 'Regulatory Dispute' },
 };
 
-// Dispute status badges
+// Dispute status badges - UNIFIED
 const disputeStatusConfig = {
+  draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30' },
   open: { label: 'Open', color: 'bg-blue-500/30 text-blue-400 border-blue-400/30' },
-  in_progress: { label: 'In Progress', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30' },
-  mediation: { label: 'Mediation', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
+  in_progress: { label: 'In Progress', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
+  mediation: { label: 'Mediation', color: 'bg-cyan-500/30 text-cyan-400 border-cyan-400/30' },
   litigation: { label: 'Litigation', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
   settled: { label: 'Settled', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   closed: { label: 'Closed', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' },
-  finalized: { label: 'Finalized', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30' },
+  finalized: { label: 'Finalized', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   appealed: { label: 'Appealed', color: 'bg-orange-500/30 text-orange-400 border-orange-400/30' },
 };
 
