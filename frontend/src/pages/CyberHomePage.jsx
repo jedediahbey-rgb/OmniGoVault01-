@@ -96,12 +96,12 @@ const SCENARIOS = [
 ];
 
 const TEMPLATES = [
-  { id: 1, title: 'Meeting Minutes Pack', desc: 'Annual & Special meetings', icon: Notebook },
-  { id: 2, title: 'Resolution Pack', desc: 'Trustee resolutions & amendments', icon: FileText },
-  { id: 3, title: 'Distribution Receipt', desc: 'Beneficiary payment records', icon: CurrencyDollar },
-  { id: 4, title: 'Insurance Summary', desc: 'Policy overview documents', icon: ShieldCheck },
-  { id: 5, title: 'Trustee Time Log', desc: 'Compensation tracking sheets', icon: Timer },
-  { id: 6, title: 'Dispute Summary', desc: 'Case documentation templates', icon: Gavel },
+  { id: 1, title: 'Declaration of Trust', desc: 'Establishes pure equity trust structure', icon: Scroll },
+  { id: 2, title: 'Trust Transfer Grant Deed', desc: 'Conveys property into trust', icon: FileText },
+  { id: 3, title: 'Acknowledgement Receipt', desc: 'Formal receipt for transactions', icon: Handshake },
+  { id: 4, title: 'Certificate of Trust', desc: 'Foreign grantor trust certificate', icon: Certificate },
+  { id: 5, title: 'Affidavit of Fact', desc: 'Sworn statement under oath', icon: Stamp },
+  { id: 6, title: 'Trustee Acceptance', desc: 'Notice of trustee acceptance', icon: UserCheck },
 ];
 
 const MAXIMS = [
