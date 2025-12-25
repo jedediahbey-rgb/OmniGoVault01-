@@ -163,7 +163,7 @@ export default function TrustProfilePage({ user }) {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <button
         onClick={() => navigate(`/vault/portfolio/${portfolioId}`)}
         className="flex items-center gap-2 text-white/40 hover:text-white mb-4 transition-colors"
