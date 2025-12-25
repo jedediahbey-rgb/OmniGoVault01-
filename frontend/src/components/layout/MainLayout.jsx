@@ -82,17 +82,23 @@ export default function MainLayout({ children, user, onLogout }) {
       />
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-vault-void/95 backdrop-blur-xl border-b border-white/10 px-4 py-2">
-        <div className="flex items-center justify-between">
-          <VaultToggle 
-            isOpen={sidebarOpen} 
-            onClick={() => setSidebarOpen(!sidebarOpen)} 
-          />
-          <div className="flex items-center gap-2">
-            <Key className="w-5 h-5 text-vault-gold" weight="fill" />
-            <span className="text-base font-medium text-white">Exclusive Equity & Trust</span>
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#05080F]/80 backdrop-blur-xl border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center h-16 relative">
+            {/* Menu Toggle - Absolute left */}
+            <div className="absolute left-0">
+              <VaultToggle 
+                isOpen={sidebarOpen} 
+                onClick={() => setSidebarOpen(!sidebarOpen)} 
+              />
+            </div>
+            
+            {/* Logo - Centered */}
+            <div className="flex items-center gap-2">
+              <Key className="w-5 h-5 text-vault-gold" weight="fill" />
+              <span className="text-base font-medium text-white">Exclusive Equity & Trust</span>
+            </div>
           </div>
-          <div className="w-10" /> {/* Spacer for centering */}
         </div>
       </header>
 
