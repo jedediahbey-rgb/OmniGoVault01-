@@ -924,6 +924,20 @@ export default function DisputeEditorPage({ user }) {
               </div>
             )}
           </div>
+          
+          {/* Integrity Seal for finalized disputes */}
+          {isLocked && (
+            <div className="mt-4 pt-4 border-t border-vault-gold/20">
+              <IntegritySealBadge
+                recordId={dispute.id}
+                sealId={dispute.integrity_seal_id}
+                sealedAt={dispute.integrity_sealed_at}
+                verifiedAt={dispute.integrity_verified_at}
+                status={dispute.integrity_seal_id ? 'valid' : 'never_sealed'}
+                isFinalized={true}
+              />
+            </div>
+          )}
         </GlassCard>
       </motion.div>
 
