@@ -494,22 +494,30 @@ export default function GovernancePage({ user }) {
       
       const data = res.data;
       if (data.ok && data.data?.items) {
-        const transformedDisputes = data.data.items.map(record => ({
-          dispute_id: record.id,
-          id: record.id,
-          title: record.title,
-          rm_id: record.rm_id,
-          // Keep draft as draft, only map finalized to closed for operational status
-          status: record.status,
-          locked: record.status === 'finalized',
-          created_at: record.created_at,
-          finalized_at: record.finalized_at,
-          // Default values
-          dispute_type: 'beneficiary',
-          priority: 'medium',
-          amount_claimed: 0,
-          currency: 'USD'
-        }));
+        const transformedDisputes = data.data.items.map(record => {
+          // Extract payload data
+          const payload = record.current_revision?.payload_json || {};
+          return {
+            dispute_id: record.id,
+            id: record.id,
+            title: record.title,
+            rm_id: record.rm_id,
+            // Lifecycle status (draft/finalized)
+            status: record.status,
+            locked: record.status === 'finalized',
+            created_at: record.created_at,
+            finalized_at: record.finalized_at,
+            // Operational status from payload
+            dispute_status: payload.dispute_status || 'open',
+            dispute_type: payload.dispute_type || 'beneficiary',
+            priority: payload.priority || 'medium',
+            amount_claimed: payload.amount_claimed || 0,
+            currency: payload.currency || 'USD',
+            case_number: payload.case_number || '',
+            jurisdiction: payload.jurisdiction || '',
+            parties: payload.parties || []
+          };
+        });
         setDisputes(transformedDisputes);
       } else {
         setDisputes([]);
