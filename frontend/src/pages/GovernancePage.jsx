@@ -1256,13 +1256,13 @@ export default function GovernancePage({ user }) {
                                 </div>
                               </div>
                               
-                              <div className="text-right shrink-0 pl-4">
-                                <div className="text-sm text-vault-muted flex items-center gap-1 justify-end">
-                                  <Clock className="w-4 h-4 flex-shrink-0" />
+                              <div className="text-right shrink-0 pl-2 max-w-[140px] overflow-hidden">
+                                <div className="text-xs text-vault-muted flex items-center gap-1 justify-end">
+                                  <Clock className="w-3 h-3 flex-shrink-0" />
                                   <span className="truncate">{formatDate(meeting.date_time)}</span>
                                 </div>
                                 {meeting.location && (
-                                  <div className="text-xs text-vault-muted mt-1 truncate max-w-[180px] text-right">
+                                  <div className="text-xs text-vault-muted mt-1 truncate text-right">
                                     📍 {meeting.location}
                                   </div>
                                 )}
