@@ -21,6 +21,7 @@ import DocumentEditorPage from './pages/DocumentEditorPage';
 import TrustProfilePage from './pages/TrustProfilePage';
 import PortfolioOverviewPage from './pages/PortfolioOverviewPage';
 import DiagramsPage from './pages/DiagramsPage';
+import NodeMapPage from './pages/NodeMapPage';
 import GovernancePage from './pages/GovernancePage';
 import MeetingEditorPage from './pages/MeetingEditorPage';
 import DistributionEditorPage from './pages/DistributionEditorPage';
