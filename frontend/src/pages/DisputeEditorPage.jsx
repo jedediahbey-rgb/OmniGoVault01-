@@ -420,10 +420,10 @@ export default function DisputeEditorPage({ user }) {
   const handleFinalize = async () => {
     setFinalizing(true);
     try {
-      await axios.post(`${API}/governance/disputes/${disputeId}/finalize`, {});
+      await axios.post(`${API}/governance/v2/records/${disputeId}/finalize`, {});
       await refetchDispute();
       setShowFinalizeConfirm(false);
-      toast.success('Dispute finalized and locked');
+      toast.success('Dispute finalized');
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to finalize dispute');
     } finally {
