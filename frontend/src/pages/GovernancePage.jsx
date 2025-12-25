@@ -1988,6 +1988,14 @@ export default function GovernancePage({ user }) {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
+            {/* Ledger Thread Selector - TOP of form */}
+            <LedgerThreadSelector
+              portfolioId={selectedPortfolio}
+              moduleType="distribution"
+              selectedSubject={distributionThread}
+              onSubjectChange={setDistributionThread}
+            />
+            
             <div>
               <label className="text-sm text-vault-muted mb-1 block">Distribution Title *</label>
               <Input
