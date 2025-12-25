@@ -962,14 +962,14 @@ export default function CyberHomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
           >
             <button
               onClick={scrollToTop}
-              className="group flex flex-col items-center gap-1 px-4 py-2"
+              className="group flex flex-col items-center gap-1 px-6 py-3"
               aria-label="Scroll to top"
             >
-              <div className="w-10 h-1 rounded-full bg-white/20 group-hover:bg-[#C6A87C]/60 transition-colors" />
+              <div className="w-12 h-1.5 rounded-full bg-white/30 group-hover:bg-[#C6A87C] transition-all duration-300 group-hover:w-16" />
             </button>
           </motion.div>
         )}
