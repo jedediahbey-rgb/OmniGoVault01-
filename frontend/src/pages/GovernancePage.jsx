@@ -615,7 +615,7 @@ export default function GovernancePage({ user }) {
     
     setCreatingDistribution(true);
     try {
-      // Build request with optional ledger thread info
+      // Build request
       const requestData = {
         module_type: MODULE_TYPES.distributions,
         portfolio_id: selectedPortfolio,
@@ -632,18 +632,6 @@ export default function GovernancePage({ user }) {
         }
       };
       
-      // Add ledger thread info if selected
-      if (distributionThread) {
-        if (distributionThread.is_new) {
-          requestData.create_new_subject = true;
-          requestData.new_subject_title = distributionThread.title;
-          requestData.new_subject_party_name = distributionThread.primary_party_name;
-          requestData.new_subject_external_ref = distributionThread.external_ref;
-        } else {
-          requestData.rm_subject_id = distributionThread.id;
-        }
-      }
-      
       const res = await axios.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
@@ -659,7 +647,6 @@ export default function GovernancePage({ user }) {
           asset_type: 'cash',
           scheduled_date: new Date().toISOString().slice(0, 10),
         });
-        setDistributionThread(null);
         
         navigate(`/vault/governance/distributions/${data.data.record.id}`);
       } else {
