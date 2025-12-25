@@ -1415,13 +1415,12 @@ export default function PortfolioOverviewPage({ user }) {
               </div>
             )}
             {!editingAsset && (
-              <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-                <div className="flex items-center gap-2 mb-1">
-                  <Hash className="w-4 h-4 text-emerald-400" weight="bold" />
-                  <p className="text-emerald-400 text-sm font-medium">Ledger Thread RM-ID</p>
-                </div>
-                <p className="text-white/50 text-xs">A random group number (1-99) will be assigned to create a unique RM-ID for tracking this asset in the trust ledger.</p>
-              </div>
+              <LedgerThreadSelector
+                portfolioId={portfolioId}
+                moduleType={`asset_${newAssetType}`}
+                selectedSubject={assetThread}
+                onSubjectChange={setAssetThread}
+              />
             )}
             <div>
               <label className="text-white/60 text-sm mb-2 block">Description *</label>
