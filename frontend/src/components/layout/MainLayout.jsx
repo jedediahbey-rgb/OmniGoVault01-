@@ -88,7 +88,10 @@ export default function MainLayout({ children, user, onLogout }) {
             isOpen={sidebarOpen} 
             onClick={() => setSidebarOpen(!sidebarOpen)} 
           />
-          <span className="font-heading text-lg text-white">Exclusive Equity & Trust</span>
+          <div className="flex items-center gap-2">
+            <Key className="w-5 h-5 text-vault-gold" weight="fill" />
+            <span className="font-heading text-lg text-white">Exclusive Equity & Trust</span>
+          </div>
           <div className="w-10" /> {/* Spacer for centering */}
         </div>
       </header>
