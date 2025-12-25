@@ -178,14 +178,15 @@ export default function PortfolioOverviewPage({ user }) {
       if (!portfolioId) return;
       
       try {
-        const [portfolioRes, trustRes, docsRes, assetsRes, partiesRes, ledgerRes, categoriesRes] = await Promise.all([
+        const [portfolioRes, trustRes, docsRes, assetsRes, partiesRes, ledgerRes, categoriesRes, govRes] = await Promise.all([
           axios.get(`${API}/portfolios/${portfolioId}`),
           axios.get(`${API}/portfolios/${portfolioId}/trust-profile`).catch(() => ({ data: null })),
           axios.get(`${API}/documents?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
           axios.get(`${API}/portfolios/${portfolioId}/assets`).catch(() => ({ data: [] })),
           axios.get(`${API}/parties?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
           axios.get(`${API}/portfolios/${portfolioId}/ledger`).catch(() => ({ data: { entries: [], summary: {} } })),
-          axios.get(`${API}/portfolios/${portfolioId}/subject-categories`).catch(() => ({ data: [] }))
+          axios.get(`${API}/portfolios/${portfolioId}/subject-categories`).catch(() => ({ data: [] })),
+          axios.get(`${API}/governance/v2/records?portfolio_id=${portfolioId}&limit=100`).catch(() => ({ data: { ok: false, data: { items: [] } } }))
         ]);
         
         if (isMounted) {
@@ -196,6 +197,9 @@ export default function PortfolioOverviewPage({ user }) {
           setParties(partiesRes.data || []);
           setLedger(ledgerRes.data || { entries: [], summary: {} });
           setSubjectCategories(categoriesRes.data || []);
+          // Extract governance records from V2 API response
+          const govData = govRes.data?.ok ? govRes.data.data?.items : (govRes.data?.items || []);
+          setGovernanceRecords(govData || []);
           setLoading(false);
         }
       } catch (error) {
