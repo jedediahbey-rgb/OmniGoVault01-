@@ -233,10 +233,19 @@ async def log_event(
 
 # ============ PAYLOAD VALIDATION ============
 
-def validate_payload(module_type: ModuleType, payload: dict) -> tuple:
+# Valid policy states for insurance (only ACTIVE allowed when finalized)
+INSURANCE_POLICY_STATES = {"pending", "active", "lapsed", "paid_up", "surrendered", "claimed", "expired"}
+INSURANCE_DRAFT_ALLOWED_STATES = {"pending"}  # When draft, only pending is allowed
+
+
+def validate_payload(module_type: ModuleType, payload: dict, is_finalized: bool = False) -> tuple:
     """
     Validate payload against module-specific schema.
     Returns (is_valid, error_message, normalized_payload)
+    
+    For insurance records:
+    - Draft records: policy_state must be "pending" (enforced)
+    - Finalized records: policy_state can be any valid state
     """
     try:
         if module_type == ModuleType.MINUTES:
@@ -247,6 +256,19 @@ def validate_payload(module_type: ModuleType, payload: dict) -> tuple:
             validated = DisputePayload(**payload)
         elif module_type == ModuleType.INSURANCE:
             validated = InsurancePayload(**payload)
+            result = validated.model_dump()
+            
+            # Enforce policy_state rules
+            policy_state = result.get("policy_state", "pending")
+            if policy_state not in INSURANCE_POLICY_STATES:
+                return False, f"Invalid policy_state: {policy_state}. Must be one of {INSURANCE_POLICY_STATES}", payload
+            
+            # Block "active" and other operational states unless record is finalized
+            if not is_finalized and policy_state not in INSURANCE_DRAFT_ALLOWED_STATES:
+                # Force back to pending for draft records
+                result["policy_state"] = "pending"
+            
+            return True, None, result
         elif module_type == ModuleType.COMPENSATION:
             validated = CompensationPayload(**payload)
         else:
