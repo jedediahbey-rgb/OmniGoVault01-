@@ -198,6 +198,7 @@ export default function SettingsPage() {
         <PageHeader
           title="Settings"
           subtitle="Configure trust health rules and governance checklists"
+          helpKey="settings"
           breadcrumbs={[
             { label: 'Dashboard', href: '/vault' },
             { label: 'Settings' }

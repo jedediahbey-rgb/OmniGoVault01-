@@ -183,6 +183,7 @@ export default function DiagnosticsPage() {
         <PageHeader
           title="System Diagnostics"
           subtitle="Data integrity tools and repair utilities"
+          helpKey="diagnostics"
           breadcrumbs={[
             { label: 'Dashboard', href: '/vault' },
             { label: 'Diagnostics' }
