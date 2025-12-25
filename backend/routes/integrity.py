@@ -323,6 +323,122 @@ async def get_available_transitions(request: Request, record_id: str):
     })
 
 
+@router.delete("/records/{record_id}")
+async def delete_orphaned_record(record_id: str, request: Request):
+    """
+    Delete an orphaned governance record.
+    Only records with missing portfolio references can be deleted.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    # Verify the record exists
+    record = await db.governance_records.find_one(
+        {"id": record_id, "user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not record:
+        return error_response("NOT_FOUND", f"Record {record_id} not found", status_code=404)
+    
+    # Optional: Verify this is actually an orphaned record (portfolio doesn't exist)
+    portfolio_id = record.get("portfolio_id")
+    if portfolio_id:
+        portfolio = await db.portfolios.find_one({"portfolio_id": portfolio_id})
+        if portfolio:
+            return error_response(
+                "NOT_ORPHANED", 
+                "This record is not orphaned - it has a valid portfolio reference",
+                status_code=400
+            )
+    
+    # Delete the record and its revisions
+    await db.governance_records.delete_one({"id": record_id})
+    await db.governance_revisions.delete_many({"record_id": record_id})
+    
+    # Log the deletion
+    log_entry = {
+        "action": "delete_orphaned_record",
+        "record_id": record_id,
+        "portfolio_id": portfolio_id,
+        "deleted_by": user.user_id,
+        "deleted_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.integrity_logs.insert_one(log_entry)
+    
+    return success_response({
+        "deleted": True,
+        "record_id": record_id,
+        "message": f"Successfully deleted orphaned record {record_id}"
+    })
+
+
+@router.delete("/records/bulk")
+async def bulk_delete_orphaned_records(request: Request):
+    """
+    Delete multiple orphaned records at once.
+    Body should contain: { "record_ids": ["rec_xxx", "rec_yyy"] }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        record_ids = body.get("record_ids", [])
+    except Exception:
+        return error_response("INVALID_BODY", "Request body must contain record_ids array", status_code=400)
+    
+    if not record_ids:
+        return error_response("NO_RECORDS", "No record IDs provided", status_code=400)
+    
+    deleted_count = 0
+    failed_ids = []
+    
+    for record_id in record_ids:
+        record = await db.governance_records.find_one(
+            {"id": record_id, "user_id": user.user_id},
+            {"_id": 0}
+        )
+        
+        if not record:
+            failed_ids.append({"id": record_id, "reason": "not_found"})
+            continue
+        
+        # Check if orphaned
+        portfolio_id = record.get("portfolio_id")
+        if portfolio_id:
+            portfolio = await db.portfolios.find_one({"portfolio_id": portfolio_id})
+            if portfolio:
+                failed_ids.append({"id": record_id, "reason": "not_orphaned"})
+                continue
+        
+        # Delete
+        await db.governance_records.delete_one({"id": record_id})
+        await db.governance_revisions.delete_many({"record_id": record_id})
+        deleted_count += 1
+    
+    # Log the bulk deletion
+    log_entry = {
+        "action": "bulk_delete_orphaned_records",
+        "deleted_count": deleted_count,
+        "failed_ids": failed_ids,
+        "deleted_by": user.user_id,
+        "deleted_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.integrity_logs.insert_one(log_entry)
+    
+    return success_response({
+        "deleted_count": deleted_count,
+        "failed_count": len(failed_ids),
+        "failed_ids": failed_ids,
+        "message": f"Deleted {deleted_count} orphaned records"
+    })
+
+
 @router.get("/lifecycle/derive-status")
 async def derive_operational_status(
     request: Request,
