@@ -196,7 +196,7 @@ async def delete_orphan_revision(request: Request, revision_id: str):
     Delete an orphaned revision.
     """
     try:
-        user = await get_current_user(request)
+        await get_current_user(request)  # Verify auth
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
