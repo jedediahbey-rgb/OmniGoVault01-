@@ -351,11 +351,20 @@ export default function LedgerTimelinePage() {
             </Button>
           </Link>
         </GlassCard>
-      ) : viewMode === 'timeline' ? (
-        // Timeline View
-        <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-4 md:left-8 top-0 bottom-0 w-0.5 bg-vault-gold/20" />
+      ) : (
+        <AnimatePresence mode="wait">
+          {viewMode === 'timeline' ? (
+            // Timeline View
+            <motion.div 
+              key="timeline-view"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative"
+            >
+              {/* Timeline line */}
+              <div className="absolute left-4 md:left-8 top-0 bottom-0 w-0.5 bg-vault-gold/20" />
 
           {Object.entries(groupedByDate).map(([date, dateRecords], dateIdx) => (
             <motion.div
