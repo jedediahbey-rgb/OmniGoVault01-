@@ -377,6 +377,14 @@ class RecordCreateRequest(BaseModel):
     module_type: ModuleType
     title: str
     payload_json: Dict[str, Any] = Field(default_factory=dict)
+    
+    # RM Subject (Ledger Thread) linking
+    rm_subject_id: Optional[str] = None  # Link to existing subject
+    create_new_subject: bool = False  # If true, spawn a new thread
+    new_subject_title: Optional[str] = None  # Title for new subject
+    new_subject_party_id: Optional[str] = None  # Primary party for new subject
+    new_subject_party_name: Optional[str] = None  # Party name for new subject
+    new_subject_external_ref: Optional[str] = None  # External ref for new subject
 
 
 class RecordAmendRequest(BaseModel):
