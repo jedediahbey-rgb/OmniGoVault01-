@@ -322,20 +322,65 @@ export default function InsuranceEditorPage({ user }) {
     }
   };
 
-  const handleSaveHeader = async () => {
+  // Save using V2 API
+  const savePolicy = async (updates) => {
     setSaving(true);
     try {
-      await axios.put(`${API}/governance/insurance-policies/${policyId}`, editedHeader);
-      
-      setPolicy(prev => ({ ...prev, ...editedHeader }));
-      setEditingHeader(false);
-      toast.success('Policy updated');
+      const payload = {
+        policy_type: updates.policy_type !== undefined ? updates.policy_type : policy.policy_type,
+        policy_number: updates.policy_number !== undefined ? updates.policy_number : policy.policy_number,
+        carrier_name: updates.carrier_name !== undefined ? updates.carrier_name : policy.carrier_name,
+        insured_name: updates.insured_name !== undefined ? updates.insured_name : policy.insured_name,
+        death_benefit: updates.death_benefit !== undefined ? updates.death_benefit : policy.death_benefit,
+        cash_value: updates.cash_value !== undefined ? updates.cash_value : policy.cash_value,
+        currency: updates.currency || policy.currency,
+        premium_amount: updates.premium_amount !== undefined ? updates.premium_amount : policy.premium_amount,
+        premium_frequency: updates.premium_frequency || policy.premium_frequency,
+        effective_date: updates.effective_date || policy.effective_date,
+        beneficiaries: updates.beneficiaries !== undefined ? updates.beneficiaries : (policy.beneficiaries || []),
+        premium_payments: updates.premium_payments !== undefined ? updates.premium_payments : (policy.premium_payments || []),
+        premium_due_date: updates.premium_due_date || policy.premium_due_date,
+        lapse_risk: updates.lapse_risk !== undefined ? updates.lapse_risk : policy.lapse_risk,
+        policy_state: updates.policy_state || policy.policy_state,
+        notes: updates.notes !== undefined ? updates.notes : policy.notes,
+      };
+
+      await axios.put(`${API}/governance/v2/records/${policyId}`, {
+        title: updates.title || policy.title,
+        payload_json: payload
+      });
+
+      await refetchPolicy();
+      toast.success('Changes saved');
     } catch (error) {
       console.error('Failed to save:', error);
-      toast.error(error.response?.data?.error?.message || 'Failed to save changes');
+      if (error.response?.status === 409) {
+        toast.error('This policy is finalized and cannot be edited.');
+        await refetchPolicy();
+      } else {
+        toast.error(error.response?.data?.error?.message || 'Failed to save changes');
+      }
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSaveHeader = async () => {
+    await savePolicy({
+      title: editedHeader.title,
+      policy_type: editedHeader.policy_type,
+      policy_number: editedHeader.policy_number,
+      carrier_name: editedHeader.carrier_name,
+      insured_name: editedHeader.insured_name,
+      death_benefit: parseFloat(editedHeader.death_benefit) || 0,
+      cash_value: parseFloat(editedHeader.cash_value) || 0,
+      currency: editedHeader.currency,
+      premium_amount: parseFloat(editedHeader.premium_amount) || 0,
+      premium_frequency: editedHeader.premium_frequency,
+      effective_date: editedHeader.effective_date || null,
+      notes: editedHeader.notes,
+    });
+    setEditingHeader(false);
   };
 
   const handleAddBeneficiary = async () => {
