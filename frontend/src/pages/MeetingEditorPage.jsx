@@ -65,6 +65,7 @@ import { Checkbox } from '../components/ui/checkbox';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import { toast } from 'sonner';
 import { AmendmentStudio, RevisionHistory } from '../components/governance';
+import { FinalizeConfirmationModal } from '../components/governance/FinalizeConfirmationModal';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const API_V2 = `${process.env.REACT_APP_BACKEND_URL}/api/governance/v2`;
