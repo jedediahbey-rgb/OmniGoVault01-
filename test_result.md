@@ -582,3 +582,77 @@ Date: Thu Dec 25 17:20:00 UTC 2025
 - /app/frontend/src/components/shared/IntegritySealBadge.jsx (NEW)
 - /app/frontend/src/pages/MeetingEditorPage.jsx (Added seal badge)
 
+
+
+## Portfolio Binder (Phase 1) - IMPLEMENTED
+Date: Thu Dec 25 17:45:00 UTC 2025
+
+### Features Built
+1. **Backend Binder Service** (`/app/backend/services/binder_service.py`)
+   - Three default profiles: Audit, Court/Litigation, Omni Physical
+   - Profile configuration with inclusion rules
+   - Content collection from governance records, documents, assets, ledger
+   - Manifest generation with deterministic ordering
+   - PDF generation using WeasyPrint with cyber-futuristic styling
+   - Cover page, manifest/index, section pages, integrity summary
+
+2. **API Endpoints** (`/app/backend/routes/binder.py`)
+   - `GET /api/binder/profiles` - Get/create default profiles for portfolio
+   - `GET /api/binder/profiles/{id}` - Get specific profile
+   - `PUT /api/binder/profiles/{id}` - Update profile rules
+   - `POST /api/binder/generate` - Generate binder PDF
+   - `GET /api/binder/runs` - Get binder history
+   - `GET /api/binder/runs/{id}` - Get specific run
+   - `GET /api/binder/runs/{id}/download` - Download PDF
+   - `GET /api/binder/runs/{id}/view` - View PDF inline
+   - `GET /api/binder/latest` - Get latest completed binder
+   - `GET /api/binder/manifest/{id}` - Get binder manifest
+   - `GET /api/binder/stale-check` - Check if binder is out of date
+
+3. **Frontend UI** (`/app/frontend/src/pages/BinderPage.jsx`)
+   - Profile selection cards (Audit/Court/Omni)
+   - "Generate Binder (PDF)" one-click button
+   - Latest Binder card with View/Download/Print actions
+   - Binder history sidebar
+   - Profile configuration modal
+   - Manifest viewer modal
+   - Stale binder badge with "Regenerate" button
+
+4. **Routing & Navigation**
+   - Route added at `/binder`
+   - Sidebar link under TOOLS section
+
+### Profile Rules (Configurable)
+- include_drafts (ON/OFF)
+- include_pending_approved_executed (ON/OFF)
+- include_voided_trashed (ON/OFF)
+- include_attachments (ON/OFF)
+- include_ledger_excerpts (ON/OFF)
+- include_integrity_summary (ON/OFF)
+- date_range (all/12months/24months)
+
+### PDF Content Sections
+1. Cover Page (portfolio name, trust name, generated date, profile type)
+2. Document Manifest (table of all items)
+3. Trust Profile & Authority
+4. Governance - Minutes
+5. Governance - Distributions
+6. Governance - Compensation
+7. Governance - Disputes
+8. Governance - Insurance
+9. Ledger & Financial
+10. Documents
+11. Integrity Summary
+
+### Database Collections
+- `binder_profiles` - Profile configurations
+- `binder_runs` - Generation history with PDF data
+
+### Files Created/Modified
+- /app/backend/services/binder_service.py (NEW)
+- /app/backend/routes/binder.py (NEW)
+- /app/frontend/src/pages/BinderPage.jsx (NEW)
+- /app/frontend/src/App.js (Added route)
+- /app/frontend/src/components/layout/Sidebar.jsx (Added link)
+- /app/backend/server.py (Registered router)
+
