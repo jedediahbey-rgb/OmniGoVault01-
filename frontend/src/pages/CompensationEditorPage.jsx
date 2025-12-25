@@ -637,6 +637,20 @@ export default function CompensationEditorPage({ user }) {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
+                
+                {/* Integrity Seal for finalized compensation */}
+                {isLocked && (
+                  <div className="mt-4 pt-4 border-t border-vault-gold/20 w-full">
+                    <IntegritySealBadge
+                      recordId={compensation.id}
+                      sealId={compensation.integrity_seal_id}
+                      sealedAt={compensation.integrity_sealed_at}
+                      verifiedAt={compensation.integrity_verified_at}
+                      status={compensation.integrity_seal_id ? 'valid' : 'never_sealed'}
+                      isFinalized={true}
+                    />
+                  </div>
+                )}
               </>
             )}
           </GlassCard>
