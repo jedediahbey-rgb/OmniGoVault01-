@@ -1365,6 +1365,228 @@ class EquityTrustAPITester:
         
         return distribution_id
 
+    def test_v1_v2_compatibility(self, portfolio_id):
+        """Test V1/V2 compatibility - V1 GET endpoints should check both legacy and V2 collections"""
+        print("\n📋 Testing V1/V2 Compatibility...")
+        
+        # First, create V2 records for all governance modules
+        v2_records = {}
+        
+        # Create V2 meeting record
+        meeting_data = {
+            "module_type": "minutes",
+            "portfolio_id": portfolio_id,
+            "title": "V2 Test Meeting for V1 Compatibility",
+            "payload_json": {
+                "title": "V2 Test Meeting for V1 Compatibility",
+                "meeting_type": "regular",
+                "date_time": "2024-01-15T10:00:00Z",
+                "location": "Virtual",
+                "called_by": "Test Trustee",
+                "attendees": [
+                    {"name": "Test Trustee", "role": "trustee", "present": True}
+                ],
+                "agenda_items": [
+                    {"title": "Test Agenda Item", "discussion_summary": "Test discussion"}
+                ]
+            }
+        }
+        
+        v2_meeting = self.run_test("V1/V2 Compat - Create V2 Meeting", "POST", "governance/v2/records", 200, meeting_data)
+        if v2_meeting and v2_meeting.get('data', {}).get('record', {}).get('id'):
+            v2_records['meeting'] = v2_meeting['data']['record']['id']
+            print(f"   Created V2 meeting: {v2_records['meeting']}")
+        
+        # Create V2 distribution record
+        distribution_data = {
+            "module_type": "distribution",
+            "portfolio_id": portfolio_id,
+            "title": "V2 Test Distribution for V1 Compatibility",
+            "payload_json": {
+                "title": "V2 Test Distribution for V1 Compatibility",
+                "distribution_type": "regular",
+                "total_amount": 50000,
+                "currency": "USD",
+                "asset_type": "cash",
+                "recipients": [
+                    {"name": "Test Beneficiary", "role": "beneficiary", "amount": 50000}
+                ]
+            }
+        }
+        
+        v2_distribution = self.run_test("V1/V2 Compat - Create V2 Distribution", "POST", "governance/v2/records", 200, distribution_data)
+        if v2_distribution and v2_distribution.get('data', {}).get('record', {}).get('id'):
+            v2_records['distribution'] = v2_distribution['data']['record']['id']
+            print(f"   Created V2 distribution: {v2_records['distribution']}")
+        
+        # Create V2 dispute record
+        dispute_data = {
+            "module_type": "dispute",
+            "portfolio_id": portfolio_id,
+            "title": "V2 Test Dispute for V1 Compatibility",
+            "payload_json": {
+                "title": "V2 Test Dispute for V1 Compatibility",
+                "dispute_type": "beneficiary",
+                "description": "Test dispute for V1/V2 compatibility",
+                "priority": "medium",
+                "amount_claimed": 25000,
+                "currency": "USD"
+            }
+        }
+        
+        v2_dispute = self.run_test("V1/V2 Compat - Create V2 Dispute", "POST", "governance/v2/records", 200, dispute_data)
+        if v2_dispute and v2_dispute.get('data', {}).get('record', {}).get('id'):
+            v2_records['dispute'] = v2_dispute['data']['record']['id']
+            print(f"   Created V2 dispute: {v2_records['dispute']}")
+        
+        # Create V2 insurance record
+        insurance_data = {
+            "module_type": "insurance",
+            "portfolio_id": portfolio_id,
+            "title": "V2 Test Insurance Policy for V1 Compatibility",
+            "payload_json": {
+                "title": "V2 Test Insurance Policy for V1 Compatibility",
+                "policy_type": "whole_life",
+                "policy_number": "V2-TEST-001",
+                "carrier_name": "Test Insurance Co",
+                "death_benefit": 1000000,
+                "currency": "USD"
+            }
+        }
+        
+        v2_insurance = self.run_test("V1/V2 Compat - Create V2 Insurance", "POST", "governance/v2/records", 200, insurance_data)
+        if v2_insurance and v2_insurance.get('data', {}).get('record', {}).get('id'):
+            v2_records['insurance'] = v2_insurance['data']['record']['id']
+            print(f"   Created V2 insurance: {v2_records['insurance']}")
+        
+        # Create V2 compensation record
+        compensation_data = {
+            "module_type": "compensation",
+            "portfolio_id": portfolio_id,
+            "title": "V2 Test Compensation for V1 Compatibility",
+            "payload_json": {
+                "title": "V2 Test Compensation for V1 Compatibility",
+                "compensation_type": "annual_fee",
+                "recipient_name": "Test Trustee",
+                "recipient_role": "trustee",
+                "amount": 15000,
+                "currency": "USD"
+            }
+        }
+        
+        v2_compensation = self.run_test("V1/V2 Compat - Create V2 Compensation", "POST", "governance/v2/records", 200, compensation_data)
+        if v2_compensation and v2_compensation.get('data', {}).get('record', {}).get('id'):
+            v2_records['compensation'] = v2_compensation['data']['record']['id']
+            print(f"   Created V2 compensation: {v2_records['compensation']}")
+        
+        # Now test V1 GET endpoints to ensure they can retrieve V2 records
+        print("   📋 Testing V1 GET endpoints with V2 records...")
+        
+        # Test V1 meeting GET endpoint
+        if 'meeting' in v2_records:
+            meeting_response = self.run_test(
+                "V1/V2 Compat - V1 GET Meeting from V2", 
+                "GET", 
+                f"governance/meetings/{v2_records['meeting']}", 
+                200
+            )
+            if meeting_response and meeting_response.get('ok') and meeting_response.get('item'):
+                item = meeting_response['item']
+                if (item.get('meeting_id') == v2_records['meeting'] and 
+                    item.get('title') == "V2 Test Meeting for V1 Compatibility"):
+                    self.log_test("V1/V2 Compat - V1 Meeting GET transforms V2 correctly", True)
+                else:
+                    self.log_test("V1/V2 Compat - V1 Meeting GET transforms V2 correctly", False, "Missing or incorrect fields")
+        
+        # Test V1 distribution GET endpoint
+        if 'distribution' in v2_records:
+            dist_response = self.run_test(
+                "V1/V2 Compat - V1 GET Distribution from V2", 
+                "GET", 
+                f"governance/distributions/{v2_records['distribution']}", 
+                200
+            )
+            if dist_response and dist_response.get('ok') and dist_response.get('item'):
+                item = dist_response['item']
+                if (item.get('distribution_id') == v2_records['distribution'] and 
+                    item.get('title') == "V2 Test Distribution for V1 Compatibility"):
+                    self.log_test("V1/V2 Compat - V1 Distribution GET transforms V2 correctly", True)
+                else:
+                    self.log_test("V1/V2 Compat - V1 Distribution GET transforms V2 correctly", False, "Missing or incorrect fields")
+        
+        # Test V1 dispute GET endpoint
+        if 'dispute' in v2_records:
+            dispute_response = self.run_test(
+                "V1/V2 Compat - V1 GET Dispute from V2", 
+                "GET", 
+                f"governance/disputes/{v2_records['dispute']}", 
+                200
+            )
+            if dispute_response and dispute_response.get('ok') and dispute_response.get('item'):
+                item = dispute_response['item']
+                if (item.get('dispute_id') == v2_records['dispute'] and 
+                    item.get('title') == "V2 Test Dispute for V1 Compatibility"):
+                    self.log_test("V1/V2 Compat - V1 Dispute GET transforms V2 correctly", True)
+                else:
+                    self.log_test("V1/V2 Compat - V1 Dispute GET transforms V2 correctly", False, "Missing or incorrect fields")
+        
+        # Test V1 insurance GET endpoint
+        if 'insurance' in v2_records:
+            insurance_response = self.run_test(
+                "V1/V2 Compat - V1 GET Insurance from V2", 
+                "GET", 
+                f"governance/insurance-policies/{v2_records['insurance']}", 
+                200
+            )
+            if insurance_response and insurance_response.get('item'):
+                item = insurance_response['item']
+                if (item.get('policy_id') == v2_records['insurance'] and 
+                    item.get('title') == "V2 Test Insurance Policy for V1 Compatibility"):
+                    self.log_test("V1/V2 Compat - V1 Insurance GET transforms V2 correctly", True)
+                else:
+                    self.log_test("V1/V2 Compat - V1 Insurance GET transforms V2 correctly", False, "Missing or incorrect fields")
+        
+        # Test V1 compensation GET endpoint
+        if 'compensation' in v2_records:
+            comp_response = self.run_test(
+                "V1/V2 Compat - V1 GET Compensation from V2", 
+                "GET", 
+                f"governance/compensation/{v2_records['compensation']}", 
+                200
+            )
+            if comp_response and comp_response.get('ok') and comp_response.get('item'):
+                item = comp_response['item']
+                if (item.get('compensation_id') == v2_records['compensation'] and 
+                    item.get('title') == "V2 Test Compensation for V1 Compatibility"):
+                    self.log_test("V1/V2 Compat - V1 Compensation GET transforms V2 correctly", True)
+                else:
+                    self.log_test("V1/V2 Compat - V1 Compensation GET transforms V2 correctly", False, "Missing or incorrect fields")
+        
+        # Test that records with status=finalized can be deleted (no status restriction)
+        print("   📋 Testing delete functionality without status restrictions...")
+        
+        # Finalize one of the V2 records and then try to delete it
+        if 'meeting' in v2_records:
+            # Finalize the meeting
+            finalize_response = self.run_test(
+                "V1/V2 Compat - Finalize V2 Meeting", 
+                "POST", 
+                f"governance/v2/records/{v2_records['meeting']}/finalize", 
+                200,
+                {"finalized_by_name": "Test User"}
+            )
+            
+            # Try to delete the finalized record (should work now)
+            delete_response = self.run_test(
+                "V1/V2 Compat - Delete Finalized Record", 
+                "POST", 
+                f"governance/v2/records/{v2_records['meeting']}/void", 
+                200,
+                {"void_reason": "Testing delete without status restriction"}
+            )
+        
+        return v2_records
+
     def run_all_tests(self):
         """Run all API tests"""
         print("🚀 Starting Equity Trust API Tests")
