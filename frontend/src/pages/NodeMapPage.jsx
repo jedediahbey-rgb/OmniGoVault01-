@@ -149,8 +149,11 @@ export default function NodeMapPage() {
   const navigate = useNavigate();
   const { portfolioId } = useParams();
   
+  // Get default portfolio from localStorage
+  const defaultPortfolioId = localStorage.getItem('defaultPortfolioId') || '';
+  
   const [portfolios, setPortfolios] = useState([]);
-  const [selectedPortfolio, setSelectedPortfolio] = useState(portfolioId || '');
+  const [selectedPortfolio, setSelectedPortfolio] = useState(portfolioId || defaultPortfolioId || '');
   const [trustProfile, setTrustProfile] = useState(null);
   const [parties, setParties] = useState([]);
   const [assets, setAssets] = useState([]);
