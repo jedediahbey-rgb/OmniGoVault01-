@@ -49,6 +49,12 @@ mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ.get('DB_NAME', 'test_database')]
 
+# Import V2 RMID Allocator
+from services.rmid_v2 import RMIDAllocator, init_allocator, allocate_rm_id as allocate_rm_id_v2
+
+# Global V2 allocator instance
+rmid_allocator: Optional[RMIDAllocator] = None
+
 # Create the main app
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
