@@ -2785,7 +2785,7 @@ async def chat_with_assistant(data: ChatRequest, request: Request):
 YOUR KNOWLEDGE BASE:
 You have deep knowledge from two authoritative source documents:
 - "Kingdom vs Empire" (Roark) - covers equity history, maxims, trust relationships
-- "Pure Trust Under Equity" - covers trust document templates and forms
+- "Exclusive Trust Under Equity" - covers trust document templates and forms
 
 RESPONSE GUIDELINES:
 1. When a topic IS covered in the sources, cite them: [Source Name]
