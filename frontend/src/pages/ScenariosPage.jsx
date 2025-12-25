@@ -515,8 +515,10 @@ export default function ScenariosPage() {
                       onClick={() => {
                         setSelectedScenario(null);
                         setResults(null);
-                        // Scroll to top when going back
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        // Scroll to top after React re-renders the card grid
+                        setTimeout(() => {
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }, 50);
                       }}
                       className="text-vault-gold hover:underline text-sm"
                     >
