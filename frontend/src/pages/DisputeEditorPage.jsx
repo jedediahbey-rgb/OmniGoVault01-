@@ -135,6 +135,8 @@ export default function DisputeEditorPage({ user }) {
   
   // Amendment Studio V2
   const [showAmendmentStudio, setShowAmendmentStudio] = useState(false);
+  const [showRevisionHistory, setShowRevisionHistory] = useState(false);
+  const [revisions, setRevisions] = useState([]);
   const [amendLoading, setAmendLoading] = useState(false);
   
   // Forms
