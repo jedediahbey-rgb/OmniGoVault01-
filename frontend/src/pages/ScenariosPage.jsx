@@ -513,6 +513,8 @@ export default function ScenariosPage() {
                       onClick={() => {
                         setSelectedScenario(null);
                         setResults(null);
+                        // Scroll to top when going back
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       className="text-vault-gold hover:underline text-sm"
                     >
