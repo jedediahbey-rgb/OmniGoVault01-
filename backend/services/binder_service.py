@@ -471,10 +471,10 @@ class BinderService:
         for doc in documents:
             content["documents"].append({
                 "type": "document",
-                "title": doc.get("name", "Document"),
-                "id": doc.get("id"),
-                "status": doc.get("status", "active"),
-                "created_at": doc.get("created_at"),
+                "title": safe_title(doc, "Document"),
+                "id": safe_get(doc, "id"),
+                "status": safe_get(doc, "status", "active"),
+                "created_at": safe_get(doc, "created_at"),
                 "data": doc
             })
         
