@@ -1,0 +1,1112 @@
+"""
+Governance V2 API Routes - Amendment Studio
+Production-grade revisioning system with strict immutability.
+
+Core Rules:
+1. Finalized revisions are NEVER directly editable
+2. Amendments create NEW revisions linked to prior
+3. All actions logged to audit trail
+4. Hash chain ensures tamper evidence
+"""
+
+from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi.responses import JSONResponse
+from typing import Optional, List
+from datetime import datetime, timezone
+import json
+
+from models.governance_v2 import (
+    GovernanceRecord, GovernanceRevision, GovernanceEvent,
+    GovernanceAttachment, GovernanceAttestation,
+    ModuleType, RecordStatus, ChangeType, EventType,
+    RecordCreateRequest, RecordAmendRequest, RevisionUpdateRequest,
+    RecordVoidRequest, AttestationCreateRequest,
+    RecordSummary, RevisionSummary, RecordDetailResponse,
+    MinutesPayload, DistributionPayload, DisputePayload,
+    InsurancePayload, CompensationPayload,
+    compute_content_hash, generate_id
+)
+
+router = APIRouter(prefix="/api/governance/v2", tags=["governance-v2"])
+
+# Dependencies injected from server.py
+db = None
+get_current_user = None
+generate_subject_rm_id = None
+
+
+def init_governance_v2_routes(database, auth_func, rmid_func):
+    """Initialize routes with dependencies"""
+    global db, get_current_user, generate_subject_rm_id
+    db = database
+    get_current_user = auth_func
+    generate_subject_rm_id = rmid_func
+
+
+# ============ RESPONSE HELPERS ============
+
+def success_response(data: dict, message: str = None):
+    """Standard success response"""
+    response = {"ok": True, "data": data}
+    if message:
+        response["message"] = message
+    return response
+
+
+def error_response(code: str, message: str, details: dict = None, status_code: int = 400):
+    """Standard error response"""
+    error = {"code": code, "message": message}
+    if details:
+        error["details"] = details
+    return JSONResponse(
+        status_code=status_code,
+        content={"ok": False, "error": error}
+    )
+
+
+def serialize_doc(doc: dict) -> dict:
+    """Remove MongoDB _id and convert datetime objects"""
+    if not doc:
+        return doc
+    result = {k: v for k, v in doc.items() if k != "_id"}
+    for key, value in result.items():
+        if isinstance(value, datetime):
+            result[key] = value.isoformat()
+    return result
+
+
+# ============ AUDIT LOG HELPER ============
+
+async def log_event(
+    event_type: EventType,
+    record_id: str,
+    actor_id: str,
+    portfolio_id: str,
+    trust_id: str = None,
+    revision_id: str = None,
+    actor_name: str = "",
+    meta: dict = None
+):
+    """Create an audit log entry"""
+    event = GovernanceEvent(
+        trust_id=trust_id,
+        portfolio_id=portfolio_id,
+        user_id=actor_id,
+        record_id=record_id,
+        revision_id=revision_id,
+        event_type=event_type,
+        actor_id=actor_id,
+        actor_name=actor_name,
+        meta_json=meta or {}
+    )
+    doc = event.model_dump()
+    doc["at"] = doc["at"].isoformat()
+    await db.governance_events.insert_one(doc)
+    return doc
+
+
+# ============ PAYLOAD VALIDATION ============
+
+def validate_payload(module_type: ModuleType, payload: dict) -> tuple:
+    """
+    Validate payload against module-specific schema.
+    Returns (is_valid, error_message, normalized_payload)
+    """
+    try:
+        if module_type == ModuleType.MINUTES:
+            validated = MinutesPayload(**payload)
+        elif module_type == ModuleType.DISTRIBUTION:
+            validated = DistributionPayload(**payload)
+        elif module_type == ModuleType.DISPUTE:
+            validated = DisputePayload(**payload)
+        elif module_type == ModuleType.INSURANCE:
+            validated = InsurancePayload(**payload)
+        elif module_type == ModuleType.COMPENSATION:
+            validated = CompensationPayload(**payload)
+        else:
+            return False, f"Unknown module type: {module_type}", payload
+        
+        return True, None, validated.model_dump()
+    except Exception as e:
+        return False, str(e), payload
+
+
+# ============ RM-ID SUBJECT CODES ============
+
+MODULE_SUBJECT_CODES = {
+    ModuleType.MINUTES: ("20", "Meeting Minutes"),
+    ModuleType.DISTRIBUTION: ("21", "Distributions"),
+    ModuleType.DISPUTE: ("22", "Disputes"),
+    ModuleType.INSURANCE: ("23", "Insurance"),
+    ModuleType.COMPENSATION: ("24", "Compensation"),
+}
+
+
+# ============ LIST/GET ENDPOINTS ============
+
+@router.get("/records")
+async def list_records(
+    request: Request,
+    trust_id: Optional[str] = Query(None),
+    portfolio_id: Optional[str] = Query(None),
+    module_type: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    include_voided: bool = Query(False),
+    limit: int = Query(100, ge=1, le=500),
+    offset: int = Query(0, ge=0)
+):
+    """
+    List governance records with filters.
+    Returns records with current revision summary.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    # Build query
+    query = {"user_id": user.user_id}
+    
+    if portfolio_id:
+        query["portfolio_id"] = portfolio_id
+    if trust_id:
+        query["trust_id"] = trust_id
+    if module_type:
+        query["module_type"] = module_type
+    if status:
+        query["status"] = status
+    if not include_voided:
+        query["status"] = {"$ne": "voided"}
+    
+    try:
+        total = await db.governance_records.count_documents(query)
+        records = await db.governance_records.find(
+            query, {"_id": 0}
+        ).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+        
+        # Enrich with current revision info
+        items = []
+        for rec in records:
+            current_rev = None
+            if rec.get("current_revision_id"):
+                current_rev = await db.governance_revisions.find_one(
+                    {"id": rec["current_revision_id"]}, {"_id": 0}
+                )
+            
+            items.append({
+                "id": rec["id"],
+                "module_type": rec["module_type"],
+                "title": rec["title"],
+                "rm_id": rec.get("rm_id", ""),
+                "status": rec["status"],
+                "current_version": current_rev.get("version", 1) if current_rev else 1,
+                "created_at": rec.get("created_at"),
+                "finalized_at": rec.get("finalized_at"),
+                "created_by": rec.get("created_by", "")
+            })
+        
+        return success_response({
+            "items": items,
+            "total": total,
+            "limit": limit,
+            "offset": offset
+        })
+        
+    except Exception as e:
+        print(f"Error listing records: {e}")
+        return error_response("DB_ERROR", "Failed to list records", {"error": str(e)}, status_code=500)
+
+
+@router.get("/records/{record_id}")
+async def get_record(record_id: str, request: Request):
+    """
+    Get a single record with current revision, attestations, and attachments.
+    This is the endpoint to use when clicking on a record from the list.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        record = await db.governance_records.find_one(
+            {"id": record_id, "user_id": user.user_id}, {"_id": 0}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # Get current revision
+        current_revision = None
+        if record.get("current_revision_id"):
+            current_revision = await db.governance_revisions.find_one(
+                {"id": record["current_revision_id"]}, {"_id": 0}
+            )
+        
+        # Count all revisions
+        revision_count = await db.governance_revisions.count_documents(
+            {"record_id": record_id}
+        )
+        
+        # Get attestations for current revision
+        attestations = []
+        if current_revision:
+            attestations = await db.governance_attestations.find(
+                {"revision_id": current_revision["id"]}, {"_id": 0}
+            ).to_list(50)
+        
+        # Get attachments for current revision
+        attachments = []
+        if current_revision:
+            attachments = await db.governance_attachments.find(
+                {"revision_id": current_revision["id"]}, {"_id": 0}
+            ).to_list(100)
+        
+        return success_response({
+            "record": serialize_doc(record),
+            "current_revision": serialize_doc(current_revision) if current_revision else None,
+            "revision_count": revision_count,
+            "attestations": [serialize_doc(a) for a in attestations],
+            "attachments": [serialize_doc(a) for a in attachments]
+        })
+        
+    except Exception as e:
+        print(f"Error getting record: {e}")
+        return error_response("DB_ERROR", "Failed to get record", {"error": str(e)}, status_code=500)
+
+
+@router.get("/records/{record_id}/revisions")
+async def get_revisions(record_id: str, request: Request):
+    """
+    Get revision history for a record.
+    Returns list of revisions sorted by version ascending.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        # Verify record exists and user has access
+        record = await db.governance_records.find_one(
+            {"id": record_id, "user_id": user.user_id}, {"_id": 0}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        revisions = await db.governance_revisions.find(
+            {"record_id": record_id}, {"_id": 0}
+        ).sort("version", 1).to_list(100)
+        
+        summaries = []
+        for rev in revisions:
+            summaries.append({
+                "id": rev["id"],
+                "version": rev["version"],
+                "change_type": rev["change_type"],
+                "change_reason": rev.get("change_reason", ""),
+                "created_at": rev.get("created_at"),
+                "created_by": rev.get("created_by", ""),
+                "finalized_at": rev.get("finalized_at"),
+                "finalized_by": rev.get("finalized_by"),
+                "content_hash": rev.get("content_hash", "")
+            })
+        
+        return success_response({
+            "record_id": record_id,
+            "record_title": record.get("title", ""),
+            "revisions": summaries,
+            "total": len(summaries)
+        })
+        
+    except Exception as e:
+        print(f"Error getting revisions: {e}")
+        return error_response("DB_ERROR", "Failed to get revisions", {"error": str(e)}, status_code=500)
+
+
+@router.get("/revisions/{revision_id}")
+async def get_revision(revision_id: str, request: Request):
+    """
+    Get a specific revision by ID.
+    Used to view historical versions in read-only mode.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        revision = await db.governance_revisions.find_one(
+            {"id": revision_id}, {"_id": 0}
+        )
+        
+        if not revision:
+            return error_response("NOT_FOUND", "Revision not found", status_code=404)
+        
+        # Verify user has access to parent record
+        record = await db.governance_records.find_one(
+            {"id": revision["record_id"], "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # Get attachments for this revision
+        attachments = await db.governance_attachments.find(
+            {"revision_id": revision_id}, {"_id": 0}
+        ).to_list(100)
+        
+        return success_response({
+            "revision": serialize_doc(revision),
+            "record_title": record.get("title", ""),
+            "record_status": record.get("status", ""),
+            "attachments": [serialize_doc(a) for a in attachments]
+        })
+        
+    except Exception as e:
+        print(f"Error getting revision: {e}")
+        return error_response("DB_ERROR", "Failed to get revision", {"error": str(e)}, status_code=500)
+
+
+# ============ CREATE ENDPOINT ============
+
+@router.post("/records")
+async def create_record(data: RecordCreateRequest, request: Request):
+    """
+    Create a new governance record with initial draft revision (v1).
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        # Validate payload
+        is_valid, error_msg, normalized_payload = validate_payload(
+            data.module_type, data.payload_json
+        )
+        if not is_valid:
+            return error_response("VALIDATION_ERROR", f"Invalid payload: {error_msg}")
+        
+        # Generate RM-ID
+        rm_id = ""
+        try:
+            subject_code, subject_name = MODULE_SUBJECT_CODES.get(
+                data.module_type, ("00", "General")
+            )
+            rm_id, _, _, _ = await generate_subject_rm_id(
+                data.portfolio_id, user.user_id, subject_code, subject_name
+            )
+        except Exception as e:
+            print(f"Warning: Could not generate RM-ID: {e}")
+        
+        # Create record
+        record = GovernanceRecord(
+            trust_id=data.trust_id,
+            portfolio_id=data.portfolio_id,
+            user_id=user.user_id,
+            module_type=data.module_type,
+            title=data.title,
+            rm_id=rm_id,
+            created_by=user.name if hasattr(user, 'name') else user.user_id
+        )
+        
+        # Create initial revision (v1, draft)
+        revision = GovernanceRevision(
+            record_id=record.id,
+            version=1,
+            change_type=ChangeType.INITIAL,
+            payload_json=normalized_payload,
+            created_by=user.name if hasattr(user, 'name') else user.user_id
+        )
+        
+        # Link record to revision
+        record.current_revision_id = revision.id
+        
+        # Save to database
+        record_doc = record.model_dump()
+        record_doc["created_at"] = record_doc["created_at"].isoformat()
+        
+        revision_doc = revision.model_dump()
+        revision_doc["created_at"] = revision_doc["created_at"].isoformat()
+        
+        await db.governance_records.insert_one(record_doc)
+        await db.governance_revisions.insert_one(revision_doc)
+        
+        # Log event
+        await log_event(
+            event_type=EventType.CREATED,
+            record_id=record.id,
+            actor_id=user.user_id,
+            portfolio_id=data.portfolio_id,
+            trust_id=data.trust_id,
+            revision_id=revision.id,
+            actor_name=record.created_by,
+            meta={"module_type": data.module_type.value, "title": data.title}
+        )
+        
+        return success_response({
+            "record": serialize_doc(record_doc),
+            "revision": serialize_doc(revision_doc)
+        }, message="Record created successfully")
+        
+    except Exception as e:
+        print(f"Error creating record: {e}")
+        return error_response("CREATE_ERROR", "Failed to create record", {"error": str(e)}, status_code=500)
+
+
+# ============ FINALIZE ENDPOINT ============
+
+@router.post("/records/{record_id}/finalize")
+async def finalize_record(record_id: str, request: Request):
+    """
+    Finalize the current draft revision.
+    - Computes content hash
+    - Sets finalized_at/by on revision
+    - Updates record status to finalized
+    - Creates audit event
+    
+    STRICT: Only finalizes if current revision is a draft.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        record = await db.governance_records.find_one(
+            {"id": record_id, "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        if not record.get("current_revision_id"):
+            return error_response("NO_REVISION", "Record has no revision to finalize")
+        
+        revision = await db.governance_revisions.find_one(
+            {"id": record["current_revision_id"]}
+        )
+        
+        if not revision:
+            return error_response("NOT_FOUND", "Current revision not found", status_code=404)
+        
+        # STRICT: Cannot finalize an already-finalized revision
+        if revision.get("finalized_at"):
+            return error_response(
+                "ALREADY_FINALIZED",
+                "This revision is already finalized. Use amend to create a new revision.",
+                status_code=409
+            )
+        
+        # Compute content hash
+        finalized_at = datetime.now(timezone.utc)
+        finalized_by = user.name if hasattr(user, 'name') else user.user_id
+        
+        content_hash = compute_content_hash(
+            payload_json=revision.get("payload_json", {}),
+            created_at=revision.get("created_at", ""),
+            created_by=revision.get("created_by", ""),
+            version=revision.get("version", 1),
+            parent_hash=revision.get("parent_hash")
+        )
+        
+        # Update revision
+        await db.governance_revisions.update_one(
+            {"id": revision["id"]},
+            {"$set": {
+                "finalized_at": finalized_at.isoformat(),
+                "finalized_by": finalized_by,
+                "content_hash": content_hash
+            }}
+        )
+        
+        # Update record status
+        record_update = {
+            "status": RecordStatus.FINALIZED.value,
+            "finalized_at": finalized_at.isoformat(),
+            "finalized_by": finalized_by
+        }
+        
+        # Only set these on first finalization
+        if not record.get("finalized_at"):
+            record_update["finalized_at"] = finalized_at.isoformat()
+            record_update["finalized_by"] = finalized_by
+        
+        await db.governance_records.update_one(
+            {"id": record_id},
+            {"$set": record_update}
+        )
+        
+        # Log event
+        await log_event(
+            event_type=EventType.FINALIZED,
+            record_id=record_id,
+            actor_id=user.user_id,
+            portfolio_id=record.get("portfolio_id", ""),
+            trust_id=record.get("trust_id"),
+            revision_id=revision["id"],
+            actor_name=finalized_by,
+            meta={"version": revision.get("version", 1), "content_hash": content_hash}
+        )
+        
+        return success_response({
+            "record_id": record_id,
+            "revision_id": revision["id"],
+            "version": revision.get("version", 1),
+            "finalized_at": finalized_at.isoformat(),
+            "finalized_by": finalized_by,
+            "content_hash": content_hash
+        }, message="Record finalized successfully")
+        
+    except Exception as e:
+        print(f"Error finalizing record: {e}")
+        return error_response("FINALIZE_ERROR", "Failed to finalize record", {"error": str(e)}, status_code=500)
+
+
+# ============ AMEND ENDPOINT ============
+
+@router.post("/records/{record_id}/amend")
+async def create_amendment(record_id: str, data: RecordAmendRequest, request: Request):
+    """
+    Create an amendment to a finalized record.
+    
+    STRICT REQUIREMENTS:
+    - Record must be finalized
+    - Creates NEW draft revision linked to current finalized revision
+    - Copies payload from current revision for editing
+    - Stores parent hash for chain integrity
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    if not data.change_reason or not data.change_reason.strip():
+        return error_response("VALIDATION_ERROR", "Change reason is required for amendments")
+    
+    try:
+        record = await db.governance_records.find_one(
+            {"id": record_id, "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # STRICT: Can only amend finalized records
+        if record.get("status") != RecordStatus.FINALIZED.value:
+            return error_response(
+                "NOT_FINALIZED",
+                "Cannot amend a non-finalized record. Finalize it first or edit the draft directly.",
+                status_code=409
+            )
+        
+        # Get current revision
+        current_revision = await db.governance_revisions.find_one(
+            {"id": record.get("current_revision_id")}
+        )
+        
+        if not current_revision:
+            return error_response("NOT_FOUND", "Current revision not found", status_code=404)
+        
+        # STRICT: Current revision must be finalized
+        if not current_revision.get("finalized_at"):
+            return error_response(
+                "NOT_FINALIZED",
+                "Current revision is not finalized. Finalize it first.",
+                status_code=409
+            )
+        
+        # Create new draft revision
+        new_version = current_revision.get("version", 1) + 1
+        created_by = user.name if hasattr(user, 'name') else user.user_id
+        
+        new_revision = GovernanceRevision(
+            record_id=record_id,
+            version=new_version,
+            parent_revision_id=current_revision["id"],
+            change_type=data.change_type,
+            change_reason=data.change_reason.strip(),
+            payload_json=current_revision.get("payload_json", {}),  # Deep copy
+            created_by=created_by,
+            parent_hash=current_revision.get("content_hash", "")
+        )
+        
+        if data.effective_at:
+            new_revision.effective_at = datetime.fromisoformat(data.effective_at.replace('Z', '+00:00'))
+        
+        revision_doc = new_revision.model_dump()
+        revision_doc["created_at"] = revision_doc["created_at"].isoformat()
+        if revision_doc.get("effective_at"):
+            revision_doc["effective_at"] = revision_doc["effective_at"].isoformat()
+        
+        await db.governance_revisions.insert_one(revision_doc)
+        
+        # Update record to point to new draft
+        await db.governance_records.update_one(
+            {"id": record_id},
+            {"$set": {
+                "current_revision_id": new_revision.id,
+                "status": RecordStatus.DRAFT.value  # Back to draft until new revision finalized
+            }}
+        )
+        
+        # Log event
+        await log_event(
+            event_type=EventType.AMENDMENT_CREATED,
+            record_id=record_id,
+            actor_id=user.user_id,
+            portfolio_id=record.get("portfolio_id", ""),
+            trust_id=record.get("trust_id"),
+            revision_id=new_revision.id,
+            actor_name=created_by,
+            meta={
+                "version": new_version,
+                "change_type": data.change_type.value,
+                "change_reason": data.change_reason,
+                "parent_revision_id": current_revision["id"]
+            }
+        )
+        
+        return success_response({
+            "record_id": record_id,
+            "revision_id": new_revision.id,
+            "version": new_version,
+            "parent_revision_id": current_revision["id"],
+            "parent_hash": current_revision.get("content_hash", "")
+        }, message="Amendment draft created. Edit and finalize when ready.")
+        
+    except Exception as e:
+        print(f"Error creating amendment: {e}")
+        return error_response("AMEND_ERROR", "Failed to create amendment", {"error": str(e)}, status_code=500)
+
+
+# ============ UPDATE DRAFT ENDPOINT ============
+
+@router.patch("/revisions/{revision_id}")
+async def update_draft_revision(revision_id: str, data: RevisionUpdateRequest, request: Request):
+    """
+    Update a DRAFT revision only.
+    
+    STRICT: Returns 403/409 if revision is already finalized.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        revision = await db.governance_revisions.find_one({"id": revision_id})
+        
+        if not revision:
+            return error_response("NOT_FOUND", "Revision not found", status_code=404)
+        
+        # Verify user access
+        record = await db.governance_records.find_one(
+            {"id": revision["record_id"], "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # STRICT: Cannot update finalized revision
+        if revision.get("finalized_at"):
+            return error_response(
+                "REVISION_LOCKED",
+                "Cannot edit a finalized revision. Create an amendment instead.",
+                status_code=409
+            )
+        
+        # Build update
+        update_fields = {}
+        
+        if data.payload_json is not None:
+            # Validate payload
+            is_valid, error_msg, normalized = validate_payload(
+                record.get("module_type"), data.payload_json
+            )
+            if not is_valid:
+                return error_response("VALIDATION_ERROR", f"Invalid payload: {error_msg}")
+            update_fields["payload_json"] = normalized
+        
+        if not update_fields:
+            return error_response("NO_CHANGES", "No valid fields to update")
+        
+        await db.governance_revisions.update_one(
+            {"id": revision_id},
+            {"$set": update_fields}
+        )
+        
+        # Update record title if provided
+        if data.title:
+            await db.governance_records.update_one(
+                {"id": record["id"]},
+                {"$set": {"title": data.title}}
+            )
+        
+        # Log event
+        await log_event(
+            event_type=EventType.UPDATED_DRAFT,
+            record_id=record["id"],
+            actor_id=user.user_id,
+            portfolio_id=record.get("portfolio_id", ""),
+            trust_id=record.get("trust_id"),
+            revision_id=revision_id,
+            actor_name=user.name if hasattr(user, 'name') else user.user_id,
+            meta={"fields_updated": list(update_fields.keys())}
+        )
+        
+        # Return updated revision
+        updated = await db.governance_revisions.find_one({"id": revision_id}, {"_id": 0})
+        
+        return success_response({
+            "revision": serialize_doc(updated)
+        }, message="Draft updated successfully")
+        
+    except Exception as e:
+        print(f"Error updating revision: {e}")
+        return error_response("UPDATE_ERROR", "Failed to update revision", {"error": str(e)}, status_code=500)
+
+
+# ============ FINALIZE AMENDMENT ENDPOINT ============
+
+@router.post("/revisions/{revision_id}/finalize")
+async def finalize_amendment(revision_id: str, request: Request):
+    """
+    Finalize an amendment revision.
+    
+    - Computes hash chain: content_hash includes parent_hash
+    - Updates record.current_revision_id
+    - Record status stays/returns to finalized
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        revision = await db.governance_revisions.find_one({"id": revision_id})
+        
+        if not revision:
+            return error_response("NOT_FOUND", "Revision not found", status_code=404)
+        
+        record = await db.governance_records.find_one(
+            {"id": revision["record_id"], "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # STRICT: Cannot finalize already-finalized revision
+        if revision.get("finalized_at"):
+            return error_response(
+                "ALREADY_FINALIZED",
+                "This revision is already finalized.",
+                status_code=409
+            )
+        
+        # Compute content hash with parent hash for chain integrity
+        finalized_at = datetime.now(timezone.utc)
+        finalized_by = user.name if hasattr(user, 'name') else user.user_id
+        
+        content_hash = compute_content_hash(
+            payload_json=revision.get("payload_json", {}),
+            created_at=revision.get("created_at", ""),
+            created_by=revision.get("created_by", ""),
+            version=revision.get("version", 1),
+            parent_hash=revision.get("parent_hash")
+        )
+        
+        # Update revision
+        await db.governance_revisions.update_one(
+            {"id": revision_id},
+            {"$set": {
+                "finalized_at": finalized_at.isoformat(),
+                "finalized_by": finalized_by,
+                "content_hash": content_hash
+            }}
+        )
+        
+        # Update record
+        await db.governance_records.update_one(
+            {"id": record["id"]},
+            {"$set": {
+                "current_revision_id": revision_id,
+                "status": RecordStatus.FINALIZED.value
+            }}
+        )
+        
+        # Log event
+        await log_event(
+            event_type=EventType.AMENDMENT_FINALIZED,
+            record_id=record["id"],
+            actor_id=user.user_id,
+            portfolio_id=record.get("portfolio_id", ""),
+            trust_id=record.get("trust_id"),
+            revision_id=revision_id,
+            actor_name=finalized_by,
+            meta={
+                "version": revision.get("version", 1),
+                "content_hash": content_hash,
+                "parent_hash": revision.get("parent_hash", "")
+            }
+        )
+        
+        return success_response({
+            "record_id": record["id"],
+            "revision_id": revision_id,
+            "version": revision.get("version", 1),
+            "finalized_at": finalized_at.isoformat(),
+            "finalized_by": finalized_by,
+            "content_hash": content_hash
+        }, message="Amendment finalized successfully")
+        
+    except Exception as e:
+        print(f"Error finalizing amendment: {e}")
+        return error_response("FINALIZE_ERROR", "Failed to finalize amendment", {"error": str(e)}, status_code=500)
+
+
+# ============ VOID ENDPOINT ============
+
+@router.post("/records/{record_id}/void")
+async def void_record(record_id: str, data: RecordVoidRequest, request: Request):
+    """
+    Void (soft-delete) a record.
+    
+    - Creates a void audit event
+    - NEVER removes history
+    - Record becomes read-only voided state
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    if not data.void_reason or not data.void_reason.strip():
+        return error_response("VALIDATION_ERROR", "Void reason is required")
+    
+    try:
+        record = await db.governance_records.find_one(
+            {"id": record_id, "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        if record.get("status") == RecordStatus.VOIDED.value:
+            return error_response("ALREADY_VOIDED", "Record is already voided", status_code=409)
+        
+        voided_at = datetime.now(timezone.utc)
+        voided_by = user.name if hasattr(user, 'name') else user.user_id
+        
+        await db.governance_records.update_one(
+            {"id": record_id},
+            {"$set": {
+                "status": RecordStatus.VOIDED.value,
+                "voided_at": voided_at.isoformat(),
+                "voided_by": voided_by,
+                "void_reason": data.void_reason.strip()
+            }}
+        )
+        
+        # Log event
+        await log_event(
+            event_type=EventType.VOIDED,
+            record_id=record_id,
+            actor_id=user.user_id,
+            portfolio_id=record.get("portfolio_id", ""),
+            trust_id=record.get("trust_id"),
+            actor_name=voided_by,
+            meta={"void_reason": data.void_reason.strip()}
+        )
+        
+        return success_response({
+            "record_id": record_id,
+            "voided_at": voided_at.isoformat(),
+            "voided_by": voided_by
+        }, message="Record voided successfully")
+        
+    except Exception as e:
+        print(f"Error voiding record: {e}")
+        return error_response("VOID_ERROR", "Failed to void record", {"error": str(e)}, status_code=500)
+
+
+# ============ ATTESTATION ENDPOINT ============
+
+@router.post("/revisions/{revision_id}/attest")
+async def add_attestation(revision_id: str, data: AttestationCreateRequest, request: Request):
+    """
+    Add an attestation to a finalized revision.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        revision = await db.governance_revisions.find_one({"id": revision_id})
+        
+        if not revision:
+            return error_response("NOT_FOUND", "Revision not found", status_code=404)
+        
+        # Can only attest finalized revisions
+        if not revision.get("finalized_at"):
+            return error_response(
+                "NOT_FINALIZED",
+                "Can only attest finalized revisions",
+                status_code=409
+            )
+        
+        record = await db.governance_records.find_one(
+            {"id": revision["record_id"], "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        attestation = GovernanceAttestation(
+            trust_id=record.get("trust_id"),
+            portfolio_id=record.get("portfolio_id"),
+            record_id=record["id"],
+            revision_id=revision_id,
+            role=data.role,
+            signer_id=user.user_id,
+            signer_name=data.signer_name,
+            signature_type=data.signature_type,
+            attestation_text=data.attestation_text,
+            ip_address=request.client.host if request.client else ""
+        )
+        
+        doc = attestation.model_dump()
+        doc["signed_at"] = doc["signed_at"].isoformat()
+        
+        await db.governance_attestations.insert_one(doc)
+        
+        # Log event
+        await log_event(
+            event_type=EventType.ATTESTATION_ADDED,
+            record_id=record["id"],
+            actor_id=user.user_id,
+            portfolio_id=record.get("portfolio_id", ""),
+            trust_id=record.get("trust_id"),
+            revision_id=revision_id,
+            actor_name=data.signer_name,
+            meta={"role": data.role.value, "signature_type": data.signature_type}
+        )
+        
+        return success_response({
+            "attestation": serialize_doc(doc)
+        }, message="Attestation added successfully")
+        
+    except Exception as e:
+        print(f"Error adding attestation: {e}")
+        return error_response("ATTEST_ERROR", "Failed to add attestation", {"error": str(e)}, status_code=500)
+
+
+# ============ AUDIT LOG ENDPOINT ============
+
+@router.get("/records/{record_id}/events")
+async def get_record_events(record_id: str, request: Request, limit: int = Query(100, ge=1, le=500)):
+    """
+    Get audit log for a record.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        record = await db.governance_records.find_one(
+            {"id": record_id, "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        events = await db.governance_events.find(
+            {"record_id": record_id}, {"_id": 0}
+        ).sort("at", -1).to_list(limit)
+        
+        return success_response({
+            "record_id": record_id,
+            "events": [serialize_doc(e) for e in events],
+            "total": len(events)
+        })
+        
+    except Exception as e:
+        print(f"Error getting events: {e}")
+        return error_response("DB_ERROR", "Failed to get events", {"error": str(e)}, status_code=500)
+
+
+# ============ DIFF ENDPOINT ============
+
+@router.get("/revisions/{revision_id}/diff")
+async def get_revision_diff(revision_id: str, request: Request, compare_to: Optional[str] = Query(None)):
+    """
+    Get diff between two revisions.
+    If compare_to is not provided, compares to parent revision.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        revision = await db.governance_revisions.find_one({"id": revision_id}, {"_id": 0})
+        
+        if not revision:
+            return error_response("NOT_FOUND", "Revision not found", status_code=404)
+        
+        record = await db.governance_records.find_one(
+            {"id": revision["record_id"], "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # Get comparison revision
+        compare_revision = None
+        if compare_to:
+            compare_revision = await db.governance_revisions.find_one(
+                {"id": compare_to}, {"_id": 0}
+            )
+        elif revision.get("parent_revision_id"):
+            compare_revision = await db.governance_revisions.find_one(
+                {"id": revision["parent_revision_id"]}, {"_id": 0}
+            )
+        
+        # Compute simple key-based diff
+        current_payload = revision.get("payload_json", {})
+        parent_payload = compare_revision.get("payload_json", {}) if compare_revision else {}
+        
+        changes = []
+        all_keys = set(current_payload.keys()) | set(parent_payload.keys())
+        
+        for key in all_keys:
+            old_val = parent_payload.get(key)
+            new_val = current_payload.get(key)
+            
+            if old_val != new_val:
+                changes.append({
+                    "field": key,
+                    "old_value": old_val,
+                    "new_value": new_val,
+                    "type": "modified" if key in parent_payload and key in current_payload else (
+                        "added" if key not in parent_payload else "removed"
+                    )
+                })
+        
+        return success_response({
+            "revision_id": revision_id,
+            "revision_version": revision.get("version", 1),
+            "compare_to_id": compare_revision["id"] if compare_revision else None,
+            "compare_to_version": compare_revision.get("version") if compare_revision else None,
+            "changes": changes,
+            "before_payload": parent_payload,
+            "after_payload": current_payload
+        })
+        
+    except Exception as e:
+        print(f"Error getting diff: {e}")
+        return error_response("DB_ERROR", "Failed to get diff", {"error": str(e)}, status_code=500)
