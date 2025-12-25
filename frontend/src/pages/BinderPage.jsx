@@ -631,7 +631,7 @@ export default function BinderPage() {
                         )}
                         {run.status === 'failed' && run.error_json && (
                           <p className="text-red-400 text-xs mt-1 truncate">
-                            Error: {run.error_json.message}
+                            {run.error_json.user_message || run.error_json.message || 'Generation failed'}
                           </p>
                         )}
                       </div>
