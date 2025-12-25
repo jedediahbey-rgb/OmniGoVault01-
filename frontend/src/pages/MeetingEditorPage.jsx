@@ -468,8 +468,18 @@ export default function MeetingEditorPage({ user }) {
         item.item_id === itemId ? { ...item, ...updates } : item
       );
       
+      const currentPayload = {
+        meeting_type: meeting.meeting_type || 'regular',
+        date_time: meeting.date_time,
+        location: meeting.location,
+        attendees: meeting.attendees || [],
+        agenda_items: updatedAgendaItems,
+        motions: meeting.motions || [],
+        notes: meeting.notes || ''
+      };
+      
       await axios.put(`${API}/governance/v2/records/${meetingId}`, {
-        agenda_items: updatedAgendaItems
+        payload_json: currentPayload
       });
       await refetchMeeting();
     } catch (error) {
@@ -485,8 +495,18 @@ export default function MeetingEditorPage({ user }) {
         item.item_id !== itemId
       );
       
+      const currentPayload = {
+        meeting_type: meeting.meeting_type || 'regular',
+        date_time: meeting.date_time,
+        location: meeting.location,
+        attendees: meeting.attendees || [],
+        agenda_items: updatedAgendaItems,
+        motions: meeting.motions || [],
+        notes: meeting.notes || ''
+      };
+      
       await axios.put(`${API}/governance/v2/records/${meetingId}`, {
-        agenda_items: updatedAgendaItems
+        payload_json: currentPayload
       });
       await refetchMeeting();
       toast.success('Agenda item deleted');
