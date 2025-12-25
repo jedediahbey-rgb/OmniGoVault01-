@@ -111,6 +111,59 @@ const statusConfig = {
   amended: { label: 'Amended', bgClass: 'bg-blue-500/20', textClass: 'text-blue-400', borderClass: 'border-blue-500/30' },
 };
 
+// Asset type configurations
+const assetTypeConfig = {
+  real_property: { 
+    icon: House, 
+    label: 'Real Property', 
+    bgClass: 'bg-emerald-500/20', 
+    textClass: 'text-emerald-400',
+    borderClass: 'border-emerald-500/30'
+  },
+  personal_property: { 
+    icon: Package, 
+    label: 'Personal Property', 
+    bgClass: 'bg-blue-500/20', 
+    textClass: 'text-blue-400',
+    borderClass: 'border-blue-500/30'
+  },
+  financial_account: { 
+    icon: Bank, 
+    label: 'Financial Account', 
+    bgClass: 'bg-purple-500/20', 
+    textClass: 'text-purple-400',
+    borderClass: 'border-purple-500/30'
+  },
+  securities: { 
+    icon: ChartLine, 
+    label: 'Securities', 
+    bgClass: 'bg-cyan-500/20', 
+    textClass: 'text-cyan-400',
+    borderClass: 'border-cyan-500/30'
+  },
+  intellectual_property: { 
+    icon: FileText, 
+    label: 'Intellectual Property', 
+    bgClass: 'bg-amber-500/20', 
+    textClass: 'text-amber-400',
+    borderClass: 'border-amber-500/30'
+  },
+  vehicle: { 
+    icon: Car, 
+    label: 'Vehicle', 
+    bgClass: 'bg-orange-500/20', 
+    textClass: 'text-orange-400',
+    borderClass: 'border-orange-500/30'
+  },
+  other: { 
+    icon: Wallet, 
+    label: 'Other', 
+    bgClass: 'bg-gray-500/20', 
+    textClass: 'text-gray-400',
+    borderClass: 'border-gray-500/30'
+  },
+};
+
 export default function PortfolioOverviewPage({ user }) {
   const { portfolioId } = useParams();
   const navigate = useNavigate();
@@ -127,6 +180,11 @@ export default function PortfolioOverviewPage({ user }) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  
+  // Asset management state
+  const [assetSearch, setAssetSearch] = useState('');
+  const [assetTypeFilter, setAssetTypeFilter] = useState('all');
+  const [selectedAsset, setSelectedAsset] = useState(null);
   
   // Asset dialog state
   const [showAssetDialog, setShowAssetDialog] = useState(false);
