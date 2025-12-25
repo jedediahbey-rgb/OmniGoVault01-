@@ -193,6 +193,13 @@ const AppRouter = ({ auth }) => {
         </AuthLayout>
       } />
       
+      {/* Trust Health Dashboard */}
+      <Route path="/health" element={
+        <AuthLayout auth={auth}>
+          <TrustHealthDashboard />
+        </AuthLayout>
+      } />
+      
       {/* Protected Vault Routes */}
       <Route
         path="/vault"
