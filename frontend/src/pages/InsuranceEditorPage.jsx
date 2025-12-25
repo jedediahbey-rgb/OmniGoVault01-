@@ -522,19 +522,19 @@ export default function InsuranceEditorPage({ user }) {
             {/* Actions - properly aligned */}
             {!editingHeader && (
               <div className="flex items-center gap-2 justify-end mt-4">
-                {!isLocked && (
+                {isDraft && (
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowFinalizeConfirm(true)}
                     className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10"
                   >
-                    <Lock className="w-4 h-4 mr-2" />
+                    <CheckCircle className="w-4 h-4 mr-2" />
                     Finalize
                   </Button>
                 )}
                 
-                {isLocked && !policy.amended_by_id && (
+                {isFinalized && !policy.amended_by_id && (
                   <Button
                     variant="outline"
                     size="sm"
