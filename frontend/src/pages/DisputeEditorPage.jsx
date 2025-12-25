@@ -1118,6 +1118,17 @@ export default function DisputeEditorPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Amendment Studio V2 */}
+      <AmendmentStudio
+        open={showAmendmentStudio}
+        onOpenChange={setShowAmendmentStudio}
+        recordTitle={dispute?.title || 'Dispute'}
+        currentVersion={dispute?.revision || 1}
+        moduleType="dispute"
+        onCreateAmendment={handleAmendV2}
+        isLoading={amendLoading}
+      />
     </motion.div>
   );
 }
