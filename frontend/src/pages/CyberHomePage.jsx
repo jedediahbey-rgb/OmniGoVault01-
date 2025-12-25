@@ -587,34 +587,12 @@ export default function CyberHomePage() {
       {/* ===== TOP NAV ===== */}
       <nav className="fixed top-0 left-0 right-0 z-40 bg-[#05080F]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo - Exclusive Equity & Trust */}
+          <div className="flex items-center justify-center h-16">
+            {/* Logo - Exclusive Equity & Trust - Centered */}
             <Link to="/vault" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Key className="w-5 h-5 text-vault-gold" weight="fill" />
               <span className="text-base font-medium text-white">Exclusive Equity & Trust</span>
             </Link>
-            
-            {/* Nav Links - Hidden on mobile */}
-            <div className="hidden lg:flex items-center gap-6 text-sm">
-              {['Learn', 'Tools', 'Templates', 'Governance', 'Scenarios', 'Pricing'].map((item) => (
-                <a key={item} href={`#${item.toLowerCase()}`} className="text-slate-400 hover:text-white transition-colors">
-                  {item}
-                </a>
-              ))}
-            </div>
-            
-            {/* Right side */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Command palette hint */}
-              <button
-                onClick={() => setShowCommandPalette(true)}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs text-slate-400 hover:border-vault-gold/30 transition-colors"
-              >
-                <MagnifyingGlass className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Search</span>
-                <kbd className="ml-2 px-1.5 py-0.5 bg-white/5 rounded text-[10px]">⌘K</kbd>
-              </button>
-            </div>
           </div>
         </div>
       </nav>
