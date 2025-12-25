@@ -50,13 +50,13 @@ class GovernanceV2Tester:
             return False
     
     def test_create_meeting_record(self):
-        """Test creating a meeting minutes record"""
+        """Test creating a meeting minutes record for PUT testing"""
         payload = {
             "module_type": "minutes",
             "portfolio_id": self.portfolio_id,
-            "title": "Test Meeting Minutes",
+            "title": "Test Meeting for PUT Testing",
             "payload_json": {
-                "title": "Test Meeting Minutes",
+                "title": "Test Meeting for PUT Testing",
                 "meeting_type": "regular",
                 "date_time": datetime.now().isoformat(),
                 "location": "Conference Room A",
@@ -80,8 +80,8 @@ class GovernanceV2Tester:
             if success:
                 data = response.json()
                 if data.get("ok") and data.get("data", {}).get("record"):
-                    record_id = data["data"]["record"]["id"]
-                    details += f", Record ID: {record_id}"
+                    self.test_record_id = data["data"]["record"]["id"]
+                    details += f", Record ID: {self.test_record_id}"
                 else:
                     success = False
                     details += f", Invalid response structure: {data}"
@@ -92,11 +92,11 @@ class GovernanceV2Tester:
                 except:
                     details += f", Response: {response.text[:300]}"
             
-            self.log_test("Create Meeting Minutes Record", success, details)
+            self.log_test("Create Test Meeting Record", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Create Meeting Minutes Record", False, f"Exception: {str(e)}")
+            self.log_test("Create Test Meeting Record", False, f"Exception: {str(e)}")
             return False
     
     def test_create_distribution_record(self):
