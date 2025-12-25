@@ -531,13 +531,13 @@ class BinderService:
             for item in items:
                 manifest.append({
                     "section": section,
-                    "item_type": item.get("type"),
-                    "title": item.get("title"),
-                    "db_id": item.get("id"),
-                    "rm_id_display": item.get("rm_id"),
-                    "status": item.get("status"),
-                    "finalized_at": item.get("finalized_at"),
-                    "version": item.get("data", {}).get("version")
+                    "item_type": safe_get(item, "type"),
+                    "title": safe_title(item, "Untitled"),
+                    "db_id": safe_get(item, "id"),
+                    "rm_id_display": safe_get(item, "rm_id"),
+                    "status": safe_get(item, "status"),
+                    "finalized_at": safe_get(item, "finalized_at"),
+                    "version": safe_get(safe_get(item, "data", {}), "version")
                 })
         
         return manifest
