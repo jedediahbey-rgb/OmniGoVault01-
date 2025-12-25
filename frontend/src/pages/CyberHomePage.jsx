@@ -717,15 +717,9 @@ export default function CyberHomePage() {
               viewport={{ once: true, margin: '-100px' }}
               variants={staggerContainer}
             >
-              <motion.div variants={fadeInUp} className="flex flex-col items-center lg:items-start gap-4 mb-4 text-center lg:text-left">
-                <div>
-                  <div className="flex justify-center lg:justify-start">
-                    <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
-                  </div>
-                  <h2 className="mt-3 text-xl sm:text-2xl font-bold text-white">Signal Console</h2>
-                  <p className="text-sm sm:text-base text-slate-400">Real-time governance activity</p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
+              <motion.div variants={fadeInUp} className="mb-4 text-center lg:text-left">
+                {/* Mode Toggle Row - Centered on mobile */}
+                <div className="flex items-center justify-center lg:justify-start gap-2 mb-3">
                   {!demoMode && (
                     <Button 
                       variant="ghost" 
@@ -737,6 +731,7 @@ export default function CyberHomePage() {
                       <ClockCounterClockwise className={`w-4 h-4 ${signalsLoading ? 'animate-spin' : ''}`} />
                     </Button>
                   )}
+                  <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -752,6 +747,8 @@ export default function CyberHomePage() {
                     {demoMode ? 'Demo' : 'Live'}
                   </Button>
                 </div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Signal Console</h2>
+                <p className="text-sm sm:text-base text-slate-400">Real-time governance activity</p>
               </motion.div>
               
               <motion.div variants={fadeInUp}>
