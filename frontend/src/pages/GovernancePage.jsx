@@ -186,10 +186,9 @@ const insuranceTypeConfig = {
   group: { icon: Users, color: 'text-cyan-400', bg: 'bg-cyan-500/20', label: 'Group Life' },
 };
 
-// Insurance status badges
-const insuranceStatusConfig = {
-  draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30' },
-  finalized: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
+// Insurance badge - policy state badges (only shown when FINALIZED)
+const policyStateBadgeConfig = {
+  pending: { label: 'Pending', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' },
   active: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   lapsed: { label: 'Lapsed', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
   paid_up: { label: 'Paid Up', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30' },
@@ -197,6 +196,44 @@ const insuranceStatusConfig = {
   claimed: { label: 'Claimed', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30' },
   expired: { label: 'Expired', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30' },
 };
+
+/**
+ * Derived Insurance Badge Logic:
+ * - If lifecycle status !== "finalized" => show "Draft" badge only
+ * - Only when status === "finalized" may we show policyState badges
+ * 
+ * @param {Object} policy - Insurance policy object
+ * @param {string} policy.status - Lifecycle status: "draft" | "finalized" | "voided"
+ * @param {string} policy.policy_state - Policy operational state (only meaningful when finalized)
+ * @returns {Object} { label: string, color: string }
+ */
+function getInsuranceBadge(policy) {
+  const lifecycleStatus = policy?.status; // "draft" | "finalized" | "voided"
+  const policyState = policy?.policy_state || "pending"; // "active" | "lapsed" | "pending" | ...
+
+  // RULE: Draft records must NEVER display "Active" or any operational state
+  if (lifecycleStatus !== "finalized") {
+    return { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30' };
+  }
+
+  // Finalized records - show the policy state
+  const stateConfig = policyStateBadgeConfig[policyState];
+  if (stateConfig) {
+    return stateConfig;
+  }
+
+  // Fallback for unknown policy states
+  return { label: policyState || 'Pending', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30' };
+}
+
+// Runtime assertion to prevent invalid state rendering (dev helper)
+function assertNoActiveOnDraft(policy) {
+  if (policy?.status !== 'finalized' && policy?.policy_state === 'active') {
+    console.error('[INSURANCE_BADGE_VIOLATION] Draft record has policy_state=active. This should not happen:', policy);
+    return false;
+  }
+  return true;
+}
 
 // Role badge colors
 const roleColors = {
