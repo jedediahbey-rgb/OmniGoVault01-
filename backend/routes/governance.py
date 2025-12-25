@@ -356,7 +356,7 @@ async def get_meetings(
 
 @router.get("/meetings/{meeting_id}")
 async def get_meeting(meeting_id: str, request: Request):
-    """Get a single meeting by ID"""
+    """Get a single meeting by ID - checks both V1 and V2 collections"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -366,15 +366,50 @@ async def get_meeting(meeting_id: str, request: Request):
         return error_response("MISSING_MEETING_ID", "Meeting ID is required")
     
     try:
+        # First check legacy V1 collection
         meeting = await db.meetings.find_one(
             {"meeting_id": meeting_id, "user_id": user.user_id},
             {"_id": 0}
         )
         
-        if not meeting:
-            return error_response("NOT_FOUND", "Meeting not found", status_code=404)
+        if meeting:
+            return success_item(meeting)
         
-        return success_item(meeting)
+        # If not found, check V2 governance_records collection
+        v2_record = await db.governance_records.find_one(
+            {"id": meeting_id, "user_id": user.user_id, "module_type": "minutes", "status": {"$ne": "voided"}},
+            {"_id": 0}
+        )
+        
+        if v2_record:
+            # Get the latest revision payload
+            revision = await db.governance_revisions.find_one(
+                {"id": v2_record.get("current_revision_id")},
+                {"_id": 0}
+            )
+            
+            payload = revision.get("payload_json", {}) if revision else {}
+            
+            # Transform V2 record to V1 format
+            meeting = {
+                "meeting_id": v2_record["id"],
+                "id": v2_record["id"],
+                "portfolio_id": v2_record.get("portfolio_id"),
+                "user_id": v2_record.get("user_id"),
+                "title": v2_record.get("title") or payload.get("title", ""),
+                "rm_id": v2_record.get("rm_id", ""),
+                "status": v2_record.get("status", "draft"),
+                "locked": v2_record.get("status") == "finalized",
+                "created_at": v2_record.get("created_at"),
+                "finalized_at": v2_record.get("finalized_at"),
+                "attendees": payload.get("attendees", []),
+                "agenda_items": payload.get("agenda_items", []),
+                # Merge payload fields
+                **payload
+            }
+            return success_item(meeting)
+        
+        return error_response("NOT_FOUND", "Meeting not found", status_code=404)
         
     except Exception as e:
         print(f"Error fetching meeting: {e}")
