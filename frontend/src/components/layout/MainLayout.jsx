@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, Link } from 'react-router-dom';
 import {
   Vault,
-  X
+  X,
+  Key
 } from '@phosphor-icons/react';
 import Sidebar from './Sidebar';
 import { pageTransition } from '../../lib/motion';
