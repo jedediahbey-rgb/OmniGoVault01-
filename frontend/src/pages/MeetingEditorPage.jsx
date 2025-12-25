@@ -962,21 +962,32 @@ export default function MeetingEditorPage({ user }) {
             </div>
           )}
           
-          {/* Hash verification for finalized meetings */}
-          {isFinalized && meeting.finalized_hash && (
-            <div className="mt-4 pt-4 border-t border-vault-gold/20 space-y-2">
-              {/* Tamper-evident hash - on its own line */}
-              <div className="flex flex-wrap items-center gap-2 text-xs text-vault-muted">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="shrink-0">Tamper-evident hash:</span>
-                <code className="bg-vault-dark/50 px-2 py-0.5 rounded font-mono break-all">
-                  {meeting.finalized_hash.slice(0, 16)}...{meeting.finalized_hash.slice(-16)}
-                </code>
-              </div>
-              {/* Finalized by - on its own line */}
-              {meeting.finalized_by && (
-                <div className="text-xs text-vault-muted pl-6">
-                  Finalized by <span className="text-white">{meeting.finalized_by}</span> on {formatDate(meeting.finalized_at)}
+          {/* Integrity Seal for finalized meetings */}
+          {isFinalized && (
+            <div className="mt-4 pt-4 border-t border-vault-gold/20">
+              <IntegritySealBadge
+                recordId={meeting.id}
+                sealId={meeting.integrity_seal_id}
+                sealedAt={meeting.integrity_sealed_at}
+                verifiedAt={meeting.integrity_verified_at}
+                status={meeting.integrity_seal_id ? 'valid' : 'never_sealed'}
+                isFinalized={true}
+              />
+              {/* Legacy hash display */}
+              {meeting.finalized_hash && (
+                <div className="mt-3 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-vault-muted">
+                    <Hash className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="shrink-0">Content hash:</span>
+                    <code className="bg-vault-dark/50 px-2 py-0.5 rounded font-mono break-all">
+                      {meeting.finalized_hash.slice(0, 16)}...{meeting.finalized_hash.slice(-16)}
+                    </code>
+                  </div>
+                  {meeting.finalized_by && (
+                    <div className="text-xs text-vault-muted pl-6">
+                      Finalized by <span className="text-white">{meeting.finalized_by}</span> on {formatDate(meeting.finalized_at)}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
