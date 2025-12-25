@@ -27,6 +27,7 @@ import DistributionEditorPage from './pages/DistributionEditorPage';
 import DisputeEditorPage from './pages/DisputeEditorPage';
 import InsuranceEditorPage from './pages/InsuranceEditorPage';
 import CompensationEditorPage from './pages/CompensationEditorPage';
+import GovernanceRecordPage from './pages/GovernanceRecordPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
