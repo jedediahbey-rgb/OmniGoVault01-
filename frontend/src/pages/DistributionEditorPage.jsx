@@ -677,6 +677,20 @@ export default function DistributionEditorPage({ user }) {
                 </div>
             )}
           </div>
+          
+          {/* Integrity Seal for finalized distributions */}
+          {isFinalized && (
+            <div className="mt-4 pt-4 border-t border-vault-gold/20">
+              <IntegritySealBadge
+                recordId={distribution.id}
+                sealId={distribution.integrity_seal_id}
+                sealedAt={distribution.integrity_sealed_at}
+                verifiedAt={distribution.integrity_verified_at}
+                status={distribution.integrity_seal_id ? 'valid' : 'never_sealed'}
+                isFinalized={true}
+              />
+            </div>
+          )}
         </GlassCard>
       </motion.div>
 
