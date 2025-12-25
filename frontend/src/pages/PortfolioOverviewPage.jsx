@@ -535,6 +535,7 @@ export default function PortfolioOverviewPage({ user }) {
     setNewAssetValue('');
     setNewAssetNotes('');
     setAssetTransactionType('deposit');
+    setAssetThread(null); // Reset ledger thread selection
   };
 
   const resetLedgerForm = () => {
