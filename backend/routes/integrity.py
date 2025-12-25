@@ -15,6 +15,7 @@ import json
 
 from services.integrity_checker import create_integrity_checker, IntegrityScanResult
 from services.lifecycle_engine import lifecycle_engine, FinalizeValidation
+from services.integrity_seal import create_integrity_seal_service, SealStatus
 
 router = APIRouter(prefix="/api/integrity", tags=["integrity"])
 
@@ -469,3 +470,144 @@ async def derive_operational_status(
         "derived_operational_status": derived,
         "rule_explanation": "Draft records always show lifecycle status, never operational status like 'Active'"
     })
+
+
+# ============ INTEGRITY SEAL ENDPOINTS ============
+
+@router.post("/seal/{record_id}")
+async def create_seal(record_id: str, request: Request):
+    """
+    Create an integrity seal for a finalized record.
+    Generates a cryptographic hash and stores it for tamper detection.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    seal_service = create_integrity_seal_service(db)
+    
+    body = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+    
+    result = await seal_service.create_integrity_seal(
+        record_id=record_id,
+        user_id=user.user_id,
+        sealed_by=body.get("sealed_by", user.name if hasattr(user, 'name') else user.user_id)
+    )
+    
+    if result.get("success"):
+        return success_response(result)
+    else:
+        return error_response("SEAL_ERROR", result.get("error", "Failed to create seal"))
+
+
+@router.get("/seal/{record_id}/verify")
+async def verify_seal(record_id: str, request: Request):
+    """
+    Verify the integrity seal of a record.
+    Returns verification status and detects any tampering.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    seal_service = create_integrity_seal_service(db)
+    result = await seal_service.verify_record_seal(record_id, user.user_id)
+    
+    return success_response(result)
+
+
+@router.post("/seal/batch")
+async def batch_seal_records(request: Request):
+    """
+    Create seals for all finalized records without seals in a portfolio.
+    
+    Body: { "portfolio_id": "..." }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        portfolio_id = body.get("portfolio_id")
+    except Exception:
+        return error_response("INVALID_BODY", "Request body must contain portfolio_id", status_code=400)
+    
+    if not portfolio_id:
+        return error_response("MISSING_FIELD", "portfolio_id is required", status_code=400)
+    
+    seal_service = create_integrity_seal_service(db)
+    result = await seal_service.seal_all_finalized(
+        portfolio_id=portfolio_id,
+        user_id=user.user_id,
+        sealed_by=user.name if hasattr(user, 'name') else user.user_id
+    )
+    
+    return success_response(result)
+
+
+@router.post("/seal/verify-all")
+async def verify_all_seals(request: Request):
+    """
+    Verify all seals in a portfolio.
+    
+    Body: { "portfolio_id": "..." }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        portfolio_id = body.get("portfolio_id")
+    except Exception:
+        return error_response("INVALID_BODY", "Request body must contain portfolio_id", status_code=400)
+    
+    if not portfolio_id:
+        return error_response("MISSING_FIELD", "portfolio_id is required", status_code=400)
+    
+    seal_service = create_integrity_seal_service(db)
+    result = await seal_service.verify_all_seals(portfolio_id, user.user_id)
+    
+    return success_response(result)
+
+
+@router.get("/seal/chain/{portfolio_id}")
+async def verify_seal_chain(portfolio_id: str, request: Request):
+    """
+    Verify the integrity of the seal chain for a portfolio.
+    Checks that seals are properly linked.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    seal_service = create_integrity_seal_service(db)
+    result = await seal_service.verify_chain(portfolio_id, user.user_id)
+    
+    return success_response(result)
+
+
+@router.get("/seal/report/{portfolio_id}")
+async def get_seal_report(portfolio_id: str, request: Request):
+    """
+    Get a comprehensive seal status report for a portfolio.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    seal_service = create_integrity_seal_service(db)
+    result = await seal_service.get_seal_report(portfolio_id, user.user_id)
+    
+    return success_response(result)
