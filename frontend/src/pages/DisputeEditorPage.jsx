@@ -396,6 +396,27 @@ export default function DisputeEditorPage({ user }) {
     }
   };
 
+  // V2 Amendment Studio handler
+  const handleAmendV2 = async (amendData) => {
+    setAmendLoading(true);
+    try {
+      const res = await axios.post(`${API}/governance/disputes/${disputeId}/amend`, {
+        reason: amendData.change_reason,
+        change_type: amendData.change_type,
+        effective_at: amendData.effective_at
+      });
+      const data = res.data;
+      const amendmentData = data.item || data;
+      toast.success('Amendment draft created');
+      setShowAmendmentStudio(false);
+      navigate(`/vault/governance/disputes/${amendmentData.dispute_id}`);
+    } catch (error) {
+      throw new Error(error.response?.data?.error?.message || 'Failed to create amendment');
+    } finally {
+      setAmendLoading(false);
+    }
+  };
+
   const handleFinalize = async () => {
     setFinalizing(true);
     try {
