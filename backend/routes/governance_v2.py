@@ -841,7 +841,7 @@ async def update_record(record_id: str, request: Request):
         
         # Log audit event
         await log_event(
-            event_type=EventType.UPDATED,
+            event_type=EventType.UPDATED_DRAFT,
             record_id=actual_id,
             revision_id=revision["id"] if revision else None,
             portfolio_id=record.get("portfolio_id"),
