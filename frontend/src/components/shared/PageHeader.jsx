@@ -89,9 +89,12 @@ export default function PageHeader({
             </div>
           )}
           <div>
-            <h1 className="text-3xl font-heading text-white tracking-tight">
-              {safeTitle || 'Untitled'}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-heading text-white tracking-tight">
+                {safeTitle || 'Untitled'}
+              </h1>
+              {helpKey && <PageHelpTooltip pageKey={helpKey} />}
+            </div>
             {safeSubtitle && (
               <p className="text-white/60 mt-1">{safeSubtitle}</p>
             )}
