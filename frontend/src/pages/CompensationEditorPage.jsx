@@ -494,70 +494,64 @@ export default function CompensationEditorPage({ user }) {
               </div>
             ) : (
               <>
-                {/* Header Row */}
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
-                      <CurrencyDollar className="w-5 h-5 text-emerald-400" />
-                    </div>
-                    <div className="min-w-0">
-                      <h1 className="text-lg sm:text-xl font-heading text-white truncate">
-                        {compensation.title || 'Compensation Entry'}
-                      </h1>
-                      <div className="flex flex-wrap items-center gap-2 mt-1">
-                        {compensation.rm_id && (
-                          <span className="text-xs font-mono text-vault-gold bg-vault-gold/10 px-2 py-0.5 rounded">
-                            {compensation.rm_id}
-                          </span>
-                        )}
-                        <Badge className={`text-xs ${status.color} border`}>
-                          {status.label}
+                {/* Header Row - Unified layout */}
+                <div className="flex items-start gap-3">
+                  <div className="p-3 rounded-xl bg-emerald-500/20 shrink-0">
+                    <CurrencyDollar className="w-6 h-6 text-emerald-400" weight="duotone" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    {/* Badges row - status first, then type */}
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <Badge className={`${status.color} border text-xs`}>
+                        {status.label}
+                      </Badge>
+                      <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
+                        {typeLabels[compensation.compensation_type] || 'Annual Fee'}
+                      </Badge>
+                      {isLocked && (
+                        <Badge className="bg-vault-gold/20 text-vault-gold border border-vault-gold/30 text-xs">
+                          <Lock className="w-3 h-3 mr-1" />
+                          Locked
                         </Badge>
-                        {isLocked && (
-                          <Badge className="text-xs bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-                            <Lock className="w-3 h-3 mr-1" />
-                            Locked
-                          </Badge>
-                        )}
+                      )}
+                    </div>
+                    
+                    {/* Title */}
+                    <h1 className="text-xl sm:text-2xl font-heading text-white break-words">
+                      {compensation.title || 'Compensation Entry'}
+                    </h1>
+                    
+                    {/* RM-ID */}
+                    {compensation.rm_id && (
+                      <span className="text-xs font-mono text-vault-muted">
+                        {compensation.rm_id}
+                      </span>
+                    )}
+                    
+                    {/* Amount */}
+                    <div className="text-2xl font-heading text-emerald-400 mt-2">
+                      {formatCurrency(compensation.amount, compensation.currency)}
+                      <span className="text-sm text-vault-muted ml-2">compensation</span>
+                    </div>
+                    
+                    {/* Details row */}
+                    <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-vault-muted">
+                      <div className="flex items-center gap-1">
+                        <User className="w-4 h-4" />
+                        <span>{compensation.recipient_name}</span>
                       </div>
+                      {compensation.fiscal_year && (
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>FY {compensation.fiscal_year}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Amount Display */}
-                <div className="text-2xl sm:text-3xl font-heading text-emerald-400 mb-4">
-                  {formatCurrency(compensation.amount, compensation.currency)}
-                  <span className="text-sm text-vault-muted ml-2">
-                    {typeLabels[compensation.compensation_type] || compensation.compensation_type}
-                  </span>
-                </div>
-
-                {/* Details */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  <div className="flex items-center gap-2 text-sm text-vault-muted">
-                    <User className="w-4 h-4" />
-                    <span>{compensation.recipient_name}</span>
-                    <span className="text-xs bg-vault-gold/10 px-2 py-0.5 rounded">
-                      {compensation.recipient_role}
-                    </span>
-                  </div>
-                  {compensation.period_start && compensation.period_end && (
-                    <div className="flex items-center gap-2 text-sm text-vault-muted">
-                      <Calendar className="w-4 h-4" />
-                      <span>{new Date(compensation.period_start).toLocaleDateString()} - {new Date(compensation.period_end).toLocaleDateString()}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Description */}
-                {compensation.description && (
-                  <div className="mb-4 p-3 bg-vault-dark/30 rounded-lg">
-                    <p className="text-sm text-vault-muted">{compensation.description}</p>
-                  </div>
-                )}
-
-                {/* Action buttons */}
-                <div className="flex items-center gap-2 flex-wrap">
+                {/* Action buttons - properly aligned */}
+                <div className="flex items-center gap-2 justify-end mt-4">
                   {!isLocked && (
                     <Button onClick={() => setShowFinalizeConfirm(true)} variant="outline" className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10">
                       <Lock className="w-4 h-4 mr-2" />
