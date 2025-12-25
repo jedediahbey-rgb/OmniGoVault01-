@@ -606,32 +606,44 @@ export default function GovernancePage({ user }) {
     
     setCreatingDistribution(true);
     try {
-      const res = await axios.post(`${API}/governance/distributions`, {
-        ...newDistribution,
+      // Use V2 API for creating distributions
+      const res = await axios.post(`${API_V2}/records`, {
+        module_type: MODULE_TYPES.distributions,
         portfolio_id: selectedPortfolio,
-        total_amount: parseFloat(newDistribution.total_amount) || 0,
+        title: newDistribution.title,
+        payload_json: {
+          title: newDistribution.title,
+          distribution_type: newDistribution.distribution_type,
+          description: newDistribution.description,
+          total_amount: parseFloat(newDistribution.total_amount) || 0,
+          currency: newDistribution.currency,
+          asset_type: newDistribution.asset_type,
+          scheduled_date: newDistribution.scheduled_date,
+          recipients: []
+        }
       });
       
       const data = res.data;
-      const distData = data.item || data;
-      
-      toast.success('Distribution created');
-      setShowNewDistribution(false);
-      setNewDistribution({
-        title: '',
-        distribution_type: 'regular',
-        description: '',
-        total_amount: '',
-        currency: 'USD',
-        asset_type: 'cash',
-        scheduled_date: new Date().toISOString().slice(0, 10),
-      });
-      
-      // Navigate to the distribution editor
-      navigate(`/vault/governance/distributions/${distData.distribution_id}`);
+      if (data.ok && data.data?.record) {
+        toast.success('Distribution created');
+        setShowNewDistribution(false);
+        setNewDistribution({
+          title: '',
+          distribution_type: 'regular',
+          description: '',
+          total_amount: '',
+          currency: 'USD',
+          asset_type: 'cash',
+          scheduled_date: new Date().toISOString().slice(0, 10),
+        });
+        
+        navigate(`/vault/governance/distributions/${data.data.record.id}`);
+      } else {
+        throw new Error(data.error?.message || 'Failed to create distribution');
+      }
     } catch (error) {
       console.error('Failed to create distribution:', error);
-      toast.error(error.response?.data?.error?.message || 'Failed to create distribution');
+      toast.error(error.response?.data?.error?.message || error.message || 'Failed to create distribution');
     } finally {
       setCreatingDistribution(false);
     }
