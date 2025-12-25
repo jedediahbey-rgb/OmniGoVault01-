@@ -1078,6 +1078,165 @@ export default function BinderPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Schedule Modal */}
+        <Dialog open={showScheduleModal} onOpenChange={(open) => {
+          setShowScheduleModal(open);
+          if (!open) {
+            setEditingSchedule(null);
+            resetScheduleForm();
+          }
+        }}>
+          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
+                <CalendarBlank className="w-5 h-5" />
+                {editingSchedule ? 'Edit Schedule' : 'New Schedule'}
+              </DialogTitle>
+              <DialogDescription className="text-vault-muted">
+                Configure automatic binder generation
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              {/* Profile Selection */}
+              <div>
+                <label className="text-sm text-white mb-2 block">Binder Profile</label>
+                <Select
+                  value={scheduleForm.profile_id}
+                  onValueChange={(value) => setScheduleForm({ ...scheduleForm, profile_id: value })}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue placeholder="Select profile" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    {profiles.map((profile) => (
+                      <SelectItem
+                        key={profile.id}
+                        value={profile.id}
+                        className="text-white hover:bg-vault-gold/20"
+                      >
+                        {profile.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Frequency Selection */}
+              <div>
+                <label className="text-sm text-white mb-2 block">Frequency</label>
+                <Select
+                  value={scheduleForm.frequency}
+                  onValueChange={(value) => setScheduleForm({ ...scheduleForm, frequency: value })}
+                >
+                  <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                    <SelectItem value="daily" className="text-white hover:bg-vault-gold/20">Daily</SelectItem>
+                    <SelectItem value="weekly" className="text-white hover:bg-vault-gold/20">Weekly</SelectItem>
+                    <SelectItem value="monthly" className="text-white hover:bg-vault-gold/20">Monthly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Day of Week (for weekly) */}
+              {scheduleForm.frequency === 'weekly' && (
+                <div>
+                  <label className="text-sm text-white mb-2 block">Day of Week</label>
+                  <Select
+                    value={String(scheduleForm.day_of_week)}
+                    onValueChange={(value) => setScheduleForm({ ...scheduleForm, day_of_week: parseInt(value) })}
+                  >
+                    <SelectTrigger className="bg-[#05080F] border-vault-gold/20 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                      <SelectItem value="0" className="text-white hover:bg-vault-gold/20">Sunday</SelectItem>
+                      <SelectItem value="1" className="text-white hover:bg-vault-gold/20">Monday</SelectItem>
+                      <SelectItem value="2" className="text-white hover:bg-vault-gold/20">Tuesday</SelectItem>
+                      <SelectItem value="3" className="text-white hover:bg-vault-gold/20">Wednesday</SelectItem>
+                      <SelectItem value="4" className="text-white hover:bg-vault-gold/20">Thursday</SelectItem>
+                      <SelectItem value="5" className="text-white hover:bg-vault-gold/20">Friday</SelectItem>
+                      <SelectItem value="6" className="text-white hover:bg-vault-gold/20">Saturday</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Day of Month (for monthly) */}
+              {scheduleForm.frequency === 'monthly' && (
+                <div>
+                  <label className="text-sm text-white mb-2 block">Day of Month (1-28)</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="28"
+                    value={scheduleForm.day_of_month}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, day_of_month: parseInt(e.target.value) || 1 })}
+                    className="bg-[#05080F] border-vault-gold/20 text-white"
+                  />
+                </div>
+              )}
+
+              {/* Time */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-white mb-2 block">Hour (0-23)</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="23"
+                    value={scheduleForm.hour}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, hour: parseInt(e.target.value) || 0 })}
+                    className="bg-[#05080F] border-vault-gold/20 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-white mb-2 block">Minute (0-59)</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="59"
+                    value={scheduleForm.minute}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, minute: parseInt(e.target.value) || 0 })}
+                    className="bg-[#05080F] border-vault-gold/20 text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Enabled Toggle */}
+              <div className="flex items-center justify-between pt-2">
+                <label className="text-sm text-white">Schedule Active</label>
+                <Switch
+                  checked={scheduleForm.enabled}
+                  onCheckedChange={(checked) => setScheduleForm({ ...scheduleForm, enabled: checked })}
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowScheduleModal(false);
+                  setEditingSchedule(null);
+                  resetScheduleForm();
+                }}
+                className="border-vault-gold/30 text-white"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={editingSchedule ? handleUpdateSchedule : handleCreateSchedule}
+                className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+              >
+                {editingSchedule ? 'Update Schedule' : 'Create Schedule'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
