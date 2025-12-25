@@ -215,7 +215,9 @@ export default function CompensationEditorPage({ user }) {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await axios.delete(`${API}/governance/compensation/${compensationId}`);
+      await axios.post(`${API}/governance/v2/records/${compensationId}/void`, {
+        void_reason: 'Deleted by user'
+      });
       toast.success('Compensation entry deleted successfully');
       navigate('/vault/governance?tab=compensation');
     } catch (error) {
