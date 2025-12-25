@@ -1478,96 +1478,86 @@ export default function GovernancePage({ user }) {
                 {filteredDisputes.map((dispute, index) => {
                   const typeConfig = disputeTypeConfig[dispute.dispute_type] || disputeTypeConfig.beneficiary;
                   const TypeIcon = typeConfig.icon;
-                  // Always show the actual status - don't override
-                  const status = disputeStatusConfig[dispute.status] || disputeStatusConfig.open;
+                  // Use draft status if not yet finalized
+                  const effectiveStatus = dispute.locked ? 'finalized' : (dispute.status || 'draft');
+                  const status = disputeStatusConfig[effectiveStatus] || disputeStatusConfig.draft;
                   const priority = priorityConfig[dispute.priority] || priorityConfig.medium;
                   const disputeId = dispute.id || dispute.dispute_id;
                   
                   return (
                     <motion.div
                       key={disputeId}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
                       <GlassCard 
-                        className="p-4 hover:border-vault-gold/40 transition-all cursor-pointer group"
+                        className="p-4 cursor-pointer hover:border-vault-gold/50 transition-all group"
                         onClick={() => navigate(`/vault/governance/disputes/${disputeId}`)}
                       >
-                        <div className="flex items-start gap-4">
-                          {/* Type Icon */}
-                          <div className={`p-3 rounded-xl ${typeConfig.bg}`}>
-                            <TypeIcon className={`w-6 h-6 ${typeConfig.color}`} />
-                          </div>
-                          
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <h3 className="text-lg font-heading text-white group-hover:text-vault-gold transition-colors">
-                                  {dispute.title}
-                                </h3>
-                                <div className="flex flex-wrap items-center gap-2 mt-1">
-                                  {dispute.rm_id && (
-                                    <span className="text-xs font-mono text-vault-muted bg-vault-dark/50 px-2 py-0.5 rounded">
-                                      {dispute.rm_id}
-                                    </span>
-                                  )}
-                                  <Badge className={`text-xs ${status.color} border`}>
-                                    {status.label}
-                                  </Badge>
-                                  <Badge className={`text-xs ${priority.color} border`}>
-                                    {priority.label}
-                                  </Badge>
-                                </div>
-                              </div>
-                              
-                              {/* Amount */}
-                              {dispute.amount_claimed > 0 && (
-                                <div className="text-right">
-                                  <div className="text-xl font-heading text-red-400">
-                                    {formatCurrency(dispute.amount_claimed, dispute.currency)}
-                                  </div>
-                                  <div className="text-xs text-vault-muted">
-                                    Amount Claimed
-                                  </div>
-                                </div>
-                              )}
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            {/* Icon - consistent p-2 rounded-lg */}
+                            <div className={`p-2 rounded-lg ${typeConfig.bg} shrink-0`}>
+                              <TypeIcon className={`w-5 h-5 ${typeConfig.color}`} weight="duotone" />
                             </div>
                             
-                            {/* Details Row */}
-                            <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-vault-muted">
-                              {dispute.case_number && (
-                                <div className="flex items-center gap-1">
-                                  <FileText className="w-4 h-4" />
-                                  <span>Case: {dispute.case_number}</span>
+                            <div className="flex-1 min-w-0">
+                              {/* Badges row - status first, then type, then priority */}
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <Badge className={`${status.color} border text-xs`}>
+                                  {status.label}
+                                </Badge>
+                                <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
+                                  {typeConfig.label}
+                                </Badge>
+                                <Badge className={`${priority.color} border text-xs`}>
+                                  {priority.label}
+                                </Badge>
+                              </div>
+                              
+                              {/* Title */}
+                              <h3 className="text-white font-medium truncate">{dispute.title}</h3>
+                              
+                              {/* RM-ID */}
+                              {dispute.rm_id && (
+                                <span className="text-xs font-mono text-vault-muted">{dispute.rm_id}</span>
+                              )}
+                              
+                              {/* Amount Claimed */}
+                              {dispute.amount_claimed > 0 && (
+                                <div className="text-lg font-heading text-red-400 mt-1">
+                                  {formatCurrency(dispute.amount_claimed, dispute.currency)}
+                                  <span className="text-xs text-vault-muted ml-2">claimed</span>
                                 </div>
                               )}
-                              {dispute.jurisdiction && (
-                                <div className="flex items-center gap-1">
-                                  <Gavel className="w-4 h-4" />
-                                  <span>{dispute.jurisdiction}</span>
-                                </div>
-                              )}
-                              {dispute.next_deadline && (
-                                <div className="flex items-center gap-1 text-amber-400">
-                                  <Clock className="w-4 h-4" />
-                                  <span>Deadline: {new Date(dispute.next_deadline).toLocaleDateString()}</span>
-                                </div>
-                              )}
-                              {dispute.parties?.length > 0 && (
-                                <div className="flex items-center gap-1">
-                                  <Users className="w-4 h-4" />
-                                  <span>{dispute.parties.length} parties</span>
-                                </div>
-                              )}
+                              
+                              {/* Details row */}
+                              <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-vault-muted">
+                                {dispute.case_number && (
+                                  <div className="flex items-center gap-1">
+                                    <FileText className="w-4 h-4" />
+                                    <span>#{dispute.case_number}</span>
+                                  </div>
+                                )}
+                                {dispute.jurisdiction && (
+                                  <div className="flex items-center gap-1">
+                                    <Gavel className="w-4 h-4" />
+                                    <span>{dispute.jurisdiction}</span>
+                                  </div>
+                                )}
+                                {dispute.parties?.length > 0 && (
+                                  <div className="flex items-center gap-1">
+                                    <Users className="w-4 h-4" />
+                                    <span>{dispute.parties.length}</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                           
-                          {/* Arrow indicator only */}
-                          <div className="flex items-center">
-                            <CaretRight className="w-5 h-5 text-vault-muted" />
-                          </div>
+                          {/* Arrow */}
+                          <CaretRight className="w-5 h-5 text-vault-muted shrink-0" />
                         </div>
                       </GlassCard>
                     </motion.div>
