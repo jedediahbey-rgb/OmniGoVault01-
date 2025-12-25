@@ -102,13 +102,14 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
               className="fixed inset-0 z-[100] bg-black/40"
             />
             
-            {/* Tooltip - Always centered modal for consistency */}
+            {/* Tooltip - Centered modal */}
             <motion.div
               initial={{ opacity: 0, y: 8, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="fixed z-[101] left-4 right-4 top-1/3 max-w-sm mx-auto p-4 bg-vault-void border border-white/10 rounded-xl shadow-2xl"
+              className="fixed z-[101] inset-x-4 top-1/4 p-4 bg-vault-void border border-white/10 rounded-xl shadow-2xl"
+              style={{ maxWidth: '320px', margin: '0 auto' }}
             >
               <button
                 onClick={() => setIsOpen(false)}
