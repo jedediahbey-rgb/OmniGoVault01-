@@ -303,13 +303,22 @@ class DistributionAllocation(BaseModel):
 
 class DistributionPayload(BaseModel):
     """Payload schema for Distributions"""
+    title: str = ""
+    distribution_type: str = "regular"
+    description: str = ""
     period: str = ""  # e.g., "Q1 2024", "Annual 2024"
     distribution_date: str = ""
+    scheduled_date: str = ""  # Alternative field from frontend
     total_amount: float = 0.0
     currency: str = "USD"
+    asset_type: str = "cash"
     allocations: List[DistributionAllocation] = []
+    recipients: List[Dict[str, Any]] = []  # Alternative field from frontend
     notes: str = ""
     approval_notes: str = ""
+    
+    class Config:
+        extra = "allow"
 
 
 class DisputeClaim(BaseModel):
