@@ -1109,6 +1109,68 @@ class BinderService:
         </div>
         """)
         
+        # 3a. Missing Items Page (if any)
+        missing_items = content.get("_missing_items", [])
+        validation_warnings = content.get("_validation_warnings", [])
+        
+        if missing_items or validation_warnings:
+            html_parts.append("""
+            <div class="record-page" id="missing-items">
+                <h1 class="bookmark-l1" data-bookmark="Missing Items Notice" style="visibility: hidden; height: 0; margin: 0;">Missing Items</h1>
+                <h2 style="color: #dc3545; border-bottom: 2px solid #dc3545; padding-bottom: 8px;">
+                    ⚠️ Missing Items Notice
+                </h2>
+                <p style="font-size: 10pt; color: #666; margin-bottom: 16px;">
+                    The following items were referenced but could not be found during binder generation.
+                    This may indicate deleted records or data inconsistencies.
+                </p>
+            """)
+            
+            if missing_items:
+                html_parts.append("""
+                <table class="manifest-table" style="margin-bottom: 20px;">
+                    <thead>
+                        <tr>
+                            <th>Record ID</th>
+                            <th>Type</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                """)
+                
+                for item in missing_items:
+                    record_id = item.get("record_id", "Unknown")
+                    item_type = item.get("type", "Unknown")
+                    reason = item.get("reason", "Not specified")
+                    
+                    html_parts.append(f"""
+                        <tr>
+                            <td><code>{record_id}</code></td>
+                            <td>{item_type}</td>
+                            <td>{reason}</td>
+                        </tr>
+                    """)
+                
+                html_parts.append("""
+                    </tbody>
+                </table>
+                """)
+            
+            if validation_warnings:
+                html_parts.append("""
+                <h3 style="color: #856404; margin-top: 20px;">Validation Warnings</h3>
+                <ul style="font-size: 10pt; color: #666;">
+                """)
+                
+                for warning in validation_warnings:
+                    msg = warning.get("message", str(warning))
+                    html_parts.append(f"<li>{msg}</li>")
+                
+                html_parts.append("</ul>")
+            
+            html_parts.append("</div>")
+        
         # Section counter for numbering
         section_counter = 1
         
