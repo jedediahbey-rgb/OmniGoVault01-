@@ -196,6 +196,7 @@ export default function PortfolioOverviewPage({ user }) {
   const [newAssetValue, setNewAssetValue] = useState('');
   const [newAssetNotes, setNewAssetNotes] = useState('');
   const [assetTransactionType, setAssetTransactionType] = useState('deposit');
+  const [assetThread, setAssetThread] = useState(null); // Ledger thread selector
   const [deleteAssetId, setDeleteAssetId] = useState(null);
   
   // Ledger entry dialog
