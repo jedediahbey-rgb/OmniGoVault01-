@@ -34,6 +34,7 @@ import GovernanceRecordPage from './pages/GovernanceRecordPage';
 import DiagnosticsPage from './pages/DiagnosticsPage';
 import TrustHealthDashboard from './pages/TrustHealthDashboard';
 import SettingsPage from './pages/SettingsPage';
+import LedgerThreadsPage from './pages/LedgerThreadsPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -205,6 +206,13 @@ const AppRouter = ({ auth }) => {
       <Route path="/settings" element={
         <AuthLayout auth={auth}>
           <SettingsPage />
+        </AuthLayout>
+      } />
+      
+      {/* Ledger Threads Manager */}
+      <Route path="/ledger-threads" element={
+        <AuthLayout auth={auth}>
+          <LedgerThreadsPage />
         </AuthLayout>
       } />
       
