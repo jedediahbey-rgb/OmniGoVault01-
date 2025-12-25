@@ -291,13 +291,15 @@ export default function InsuranceEditorPage({ user }) {
   const handleFinalize = async () => {
     setFinalizing(true);
     try {
-      await axios.post(`${API}/governance/insurance-policies/${policyId}/finalize`, {});
+      await axios.post(`${API}/governance/v2/records/${policyId}/finalize`, {});
       // Refetch policy data
-      const res = await axios.get(`${API}/governance/insurance-policies/${policyId}`);
+      const res = await axios.get(`${API}/governance/v2/records/${policyId}`);
       const data = res.data;
-      setPolicy(data.item || data);
+      if (data.ok && data.data?.record) {
+        setPolicy(data.data.record);
+      }
       setShowFinalizeConfirm(false);
-      toast.success('Insurance policy finalized and locked');
+      toast.success('Insurance policy finalized');
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to finalize policy');
     } finally {
