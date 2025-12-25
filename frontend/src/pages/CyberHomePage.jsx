@@ -812,7 +812,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== LEARN SECTION ===== */}
-      <section id="learn" className="py-16 lg:py-24 bg-gradient-to-b from-[#05080F] to-[#0B1221]">
+      <section id="learn" className="py-10 lg:py-24 bg-gradient-to-b from-[#05080F] to-[#0B1221]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -820,13 +820,15 @@ export default function CyberHomePage() {
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-10">
+            <motion.div variants={fadeInUp} className="flex flex-col items-center lg:items-start lg:flex-row lg:justify-between gap-4 mb-8 text-center lg:text-left">
               <div>
-                <IconChip icon={Sparkle} label="Education" variant="gold" />
-                <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">Maxims Explorer</h2>
+                <div className="flex justify-center lg:justify-start">
+                  <IconChip icon={Sparkle} label="Education" variant="gold" />
+                </div>
+                <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">Maxims Explorer</h2>
                 <p className="mt-2 text-slate-400">Master the foundational principles of equity law</p>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
                   <Lightning className="w-4 h-4 text-emerald-400" />
                   <span className="text-sm text-emerald-400">3-day streak</span>
