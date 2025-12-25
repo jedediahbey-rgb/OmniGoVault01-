@@ -1857,24 +1857,45 @@ export default function GovernancePage({ user }) {
                             </div>
                           </div>
                           
-                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            {entry.status === 'draft' && !entry.locked && (
+                          {/* 3-dot dropdown menu for actions */}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <DotsThreeVertical className="w-5 h-5 text-vault-muted" weight="bold" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-700">
+                              <DropdownMenuItem
+                                className="text-white hover:bg-zinc-800 cursor-pointer"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  if (window.confirm('Delete this compensation entry?')) {
-                                    handleDeleteCompensation(compId);
-                                  }
+                                  navigate(`/vault/governance/compensation/${compId}`);
                                 }}
                               >
-                                <Trash className="w-4 h-4" />
-                              </Button>
-                            )}
-                            <CaretRight className="w-5 h-5 text-vault-muted" />
-                          </div>
+                                <PencilSimple className="w-4 h-4 mr-2" />
+                                View / Edit
+                              </DropdownMenuItem>
+                              {entry.status === 'draft' && !entry.locked && (
+                                <DropdownMenuItem
+                                  className="text-red-400 hover:bg-red-500/10 cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (window.confirm('Delete this compensation entry?')) {
+                                      handleDeleteCompensation(compId);
+                                    }
+                                  }}
+                                >
+                                  <Trash className="w-4 h-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </GlassCard>
                     </motion.div>
