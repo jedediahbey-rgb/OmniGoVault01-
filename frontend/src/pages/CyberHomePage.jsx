@@ -717,7 +717,7 @@ export default function CyberHomePage() {
               viewport={{ once: true, margin: '-100px' }}
               variants={staggerContainer}
             >
-              <motion.div variants={fadeInUp} className="flex flex-col items-center lg:items-start sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 text-center lg:text-left">
+              <motion.div variants={fadeInUp} className="flex flex-col items-center lg:items-start gap-4 mb-4 text-center lg:text-left">
                 <div>
                   <div className="flex justify-center lg:justify-start">
                     <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
