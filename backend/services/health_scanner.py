@@ -73,23 +73,24 @@ class TrustHealthScanner:
     """
     Comprehensive Trust Health Scanner.
     Produces an overall score (0-100) with category breakdowns.
+    Uses configurable weights from database if available.
     """
     
-    # Category weights (must sum to 1.0)
-    WEIGHTS = {
-        "governance_hygiene": 0.25,
-        "financial_integrity": 0.25,
-        "compliance_recordkeeping": 0.15,
-        "risk_exposure": 0.15,
-        "data_integrity": 0.20
+    # Default category weights (percentages, must sum to 100)
+    DEFAULT_WEIGHTS = {
+        "governance_hygiene": 25,
+        "financial_integrity": 25,
+        "compliance_recordkeeping": 15,
+        "risk_exposure": 15,
+        "data_integrity": 20
     }
     
-    # Blocking condition caps
-    CAPS = {
-        "ghost_records": 60,
-        "missing_required_fields": 70,
-        "ledger_imbalance": 65,
-        "draft_showing_active": 75
+    # Default blocking condition caps
+    DEFAULT_CAPS = {
+        "ghost_records": {"enabled": True, "cap": 60, "description": "Orphan/ghost records detected"},
+        "missing_required_fields": {"enabled": True, "cap": 70, "description": "Finalized records missing required fields"},
+        "ledger_imbalance": {"enabled": True, "cap": 65, "description": "Ledger debits and credits don't balance"},
+        "draft_showing_active": {"enabled": True, "cap": 75, "description": "Draft insurance showing as active"}
     }
     
     def __init__(self, db):
@@ -99,6 +100,38 @@ class TrustHealthScanner:
         self.blocking_conditions: List[str] = []
         self.scan_id = f"scan_{uuid4().hex[:8]}"
         self.scanned_at = None
+        # Dynamic weights and caps (loaded from config)
+        self.WEIGHTS = {}
+        self.CAPS = {}
+    
+    async def _load_config(self, user_id: str):
+        """Load health rules configuration from database."""
+        try:
+            config_doc = await self.db.system_config.find_one(
+                {"config_type": "health_rules", "user_id": user_id},
+                {"_id": 0}
+            )
+            
+            if config_doc and config_doc.get("config"):
+                config = config_doc["config"]
+                # Load weights (convert from percentage to decimal)
+                weights = config.get("category_weights", self.DEFAULT_WEIGHTS)
+                self.WEIGHTS = {k: v / 100.0 for k, v in weights.items()}
+                
+                # Load blocking caps
+                caps_config = config.get("blocking_caps", self.DEFAULT_CAPS)
+                self.CAPS = {}
+                for cap_name, cap_data in caps_config.items():
+                    if isinstance(cap_data, dict) and cap_data.get("enabled", True):
+                        self.CAPS[cap_name] = cap_data.get("cap", 60)
+            else:
+                # Use defaults
+                self.WEIGHTS = {k: v / 100.0 for k, v in self.DEFAULT_WEIGHTS.items()}
+                self.CAPS = {k: v["cap"] for k, v in self.DEFAULT_CAPS.items()}
+        except Exception as e:
+            # Fallback to defaults on error
+            self.WEIGHTS = {k: v / 100.0 for k, v in self.DEFAULT_WEIGHTS.items()}
+            self.CAPS = {k: v["cap"] for k, v in self.DEFAULT_CAPS.items()}
     
     async def run_full_scan(self, user_id: str = "default_user") -> Dict:
         """Run a comprehensive health scan."""
@@ -106,6 +139,9 @@ class TrustHealthScanner:
         self.category_scores = {}
         self.blocking_conditions = []
         self.scanned_at = datetime.now(timezone.utc).isoformat()
+        
+        # Load configuration from database
+        await self._load_config(user_id)
         
         # Gather all data
         records = await self._get_governance_records(user_id)
