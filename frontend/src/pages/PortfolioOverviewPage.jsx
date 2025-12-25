@@ -37,6 +37,7 @@ import {
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import StatCard from '../components/shared/StatCard';
+import LedgerThreadSelector from '../components/governance/LedgerThreadSelector';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
