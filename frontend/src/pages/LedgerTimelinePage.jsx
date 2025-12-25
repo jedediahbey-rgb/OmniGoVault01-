@@ -237,7 +237,7 @@ export default function LedgerTimelinePage() {
       className="p-4 sm:p-6 lg:p-8"
     >
       <PageHeader
-        icon={TimelineIcon}
+        icon={Scroll}
         title="Governance Ledger"
         subtitle="Unified timeline of all trust governance activities"
       />
