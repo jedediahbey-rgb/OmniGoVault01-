@@ -61,3 +61,44 @@
 ## Testing Scope
 - Backend: Full compensation CRUD operations
 - Frontend: Compensation tab UI and creation dialog
+
+## Amendment Studio V2 Implementation - Phase 1 Complete
+
+### New Backend Components
+- **Models**: `/app/backend/models/governance_v2.py`
+  - GovernanceRecord (top-level record)
+  - GovernanceRevision (immutable revisions with hash chain)
+  - GovernanceEvent (audit log)
+  - GovernanceAttachment, GovernanceAttestation
+  - Module-specific payload schemas (Minutes, Distribution, Dispute, Insurance, Compensation)
+
+- **API Routes**: `/app/backend/routes/governance_v2.py` (prefix: `/api/governance/v2`)
+  - GET /records - List records with filters
+  - GET /records/:id - Get record with current revision
+  - GET /records/:id/revisions - Revision history
+  - POST /records - Create new record with v1 draft
+  - POST /records/:id/finalize - Finalize current draft
+  - POST /records/:id/amend - Create amendment draft
+  - PATCH /revisions/:id - Update draft only (403 if finalized)
+  - POST /revisions/:id/finalize - Finalize amendment
+  - POST /records/:id/void - Soft delete with audit
+  - POST /revisions/:id/attest - Add attestation
+  - GET /records/:id/events - Audit log
+  - GET /revisions/:id/diff - Compare revisions
+
+### New Frontend Components
+- `/app/frontend/src/components/governance/AmendmentStudio.jsx`
+- `/app/frontend/src/components/governance/RevisionHistory.jsx`
+- `/app/frontend/src/components/governance/DiffPreview.jsx`
+- `/app/frontend/src/components/governance/ReviewModeHeader.jsx`
+- `/app/frontend/src/pages/GovernanceRecordPage.jsx` (unified editor)
+
+### Route Added
+- `/vault/governance/record/:recordId` - V2 unified record page
+
+### Core Principles Implemented
+1. Finalized = read-only (PATCH returns 409 if finalized)
+2. Amendments create NEW revisions linked to prior
+3. Every change logged to governance_events
+4. Hash chain for tamper evidence
+5. Void = soft-delete with audit trail
