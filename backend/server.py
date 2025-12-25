@@ -3599,6 +3599,11 @@ from routes.ledger_threads import router as ledger_threads_router, init_ledger_t
 init_ledger_thread_routes(db, get_current_user)
 app.include_router(ledger_threads_router)
 
+# Initialize and include Integrity/Diagnostics routes
+from routes.integrity import router as integrity_router, init_integrity_routes
+init_integrity_routes(db, get_current_user)
+app.include_router(integrity_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
