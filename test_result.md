@@ -433,3 +433,59 @@ Integrated the FinalizeConfirmationModal component into all 4 remaining governan
 - Modal displays correctly with all UI elements
 - Lint check passed (no errors)
 
+
+
+## Settings Page (Trust Score Rules Editor & Governance Checklists) - IMPLEMENTED
+Date: Thu Dec 25 16:50:00 UTC 2025
+
+### Features Built
+1. **Settings Page** (/settings)
+   - Two tabs: Health Score Rules & Governance Checklists
+   - Breadcrumb navigation (Dashboard > Settings)
+   - Settings link added to sidebar under TOOLS section
+
+2. **Health Score Rules Tab**
+   - Category Weights editor with sliders and numeric inputs
+   - Real-time validation (weights must sum to 100%)
+   - Blocking Conditions configuration with enable/disable toggles
+   - Save Changes and Reset to Defaults buttons
+   - Info banner shows when using default configuration
+
+3. **Governance Checklists Tab**
+   - Module selector (Minutes, Distribution, Insurance, Compensation, Dispute)
+   - Editable checklist items with labels
+   - Required checkbox for each item
+   - Add new item and delete item functionality
+   - Save per-module checklist
+
+4. **Backend Integration**
+   - GET /api/config/health-rules - Retrieve current config
+   - PUT /api/config/health-rules - Update config
+   - POST /api/config/health-rules/reset - Reset to defaults
+   - GET /api/config/checklists - Get all checklists
+   - PUT /api/config/checklists/{module} - Update specific checklist
+
+5. **Health Scanner Integration**
+   - Modified /app/backend/services/health_scanner.py
+   - Scanner now loads weights from database configuration
+   - Falls back to defaults if no custom config exists
+
+### Files Created/Modified
+- /app/frontend/src/pages/SettingsPage.jsx (EXISTS - verified working)
+- /app/frontend/src/App.js (Added /settings route)
+- /app/frontend/src/components/layout/Sidebar.jsx (Added Settings link)
+- /app/backend/routes/config.py (EXISTS - verified working)
+- /app/backend/services/health_scanner.py (Modified to use dynamic config)
+
+### API Verification
+- GET /api/config/health-rules: Returns default config with is_default=true
+- PUT /api/config/health-rules: Successfully updates weights (tested with 30% governance)
+- POST /api/config/health-rules/reset: Successfully resets to defaults
+- GET /api/config/checklists: Returns all 5 module checklists
+
+### Frontend Verification
+- Settings page loads correctly at /settings
+- Health Score Rules tab displays weights sliders
+- Governance Checklists tab displays all modules and items
+- Tab switching works correctly
+
