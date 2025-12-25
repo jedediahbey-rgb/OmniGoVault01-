@@ -912,15 +912,114 @@ class BinderService:
         generated_at = datetime.now(timezone.utc).strftime("%B %d, %Y at %I:%M %p UTC")
         profile_name = profile.get("name", "Binder")
         
+        # Get first letter for logo
+        logo_letter = portfolio_name[0].upper() if portfolio_name else "B"
+        
         html_parts.append(f"""
         <div class="cover-page">
-            <div class="cover-title">{portfolio_name}</div>
-            <div class="cover-subtitle">{trust_name}</div>
-            <div class="cover-badge">{profile_name}</div>
-            <div class="cover-meta">
-                <p>Generated: {generated_at}</p>
-                <p>Total Items: {len(manifest)}</p>
+            <h1 class="bookmark-l1" data-bookmark="{portfolio_name} - {profile_name}" style="position: absolute; top: -100px; visibility: hidden;">Cover</h1>
+            <div class="cover-container">
+                <div class="cover-logo">
+                    <span class="cover-logo-text">{logo_letter}</span>
+                </div>
+                <div class="cover-title">{portfolio_name}</div>
+                <div class="cover-subtitle">{trust_name or 'Trust Administration Binder'}</div>
+                <div class="cover-badge">{profile_name}</div>
+                <div class="cover-meta">
+                    <p><strong>Generated:</strong> {generated_at}</p>
+                    <p><strong>Total Items:</strong> {len(manifest)}</p>
+                    <p><strong>Document Type:</strong> Court/Audit Ready PDF Packet</p>
+                </div>
             </div>
+        </div>
+        """)
+        
+        # 2. Table of Contents with clickable links
+        # Build section info for TOC
+        section_icons = {
+            "trust_profile": "📋",
+            "governance_minutes": "📝",
+            "governance_distributions": "💰",
+            "governance_compensation": "👥",
+            "governance_disputes": "⚖️",
+            "governance_insurance": "🛡️",
+            "ledger": "📊",
+            "assets": "🏢",
+            "documents": "📁",
+            "integrity_summary": "✓"
+        }
+        
+        section_display_names = {
+            "trust_profile": "Trust Profile & Authority",
+            "governance_minutes": "Meeting Minutes",
+            "governance_distributions": "Distributions",
+            "governance_compensation": "Compensation",
+            "governance_disputes": "Disputes",
+            "governance_insurance": "Insurance Policies",
+            "ledger": "Ledger & Financial",
+            "assets": "Assets",
+            "documents": "Documents",
+            "integrity_summary": "Integrity Summary"
+        }
+        
+        html_parts.append(f"""
+        <div class="toc-page" id="toc">
+            <h1 class="bookmark-l1" data-bookmark="Table of Contents" style="visibility: hidden; height: 0; margin: 0;">TOC</h1>
+            <div class="toc-header">Table of Contents</div>
+            <ul class="toc-list">
+        """)
+        
+        section_num = 1
+        for section_key in SECTION_ORDER:
+            if section_key in ["cover", "toc", "manifest", "attachments", "trust_authority"]:
+                continue
+            
+            items = content.get(section_key, [])
+            if not items and section_key != "integrity_summary":
+                continue
+            
+            # Skip integrity summary if disabled
+            if section_key == "integrity_summary" and not profile.get("rules_json", {}).get("include_integrity_summary", True):
+                continue
+            
+            icon = section_icons.get(section_key, "📄")
+            display_name = section_display_names.get(section_key, section_key.replace("_", " ").title())
+            item_count = len(items) if items else ""
+            count_text = f"({item_count} items)" if item_count else ""
+            
+            html_parts.append(f"""
+                <li class="toc-section">
+                    <a href="#section-{section_key}" class="toc-section-link">
+                        <span class="toc-icon">{icon}</span>
+                        <span class="toc-title">Section {section_num}: {display_name}</span>
+                        <span class="toc-count">{count_text}</span>
+                    </a>
+            """)
+            
+            # Add subsection links for individual items (max 10 to avoid TOC bloat)
+            if items and len(items) <= 10:
+                html_parts.append('<ul class="toc-subsection">')
+                for idx, item in enumerate(items):
+                    item_id = item.get("id", f"{section_key}-{idx}")
+                    item_title = item.get("title", "Untitled")[:50]
+                    rm_id = item.get("rm_id", "")
+                    rm_display = f" ({rm_id})" if rm_id else ""
+                    html_parts.append(f"""
+                        <li>
+                            <a href="#item-{item_id}" class="toc-subsection-link">
+                                • {item_title}{rm_display}
+                            </a>
+                        </li>
+                    """)
+                html_parts.append('</ul>')
+            elif items and len(items) > 10:
+                html_parts.append(f'<div style="margin-left: 36px; font-size: 9pt; color: #888;">... and {len(items)} more items</div>')
+            
+            html_parts.append('</li>')
+            section_num += 1
+        
+        html_parts.append("""
+            </ul>
         </div>
         """)
         
