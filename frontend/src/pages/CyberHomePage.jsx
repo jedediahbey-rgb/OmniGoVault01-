@@ -354,23 +354,31 @@ export default function CyberHomePage() {
     compensation: Users,
   };
   
-  // Fetch live activity feed
+  // Fetch live activity feed from V2 governance records
   const fetchLiveSignals = async () => {
     setSignalsLoading(true);
     try {
-      const res = await axios.get(`${API}/governance/activity-feed`, {
+      // Use V2 records endpoint to get recent governance activity
+      const res = await axios.get(`${API}/governance/v2/records`, {
         params: { limit: 8 }
       });
       const data = res.data;
-      if (data.ok && data.items && data.items.length > 0) {
-        // Transform to signal format with icons
-        const signals = data.items.map((item, idx) => ({
+      if (data.ok && data.data?.items && data.data.items.length > 0) {
+        // Transform records to signal format with icons
+        const moduleTypeIcons = {
+          minutes: Notebook,
+          distribution: Coins,
+          dispute: Scales,
+          insurance: ShieldCheck,
+          compensation: CurrencyDollar
+        };
+        const signals = data.data.items.map((item, idx) => ({
           id: item.id || idx,
-          type: item.type,
-          message: item.message,
-          detail: item.detail,
-          time: item.time,
-          icon: typeIcons[item.type] || Notebook
+          type: item.module_type || 'governance',
+          message: `${item.module_type?.charAt(0).toUpperCase() + item.module_type?.slice(1) || 'Record'}: ${item.title}`,
+          detail: item.rm_id || '',
+          time: item.created_at ? new Date(item.created_at).toLocaleString() : '',
+          icon: moduleTypeIcons[item.module_type] || Notebook
         }));
         setLiveSignals(signals);
         setDemoMode(false);
