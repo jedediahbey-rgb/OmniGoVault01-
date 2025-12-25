@@ -880,6 +880,7 @@ async def finalize_record(record_id: str, request: Request):
     """
     Finalize the current draft revision.
     Accepts either record `id` or `rm_id` for lookup.
+    Uses lifecycle engine for validation.
     """
     try:
         user = await get_current_user(request)
@@ -914,6 +915,31 @@ async def finalize_record(record_id: str, request: Request):
                 "This revision is already finalized. Use amend to create a new revision.",
                 status_code=409
             )
+        
+        # ============ LIFECYCLE ENGINE VALIDATION ============
+        module_type = record.get("module_type", "minutes")
+        payload = revision.get("payload_json", {})
+        current_status = record.get("status", "draft")
+        
+        # Validate the transition using lifecycle engine
+        validation = lifecycle_engine.validate_finalization(
+            module_type=module_type,
+            payload=payload,
+            current_status=current_status
+        )
+        
+        if not validation.can_finalize:
+            return error_response(
+                "VALIDATION_FAILED",
+                "Cannot finalize record",
+                details={
+                    "errors": validation.errors,
+                    "warnings": validation.warnings,
+                    "missing_required": validation.missing_required
+                },
+                status_code=400
+            )
+        # ============ END LIFECYCLE VALIDATION ============
         
         # Compute content hash
         finalized_at = datetime.now(timezone.utc)
