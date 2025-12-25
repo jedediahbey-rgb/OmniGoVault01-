@@ -112,6 +112,41 @@ SECTION_ORDER = [
 ]
 
 
+# ============ SAFE TITLE HELPER ============
+
+def safe_title(obj, default="Untitled"):
+    """
+    Safely extract a title from any object type.
+    Supports: dicts, ORM objects, None, and missing fields.
+    """
+    if obj is None:
+        return default
+    
+    # Try dict-style access
+    if isinstance(obj, dict):
+        return obj.get("title") or obj.get("name") or obj.get("trust_name") or obj.get("description") or default
+    
+    # Try attribute access for ORM objects
+    for attr in ["title", "name", "trust_name", "description"]:
+        try:
+            val = getattr(obj, attr, None)
+            if val:
+                return str(val)
+        except Exception:
+            continue
+    
+    return default
+
+
+def safe_get(obj, key, default=None):
+    """Safely get a value from dict or object."""
+    if obj is None:
+        return default
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    return getattr(obj, key, default)
+
+
 class BinderService:
     """
     Service for generating Portfolio Binders.
