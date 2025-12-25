@@ -13,6 +13,7 @@ import {
   Robot,
   Scroll,
   Shield,
+  ShieldCheck,
   SignOut,
   Sparkle,
   X
