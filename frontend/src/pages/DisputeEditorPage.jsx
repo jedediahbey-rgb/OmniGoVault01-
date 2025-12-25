@@ -505,6 +505,23 @@ export default function DisputeEditorPage({ user }) {
     }
   };
 
+  // Fetch revision history
+  const fetchRevisions = async () => {
+    try {
+      const res = await axios.get(`${API}/governance/v2/records/${disputeId}/revisions`);
+      const data = res.data;
+      if (data.ok && data.data?.revisions) {
+        setRevisions(data.data.revisions);
+      }
+    } catch (error) {
+      console.error('Failed to fetch revisions:', error);
+    }
+  };
+
+  const handleViewRevision = (revision) => {
+    toast.info(`Viewing v${revision.version} - ${revision.change_type}`);
+  };
+
   const handleFinalize = async () => {
     setFinalizing(true);
     try {
