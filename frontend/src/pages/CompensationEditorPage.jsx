@@ -95,6 +95,10 @@ export default function CompensationEditorPage({ user }) {
   const [showFinalizeConfirm, setShowFinalizeConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
+  
+  // Amendment Studio V2
+  const [showAmendmentStudio, setShowAmendmentStudio] = useState(false);
+  const [amendLoading, setAmendLoading] = useState(false);
 
   const fetchCompensation = useCallback(async () => {
     if (!compensationId) {
