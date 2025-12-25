@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import {
   Vault,
   X
@@ -87,7 +87,7 @@ export default function MainLayout({ children, user, onLogout }) {
             isOpen={sidebarOpen} 
             onClick={() => setSidebarOpen(!sidebarOpen)} 
           />
-          <span className="font-heading text-lg text-white">Equity Trust</span>
+          <Link to="/" className="font-heading text-lg text-white hover:text-vault-gold transition-colors">Exclusive Equity Trust</Link>
           <div className="w-10" /> {/* Spacer for centering */}
         </div>
       </header>
