@@ -364,16 +364,27 @@ class InsuranceBeneficiary(BaseModel):
 
 class InsurancePayload(BaseModel):
     """Payload schema for Life Insurance"""
+    title: str = ""
     insurer: str = ""
+    carrier_name: str = ""  # Alternative from frontend
+    insured_name: str = ""
     policy_number: str = ""
     policy_type: str = ""  # term, whole_life, universal, variable
     face_value: float = 0.0
+    death_benefit: float = 0.0  # Alternative from frontend
+    cash_value: float = 0.0
+    currency: str = "USD"
     premium: float = 0.0
+    premium_amount: float = 0.0  # Alternative from frontend
     premium_frequency: str = "monthly"  # monthly, quarterly, annually
+    effective_date: str = ""
     beneficiaries: List[InsuranceBeneficiary] = []
     premium_due_date: str = ""
     lapse_risk: bool = False
     notes: str = ""
+    
+    class Config:
+        extra = "allow"
 
 
 class CompensationEntry(BaseModel):
