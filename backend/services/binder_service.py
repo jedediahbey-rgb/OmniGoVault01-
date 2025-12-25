@@ -384,8 +384,8 @@ class BinderService:
         if trust_profile:
             content["trust_profile"].append({
                 "type": "trust_profile",
-                "title": trust_profile.get("trust_name", "Trust Profile"),
-                "id": trust_profile.get("id", portfolio_id),
+                "title": safe_title(trust_profile, "Trust Profile"),
+                "id": safe_get(trust_profile, "id", portfolio_id),
                 "data": trust_profile
             })
         
