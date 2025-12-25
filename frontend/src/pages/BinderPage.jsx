@@ -312,24 +312,56 @@ export default function BinderPage() {
             </div>
           </div>
 
-          {/* Stale Badge */}
-          {staleCheck?.is_stale && latestRun && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
-              <Warning className="w-4 h-4 text-amber-400" />
-              <span className="text-amber-400 text-sm font-medium">Binder is out of date</span>
-              <Button
-                size="sm"
-                onClick={handleGenerate}
-                disabled={generating}
-                className="ml-2 bg-amber-500 hover:bg-amber-600 text-black text-xs"
-              >
-                <ArrowClockwise className={`w-3 h-3 mr-1 ${generating ? 'animate-spin' : ''}`} />
-                Regenerate
-              </Button>
+          {/* Portfolio Selector */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <FolderSimple className="w-4 h-4 text-vault-muted" />
+              <Select value={portfolioId} onValueChange={handlePortfolioChange}>
+                <SelectTrigger className="w-64 bg-[#05080F] border-vault-gold/30 text-white">
+                  <SelectValue placeholder="Select portfolio">
+                    {currentPortfolio?.name || 'Select portfolio'}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                  {portfolios.map((p) => (
+                    <SelectItem 
+                      key={p.portfolio_id} 
+                      value={p.portfolio_id}
+                      className="text-white hover:bg-vault-gold/20"
+                    >
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          )}
+
+            {/* Stale Badge */}
+            {staleCheck?.is_stale && latestRun && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                <Warning className="w-4 h-4 text-amber-400" />
+                <span className="text-amber-400 text-sm font-medium">Out of date</span>
+                <Button
+                  size="sm"
+                  onClick={handleGenerate}
+                  disabled={generating}
+                  className="ml-2 bg-amber-500 hover:bg-amber-600 text-black text-xs"
+                >
+                  <ArrowClockwise className={`w-3 h-3 mr-1 ${generating ? 'animate-spin' : ''}`} />
+                  Regenerate
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
+        {!portfolioId ? (
+          <div className="text-center py-20 bg-[#0B1221]/50 rounded-xl border border-vault-gold/10">
+            <FolderSimple className="w-12 h-12 text-vault-muted mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">Select a Portfolio</h3>
+            <p className="text-vault-muted">Choose a portfolio from the dropdown above to generate binders</p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Panel - Generate */}
           <div className="lg:col-span-2 space-y-6">
