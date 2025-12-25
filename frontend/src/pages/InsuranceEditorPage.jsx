@@ -1001,6 +1001,17 @@ export default function InsuranceEditorPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Amendment Studio V2 */}
+      <AmendmentStudio
+        open={showAmendmentStudio}
+        onOpenChange={setShowAmendmentStudio}
+        recordTitle={policy?.policy_name || 'Insurance Policy'}
+        currentVersion={policy?.revision || 1}
+        moduleType="insurance"
+        onCreateAmendment={handleAmendV2}
+        isLoading={amendLoading}
+      />
     </motion.div>
   );
 }
