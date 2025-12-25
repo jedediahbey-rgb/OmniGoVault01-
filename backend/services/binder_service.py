@@ -1307,8 +1307,9 @@ class BinderService:
                 """)
             
             html_parts.append("</tbody></table></div>")
+            section_counter += 1
         
-        # 7. Integrity Summary
+        # 8. Integrity Summary
         if profile.get("rules_json", {}).get("include_integrity_summary", True):
             sealed_count = sum(
                 1 for section in content.values()
@@ -1317,11 +1318,20 @@ class BinderService:
             )
             
             html_parts.append(f"""
-            <div class="section-divider">
+            <div class="section-divider" id="section-integrity_summary">
+                <h1 class="bookmark-l1" data-bookmark="Section {section_counter}: Integrity Summary" style="visibility: hidden; height: 0; margin: 0;">Integrity</h1>
+                <div class="section-icon">
+                    <span class="section-icon-text">✓</span>
+                </div>
+                <div class="section-number">Section {section_counter}</div>
                 <div class="section-title">Integrity Summary</div>
-                <div class="section-subtitle">Verification & Authenticity</div>
+                <div class="section-subtitle">Verification & Authenticity Report</div>
+                <div class="section-meta">
+                    Cryptographic verification status of binder contents
+                </div>
             </div>
-            <div class="record-page">
+            <div class="record-page" id="integrity-report">
+                <h2 class="bookmark-l2" data-bookmark="Integrity Report" style="visibility: hidden; height: 0; margin: 0;">Report</h2>
                 <h2 style="color: #d4af37;">Binder Integrity Report</h2>
                 <div class="trust-profile-summary">
                     <div class="profile-field">
@@ -1333,6 +1343,10 @@ class BinderService:
                         <div class="profile-value">{sealed_count}</div>
                     </div>
                     <div class="profile-field">
+                        <div class="profile-label">Seal Coverage</div>
+                        <div class="profile-value">{round(sealed_count / len(manifest) * 100, 1) if manifest else 0}%</div>
+                    </div>
+                    <div class="profile-field">
                         <div class="profile-label">Generated At</div>
                         <div class="profile-value">{generated_at}</div>
                     </div>
@@ -1340,6 +1354,17 @@ class BinderService:
                         <div class="profile-label">Profile Used</div>
                         <div class="profile-value">{profile_name}</div>
                     </div>
+                    <div class="profile-field">
+                        <div class="profile-label">Verification Hash</div>
+                        <div class="profile-value" style="font-family: monospace; font-size: 9pt;">{hashlib.sha256(str(manifest).encode()).hexdigest()[:32]}...</div>
+                    </div>
+                </div>
+                <div style="margin-top: 24px; padding: 16px; background: #f0f8f0; border-left: 4px solid #28a745;">
+                    <p style="font-size: 10pt; color: #1a1a1a; margin: 0;">
+                        <strong>Certification Statement:</strong> This binder was generated automatically by the Trust Management System.
+                        All included documents have been compiled in their original form. Items marked with integrity seals 
+                        have been cryptographically verified against their original content hashes.
+                    </p>
                 </div>
             </div>
             """)
