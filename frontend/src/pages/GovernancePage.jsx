@@ -561,7 +561,13 @@ export default function GovernancePage({ user }) {
         }
       };
       
+      console.log('[CREATE_MEETING] Sending request:', JSON.stringify(requestData, null, 2));
+      console.log('[CREATE_MEETING] URL:', `${API_V2}/records`);
+      
       const res = await axios.post(`${API_V2}/records`, requestData);
+      
+      console.log('[CREATE_MEETING] Response status:', res.status);
+      console.log('[CREATE_MEETING] Response data:', JSON.stringify(res.data, null, 2));
       
       const data = res.data;
       if (data.ok && data.data?.record) {
@@ -578,15 +584,27 @@ export default function GovernancePage({ user }) {
         // Navigate to the new meeting editor
         navigate(`/vault/governance/meetings/${data.data.record.id}`);
       } else {
-        throw new Error(data.error?.message || 'Failed to create meeting');
+        const errMsg = data.error?.message || 'Failed to create meeting';
+        console.error('[CREATE_MEETING] Server error:', data.error);
+        throw new Error(errMsg);
       }
     } catch (error) {
-      console.error('Failed to create meeting:', error);
-      toast.error(error.response?.data?.error?.message || error.message || 'Failed to create meeting');
+      console.error('[CREATE_MEETING] ERROR:', error);
+      console.error('[CREATE_MEETING] Response status:', error.response?.status);
+      console.error('[CREATE_MEETING] Response data:', JSON.stringify(error.response?.data, null, 2));
+      
+      const errMsg = error.response?.data?.error?.message 
+        || error.response?.data?.detail 
+        || error.message 
+        || 'Failed to create meeting';
+      const errCode = error.response?.data?.error?.code || error.response?.status || 'UNKNOWN';
+      
+      toast.error(`[${errCode}] ${errMsg}`);
     } finally {
       setCreating(false);
     }
   };
+
 
   const handleDeleteMeeting = async (meetingId) => {
     try {
