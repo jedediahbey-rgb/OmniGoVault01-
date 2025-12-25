@@ -947,14 +947,14 @@ async def finalize_record(record_id: str, request: Request):
             record_update["finalized_by"] = finalized_by
         
         await db.governance_records.update_one(
-            {"id": record_id},
+            {"id": actual_id},
             {"$set": record_update}
         )
         
         # Log event
         await log_event(
             event_type=EventType.FINALIZED,
-            record_id=record_id,
+            record_id=actual_id,
             actor_id=user.user_id,
             portfolio_id=record.get("portfolio_id", ""),
             trust_id=record.get("trust_id"),
@@ -964,7 +964,7 @@ async def finalize_record(record_id: str, request: Request):
         )
         
         return success_response({
-            "record_id": record_id,
+            "record_id": actual_id,
             "revision_id": revision["id"],
             "version": revision.get("version", 1),
             "finalized_at": finalized_at.isoformat(),
