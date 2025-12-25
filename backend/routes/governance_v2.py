@@ -983,12 +983,7 @@ async def finalize_record(record_id: str, request: Request):
 async def create_amendment(record_id: str, data: RecordAmendRequest, request: Request):
     """
     Create an amendment to a finalized record.
-    
-    STRICT REQUIREMENTS:
-    - Record must be finalized
-    - Creates NEW draft revision linked to current finalized revision
-    - Copies payload from current revision for editing
-    - Stores parent hash for chain integrity
+    Accepts either record `id` or `rm_id` for lookup.
     """
     try:
         user = await get_current_user(request)
@@ -999,12 +994,15 @@ async def create_amendment(record_id: str, data: RecordAmendRequest, request: Re
         return error_response("VALIDATION_ERROR", "Change reason is required for amendments")
     
     try:
-        record = await db.governance_records.find_one(
-            {"id": record_id, "user_id": user.user_id}
-        )
+        # Resolve by id or rm_id
+        record, resolver_path = await resolve_record_by_id_or_rm(record_id, user.user_id)
         
         if not record:
+            print(f"[AMEND_RECORD] NOT_FOUND: record_id={record_id}, user_id={user.user_id}")
             return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # Use resolved record ID
+        actual_id = record["id"]
         
         # STRICT: Can only amend finalized records
         if record.get("status") != RecordStatus.FINALIZED.value:
@@ -1035,7 +1033,7 @@ async def create_amendment(record_id: str, data: RecordAmendRequest, request: Re
         created_by = user.name if hasattr(user, 'name') else user.user_id
         
         new_revision = GovernanceRevision(
-            record_id=record_id,
+            record_id=actual_id,
             version=new_version,
             parent_revision_id=current_revision["id"],
             change_type=data.change_type,
