@@ -395,14 +395,32 @@ export default function GovernancePage({ user }) {
     if (!selectedPortfolio) return;
     setDisputesLoading(true);
     try {
-      const res = await axios.get(`${API}/governance/disputes`, {
-        params: { portfolio_id: selectedPortfolio }
+      // Use V2 API for disputes
+      const res = await axios.get(`${API_V2}/records`, {
+        params: { 
+          portfolio_id: selectedPortfolio, 
+          module_type: MODULE_TYPES.disputes
+        }
       });
+      
       const data = res.data;
-      if (data.ok && data.items) {
-        setDisputes(data.items);
-      } else if (Array.isArray(data)) {
-        setDisputes(data);
+      if (data.ok && data.data?.items) {
+        const transformedDisputes = data.data.items.map(record => ({
+          dispute_id: record.id,
+          id: record.id,
+          title: record.title,
+          rm_id: record.rm_id,
+          status: record.status === 'finalized' ? 'closed' : (record.status === 'draft' ? 'open' : record.status),
+          locked: record.status === 'finalized',
+          created_at: record.created_at,
+          finalized_at: record.finalized_at,
+          // Default values
+          dispute_type: 'beneficiary',
+          priority: 'medium',
+          amount_claimed: 0,
+          currency: 'USD'
+        }));
+        setDisputes(transformedDisputes);
       } else {
         setDisputes([]);
       }
