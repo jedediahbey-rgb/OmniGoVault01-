@@ -107,11 +107,47 @@ export default function CompensationEditorPage({ user }) {
     }
 
     try {
-      const res = await axios.get(`${API}/governance/compensation/${compensationId}`);
+      // Use V2 API
+      const res = await axios.get(`${API}/governance/v2/records/${compensationId}`);
       const data = res.data;
-      setCompensation(data.item || data);
+      
+      if (!data.ok || !data.data?.record) {
+        throw new Error(data.error?.message || 'Failed to load compensation');
+      }
+      
+      const record = data.data.record;
+      const revision = data.data.current_revision;
+      const payload = revision?.payload_json || {};
+      
+      // Transform V2 record to expected format
+      const compData = {
+        id: record.id,
+        compensation_id: record.id,
+        title: record.title,
+        rm_id: record.rm_id,
+        status: record.status,
+        locked: record.status === 'finalized',
+        portfolio_id: record.portfolio_id,
+        created_at: record.created_at,
+        finalized_at: record.finalized_at,
+        // Extract from payload
+        compensation_type: payload.compensation_type || 'annual_fee',
+        recipient_name: payload.recipient_name || '',
+        recipient_role: payload.recipient_role || 'trustee',
+        amount: payload.amount || 0,
+        currency: payload.currency || 'USD',
+        period_start: payload.period_start || '',
+        period_end: payload.period_end || '',
+        fiscal_year: payload.fiscal_year || '',
+        basis_of_calculation: payload.basis_of_calculation || '',
+        notes: payload.notes || '',
+        // V2 specific
+        current_version: revision?.version || 1,
+        current_revision_id: record.current_revision_id
+      };
+      
+      setCompensation(compData);
     } catch (error) {
-      // Only show error if it's not a cancel/unmount
       if (error.name !== 'CanceledError' && error.code !== 'ERR_CANCELED') {
         console.error('Failed to fetch compensation:', error);
         toast.error('Failed to load compensation details');
@@ -139,18 +175,64 @@ export default function CompensationEditorPage({ user }) {
 
   const refetchCompensation = async () => {
     try {
-      const res = await axios.get(`${API}/governance/compensation/${compensationId}`);
+      const res = await axios.get(`${API}/governance/v2/records/${compensationId}`);
       const data = res.data;
-      setCompensation(data.item || data);
+      if (!data.ok || !data.data?.record) return;
+      
+      const record = data.data.record;
+      const revision = data.data.current_revision;
+      const payload = revision?.payload_json || {};
+      
+      const compData = {
+        id: record.id,
+        compensation_id: record.id,
+        title: record.title,
+        rm_id: record.rm_id,
+        status: record.status,
+        locked: record.status === 'finalized',
+        portfolio_id: record.portfolio_id,
+        compensation_type: payload.compensation_type || 'annual_fee',
+        recipient_name: payload.recipient_name || '',
+        recipient_role: payload.recipient_role || 'trustee',
+        amount: payload.amount || 0,
+        currency: payload.currency || 'USD',
+        period_start: payload.period_start || '',
+        period_end: payload.period_end || '',
+        fiscal_year: payload.fiscal_year || '',
+        basis_of_calculation: payload.basis_of_calculation || '',
+        notes: payload.notes || '',
+        current_version: revision?.version || 1,
+      };
+      
+      setCompensation(compData);
     } catch (error) {
       console.error('Failed to refetch compensation:', error);
     }
   };
 
+  // Save using V2 API
   const saveCompensation = async (updates) => {
     setSaving(true);
     try {
-      await axios.put(`${API}/governance/compensation/${compensationId}`, updates);
+      const payload = {
+        title: updates.title || compensation.title,
+        compensation_type: updates.compensation_type || compensation.compensation_type,
+        recipient_name: updates.recipient_name !== undefined ? updates.recipient_name : compensation.recipient_name,
+        recipient_role: updates.recipient_role || compensation.recipient_role,
+        amount: updates.amount !== undefined ? updates.amount : compensation.amount,
+        currency: updates.currency || compensation.currency,
+        period_start: updates.period_start || compensation.period_start,
+        period_end: updates.period_end || compensation.period_end,
+        fiscal_year: updates.fiscal_year !== undefined ? updates.fiscal_year : compensation.fiscal_year,
+        basis_of_calculation: updates.basis_of_calculation !== undefined ? updates.basis_of_calculation : compensation.basis_of_calculation,
+        notes: updates.notes !== undefined ? updates.notes : compensation.notes,
+      };
+      
+      await axios.put(`${API}/governance/v2/records/${compensationId}`, {
+        title: payload.title,
+        payload_json: payload
+      });
+      
       await refetchCompensation();
       toast.success('Compensation updated');
       setEditingHeader(false);
@@ -181,11 +263,15 @@ export default function CompensationEditorPage({ user }) {
 
   const handleAmend = async () => {
     try {
-      const res = await axios.post(`${API}/governance/compensation/${compensationId}/amend`, {});
+      const res = await axios.post(`${API}/governance/v2/records/${compensationId}/amend`, {
+        change_reason: 'Amendment created',
+        change_type: 'amendment'
+      });
       const data = res.data;
-      const amendmentData = data.item || data;
-      toast.success('Amendment created');
-      navigate(`/vault/governance/compensation/${amendmentData.compensation_id}`);
+      if (data.ok && data.data?.record) {
+        toast.success('Amendment created');
+        navigate(`/vault/governance/compensation/${data.data.record.id}`);
+      }
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to create amendment');
     }
@@ -195,16 +281,17 @@ export default function CompensationEditorPage({ user }) {
   const handleAmendV2 = async (amendData) => {
     setAmendLoading(true);
     try {
-      const res = await axios.post(`${API}/governance/compensation/${compensationId}/amend`, {
-        reason: amendData.change_reason,
-        change_type: amendData.change_type,
+      const res = await axios.post(`${API}/governance/v2/records/${compensationId}/amend`, {
+        change_reason: amendData.change_reason,
+        change_type: amendData.change_type || 'amendment',
         effective_at: amendData.effective_at
       });
       const data = res.data;
-      const amendmentData = data.item || data;
-      toast.success('Amendment draft created');
-      setShowAmendmentStudio(false);
-      navigate(`/vault/governance/compensation/${amendmentData.compensation_id}`);
+      if (data.ok && data.data?.record) {
+        toast.success('Amendment draft created');
+        setShowAmendmentStudio(false);
+        navigate(`/vault/governance/compensation/${data.data.record.id}`);
+      }
     } catch (error) {
       throw new Error(error.response?.data?.error?.message || 'Failed to create amendment');
     } finally {
