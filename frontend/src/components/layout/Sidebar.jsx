@@ -8,6 +8,7 @@ import {
   FolderSimple,
   Gavel,
   GitBranch,
+  Heartbeat,
   House,
   MapTrifold,
   Robot,
