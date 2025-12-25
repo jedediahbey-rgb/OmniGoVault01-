@@ -5,6 +5,7 @@ import axios from 'axios';
 import {
   ArrowDownRight,
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
   Briefcase,
   CaretRight,
@@ -12,10 +13,15 @@ import {
   FileText,
   FolderSimple,
   Funnel,
+  Gavel,
+  HandCoins,
   Hash,
   Lock,
+  Newspaper,
   PencilSimple,
   Plus,
+  Scales,
+  ShieldCheck,
   Trash,
   Users
 } from '@phosphor-icons/react';
