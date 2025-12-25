@@ -527,8 +527,8 @@ export default function LedgerTimelinePage() {
                   </GlassCard>
                 </Link>
               </motion.div>
-            );
-          })}
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>
