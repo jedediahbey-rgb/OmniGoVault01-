@@ -616,7 +616,7 @@ export default function CyberHomePage() {
               </button>
               
               {/* Exclusive Equity - Links to Dashboard */}
-              <Link to="/vault/dashboard" className="flex items-center gap-2 px-3 py-1.5 bg-[#C6A87C]/10 border border-[#C6A87C]/30 rounded-lg hover:bg-[#C6A87C]/20 transition-colors">
+              <Link to="/vault" className="flex items-center gap-2 px-3 py-1.5 bg-[#C6A87C]/10 border border-[#C6A87C]/30 rounded-lg hover:bg-[#C6A87C]/20 transition-colors">
                 <Key className="w-4 h-4 text-[#C6A87C]" weight="fill" />
                 <span className="text-sm font-medium text-[#C6A87C]">Exclusive Equity</span>
               </Link>
