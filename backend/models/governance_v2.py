@@ -362,6 +362,26 @@ class InsuranceBeneficiary(BaseModel):
     relationship: str = ""
 
 
+class InsurancePolicyState(str, Enum):
+    """
+    Insurance policy operational state (only meaningful when lifecycle=FINALIZED).
+    - PENDING: Finalized but awaiting carrier activation
+    - ACTIVE: Policy is in force
+    - LAPSED: Policy lapsed due to non-payment
+    - PAID_UP: Fully paid, no more premiums due
+    - SURRENDERED: Policy surrendered for cash value
+    - CLAIMED: Death benefit claimed
+    - EXPIRED: Term policy expired
+    """
+    PENDING = "pending"
+    ACTIVE = "active"
+    LAPSED = "lapsed"
+    PAID_UP = "paid_up"
+    SURRENDERED = "surrendered"
+    CLAIMED = "claimed"
+    EXPIRED = "expired"
+
+
 class InsurancePayload(BaseModel):
     """Payload schema for Life Insurance"""
     title: str = ""
@@ -382,6 +402,9 @@ class InsurancePayload(BaseModel):
     premium_due_date: str = ""
     lapse_risk: bool = False
     notes: str = ""
+    # Policy operational state - only meaningful when record is FINALIZED
+    # Defaults to PENDING, can only be set to ACTIVE when record is finalized
+    policy_state: str = "pending"
     
     class Config:
         extra = "allow"
