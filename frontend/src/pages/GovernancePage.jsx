@@ -1124,6 +1124,17 @@ export default function GovernancePage({ user }) {
                   <span className="sm:hidden">New</span>
                 </Button>
               )}
+              {activeTab === 'compensation' && (
+                <Button
+                  onClick={() => setShowNewCompensation(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold whitespace-nowrap shrink-0"
+                  disabled={!selectedPortfolio}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">New Entry</span>
+                  <span className="sm:hidden">New</span>
+                </Button>
+              )}
             </div>
           </div>
         </GlassCard>
