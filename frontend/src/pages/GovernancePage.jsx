@@ -1657,21 +1657,19 @@ export default function GovernancePage({ user }) {
                           
                           {/* Actions */}
                           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            {policy.status === 'active' && !policy.locked && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (window.confirm('Delete this insurance policy?')) {
-                                    handleDeleteInsurance(policyId);
-                                  }
-                                }}
-                              >
-                                <Trash className="w-4 h-4" />
-                              </Button>
-                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (window.confirm('Delete this insurance policy?')) {
+                                  handleDeleteInsurance(policyId);
+                                }
+                              }}
+                            >
+                              <Trash className="w-4 h-4" />
+                            </Button>
                             <CaretRight className="w-5 h-5 text-vault-muted" />
                           </div>
                         </div>
