@@ -436,14 +436,33 @@ export default function GovernancePage({ user }) {
     if (!selectedPortfolio) return;
     setInsuranceLoading(true);
     try {
-      const res = await axios.get(`${API}/governance/insurance-policies`, {
-        params: { portfolio_id: selectedPortfolio }
+      // Use V2 API for insurance policies
+      const res = await axios.get(`${API_V2}/records`, {
+        params: { 
+          portfolio_id: selectedPortfolio, 
+          module_type: MODULE_TYPES.insurance
+        }
       });
+      
       const data = res.data;
-      if (data.ok && data.items) {
-        setInsurancePolicies(data.items);
-      } else if (Array.isArray(data)) {
-        setInsurancePolicies(data);
+      if (data.ok && data.data?.items) {
+        const transformedPolicies = data.data.items.map(record => ({
+          policy_id: record.id,
+          id: record.id,
+          title: record.title,
+          rm_id: record.rm_id,
+          status: record.status === 'finalized' ? 'active' : (record.status === 'draft' ? 'active' : record.status),
+          locked: record.status === 'finalized',
+          created_at: record.created_at,
+          finalized_at: record.finalized_at,
+          // Default values
+          policy_type: 'whole_life',
+          death_benefit: 0,
+          cash_value: 0,
+          currency: 'USD',
+          carrier_name: ''
+        }));
+        setInsurancePolicies(transformedPolicies);
       } else {
         setInsurancePolicies([]);
       }
