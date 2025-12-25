@@ -1280,92 +1280,69 @@ export default function GovernancePage({ user }) {
                   return (
                     <motion.div
                       key={meetingId}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
                       <GlassCard 
-                        className="p-4 hover:border-vault-gold/40 transition-all cursor-pointer group"
+                        className="p-4 cursor-pointer hover:border-vault-gold/50 transition-all group"
                         onClick={() => navigate(`/vault/governance/meetings/${meetingId}`)}
                       >
-                        <div className="flex items-start gap-4">
-                          {/* Type Icon */}
-                          <div className={`p-3 rounded-xl ${typeConfig.bg}`}>
-                            <TypeIcon className={`w-6 h-6 ${typeConfig.color}`} />
-                          </div>
-                          
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <h3 className="text-lg font-heading text-white group-hover:text-vault-gold transition-colors">
-                                  {meeting.title}
-                                </h3>
-                                <div className="flex flex-wrap items-center gap-2 mt-1">
-                                  {meeting.rm_id && (
-                                    <span className="text-xs font-mono text-vault-muted bg-vault-dark/50 px-2 py-0.5 rounded">
-                                      {meeting.rm_id}
-                                    </span>
-                                  )}
-                                  <Badge className={`text-xs ${status.color} border`}>
-                                    {status.label}
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            {/* Icon - consistent p-2 rounded-lg */}
+                            <div className={`p-2 rounded-lg ${typeConfig.bg} shrink-0`}>
+                              <TypeIcon className={`w-5 h-5 ${typeConfig.color}`} weight="duotone" />
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              {/* Badges row - status first, then type */}
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <Badge className={`${status.color} border text-xs`}>
+                                  {status.label}
+                                </Badge>
+                                <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
+                                  {typeConfig.label}
+                                </Badge>
+                                {meeting.is_amendment && (
+                                  <Badge className="bg-purple-500/20 text-purple-400 border border-purple-400/30 text-xs">
+                                    v{meeting.revision || meeting.amendment_number + 1}
                                   </Badge>
-                                  {meeting.is_amendment && (
-                                    <Badge className="text-xs bg-purple-500/20 text-purple-400 border border-purple-400/30">
-                                      v{meeting.revision || meeting.amendment_number + 1}
-                                    </Badge>
-                                  )}
-                                </div>
+                                )}
                               </div>
                               
-                              <div className="text-right shrink-0 pl-2 max-w-[140px] overflow-hidden">
-                                <div className="text-xs text-vault-muted flex items-center gap-1 justify-end">
-                                  <Clock className="w-3 h-3 flex-shrink-0" />
-                                  <span className="truncate">{formatDate(meeting.date_time)}</span>
+                              {/* Title */}
+                              <h3 className="text-white font-medium truncate">{meeting.title}</h3>
+                              
+                              {/* RM-ID */}
+                              {meeting.rm_id && (
+                                <span className="text-xs font-mono text-vault-muted">{meeting.rm_id}</span>
+                              )}
+                              
+                              {/* Details row */}
+                              <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-vault-muted">
+                                <div className="flex items-center gap-1">
+                                  <Clock className="w-4 h-4" />
+                                  <span>{formatDate(meeting.date_time)}</span>
                                 </div>
                                 {meeting.location && (
-                                  <div className="text-xs text-vault-muted mt-1 truncate text-right">
-                                    📍 {meeting.location}
+                                  <div className="flex items-center gap-1">
+                                    <MapPin className="w-4 h-4" />
+                                    <span className="truncate max-w-[100px]">{meeting.location}</span>
+                                  </div>
+                                )}
+                                {meeting.attendees?.length > 0 && (
+                                  <div className="flex items-center gap-1">
+                                    <Users className="w-4 h-4" />
+                                    <span>{meeting.attendees.length}</span>
                                   </div>
                                 )}
                               </div>
                             </div>
-                            
-                            {/* Attendees Preview */}
-                            {meeting.attendees?.length > 0 && (
-                              <div className="flex items-center gap-2 mt-3">
-                                <Users className="w-4 h-4 text-vault-muted" />
-                                <div className="flex flex-wrap gap-1">
-                                  {meeting.attendees.slice(0, 4).map((att, i) => (
-                                    <span 
-                                      key={i}
-                                      className={`text-xs px-2 py-0.5 rounded-full border ${roleColors[att.role] || roleColors.observer}`}
-                                    >
-                                      {att.name || 'Unknown'}
-                                    </span>
-                                  ))}
-                                  {meeting.attendees.length > 4 && (
-                                    <span className="text-xs text-vault-muted">
-                                      +{meeting.attendees.length - 4} more
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* Agenda Preview */}
-                            {meeting.agenda_items?.length > 0 && (
-                              <div className="flex items-center gap-2 mt-2 text-sm text-vault-muted">
-                                <List className="w-4 h-4" />
-                                <span>{meeting.agenda_items.length} agenda item{meeting.agenda_items.length !== 1 ? 's' : ''}</span>
-                              </div>
-                            )}
                           </div>
                           
-                          {/* Arrow indicator only - delete moved to editor 3-dot menu */}
-                          <div className="flex items-center">
-                            <CaretRight className="w-5 h-5 text-vault-muted" />
-                          </div>
+                          {/* Arrow */}
+                          <CaretRight className="w-5 h-5 text-vault-muted shrink-0" />
                         </div>
                       </GlassCard>
                     </motion.div>
