@@ -501,6 +501,11 @@ async def get_revision(revision_id: str, request: Request):
 async def create_record(data: RecordCreateRequest, request: Request):
     """
     Create a new governance record with initial draft revision (v1).
+    
+    RM-ID handling:
+    - If rm_subject_id is provided: Link to existing subject, allocate next subnumber
+    - If create_new_subject is True: Create new subject, allocate .001
+    - If neither: Fall back to legacy RM-ID generation (deprecated)
     """
     try:
         user = await get_current_user(request)
@@ -515,17 +520,60 @@ async def create_record(data: RecordCreateRequest, request: Request):
         if not is_valid:
             return error_response("VALIDATION_ERROR", f"Invalid payload: {error_msg}")
         
-        # Generate RM-ID
+        # RM-ID and Subject handling
         rm_id = ""
-        try:
-            subject_code, subject_name = MODULE_SUBJECT_CODES.get(
-                data.module_type, ("00", "General")
-            )
-            rm_id, _, _, _ = await generate_subject_rm_id(
-                data.portfolio_id, user.user_id, subject_code, subject_name
-            )
-        except Exception as e:
-            print(f"Warning: Could not generate RM-ID: {e}")
+        rm_subject_id = None
+        rm_sub = 0
+        
+        # Determine category from module type
+        category = MODULE_TO_CATEGORY.get(data.module_type.value, SubjectCategory.MISC)
+        
+        if data.rm_subject_id:
+            # Link to existing subject - allocate next subnumber
+            try:
+                rm_id, rm_sub, rm_base, rm_group, subject_title = await allocate_rm_id_from_subject(
+                    data.rm_subject_id,
+                    user.user_id
+                )
+                rm_subject_id = data.rm_subject_id
+            except ValueError as e:
+                return error_response("SUBJECT_ERROR", str(e))
+                
+        elif data.create_new_subject:
+            # Create new subject (spawn new thread)
+            if not data.new_subject_title:
+                # Use record title as subject title
+                new_subject_title = data.title
+            else:
+                new_subject_title = data.new_subject_title
+            
+            try:
+                rm_subject_id, rm_id, rm_sub, rm_base, rm_group = await create_new_subject_and_allocate(
+                    portfolio_id=data.portfolio_id,
+                    user_id=user.user_id,
+                    trust_id=data.trust_id,
+                    title=new_subject_title,
+                    category=category,
+                    party_id=data.new_subject_party_id,
+                    party_name=data.new_subject_party_name,
+                    external_ref=data.new_subject_external_ref,
+                    created_by=user.name if hasattr(user, 'name') else user.user_id
+                )
+            except ValueError as e:
+                return error_response("SUBJECT_ERROR", str(e))
+                
+        else:
+            # Legacy fallback - generate RM-ID without subject linking
+            # This path is DEPRECATED but maintained for backward compatibility
+            try:
+                subject_code, subject_name = MODULE_SUBJECT_CODES.get(
+                    data.module_type, ("00", "General")
+                )
+                rm_id, _, _, _ = await generate_subject_rm_id(
+                    data.portfolio_id, user.user_id, subject_code, subject_name
+                )
+            except Exception as e:
+                print(f"Warning: Could not generate RM-ID: {e}")
         
         # Create record
         record = GovernanceRecord(
