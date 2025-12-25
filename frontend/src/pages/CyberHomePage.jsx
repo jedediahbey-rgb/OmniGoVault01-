@@ -470,7 +470,7 @@ const GovernanceMatrixSection = () => {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
-            <Link to="/vault/governance?tab=meetings" className="text-sm text-[#C6A87C] hover:text-[#C6A87C]/80 flex items-center gap-1">
+            <Link to="/ledger" className="text-sm text-[#C6A87C] hover:text-[#C6A87C]/80 flex items-center gap-1">
               View a sample ledger <CaretRight className="w-4 h-4" />
             </Link>
           </motion.div>
