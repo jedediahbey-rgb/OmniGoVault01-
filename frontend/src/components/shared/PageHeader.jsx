@@ -91,14 +91,12 @@ export default function PageHeader({
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl sm:text-3xl font-heading text-white tracking-tight">
               {safeTitle || 'Untitled'}
-              {helpKey && (
-                <span className="inline-block align-middle ml-2">
-                  <PageHelpTooltip pageKey={helpKey} />
-                </span>
-              )}
             </h1>
-            {safeSubtitle && (
-              <p className="text-white/60 mt-1">{safeSubtitle}</p>
+            {(safeSubtitle || helpKey) && (
+              <div className="flex items-center gap-2 mt-1">
+                {safeSubtitle && <p className="text-white/60">{safeSubtitle}</p>}
+                {helpKey && <PageHelpTooltip pageKey={helpKey} />}
+              </div>
             )}
           </div>
         </div>
