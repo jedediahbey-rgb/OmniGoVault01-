@@ -19,7 +19,6 @@ import {
   Activity,
   ArrowClockwise,
   Bug,
-  Check,
   CheckCircle,
   Database,
   FileSearch,
@@ -27,7 +26,6 @@ import {
   ShieldCheck,
   Warning,
   Wrench,
-  X,
 } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 
