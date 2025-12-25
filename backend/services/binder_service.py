@@ -487,10 +487,10 @@ class BinderService:
         for asset in assets:
             content["assets"].append({
                 "type": "asset",
-                "title": asset.get("name", "Asset"),
-                "id": asset.get("id"),
-                "status": asset.get("status", "active"),
-                "created_at": asset.get("created_at"),
+                "title": safe_title(asset, "Asset"),
+                "id": safe_get(asset, "id"),
+                "status": safe_get(asset, "status", "active"),
+                "created_at": safe_get(asset, "created_at"),
                 "data": asset
             })
         
