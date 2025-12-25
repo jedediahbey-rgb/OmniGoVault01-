@@ -1716,13 +1716,6 @@ export default function GovernancePage({ user }) {
                         <p className="text-2xl font-bold text-white">{filteredCompensation.length}</p>
                       </div>
                     </div>
-                    <Button
-                      onClick={() => setShowNewCompensation(true)}
-                      className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Log Compensation
-                    </Button>
                   </div>
                 </GlassCard>
 
