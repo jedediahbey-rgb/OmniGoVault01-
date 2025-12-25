@@ -164,13 +164,7 @@ const AuthLayout = ({ children, auth }) => {
 
 // App Router Component
 const AppRouter = ({ auth }) => {
-  const location = useLocation();
   const { user, setUser, loading, setLoading, checkAuth, logout } = auth;
-
-  // Handle OAuth callback
-  if (location.hash?.includes('session_id=')) {
-    return <AuthCallback setUser={setUser} setLoading={setLoading} />;
-  }
 
   return (
     <Routes>
