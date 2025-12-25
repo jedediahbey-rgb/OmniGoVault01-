@@ -1137,6 +1137,71 @@ async def generate_subject_rm_id(portfolio_id: str, user_id: str, subject_code: 
     return full_rm_id, assigned_code, sequence_num, cat_name
 
 
+async def generate_subject_rm_id_v2(
+    portfolio_id: str, 
+    user_id: str, 
+    module_type: str,
+    relation_key: str = None,
+    related_to_record_id: str = None,
+    court_name: str = None,
+    case_number: str = None
+) -> tuple:
+    """
+    V2 RM-ID generation using atomic allocator.
+    Returns (full_rm_id, rm_group, rm_sub, module_type)
+    
+    This function uses the new atomic allocator that:
+    - Generates random group numbers to prevent duplicates
+    - Uses DB constraints for uniqueness
+    - Supports related item grouping
+    """
+    global rmid_allocator
+    
+    if rmid_allocator is None:
+        # Fallback to V1 if allocator not initialized
+        logger.warning("RM-ID V2 Allocator not initialized, using V1 fallback")
+        # Map module types to subject codes
+        module_to_code = {
+            "minutes": "20",
+            "distribution": "21",
+            "dispute": "22",
+            "insurance": "23",
+            "compensation": "24"
+        }
+        subject_code = module_to_code.get(module_type, "00")
+        return await generate_subject_rm_id(portfolio_id, user_id, subject_code, module_type)
+    
+    try:
+        result = await rmid_allocator.allocate(
+            portfolio_id=portfolio_id,
+            user_id=user_id,
+            module_type=module_type,
+            relation_key=relation_key,
+            related_to_record_id=related_to_record_id,
+            court_name=court_name,
+            case_number=case_number
+        )
+        
+        return (
+            result["rm_id"],
+            result["rm_group"],
+            result["rm_sub"],
+            module_type
+        )
+    except Exception as e:
+        logger.error(f"RM-ID V2 allocation failed: {e}, falling back to V1")
+        # Fallback to V1
+        module_to_code = {
+            "minutes": "20",
+            "distribution": "21",
+            "dispute": "22",
+            "insurance": "23",
+            "compensation": "24"
+        }
+        subject_code = module_to_code.get(module_type, "00")
+        return await generate_subject_rm_id(portfolio_id, user_id, subject_code, module_type)
+
+
 @api_router.get("/portfolios/{portfolio_id}/subject-categories")
 async def get_subject_categories(portfolio_id: str, user: User = Depends(get_current_user)):
     """Get all subject categories for a portfolio"""
