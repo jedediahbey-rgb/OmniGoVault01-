@@ -620,6 +620,22 @@ export default function InsuranceEditorPage({ user }) {
                   </Button>
                 )}
                 
+                {/* Revision History button - show if more than one version */}
+                {policy.revision > 1 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      fetchRevisions();
+                      setShowRevisionHistory(true);
+                    }}
+                    className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
+                  >
+                    <Clock className="w-4 h-4 mr-2" />
+                    v{policy.revision}
+                  </Button>
+                )}
+                
                 {isFinalized && !policy.amended_by_id && (
                   <Button
                     variant="outline"
