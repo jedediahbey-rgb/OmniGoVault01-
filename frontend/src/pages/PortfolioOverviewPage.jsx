@@ -183,7 +183,7 @@ export default function PortfolioOverviewPage({ user }) {
           axios.get(`${API}/portfolios/${portfolioId}/trust-profile`).catch(() => ({ data: null })),
           axios.get(`${API}/documents?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
           axios.get(`${API}/portfolios/${portfolioId}/assets`).catch(() => ({ data: [] })),
-          axios.get(`${API}/parties?portfolio_id=${portfolioId}`).catch(() => ({ data: [] })),
+          axios.get(`${API}/portfolios/${portfolioId}/parties`).catch(() => ({ data: [] })),
           axios.get(`${API}/portfolios/${portfolioId}/ledger`).catch(() => ({ data: { entries: [], summary: {} } })),
           axios.get(`${API}/portfolios/${portfolioId}/subject-categories`).catch(() => ({ data: [] })),
           axios.get(`${API}/governance/v2/records?portfolio_id=${portfolioId}&limit=100`).catch(() => ({ data: { ok: false, data: { items: [] } } }))
