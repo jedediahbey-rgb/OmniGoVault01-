@@ -348,10 +348,10 @@ export default function DistributionEditorPage({ user }) {
   const handleFinalize = async () => {
     setFinalizing(true);
     try {
-      await axios.post(`${API}/governance/distributions/${distributionId}/finalize`, {});
+      await axios.post(`${API}/governance/v2/records/${distributionId}/finalize`, {});
       await refetchDistribution();
       setShowFinalizeConfirm(false);
-      toast.success('Distribution finalized and locked');
+      toast.success('Distribution finalized');
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to finalize distribution');
     } finally {
