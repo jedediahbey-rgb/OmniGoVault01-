@@ -1079,6 +1079,9 @@ class EquityTrustAPITester:
         # NEW: Test V2 API for Amendment Studio
         v2_record_id = self.test_governance_v2_api(portfolio_id)
         
+        # NEW: Test RM Subject (Ledger Thread) API
+        self.test_rm_subjects_api(portfolio_id)
+        
         # Print summary
         print("\n" + "=" * 50)
         print(f"📊 Test Summary: {self.tests_passed}/{self.tests_run} tests passed")
