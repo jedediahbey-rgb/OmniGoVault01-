@@ -60,7 +60,9 @@ export default function TemplatesPage({ user }) {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [documentTitle, setDocumentTitle] = useState('');
-  const [selectedPortfolio, setSelectedPortfolio] = useState('');
+  // Get default portfolio from localStorage
+  const defaultPortfolioId = localStorage.getItem('defaultPortfolioId') || '';
+  const [selectedPortfolio, setSelectedPortfolio] = useState(defaultPortfolioId);
   const [creating, setCreating] = useState(false);
   
   // AI Generation state
