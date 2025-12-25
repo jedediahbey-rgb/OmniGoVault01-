@@ -206,26 +206,26 @@ export default function TrustProfilePage({ user }) {
         <TabsContent value="general" className="mt-6">
           <GlassCard>
             <h3 className="font-heading text-lg text-white mb-6">Trust Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="min-w-0">
                 <Label className="text-white/60">Trust Name *</Label>
                 <Input
                   value={form.trust_name}
                   onChange={e => handleChange('trust_name', e.target.value)}
                   placeholder="e.g., Smith Family Trust"
-                  className="mt-1 bg-white/5 border-white/10"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <Label className="text-white/60">Trust Identifier</Label>
                 <Input
                   value={form.trust_identifier}
                   onChange={e => handleChange('trust_identifier', e.target.value)}
                   placeholder="Internal reference"
-                  className="mt-1 bg-white/5 border-white/10"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <Label className="text-white/60">Creation Date</Label>
                 <Input
                   type="date"
