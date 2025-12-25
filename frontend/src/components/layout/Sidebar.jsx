@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen,
   CaretRight,
+  ChartLine,
   FileText,
   FolderSimple,
   Gavel,
@@ -24,6 +25,7 @@ const navItems = [
   { name: 'Glossary', href: '/glossary', icon: BookOpen, section: 'knowledge' },
   { name: 'Diagrams', href: '/diagrams', icon: GitBranch, section: 'knowledge' },
   { name: 'Node Map', href: '/node-map', icon: MapTrifold, section: 'workspace' },
+  { name: 'Scenarios', href: '/scenarios', icon: ChartLine, section: 'workspace' },
   { name: 'Vault', href: '/vault/documents', icon: FolderSimple, section: 'workspace' },
   { name: 'Governance', href: '/vault/governance', icon: Gavel, section: 'workspace' },
   { name: 'Templates', href: '/templates', icon: FileText, section: 'workspace' },
