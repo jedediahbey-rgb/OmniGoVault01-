@@ -1,47 +1,36 @@
-# Test Result - GovernancePage V2 Refactor COMPLETE
+# Test Result - RM-ID Subject Matter Linking Feature
 
-## Testing Date
+## Testing Goal
+Verify the comprehensive RM-ID Subject Matter (Ledger Thread) linking system:
+
+1. **Backend API**: RM Subject CRUD endpoints work correctly
+2. **Atomic Sequencing**: Subnumber allocation is atomic and prevents duplicates
+3. **V2 Integration**: Record creation with subject linking works
+4. **Frontend UI**: LedgerThreadSelector component displays correctly
+5. **Data Migration**: Existing data properly migrated to new schema
+
+## Test Date
 2025-12-25
 
-## GovernancePage V2 Refactor ✅ COMPLETE
+## Key Features Implemented
+- RMSubject model (Ledger Thread) with categories
+- Atomic subnumber allocation
+- Subject auto-suggest based on party/category
+- LedgerThreadSelector component for all governance create forms
+- Data migration script executed (200 subjects created, 285 records updated)
 
-### Changes Made
-All V1 API calls in GovernancePage.jsx have been replaced with V2 API calls:
+## Key Endpoints to Test
+- GET /api/rm/subjects - List subjects
+- POST /api/rm/subjects - Create new subject
+- GET /api/rm/subjects/suggest - Auto-suggest subjects
+- POST /api/rm/subjects/{id}/allocate - Allocate subnumber
+- GET /api/rm/subjects/{id}/preview - Preview next RM-ID
+- POST /api/governance/v2/records - Create record with subject linking
 
-| Function | V1 Endpoint | V2 Endpoint |
-|----------|-------------|-------------|
-| fetchMeetings | /api/governance/meetings | /api/governance/v2/records?module_type=minutes |
-| fetchDistributions | /api/governance/distributions | /api/governance/v2/records?module_type=distribution |
-| fetchDisputes | /api/governance/disputes | /api/governance/v2/records?module_type=dispute |
-| fetchInsurancePolicies | /api/governance/insurance-policies | /api/governance/v2/records?module_type=insurance |
-| fetchCompensationEntries | /api/governance/compensation | /api/governance/v2/records?module_type=compensation |
-| Create handlers | POST /api/governance/{module} | POST /api/governance/v2/records |
-| Delete handlers | DELETE /api/governance/{module}/{id} | POST /api/governance/v2/records/{id}/void |
+## Credentials
+- Use Emergent-managed Google Auth for login
 
-### Test Results
-- **Backend**: 100% - All 76 V2 API tests passed
-- **Frontend**: 95% - Auth protection working, UI tested via Playwright
-
-### Key Features Verified
-1. ✅ V2 records API with module_type filtering
-2. ✅ V2 record creation with payload_json
-3. ✅ V2 void (soft-delete) functionality
-4. ✅ RM-ID generation for V2 records
-5. ✅ Voided records excluded by default
-6. ✅ Data transformation from V2 to display format
-
-### Technical Improvements
-- Unified API for all governance modules
-- Immutable revision history
-- Proper audit trail via events
-- Hash chain for tamper evidence
-- Better separation of concerns
-
-## Previously Completed
-- All 7 patch fixes verified (RM-ID constraints, Amendment deletion, Insurance duplicates, etc.)
-
-## Next Tasks
-- (P1) "Related To" UI for RM-ID - Frontend selector to group related records
-- (Future) "Diff Preview" panel in Amendment Studio
-- (Future) Unified "Governance Ledger" timeline view
+## Previous Status
+- Backend migration completed: 200 subjects, 285 records
+- All governance module patches verified
 
