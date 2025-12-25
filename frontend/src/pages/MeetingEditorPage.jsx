@@ -436,8 +436,19 @@ export default function MeetingEditorPage({ user }) {
       // Update meeting with new agenda items using V2 API
       const updatedAgendaItems = [...(meeting.agenda_items || []), newItem];
       
+      // Build the full payload with all existing fields plus updated agenda_items
+      const currentPayload = {
+        meeting_type: meeting.meeting_type || 'regular',
+        date_time: meeting.date_time,
+        location: meeting.location,
+        attendees: meeting.attendees || [],
+        agenda_items: updatedAgendaItems,
+        motions: meeting.motions || [],
+        notes: meeting.notes || ''
+      };
+      
       await axios.put(`${API}/governance/v2/records/${meetingId}`, {
-        agenda_items: updatedAgendaItems
+        payload_json: currentPayload
       });
       
       await refetchMeeting();
