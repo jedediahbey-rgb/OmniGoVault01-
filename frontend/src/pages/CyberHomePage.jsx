@@ -749,7 +749,7 @@ export default function CyberHomePage() {
             </motion.div>
             
             <motion.div variants={fadeInUp} className="mt-8 text-center">
-              <Link to="/vault/documents">
+              <Link to="/templates">
                 <Button variant="outline" className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10">
                   Browse All Templates <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
