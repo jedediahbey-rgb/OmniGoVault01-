@@ -370,11 +370,45 @@ async def list_records(
         return error_response("DB_ERROR", "Failed to list records", {"error": str(e)}, status_code=500)
 
 
+# ============ ID RESOLUTION HELPER ============
+
+async def resolve_record_by_id_or_rm(id_or_rm: str, user_id: str) -> dict:
+    """
+    Resolve a record by either its `id` or `rm_id`.
+    
+    Logic:
+    1. First try exact match on `id` field
+    2. If not found, try match on `rm_id` field
+    
+    Returns: (record, resolver_path) or (None, None)
+    """
+    # First try by record ID
+    record = await db.governance_records.find_one(
+        {"id": id_or_rm, "user_id": user_id}, {"_id": 0}
+    )
+    
+    if record:
+        return record, "id"
+    
+    # Try by RM-ID
+    record = await db.governance_records.find_one(
+        {"rm_id": id_or_rm, "user_id": user_id}, {"_id": 0}
+    )
+    
+    if record:
+        return record, "rm_id"
+    
+    # Log the failed resolution for debugging
+    print(f"[RESOLVE_FAIL] Could not find record: id_or_rm={id_or_rm}, user_id={user_id}")
+    
+    return None, None
+
+
 @router.get("/records/{record_id}")
 async def get_record(record_id: str, request: Request):
     """
     Get a single record with current revision, attestations, and attachments.
-    This is the endpoint to use when clicking on a record from the list.
+    Accepts either record `id` or `rm_id` for lookup.
     """
     try:
         user = await get_current_user(request)
@@ -382,11 +416,11 @@ async def get_record(record_id: str, request: Request):
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
-        record = await db.governance_records.find_one(
-            {"id": record_id, "user_id": user.user_id}, {"_id": 0}
-        )
+        # Resolve by id or rm_id
+        record, resolver_path = await resolve_record_by_id_or_rm(record_id, user.user_id)
         
         if not record:
+            print(f"[GET_RECORD] NOT_FOUND: record_id={record_id}, user_id={user.user_id}")
             return error_response("NOT_FOUND", "Record not found", status_code=404)
         
         # Get current revision
