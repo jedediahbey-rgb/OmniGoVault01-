@@ -428,7 +428,7 @@ export default function InsuranceEditorPage({ user }) {
                 <TypeIcon className={`w-6 h-6 sm:w-8 sm:h-8 ${typeConfig.color}`} />
               </div>
               
-              {editingHeader && !isLocked ? (
+              {editingHeader && isDraft ? (
                 <div className="flex-1 min-w-0 space-y-4">
                   <Input
                     value={editedHeader.title}
