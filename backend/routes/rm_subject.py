@@ -202,6 +202,105 @@ async def list_subjects(
         return error_response("DB_ERROR", "Failed to list subjects", {"error": str(e)}, status_code=500)
 
 
+# ============ AUTO-SUGGEST SUBJECTS ============
+
+@router.get("/subjects/suggest")
+async def suggest_subjects(
+    request: Request,
+    portfolio_id: str = Query(..., description="Portfolio ID"),
+    category: Optional[str] = Query(None, description="Category to filter"),
+    party_id: Optional[str] = Query(None, description="Primary party ID"),
+    module_type: Optional[str] = Query(None, description="Module type (minutes, distribution, etc.)")
+):
+    """
+    Auto-suggest matching RM Subjects based on party and/or category.
+    
+    Returns:
+    - exact_match: Single subject if exactly one matches
+    - suggestions: List of potential matches if multiple
+    - should_create_new: True if no matches found
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        # Determine category from module_type if not provided
+        effective_category = category
+        if not effective_category and module_type:
+            effective_category = MODULE_TO_CATEGORY.get(module_type, SubjectCategory.MISC).value
+        
+        # Build query for suggestions
+        query = {
+            "portfolio_id": portfolio_id,
+            "user_id": user.user_id,
+            "deleted_at": None
+        }
+        
+        # If party_id is provided, look for subjects with that party
+        if party_id:
+            query["primary_party_id"] = party_id
+        
+        # If category is provided, filter by it
+        if effective_category:
+            query["category"] = effective_category
+        
+        # Find matching subjects
+        subjects = await db.rm_subjects.find(
+            query, {"_id": 0}
+        ).sort("created_at", -1).limit(10).to_list(10)
+        
+        # Enrich with record counts
+        suggestions = []
+        for subj in subjects:
+            record_count = await db.governance_records.count_documents({
+                "rm_subject_id": subj["id"],
+                "status": {"$ne": "voided"}
+            })
+            
+            suggestions.append({
+                "id": subj["id"],
+                "rm_group": subj["rm_group"],
+                "title": subj["title"],
+                "category": subj["category"],
+                "category_label": CATEGORY_LABELS.get(subj["category"], subj["category"]),
+                "primary_party_id": subj.get("primary_party_id"),
+                "primary_party_name": subj.get("primary_party_name"),
+                "external_ref": subj.get("external_ref"),
+                "record_count": record_count,
+                "rm_id_preview": format_rm_id_group(subj["rm_base"], subj["rm_group"]),
+                "next_sub_preview": f".{subj.get('next_sub', 1):03d}"
+            })
+        
+        # Determine response based on matches
+        if len(suggestions) == 1:
+            return success_response({
+                "exact_match": suggestions[0],
+                "suggestions": [],
+                "should_create_new": False,
+                "match_type": "exact"
+            })
+        elif len(suggestions) > 1:
+            return success_response({
+                "exact_match": None,
+                "suggestions": suggestions,
+                "should_create_new": False,
+                "match_type": "multiple"
+            })
+        else:
+            return success_response({
+                "exact_match": None,
+                "suggestions": [],
+                "should_create_new": True,
+                "match_type": "none"
+            })
+        
+    except Exception as e:
+        print(f"Error suggesting subjects: {e}")
+        return error_response("DB_ERROR", "Failed to suggest subjects", {"error": str(e)}, status_code=500)
+
+
 # ============ GET SUBJECT DETAIL ============
 
 @router.get("/subjects/{subject_id}")
