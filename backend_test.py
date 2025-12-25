@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Data Integrity & Diagnostics System
-Tests the integrity scan and repair endpoints for Phase 1 implementation.
+Backend API Testing for Smart Trust Score Rules Editor & Governance Compliance Checklists
+Tests all configuration APIs for health rules and checklists.
 """
 
 import requests
@@ -13,7 +13,7 @@ import time
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://trustscore-manager.preview.emergentagent.com/api"
 
-class DataIntegrityTester:
+class ConfigAPITester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
