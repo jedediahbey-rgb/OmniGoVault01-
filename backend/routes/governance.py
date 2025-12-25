@@ -1497,7 +1497,7 @@ async def update_distribution(distribution_id: str, data: dict, request: Request
 
 @router.delete("/distributions/{distribution_id}")
 async def delete_distribution(distribution_id: str, request: Request):
-    """Soft delete a distribution"""
+    """Delete a distribution - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -1511,9 +1511,28 @@ async def delete_distribution(distribution_id: str, request: Request):
         if not distribution:
             return error_response("NOT_FOUND", "Distribution not found", status_code=404)
         
-        # Can only delete drafts
-        if distribution.get("status") != "draft":
-            return error_response("CANNOT_DELETE", "Only draft distributions can be deleted")
+        # Allow deletion of drafts and amendments
+        is_finalized = distribution.get("locked") or distribution.get("status") in ("finalized", "executed")
+        if is_finalized and not distribution.get("is_amendment"):
+            return error_response("CANNOT_DELETE", "Cannot delete finalized distribution. Create an amendment instead.")
+        
+        # If this is an amendment, clean up the parent's amended_by_id
+        parent_id = distribution.get("amends_distribution_id") or distribution.get("parent_distribution_id")
+        if parent_id and distribution.get("is_amendment"):
+            other_amendments = await db.distributions.count_documents({
+                "distribution_id": {"$ne": distribution_id},
+                "$or": [
+                    {"amends_distribution_id": parent_id},
+                    {"parent_distribution_id": parent_id}
+                ],
+                "deleted_at": None
+            })
+            
+            if other_amendments == 0:
+                await db.distributions.update_one(
+                    {"distribution_id": parent_id},
+                    {"$set": {"amended_by_id": None, "status": "finalized"}}
+                )
         
         await db.distributions.update_one(
             {"distribution_id": distribution_id},
