@@ -636,12 +636,24 @@ export default function DisputeEditorPage({ user }) {
 
   const typeConfig = disputeTypeConfig[dispute.dispute_type] || disputeTypeConfig.beneficiary;
   const TypeIcon = typeConfig.icon;
-  const isLocked = dispute.locked === true || ['settled', 'closed'].includes(dispute.status);
-  // Always show the actual status - never override
-  const status = statusConfig[dispute.status] || statusConfig.open;
+  const isLocked = dispute.locked === true || ['settled', 'closed'].includes(dispute.dispute_status);
+  
+  // Lifecycle status (draft/finalized)
+  const lifecycleStatus = dispute.status || 'draft';
+  const lifecycleConfig = {
+    draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30', icon: PencilSimple },
+    finalized: { label: 'Finalized', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30', icon: Lock },
+  };
+  const lifecycle = lifecycleConfig[lifecycleStatus] || lifecycleConfig.draft;
+  const LifecycleIcon = lifecycle.icon;
+  
+  // Operational status (open/in_progress/mediation/litigation/settled/closed/appealed)
+  const operationalStatus = dispute.dispute_status || 'open';
+  const status = statusConfig[operationalStatus] || statusConfig.open;
   const StatusIcon = status.icon;
+  
   const priority = priorityConfig[dispute.priority] || priorityConfig.medium;
-  const isOpen = !isLocked && dispute.status !== 'settled' && dispute.status !== 'closed';
+  const isOpen = lifecycleStatus === 'draft' && !['settled', 'closed'].includes(operationalStatus);
 
   return (
     <motion.div 
