@@ -829,7 +829,10 @@ export default function GovernancePage({ user }) {
 
   const handleDeleteInsurance = async (policyId) => {
     try {
-      await axios.delete(`${API}/governance/insurance-policies/${policyId}`);
+      // Use V2 API void endpoint
+      await axios.post(`${API_V2}/records/${policyId}/void`, {
+        void_reason: 'Deleted by user from governance list'
+      });
       toast.success('Insurance policy deleted');
       fetchInsurancePolicies();
     } catch (error) {
@@ -854,35 +857,51 @@ export default function GovernancePage({ user }) {
     
     setCreatingCompensation(true);
     try {
-      const res = await axios.post(`${API}/governance/compensation`, {
-        ...newCompensation,
+      // Use V2 API for creating compensation entries
+      const res = await axios.post(`${API_V2}/records`, {
+        module_type: MODULE_TYPES.compensation,
         portfolio_id: selectedPortfolio,
-        amount: parseFloat(newCompensation.amount) || 0,
+        title: newCompensation.title,
+        payload_json: {
+          title: newCompensation.title,
+          compensation_type: newCompensation.compensation_type,
+          recipient_name: newCompensation.recipient_name,
+          recipient_role: newCompensation.recipient_role,
+          amount: parseFloat(newCompensation.amount) || 0,
+          currency: newCompensation.currency,
+          period_start: newCompensation.period_start,
+          period_end: newCompensation.period_end,
+          fiscal_year: newCompensation.fiscal_year,
+          basis_of_calculation: newCompensation.basis_of_calculation,
+          notes: newCompensation.notes
+        }
       });
       
       const data = res.data;
-      const compData = data.item || data;
-      
-      toast.success('Compensation entry created');
-      setShowNewCompensation(false);
-      setNewCompensation({
-        title: '',
-        compensation_type: 'annual_fee',
-        recipient_name: '',
-        recipient_role: 'trustee',
-        amount: '',
-        currency: 'USD',
-        period_start: '',
-        period_end: '',
-        fiscal_year: new Date().getFullYear().toString(),
-        basis_of_calculation: '',
-        notes: '',
-      });
-      
-      fetchCompensationEntries();
+      if (data.ok && data.data?.record) {
+        toast.success('Compensation entry created');
+        setShowNewCompensation(false);
+        setNewCompensation({
+          title: '',
+          compensation_type: 'annual_fee',
+          recipient_name: '',
+          recipient_role: 'trustee',
+          amount: '',
+          currency: 'USD',
+          period_start: '',
+          period_end: '',
+          fiscal_year: new Date().getFullYear().toString(),
+          basis_of_calculation: '',
+          notes: '',
+        });
+        
+        fetchCompensationEntries();
+      } else {
+        throw new Error(data.error?.message || 'Failed to create compensation entry');
+      }
     } catch (error) {
       console.error('Failed to create compensation entry:', error);
-      toast.error(error.response?.data?.error?.message || 'Failed to create compensation entry');
+      toast.error(error.response?.data?.error?.message || error.message || 'Failed to create compensation entry');
     } finally {
       setCreatingCompensation(false);
     }
@@ -890,7 +909,10 @@ export default function GovernancePage({ user }) {
 
   const handleDeleteCompensation = async (compensationId) => {
     try {
-      await axios.delete(`${API}/governance/compensation/${compensationId}`);
+      // Use V2 API void endpoint
+      await axios.post(`${API_V2}/records/${compensationId}/void`, {
+        void_reason: 'Deleted by user from governance list'
+      });
       toast.success('Compensation entry deleted');
       fetchCompensationEntries();
     } catch (error) {
