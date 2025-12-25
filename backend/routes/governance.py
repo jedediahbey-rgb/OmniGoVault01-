@@ -2178,22 +2178,57 @@ async def create_dispute(data: dict, request: Request):
 
 @router.get("/disputes/{dispute_id}")
 async def get_dispute(dispute_id: str, request: Request):
-    """Get a single dispute"""
+    """Get a single dispute - checks both V1 and V2 collections"""
     try:
         user = await get_current_user(request)
     except Exception as e:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
+        # First check legacy V1 collection
         dispute = await db.disputes.find_one(
             {"dispute_id": dispute_id, "user_id": user.user_id},
             {"_id": 0}
         )
         
-        if not dispute:
-            return error_response("NOT_FOUND", "Dispute not found", status_code=404)
+        if dispute:
+            return success_item(normalize_dispute(dispute))
         
-        return success_item(normalize_dispute(dispute))
+        # If not found, check V2 governance_records collection
+        v2_record = await db.governance_records.find_one(
+            {"id": dispute_id, "user_id": user.user_id, "module_type": "dispute", "status": {"$ne": "voided"}},
+            {"_id": 0}
+        )
+        
+        if v2_record:
+            # Get the latest revision payload
+            revision = await db.governance_revisions.find_one(
+                {"id": v2_record.get("current_revision_id")},
+                {"_id": 0}
+            )
+            
+            payload = revision.get("payload_json", {}) if revision else {}
+            
+            # Transform V2 record to V1 format
+            disp = {
+                "dispute_id": v2_record["id"],
+                "id": v2_record["id"],
+                "portfolio_id": v2_record.get("portfolio_id"),
+                "user_id": v2_record.get("user_id"),
+                "title": v2_record.get("title") or payload.get("title", ""),
+                "rm_id": v2_record.get("rm_id", ""),
+                "status": "open" if v2_record.get("status") == "draft" else ("closed" if v2_record.get("status") == "finalized" else v2_record.get("status")),
+                "locked": v2_record.get("status") == "finalized",
+                "created_at": v2_record.get("created_at"),
+                "finalized_at": v2_record.get("finalized_at"),
+                "parties": payload.get("parties", []),
+                "events": payload.get("events", []),
+                # Merge payload fields
+                **payload
+            }
+            return success_item(disp)
+        
+        return error_response("NOT_FOUND", "Dispute not found", status_code=404)
     except Exception as e:
         print(f"Error fetching dispute: {e}")
         return error_response("DB_ERROR", "Failed to fetch dispute", status_code=500)
