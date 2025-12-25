@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { fadeInUp } from '../../lib/motion';
 
 export default function PageHeader({ 
@@ -8,19 +9,46 @@ export default function PageHeader({
   actions,
   breadcrumbs 
 }) {
+  // Helper to render breadcrumb - handles both string and object formats
+  const renderBreadcrumb = (crumb, isLast) => {
+    // If crumb is a string, render directly
+    if (typeof crumb === 'string') {
+      return <span className={isLast ? 'text-vault-gold' : ''}>{crumb}</span>;
+    }
+    
+    // If crumb is an object with label/href
+    if (crumb && typeof crumb === 'object') {
+      const label = crumb.label || crumb.name || String(crumb);
+      const href = crumb.href || crumb.link;
+      
+      if (href && !isLast) {
+        return (
+          <Link 
+            to={href} 
+            className="hover:text-vault-gold transition-colors"
+          >
+            {label}
+          </Link>
+        );
+      }
+      return <span className={isLast ? 'text-vault-gold' : ''}>{label}</span>;
+    }
+    
+    // Fallback for any other type
+    return <span className={isLast ? 'text-vault-gold' : ''}>--</span>;
+  };
+
   return (
     <motion.div 
       {...fadeInUp}
       className="mb-8"
     >
-      {breadcrumbs && (
+      {breadcrumbs && breadcrumbs.length > 0 && (
         <div className="flex items-center gap-2 text-sm text-white/40 mb-4">
           {breadcrumbs.map((crumb, idx) => (
             <span key={idx} className="flex items-center gap-2">
               {idx > 0 && <span>/</span>}
-              <span className={idx === breadcrumbs.length - 1 ? 'text-vault-gold' : ''}>
-                {crumb}
-              </span>
+              {renderBreadcrumb(crumb, idx === breadcrumbs.length - 1)}
             </span>
           ))}
         </div>
