@@ -84,7 +84,7 @@ export default function LedgerThreadsPage() {
   const [portfolioId, setPortfolioId] = useState(portfolioIdFromUrl);
   
   // Check for default portfolio in localStorage
-  // Default portfolio state
+  // Default portfolio state (read-only - set from Dashboard)
   const [isDefaultPortfolio, setIsDefaultPortfolio] = useState(false);
   
   // Check for default portfolio in localStorage on mount and when portfolioId changes
@@ -103,16 +103,6 @@ export default function LedgerThreadsPage() {
     const defaultId = localStorage.getItem('defaultPortfolioId');
     setIsDefaultPortfolio(portfolioId === defaultId);
   }, [portfolioId]);
-  
-  // Set portfolio as default
-  const setAsDefault = (pid) => {
-    localStorage.setItem('defaultPortfolioId', pid);
-    setIsDefaultPortfolio(true);
-    toast({
-      title: 'Default Set',
-      description: 'This portfolio will be auto-selected on future visits'
-    });
-  };
 
   // Data state
   const [threads, setThreads] = useState([]);
