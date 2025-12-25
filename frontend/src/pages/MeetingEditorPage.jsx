@@ -748,7 +748,7 @@ export default function MeetingEditorPage({ user }) {
                 {/* Finalize button - prominent for draft meetings */}
                 {isDraft && (
                   <Button
-                    onClick={handleFinalize}
+                    onClick={() => setShowFinalize(true)}
                     size="sm"
                     className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
                   >
