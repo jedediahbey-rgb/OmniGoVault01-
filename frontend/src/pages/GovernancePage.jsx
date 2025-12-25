@@ -545,7 +545,7 @@ export default function GovernancePage({ user }) {
     
     setCreating(true);
     try {
-      // Build request with optional ledger thread info
+      // Build request
       const requestData = {
         module_type: MODULE_TYPES.meetings,
         portfolio_id: selectedPortfolio,
@@ -561,18 +561,6 @@ export default function GovernancePage({ user }) {
         }
       };
       
-      // Add ledger thread info if selected
-      if (meetingThread) {
-        if (meetingThread.is_new) {
-          requestData.create_new_subject = true;
-          requestData.new_subject_title = meetingThread.title;
-          requestData.new_subject_party_name = meetingThread.primary_party_name;
-          requestData.new_subject_external_ref = meetingThread.external_ref;
-        } else {
-          requestData.rm_subject_id = meetingThread.id;
-        }
-      }
-      
       const res = await axios.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
@@ -586,7 +574,6 @@ export default function GovernancePage({ user }) {
           location: '',
           called_by: '',
         });
-        setMeetingThread(null);
         
         // Navigate to the new meeting editor
         navigate(`/vault/governance/meetings/${data.data.record.id}`);
