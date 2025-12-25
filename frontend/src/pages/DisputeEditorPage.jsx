@@ -735,8 +735,14 @@ export default function DisputeEditorPage({ user }) {
             </div>
               ) : (
                 <div className="flex-1 min-w-0">
-                  {/* Badges row - status first, then type, then priority */}
+                  {/* Badges row - lifecycle status, operational status, type, priority */}
                   <div className="flex items-center gap-2 flex-wrap mb-1">
+                    {/* Lifecycle Status Badge (Draft/Finalized) */}
+                    <Badge className={`${lifecycle.color} border text-xs`}>
+                      <LifecycleIcon className="w-3 h-3 mr-1" />
+                      {lifecycle.label}
+                    </Badge>
+                    {/* Operational Status Badge (Open/In Progress/Litigation/etc.) */}
                     <Badge className={`${status.color} border text-xs`}>
                       <StatusIcon className="w-3 h-3 mr-1" />
                       {status.label}
