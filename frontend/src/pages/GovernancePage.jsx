@@ -543,11 +543,15 @@ export default function GovernancePage({ user }) {
       toast.error('Please select a portfolio');
       return;
     }
+    if (!meetingThread) {
+      toast.error('Please select or create a Ledger Thread (RM-ID)');
+      return;
+    }
     
     setCreating(true);
     try {
-      // Use V2 API for creating meetings
-      const res = await axios.post(`${API_V2}/records`, {
+      // Build request with ledger thread info
+      const requestData = {
         module_type: MODULE_TYPES.meetings,
         portfolio_id: selectedPortfolio,
         title: newMeeting.title,
@@ -560,7 +564,19 @@ export default function GovernancePage({ user }) {
           attendees: [],
           agenda_items: []
         }
-      });
+      };
+      
+      // Add ledger thread info
+      if (meetingThread.is_new) {
+        requestData.create_new_subject = true;
+        requestData.new_subject_title = meetingThread.title;
+        requestData.new_subject_party_name = meetingThread.primary_party_name;
+        requestData.new_subject_external_ref = meetingThread.external_ref;
+      } else {
+        requestData.rm_subject_id = meetingThread.id;
+      }
+      
+      const res = await axios.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
       if (data.ok && data.data?.record) {
@@ -573,6 +589,7 @@ export default function GovernancePage({ user }) {
           location: '',
           called_by: '',
         });
+        setMeetingThread(null);
         
         // Navigate to the new meeting editor
         navigate(`/vault/governance/meetings/${data.data.record.id}`);
