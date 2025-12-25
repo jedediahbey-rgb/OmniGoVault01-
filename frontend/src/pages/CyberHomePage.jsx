@@ -666,7 +666,6 @@ export default function CyberHomePage() {
                 <Link to="/login">
                   <Button size="lg" className="w-full sm:w-auto bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
                     Enter the Vault
-                    <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
                 <Link to="/login">
