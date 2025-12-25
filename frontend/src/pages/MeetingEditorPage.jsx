@@ -424,12 +424,28 @@ export default function MeetingEditorPage({ user }) {
     }
     
     try {
-      await axios.post(`${API}/governance/meetings/${meetingId}/agenda`, newAgenda);
+      // Create new agenda item
+      const newItem = {
+        item_id: `agenda_${Date.now()}`,
+        title: newAgenda.title.trim(),
+        discussion_summary: newAgenda.discussion_summary || '',
+        order: (meeting.agenda_items?.length || 0) + 1,
+        status: 'pending'
+      };
+      
+      // Update meeting with new agenda items using V2 API
+      const updatedAgendaItems = [...(meeting.agenda_items || []), newItem];
+      
+      await axios.put(`${API}/governance/v2/records/${meetingId}`, {
+        agenda_items: updatedAgendaItems
+      });
+      
       await refetchMeeting();
       setShowAddAgenda(false);
       setNewAgenda({ title: '', discussion_summary: '' });
       toast.success('Agenda item added');
     } catch (error) {
+      console.error('Failed to add agenda item:', error);
       toast.error('Failed to add agenda item');
     }
   };
