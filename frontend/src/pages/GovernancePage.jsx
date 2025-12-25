@@ -761,7 +761,7 @@ export default function GovernancePage({ user }) {
     
     setCreatingInsurance(true);
     try {
-      // Build request with optional ledger thread info
+      // Build request
       const requestData = {
         module_type: MODULE_TYPES.insurance,
         portfolio_id: selectedPortfolio,
@@ -783,18 +783,6 @@ export default function GovernancePage({ user }) {
         }
       };
       
-      // Add ledger thread info if selected
-      if (insuranceThread) {
-        if (insuranceThread.is_new) {
-          requestData.create_new_subject = true;
-          requestData.new_subject_title = insuranceThread.title;
-          requestData.new_subject_party_name = insuranceThread.primary_party_name;
-          requestData.new_subject_external_ref = insuranceThread.external_ref;
-        } else {
-          requestData.rm_subject_id = insuranceThread.id;
-        }
-      }
-      
       const res = await axios.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
@@ -815,7 +803,6 @@ export default function GovernancePage({ user }) {
           effective_date: '',
           notes: '',
         });
-        setInsuranceThread(null);
         
         navigate(`/vault/governance/insurance/${data.data.record.id}`);
       } else {
