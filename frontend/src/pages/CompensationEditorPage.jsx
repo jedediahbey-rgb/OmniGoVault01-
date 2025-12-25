@@ -168,10 +168,10 @@ export default function CompensationEditorPage({ user }) {
   const handleFinalize = async () => {
     setFinalizing(true);
     try {
-      await axios.post(`${API}/governance/compensation/${compensationId}/finalize`, {});
+      await axios.post(`${API}/governance/v2/records/${compensationId}/finalize`, {});
       await refetchCompensation();
       setShowFinalizeConfirm(false);
-      toast.success('Compensation entry finalized and locked');
+      toast.success('Compensation entry finalized');
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to finalize');
     } finally {
