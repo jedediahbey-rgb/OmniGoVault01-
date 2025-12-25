@@ -509,6 +509,7 @@ export default function LedgerThreadsPage() {
             <div className="flex items-center gap-2 min-w-0">
               <GitBranch className="w-5 h-5 text-vault-gold shrink-0" />
               <h1 className="text-xl font-heading text-white truncate">Thread Manager</h1>
+              <PageHelpTooltip pageKey="threadManager" />
             </div>
           </div>
 
