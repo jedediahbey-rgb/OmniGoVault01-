@@ -462,75 +462,70 @@ export default function LedgerThreadsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-vault-dark p-6">
+    <div className="min-h-screen bg-vault-dark p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header with Portfolio Selector */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+        {/* Header - Mobile Responsive */}
+        <div className="flex flex-col gap-4 mb-6">
+          {/* Top Row - Back button and Title */}
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate(-1)}
-              className="text-vault-muted hover:text-white"
+              className="text-vault-muted hover:text-white shrink-0 p-2"
             >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back
+              <ArrowLeft className="w-4 h-4" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-heading text-white flex items-center gap-2">
-                <GitBranch className="w-6 h-6 text-vault-gold" />
-                Ledger Thread Manager
-              </h1>
-              <p className="text-vault-muted text-sm">Merge, split, and reassign records between threads</p>
+            <div className="flex items-center gap-2 min-w-0">
+              <GitBranch className="w-5 h-5 text-vault-gold shrink-0" />
+              <h1 className="text-xl font-heading text-white truncate">Thread Manager</h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Portfolio Selector */}
-            <div className="flex items-center gap-2">
-              <FolderSimple className="w-4 h-4 text-vault-muted" />
-              <Select value={portfolioId} onValueChange={handlePortfolioChange}>
-                <SelectTrigger className="w-56 bg-[#05080F] border-vault-gold/30 text-white">
-                  <SelectValue placeholder="Select portfolio">
-                    {currentPortfolio?.name || 'Select portfolio'}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
-                  {portfolios.map((p) => (
-                    <SelectItem 
-                      key={p.portfolio_id} 
-                      value={p.portfolio_id}
-                      className="text-white hover:bg-vault-gold/20"
-                    >
-                      {p.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
+          {/* Portfolio Selector and New Thread Button Row */}
+          <div className="flex items-center gap-2">
+            <FolderSimple className="w-4 h-4 text-vault-muted shrink-0" />
+            <Select value={portfolioId} onValueChange={handlePortfolioChange}>
+              <SelectTrigger className="flex-1 bg-[#05080F] border-vault-gold/30 text-white">
+                <SelectValue placeholder="Select portfolio">
+                  {currentPortfolio?.name || 'Select portfolio'}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                {portfolios.map((p) => (
+                  <SelectItem 
+                    key={p.portfolio_id} 
+                    value={p.portfolio_id}
+                    className="text-white hover:bg-vault-gold/20"
+                  >
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button
               onClick={() => setShowNewModal(true)}
               disabled={!portfolioId}
-              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold shrink-0"
+              size="sm"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              New Thread
+              <Plus className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">New</span>
             </Button>
           </div>
         </div>
 
         {!portfolioId ? (
-          <div className="text-center py-20 bg-[#0B1221]/50 rounded-xl border border-vault-gold/10">
-            <FolderSimple className="w-12 h-12 text-vault-muted mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">Select a Portfolio</h3>
-            <p className="text-vault-muted">Choose a portfolio from the dropdown above to manage threads</p>
+          <div className="text-center py-16 bg-[#0B1221]/50 rounded-xl border border-vault-gold/10">
+            <FolderSimple className="w-10 h-10 text-vault-muted mx-auto mb-3" />
+            <h3 className="text-base font-medium text-white mb-1">Select a Portfolio</h3>
+            <p className="text-vault-muted text-sm">Choose a portfolio to manage threads</p>
           </div>
         ) : (
         <>
         {/* Filters */}
-        <div className="flex gap-4 mb-6">
-          <div className="relative flex-1 max-w-md">
+        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <div className="relative flex-1">
             <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-vault-muted" />
             <Input
               value={search}
@@ -540,7 +535,7 @@ export default function LedgerThreadsPage() {
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-48 bg-[#05080F] border-vault-gold/20 text-white">
+            <SelectTrigger className="w-full sm:w-40 bg-[#05080F] border-vault-gold/20 text-white">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent className="bg-[#0B1221] border-vault-gold/30">
@@ -556,7 +551,7 @@ export default function LedgerThreadsPage() {
 
         {/* Threads Grid */}
         {loading ? (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex items-center justify-center py-16">
             <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
           </div>
         ) : threads.length === 0 ? (
