@@ -538,31 +538,42 @@ export default function GovernancePage({ user }) {
     
     setCreating(true);
     try {
-      const res = await axios.post(`${API}/governance/meetings`, {
-        ...newMeeting,
+      // Use V2 API for creating meetings
+      const res = await axios.post(`${API_V2}/records`, {
+        module_type: MODULE_TYPES.meetings,
         portfolio_id: selectedPortfolio,
-        date_time: new Date(newMeeting.date_time).toISOString(),
+        title: newMeeting.title,
+        payload_json: {
+          title: newMeeting.title,
+          meeting_type: newMeeting.meeting_type,
+          date_time: new Date(newMeeting.date_time).toISOString(),
+          location: newMeeting.location,
+          called_by: newMeeting.called_by,
+          attendees: [],
+          agenda_items: []
+        }
       });
       
-      // Handle new envelope format: { ok: true, item: { meeting_id: ... } }
       const data = res.data;
-      const meetingData = data.item || data; // Support both envelope and direct format
-      
-      toast.success('Meeting created');
-      setShowNewMeeting(false);
-      setNewMeeting({
-        title: '',
-        meeting_type: 'regular',
-        date_time: new Date().toISOString().slice(0, 16),
-        location: '',
-        called_by: '',
-      });
-      
-      // Navigate to the new meeting
-      navigate(`/vault/governance/meetings/${meetingData.meeting_id}`);
+      if (data.ok && data.data?.record) {
+        toast.success('Meeting created');
+        setShowNewMeeting(false);
+        setNewMeeting({
+          title: '',
+          meeting_type: 'regular',
+          date_time: new Date().toISOString().slice(0, 16),
+          location: '',
+          called_by: '',
+        });
+        
+        // Navigate to the new meeting editor
+        navigate(`/vault/governance/meetings/${data.data.record.id}`);
+      } else {
+        throw new Error(data.error?.message || 'Failed to create meeting');
+      }
     } catch (error) {
       console.error('Failed to create meeting:', error);
-      toast.error(error.response?.data?.error?.message || 'Failed to create meeting');
+      toast.error(error.response?.data?.error?.message || error.message || 'Failed to create meeting');
     } finally {
       setCreating(false);
     }
