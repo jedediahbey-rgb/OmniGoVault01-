@@ -530,7 +530,7 @@ export default function DistributionEditorPage({ user }) {
                 <div className="flex items-center gap-2 justify-end">
                   {!isFinalized && (
                     <Button variant="outline" size="sm" onClick={() => setShowFinalizeConfirm(true)} className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10">
-                      <Lock className="w-4 h-4 mr-2" />
+                      <CheckCircle className="w-4 h-4 mr-2" />
                       Finalize
                     </Button>
                   )}
