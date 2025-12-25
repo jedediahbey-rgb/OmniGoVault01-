@@ -394,6 +394,15 @@ export default function TrustHealthDashboard() {
                       </>
                     )}
                   </Button>
+                  
+                  <Button
+                    onClick={downloadPdfReport}
+                    variant="outline"
+                    className="mt-2 w-full border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download PDF Report
+                  </Button>
                 </div>
               </GlassCard>
 
