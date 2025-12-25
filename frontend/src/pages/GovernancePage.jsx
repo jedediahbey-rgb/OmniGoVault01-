@@ -255,10 +255,11 @@ const roleColors = {
 
 export default function GovernancePage({ user }) {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const portfolioIdParam = searchParams.get('portfolio');
+  const tabParam = searchParams.get('tab');
   
-  const [activeTab, setActiveTab] = useState('meetings');
+  const [activeTab, setActiveTab] = useState(tabParam || 'meetings');
   const [meetings, setMeetings] = useState([]);
   const [portfolios, setPortfolios] = useState([]);
   const [parties, setParties] = useState([]);
@@ -266,6 +267,14 @@ export default function GovernancePage({ user }) {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('list');
+  
+  // Sync tab with URL
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('tab', newTab);
+    setSearchParams(newParams, { replace: true });
+  };
   
   // New Meeting Dialog
   const [showNewMeeting, setShowNewMeeting] = useState(false);
