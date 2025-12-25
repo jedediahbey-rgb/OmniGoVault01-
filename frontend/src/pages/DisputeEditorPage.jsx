@@ -598,7 +598,7 @@ export default function DisputeEditorPage({ user }) {
                 )}
                 
                 {isLocked && !dispute.amended_by_id && (
-                  <Button size="sm" onClick={handleAmend} variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
+                  <Button size="sm" onClick={() => setShowAmendmentStudio(true)} variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
                     <PlusCircle className="w-4 h-4 mr-2" />
                     Amend
                   </Button>
