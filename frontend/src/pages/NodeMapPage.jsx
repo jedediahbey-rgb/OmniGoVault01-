@@ -45,7 +45,7 @@ import {
 } from '../components/ui/select';
 import { toast } from 'sonner';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // Node style configurations
 const nodeStyles = {
