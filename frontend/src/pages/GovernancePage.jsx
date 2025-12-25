@@ -188,6 +188,8 @@ const insuranceTypeConfig = {
 
 // Insurance status badges
 const insuranceStatusConfig = {
+  draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30' },
+  finalized: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   active: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30' },
   lapsed: { label: 'Lapsed', color: 'bg-red-500/30 text-red-400 border-red-400/30' },
   paid_up: { label: 'Paid Up', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30' },
