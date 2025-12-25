@@ -16,7 +16,8 @@ import {
   Plus,
   Robot,
   Sparkle,
-  Trash
+  Trash,
+  Star
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import StatCard from '../components/shared/StatCard';
