@@ -85,8 +85,22 @@ export default function BinderPage() {
   // Modal state
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [showManifestModal, setShowManifestModal] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [manifestData, setManifestData] = useState(null);
   const [configProfile, setConfigProfile] = useState(null);
+  
+  // Schedule state
+  const [schedules, setSchedules] = useState([]);
+  const [scheduleForm, setScheduleForm] = useState({
+    profile_id: '',
+    frequency: 'weekly',
+    day_of_week: 0,
+    day_of_month: 1,
+    hour: 6,
+    minute: 0,
+    enabled: true
+  });
+  const [editingSchedule, setEditingSchedule] = useState(null);
 
   // Default portfolio state (read-only - set from Dashboard)
   const [isDefaultPortfolio, setIsDefaultPortfolio] = useState(false);
