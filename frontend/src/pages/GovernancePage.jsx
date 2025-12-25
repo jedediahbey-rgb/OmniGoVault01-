@@ -804,11 +804,15 @@ export default function GovernancePage({ user }) {
       toast.error('Please select a portfolio');
       return;
     }
+    if (!insuranceThread) {
+      toast.error('Please select or create a Ledger Thread (RM-ID)');
+      return;
+    }
     
     setCreatingInsurance(true);
     try {
-      // Use V2 API for creating insurance policies
-      const res = await axios.post(`${API_V2}/records`, {
+      // Build request with ledger thread info
+      const requestData = {
         module_type: MODULE_TYPES.insurance,
         portfolio_id: selectedPortfolio,
         title: newInsurance.title,
@@ -827,7 +831,19 @@ export default function GovernancePage({ user }) {
           notes: newInsurance.notes,
           beneficiaries: []
         }
-      });
+      };
+      
+      // Add ledger thread info
+      if (insuranceThread.is_new) {
+        requestData.create_new_subject = true;
+        requestData.new_subject_title = insuranceThread.title;
+        requestData.new_subject_party_name = insuranceThread.primary_party_name;
+        requestData.new_subject_external_ref = insuranceThread.external_ref;
+      } else {
+        requestData.rm_subject_id = insuranceThread.id;
+      }
+      
+      const res = await axios.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
       if (data.ok && data.data?.record) {
@@ -847,6 +863,7 @@ export default function GovernancePage({ user }) {
           effective_date: '',
           notes: '',
         });
+        setInsuranceThread(null);
         
         navigate(`/vault/governance/insurance/${data.data.record.id}`);
       } else {
