@@ -655,6 +655,8 @@ export default function LedgerThreadsPage() {
             ))}
           </div>
         )}
+        </>
+        )}
 
         {/* Merge Modal */}
         <Dialog open={showMergeModal} onOpenChange={setShowMergeModal}>
