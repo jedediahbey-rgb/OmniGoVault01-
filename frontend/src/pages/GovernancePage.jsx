@@ -498,7 +498,8 @@ export default function GovernancePage({ user }) {
           id: record.id,
           title: record.title,
           rm_id: record.rm_id,
-          status: record.status === 'finalized' ? 'closed' : (record.status === 'draft' ? 'open' : record.status),
+          // Keep draft as draft, only map finalized to closed for operational status
+          status: record.status,
           locked: record.status === 'finalized',
           created_at: record.created_at,
           finalized_at: record.finalized_at,
