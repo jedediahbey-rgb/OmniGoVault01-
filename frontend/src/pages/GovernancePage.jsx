@@ -1566,7 +1566,7 @@ export default function GovernancePage({ user }) {
                   const policyId = policy.policy_id || policy.id;
                   const typeConfig = insuranceTypeConfig[policy.policy_type] || insuranceTypeConfig.whole_life;
                   const TypeIcon = typeConfig.icon;
-                  const statusConf = insuranceStatusConfig[policy.status] || insuranceStatusConfig.active;
+                  const statusConf = insuranceStatusConfig[policy.status] || insuranceStatusConfig.draft;
                   
                   return (
                     <motion.div
