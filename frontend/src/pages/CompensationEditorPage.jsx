@@ -719,47 +719,16 @@ export default function CompensationEditorPage({ user }) {
         </motion.div>
       </div>
 
-      {/* Finalize Confirmation Dialog */}
-      <Dialog open={showFinalizeConfirm} onOpenChange={setShowFinalizeConfirm}>
-        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
-              <Lock className="w-5 h-5" />
-              Finalize Compensation Entry
-            </DialogTitle>
-            <DialogDescription className="text-vault-muted">
-              Once finalized, this entry cannot be edited. You can only create amendments.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
-            <div className="p-4 bg-vault-gold/10 border border-vault-gold/30 rounded-lg">
-              <p className="text-sm text-vault-gold">
-                This will lock the compensation entry for <strong>{compensation?.recipient_name}</strong> 
-                for {formatCurrency(compensation?.amount)} and prevent further edits.
-              </p>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowFinalizeConfirm(false)}
-              className="border-vault-gold/30 text-white"
-              disabled={finalizing}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleFinalize}
-              className="bg-vault-gold text-vault-dark"
-              disabled={finalizing}
-            >
-              {finalizing ? 'Finalizing...' : 'Finalize Entry'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Finalize Confirmation Modal */}
+      <FinalizeConfirmationModal
+        open={showFinalizeConfirm}
+        onOpenChange={setShowFinalizeConfirm}
+        onConfirm={handleFinalize}
+        recordTitle={compensation?.title}
+        moduleType="compensation"
+        rmId={compensation?.rm_id}
+        isLoading={finalizing}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
