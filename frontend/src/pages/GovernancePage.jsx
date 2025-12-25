@@ -264,7 +264,9 @@ export default function GovernancePage({ user }) {
   const [meetings, setMeetings] = useState([]);
   const [portfolios, setPortfolios] = useState([]);
   const [parties, setParties] = useState([]);
-  const [selectedPortfolio, setSelectedPortfolio] = useState(portfolioIdParam || '');
+  // Get default portfolio from localStorage
+  const defaultPortfolioId = localStorage.getItem('defaultPortfolioId') || '';
+  const [selectedPortfolio, setSelectedPortfolio] = useState(portfolioIdParam || defaultPortfolioId || '');
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('list');
