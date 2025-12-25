@@ -88,15 +88,19 @@ class IntegritySealAPITester:
         """Create a test governance record for sealing"""
         self.log(f"\n=== Creating Test Record: {title} ===")
         
-        # Create a governance record using V2 API
+        # Create a governance record using V2 API with all required fields
+        meeting_datetime = datetime.now().isoformat()
         record_data = {
             "title": title,
             "module_type": "minutes",
             "portfolio_id": self.test_portfolio_id,
             "payload_json": {
+                "title": title,  # Required for finalization
                 "meeting_type": "regular",
-                "date_time": datetime.now().isoformat(),
+                "meeting_datetime": meeting_datetime,  # Required for finalization
+                "date_time": meeting_datetime,
                 "location": "Test Location",
+                "called_by": "Test Caller",
                 "attendees": [{"name": "Test Attendee", "role": "trustee", "present": True}],
                 "agenda_items": [{"title": "Test Agenda Item", "discussion_summary": "Test discussion"}],
                 "notes": "Test meeting notes"
