@@ -79,6 +79,15 @@ import { toast } from 'sonner';
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const API_V2 = `${process.env.REACT_APP_BACKEND_URL}/api/governance/v2`;
 
+// Module type mapping for V2 API
+const MODULE_TYPES = {
+  meetings: 'minutes',
+  distributions: 'distribution',
+  disputes: 'dispute',
+  insurance: 'insurance',
+  compensation: 'compensation'
+};
+
 // Meeting type icons and colors
 const meetingTypeConfig = {
   regular: { icon: CyberDateIcon, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Regular Meeting' },
