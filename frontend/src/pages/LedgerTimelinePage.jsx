@@ -20,8 +20,8 @@ import {
   Newspaper,
   PencilSimple,
   Scales,
+  Scroll,
   ShieldCheck,
-  Timeline as TimelineIcon,
   User,
   X,
 } from '@phosphor-icons/react';
