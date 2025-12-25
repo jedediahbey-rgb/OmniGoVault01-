@@ -71,7 +71,7 @@ const distributionTypeConfig = {
 
 // Status configs
 const statusConfig = {
-  draft: { label: 'Draft', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30', icon: PencilSimple },
+  draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30', icon: PencilSimple },
   pending_approval: { label: 'Pending Approval', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30', icon: Clock },
   approved: { label: 'Approved', color: 'bg-blue-500/30 text-blue-400 border-blue-400/30', icon: Check },
   in_progress: { label: 'In Progress', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30', icon: Clock },

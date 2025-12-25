@@ -63,7 +63,7 @@ const fadeInUp = {
 };
 
 const statusConfig = {
-  draft: { label: 'Draft', color: 'bg-gray-500/20 text-gray-400 border-gray-400/30' },
+  draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30' },
   pending_approval: { label: 'Pending Approval', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-400/30' },
   approved: { label: 'Approved', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-400/30' },
   paid: { label: 'Paid', color: 'bg-blue-500/20 text-blue-400 border-blue-400/30' },
