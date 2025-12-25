@@ -150,7 +150,7 @@ class TrustHealthReportGenerator:
         
         elements.append(Paragraph(
             f"Generated: {generated_at}",
-            self.styles['BodyText']
+            self.styles['ReportBody']
         ))
         elements.append(Paragraph(
             f"Scan ID: {scan_id}",
@@ -177,7 +177,7 @@ class TrustHealthReportGenerator:
         ]))
         
         elements.append(score_table)
-        elements.append(Paragraph("Overall Health Score", self.styles['BodyText']))
+        elements.append(Paragraph("Overall Health Score", self.styles['ReportBody']))
         
         elements.append(Spacer(1, 0.3*inch))
         
@@ -211,7 +211,7 @@ class TrustHealthReportGenerator:
         • Audit Readiness: {int(audit_score)}%
         """
         
-        elements.append(Paragraph(summary_text, self.styles['BodyText']))
+        elements.append(Paragraph(summary_text, self.styles['ReportBody']))
         elements.append(Spacer(1, 0.3*inch))
         
         return elements
@@ -275,7 +275,7 @@ class TrustHealthReportGenerator:
         if blocking:
             elements.append(Paragraph("⚠ Score Caps Applied:", self.styles['SubSection']))
             for condition in blocking:
-                elements.append(Paragraph(f"• {condition}", self.styles['BodyText']))
+                elements.append(Paragraph(f"• {condition}", self.styles['ReportBody']))
         
         return elements
     
@@ -299,7 +299,7 @@ class TrustHealthReportGenerator:
         Status: <font color="{'green' if ready else 'orange'}">{status_text}</font><br/>
         Items Passed: {passed} / {total}
         """
-        elements.append(Paragraph(summary, self.styles['BodyText']))
+        elements.append(Paragraph(summary, self.styles['ReportBody']))
         elements.append(Spacer(1, 0.2*inch))
         
         # Checklist by category
@@ -335,7 +335,7 @@ class TrustHealthReportGenerator:
         if not findings and not next_actions:
             elements.append(Paragraph(
                 "✓ No issues found. Your trust governance is in excellent health.",
-                self.styles['BodyText']
+                self.styles['ReportBody']
             ))
         else:
             # Critical findings
@@ -345,7 +345,7 @@ class TrustHealthReportGenerator:
                 for finding in critical[:5]:
                     elements.append(Paragraph(
                         f"• {finding.get('title', 'Unknown')}: {finding.get('description', '')}",
-                        self.styles['BodyText']
+                        self.styles['ReportBody']
                     ))
             
             # Warnings
@@ -355,7 +355,7 @@ class TrustHealthReportGenerator:
                 for finding in warnings[:5]:
                     elements.append(Paragraph(
                         f"• {finding.get('title', 'Unknown')}: {finding.get('description', '')}",
-                        self.styles['BodyText']
+                        self.styles['ReportBody']
                     ))
             
             # Top recommendations
@@ -364,7 +364,7 @@ class TrustHealthReportGenerator:
                 for i, action in enumerate(next_actions[:5], 1):
                     elements.append(Paragraph(
                         f"{i}. {action.get('title', 'Unknown')} (+{action.get('impact_points', 0)} points)",
-                        self.styles['BodyText']
+                        self.styles['ReportBody']
                     ))
         
         elements.append(Spacer(1, 0.3*inch))
@@ -382,14 +382,14 @@ class TrustHealthReportGenerator:
         if not events:
             elements.append(Paragraph(
                 "No recent events recorded.",
-                self.styles['BodyText']
+                self.styles['ReportBody']
             ))
         else:
             for event in events[:10]:
                 date_str = event.get('date', '')[:10] if event.get('date') else 'Unknown'
                 elements.append(Paragraph(
                     f"• [{date_str}] {event.get('title', 'Unknown event')}",
-                    self.styles['BodyText']
+                    self.styles['ReportBody']
                 ))
         
         elements.append(Spacer(1, 0.3*inch))
