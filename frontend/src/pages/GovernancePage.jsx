@@ -1684,14 +1684,7 @@ export default function GovernancePage({ user }) {
               <GlassCard className="p-8 sm:p-12 text-center">
                 <CurrencyDollar className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
                 <h3 className="text-lg sm:text-xl font-heading text-white mb-2">No Compensation Records</h3>
-                <p className="text-sm sm:text-base text-vault-muted mb-6">Log trustee compensation to maintain reasonableness documentation</p>
-                <Button
-                  onClick={() => setShowNewCompensation(true)}
-                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Log Compensation
-                </Button>
+                <p className="text-sm sm:text-base text-vault-muted">Tap the "New" button above to log trustee compensation</p>
               </GlassCard>
             ) : (
               <div className="space-y-4">
