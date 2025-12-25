@@ -93,22 +93,22 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop for mobile */}
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 z-40 sm:hidden"
+              className="fixed inset-0 z-[100] bg-black/40"
             />
             
-            {/* Tooltip */}
+            {/* Tooltip - Fixed centered on mobile, absolute on desktop */}
             <motion.div
               initial={{ opacity: 0, y: 8, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute z-50 top-full mt-2 right-0 sm:right-auto sm:left-0 w-72 p-4 bg-vault-void/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-xl"
+              className="fixed z-[101] left-4 right-4 top-1/3 sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 w-auto sm:w-72 p-4 bg-vault-void border border-white/10 rounded-xl shadow-2xl"
             >
               <button
                 onClick={() => setIsOpen(false)}
@@ -117,7 +117,7 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
                 <X className="w-4 h-4" weight="bold" />
               </button>
               
-              <h4 className="text-sm font-semibold text-vault-gold mb-2">{content.title}</h4>
+              <h4 className="text-sm font-semibold text-vault-gold mb-2 pr-6">{content.title}</h4>
               <p className="text-xs text-white/60 leading-relaxed">{content.description}</p>
             </motion.div>
           </>
