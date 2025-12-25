@@ -744,6 +744,18 @@ export default function MeetingEditorPage({ user }) {
                   </Button>
                 )}
                 
+                {/* Finalize button - prominent for draft meetings */}
+                {isDraft && (
+                  <Button
+                    onClick={handleFinalize}
+                    size="sm"
+                    className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Finalize
+                  </Button>
+                )}
+                
                 {/* Amend button - prominent for finalized meetings */}
                 {isFinalized && !meeting.amended_by_id && (
                   <Button
