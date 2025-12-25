@@ -511,10 +511,10 @@ class BinderService:
             for entry in ledger_entries:
                 content["ledger"].append({
                     "type": "ledger_entry",
-                    "title": entry.get("description", "Ledger Entry"),
-                    "id": entry.get("id"),
+                    "title": safe_title(entry, "Ledger Entry"),
+                    "id": safe_get(entry, "id"),
                     "status": "recorded",
-                    "entry_date": entry.get("entry_date"),
+                    "entry_date": safe_get(entry, "entry_date"),
                     "data": entry
                 })
         
