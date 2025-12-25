@@ -748,8 +748,101 @@ export default function BinderPage() {
             )}
           </div>
 
-          {/* Sidebar - History */}
+          {/* Sidebar - Schedules & History */}
           <div className="space-y-6">
+            {/* Scheduled Generation */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="bg-[#0B1221]/80 rounded-xl border border-vault-gold/20 p-4"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-heading text-white flex items-center gap-2">
+                  <CalendarBlank className="w-5 h-5 text-vault-gold" />
+                  Scheduled Generation
+                </h2>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={openNewSchedule}
+                  className="text-vault-gold hover:text-white h-7 px-2"
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {schedules.length === 0 ? (
+                <div className="text-center py-4 text-vault-muted">
+                  <CalendarBlank className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No schedules configured</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={openNewSchedule}
+                    className="mt-2 border-vault-gold/30 text-vault-gold text-xs"
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    Add Schedule
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {schedules.map((schedule) => (
+                    <div
+                      key={schedule.id}
+                      className={`p-3 rounded-lg border transition-colors ${
+                        schedule.enabled 
+                          ? 'bg-vault-dark/50 border-vault-gold/20' 
+                          : 'bg-vault-dark/30 border-vault-gold/10 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-white text-sm font-medium truncate">
+                          {schedule.profile_name}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleToggleSchedule(schedule)}
+                            className={`h-6 w-6 p-0 ${schedule.enabled ? 'text-emerald-400' : 'text-vault-muted'}`}
+                          >
+                            {schedule.enabled ? <Play className="w-3 h-3" weight="fill" /> : <Pause className="w-3 h-3" />}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openEditSchedule(schedule)}
+                            className="h-6 w-6 p-0 text-vault-muted hover:text-white"
+                          >
+                            <Gear className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteSchedule(schedule.id)}
+                            className="h-6 w-6 p-0 text-vault-muted hover:text-red-400"
+                          >
+                            <Trash className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-vault-muted text-xs">
+                        {formatScheduleDescription(schedule)}
+                      </p>
+                      {schedule.next_run_at && schedule.enabled && (
+                        <p className="text-vault-gold text-xs mt-1">
+                          Next: {new Date(schedule.next_run_at).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+
+            {/* Binder History */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
