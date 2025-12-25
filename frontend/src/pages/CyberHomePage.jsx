@@ -906,7 +906,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== FINAL CTA ===== */}
-      <section className="py-16 lg:py-24 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
+      <section className="py-10 lg:py-24 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial="hidden"
@@ -915,9 +915,9 @@ export default function CyberHomePage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp}>
-              <Vault className="w-16 h-16 text-[#C6A87C] mx-auto mb-6" weight="duotone" />
+              <Vault className="w-14 h-14 text-[#C6A87C] mx-auto mb-4" weight="duotone" />
             </motion.div>
-            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
+            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3">
               Ready to Transform Your Trust Governance?
             </motion.h2>
             <motion.p variants={fadeInUp} className="text-base sm:text-lg text-slate-400 mb-8">
