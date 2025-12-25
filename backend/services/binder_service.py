@@ -1087,18 +1087,21 @@ class BinderService:
         """)
         
         for idx, item in enumerate(manifest, 1):
-            section_display = item["section"].replace("_", " ").title()
+            section_val = item.get("section", "unknown") or "unknown"
+            section_display = section_val.replace("_", " ").title()
             rm_id = item.get("rm_id_display") or "—"
             finalized = item.get("finalized_at", "")[:10] if item.get("finalized_at") else "—"
-            item_id = item.get("db_id", f"item-{idx}")
+            item_id = item.get("db_id") or f"item-{idx}"
+            item_title = item.get("title") or "Untitled"
+            item_status = (item.get("status") or "unknown").title()
             
             html_parts.append(f"""
                 <tr>
                     <td style="text-align: center;">{idx}</td>
                     <td>{section_display}</td>
-                    <td><a href="#item-{item_id}" style="color: #1a1a1a;">{item.get('title', 'Untitled')}</a></td>
+                    <td><a href="#item-{item_id}" style="color: #1a1a1a;">{item_title}</a></td>
                     <td><code>{rm_id}</code></td>
-                    <td>{item.get('status', 'unknown').title()}</td>
+                    <td>{item_status}</td>
                     <td>{finalized}</td>
                 </tr>
             """)
