@@ -66,11 +66,13 @@ const STATUS_CONFIG = {
 
 export default function BinderPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const portfolioId = searchParams.get('portfolio') || '';
+  const [searchParams, setSearchParams] = useSearchParams();
+  const portfolioIdFromUrl = searchParams.get('portfolio') || '';
   const { toast } = useToast();
 
   // State
+  const [portfolios, setPortfolios] = useState([]);
+  const [portfolioId, setPortfolioId] = useState(portfolioIdFromUrl);
   const [profiles, setProfiles] = useState([]);
   const [runs, setRuns] = useState([]);
   const [latestRun, setLatestRun] = useState(null);
@@ -84,6 +86,37 @@ export default function BinderPage() {
   const [showManifestModal, setShowManifestModal] = useState(false);
   const [manifestData, setManifestData] = useState(null);
   const [configProfile, setConfigProfile] = useState(null);
+
+  // Fetch portfolios on mount
+  useEffect(() => {
+    const fetchPortfolios = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/portfolios`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setPortfolios(data);
+          // Auto-select first portfolio if none selected
+          if (!portfolioId && data.length > 0) {
+            setPortfolioId(data[0].portfolio_id);
+            setSearchParams({ portfolio: data[0].portfolio_id });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching portfolios:', error);
+      }
+    };
+    fetchPortfolios();
+  }, []);
+
+  // Handle portfolio change
+  const handlePortfolioChange = (newPortfolioId) => {
+    setPortfolioId(newPortfolioId);
+    setSearchParams({ portfolio: newPortfolioId });
+    setProfiles([]);
+    setRuns([]);
+    setLatestRun(null);
+    setSelectedProfile(null);
+  };
 
   // Fetch data
   const fetchData = useCallback(async () => {
