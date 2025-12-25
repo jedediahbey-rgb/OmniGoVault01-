@@ -452,19 +452,35 @@ export default function MeetingEditorPage({ user }) {
 
   const handleUpdateAgendaItem = async (itemId, updates) => {
     try {
-      await axios.put(`${API}/governance/meetings/${meetingId}/agenda/${itemId}`, updates);
+      // Update the specific agenda item in the array
+      const updatedAgendaItems = (meeting.agenda_items || []).map(item => 
+        item.item_id === itemId ? { ...item, ...updates } : item
+      );
+      
+      await axios.put(`${API}/governance/v2/records/${meetingId}`, {
+        agenda_items: updatedAgendaItems
+      });
       await refetchMeeting();
     } catch (error) {
+      console.error('Failed to update agenda item:', error);
       toast.error('Failed to update agenda item');
     }
   };
 
   const handleDeleteAgendaItem = async (itemId) => {
     try {
-      await axios.delete(`${API}/governance/meetings/${meetingId}/agenda/${itemId}`);
+      // Remove the agenda item from the array
+      const updatedAgendaItems = (meeting.agenda_items || []).filter(item => 
+        item.item_id !== itemId
+      );
+      
+      await axios.put(`${API}/governance/v2/records/${meetingId}`, {
+        agenda_items: updatedAgendaItems
+      });
       await refetchMeeting();
       toast.success('Agenda item deleted');
     } catch (error) {
+      console.error('Failed to delete agenda item:', error);
       toast.error('Failed to delete agenda item');
     }
   };
