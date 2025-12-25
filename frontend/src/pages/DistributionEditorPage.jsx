@@ -528,36 +528,31 @@ export default function DistributionEditorPage({ user }) {
       <motion.div variants={fadeInUp} className="mb-6">
         <GlassCard className="p-4 sm:p-6 overflow-hidden">
           <div className="flex flex-col gap-4">
-            {/* Status badges */}
-            <div className="flex items-center gap-2 flex-wrap mb-3">
-              <Badge className={`${status.color} border`}>
-                <StatusIcon className="w-3 h-3 mr-1" />
-                {status.label}
-              </Badge>
-              <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20">
-                {typeConfig.label}
-              </Badge>
-            </div>
-            
-            {editingHeader && isDraft ? (
-              <div className="space-y-4">
-                <Input
-                  value={editedHeader.title}
-                  onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
-                  className="text-xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-vault-muted">Total Amount</label>
-                    <Input
-                      type="number"
-                      value={editedHeader.total_amount}
-                      onChange={(e) => setEditedHeader(prev => ({ ...prev, total_amount: e.target.value }))}
-                      className="bg-[#05080F] border-vault-gold/20 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-vault-muted">Currency</label>
+            {/* Top row - Icon, badges, content */}
+            <div className="flex items-start gap-3">
+              <div className={`p-3 rounded-xl ${typeConfig.bg} shrink-0`}>
+                <TypeIcon className={`w-6 h-6 ${typeConfig.color}`} weight="duotone" />
+              </div>
+              
+              {editingHeader && isDraft ? (
+                <div className="flex-1 min-w-0 space-y-4">
+                  <Input
+                    value={editedHeader.title}
+                    onChange={(e) => setEditedHeader(prev => ({ ...prev, title: e.target.value }))}
+                    className="text-lg sm:text-xl font-heading bg-[#05080F] border-vault-gold/20 text-white"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-vault-muted">Total Amount</label>
+                      <Input
+                        type="number"
+                        value={editedHeader.total_amount}
+                        onChange={(e) => setEditedHeader(prev => ({ ...prev, total_amount: e.target.value }))}
+                        className="bg-[#05080F] border-vault-gold/20 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-vault-muted">Currency</label>
                     <Select 
                       value={editedHeader.currency} 
                       onValueChange={(v) => setEditedHeader(prev => ({ ...prev, currency: v }))}
