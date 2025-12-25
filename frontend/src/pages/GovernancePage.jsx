@@ -1384,77 +1384,68 @@ export default function GovernancePage({ user }) {
                   return (
                     <motion.div
                       key={distributionId}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
                       <GlassCard 
-                        className="p-4 hover:border-vault-gold/40 transition-all cursor-pointer group"
+                        className="p-4 cursor-pointer hover:border-vault-gold/50 transition-all group"
                         onClick={() => navigate(`/vault/governance/distributions/${distributionId}`)}
                       >
-                        <div className="flex items-start gap-4">
-                          {/* Type Icon */}
-                          <div className={`p-3 rounded-xl ${typeConfig.bg}`}>
-                            <TypeIcon className={`w-6 h-6 ${typeConfig.color}`} />
-                          </div>
-                          
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <h3 className="text-lg font-heading text-white group-hover:text-vault-gold transition-colors">
-                                  {distribution.title}
-                                </h3>
-                                <div className="flex flex-wrap items-center gap-2 mt-1">
-                                  {distribution.rm_id && (
-                                    <span className="text-xs font-mono text-vault-muted bg-vault-dark/50 px-2 py-0.5 rounded">
-                                      {distribution.rm_id}
-                                    </span>
-                                  )}
-                                  <Badge className={`text-xs ${status.color} border`}>
-                                    {status.label}
-                                  </Badge>
-                                </div>
-                              </div>
-                              
-                              {/* Amount */}
-                              <div className="text-right">
-                                <div className="text-xl font-heading text-emerald-400">
-                                  {formatCurrency(distribution.total_amount, distribution.currency)}
-                                </div>
-                                <div className="text-xs text-vault-muted">
-                                  {distribution.asset_type || 'Cash'}
-                                </div>
-                              </div>
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            {/* Icon - consistent p-2 rounded-lg */}
+                            <div className={`p-2 rounded-lg ${typeConfig.bg} shrink-0`}>
+                              <TypeIcon className={`w-5 h-5 ${typeConfig.color}`} weight="duotone" />
                             </div>
                             
-                            {/* Details Row */}
-                            <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-vault-muted">
-                              {distribution.scheduled_date && (
-                                <div className="flex items-center gap-1">
-                                  <CyberDateIcon className="w-4 h-4" day={new Date(distribution.scheduled_date).getDate()} />
-                                  <span>{new Date(distribution.scheduled_date).toLocaleDateString()}</span>
+                            <div className="flex-1 min-w-0">
+                              {/* Badges row - status first, then type */}
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <Badge className={`${status.color} border text-xs`}>
+                                  {status.label}
+                                </Badge>
+                                <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
+                                  {typeConfig.label}
+                                </Badge>
+                              </div>
+                              
+                              {/* Title */}
+                              <h3 className="text-white font-medium truncate">{distribution.title}</h3>
+                              
+                              {/* RM-ID */}
+                              {distribution.rm_id && (
+                                <span className="text-xs font-mono text-vault-muted">{distribution.rm_id}</span>
+                              )}
+                              
+                              {/* Amount */}
+                              {distribution.total_amount > 0 && (
+                                <div className="text-lg font-heading text-emerald-400 mt-1">
+                                  {formatCurrency(distribution.total_amount, distribution.currency)}
+                                  <span className="text-xs text-vault-muted ml-2">{distribution.asset_type || 'Cash'}</span>
                                 </div>
                               )}
-                              {distribution.recipients?.length > 0 && (
-                                <div className="flex items-center gap-1">
-                                  <Users className="w-4 h-4" />
-                                  <span>{distribution.recipients.length} recipient{distribution.recipients.length !== 1 ? 's' : ''}</span>
-                                </div>
-                              )}
-                              {distribution.requires_approval && (
-                                <div className="flex items-center gap-1">
-                                  <CheckCircle className="w-4 h-4" />
-                                  <span>{distribution.approvals?.length || 0}/{distribution.approval_threshold || 1} approvals</span>
-                                </div>
-                              )}
+                              
+                              {/* Details row */}
+                              <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-vault-muted">
+                                {distribution.scheduled_date && (
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="w-4 h-4" />
+                                    <span>{new Date(distribution.scheduled_date).toLocaleDateString()}</span>
+                                  </div>
+                                )}
+                                {distribution.recipients?.length > 0 && (
+                                  <div className="flex items-center gap-1">
+                                    <Users className="w-4 h-4" />
+                                    <span>{distribution.recipients.length}</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                           
-                          {/* Arrow indicator only */}
-                          <div className="flex items-center">
-                            <CaretRight className="w-5 h-5 text-vault-muted" />
-                          </div>
+                          {/* Arrow */}
+                          <CaretRight className="w-5 h-5 text-vault-muted shrink-0" />
                         </div>
                       </GlassCard>
                     </motion.div>
