@@ -270,6 +270,7 @@ export default function GovernancePage({ user }) {
     location: '',
     called_by: '',
   });
+  const [meetingThread, setMeetingThread] = useState(null);
   const [creating, setCreating] = useState(false);
 
   // Distributions State
@@ -285,6 +286,7 @@ export default function GovernancePage({ user }) {
     asset_type: 'cash',
     scheduled_date: new Date().toISOString().slice(0, 10),
   });
+  const [distributionThread, setDistributionThread] = useState(null);
   const [creatingDistribution, setCreatingDistribution] = useState(false);
 
   // Disputes State
@@ -301,6 +303,7 @@ export default function GovernancePage({ user }) {
     case_number: '',
     jurisdiction: '',
   });
+  const [disputeThread, setDisputeThread] = useState(null);
   const [creatingDispute, setCreatingDispute] = useState(false);
 
   // Insurance State
@@ -321,6 +324,7 @@ export default function GovernancePage({ user }) {
     effective_date: '',
     notes: '',
   });
+  const [insuranceThread, setInsuranceThread] = useState(null);
   const [creatingInsurance, setCreatingInsurance] = useState(false);
 
   // Compensation State
@@ -340,6 +344,7 @@ export default function GovernancePage({ user }) {
     basis_of_calculation: '',
     notes: '',
   });
+  const [compensationThread, setCompensationThread] = useState(null);
   const [creatingCompensation, setCreatingCompensation] = useState(false);
 
   useEffect(() => {
