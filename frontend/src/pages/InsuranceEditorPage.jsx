@@ -516,9 +516,9 @@ export default function InsuranceEditorPage({ user }) {
               ) : (
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <Badge className={`${status.color} border`}>
+                    <Badge className={`${badge.color} border`}>
                       <StatusIcon className="w-3 h-3 mr-1" />
-                      {status.label}
+                      {badge.label}
                     </Badge>
                     <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 hidden sm:flex">
                       {typeConfig.label}
