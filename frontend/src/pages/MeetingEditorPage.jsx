@@ -721,10 +721,26 @@ export default function MeetingEditorPage({ user }) {
               
               {/* Action buttons - properly aligned */}
               <div className="flex items-center gap-2 justify-end">
+                {/* History button - show version count if > 1 */}
+                {meeting.revision > 1 && (
+                  <Button
+                    onClick={() => {
+                      fetchRevisions();
+                      setShowRevisionHistory(true);
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
+                  >
+                    <Clock className="w-4 h-4 mr-2" />
+                    v{meeting.revision}
+                  </Button>
+                )}
+                
                 {/* Amend button - prominent for finalized meetings */}
                 {isFinalized && !meeting.amended_by_id && (
                   <Button
-                    onClick={() => setShowAmend(true)}
+                    onClick={() => setShowAmendmentStudio(true)}
                     size="sm"
                     className="bg-purple-600 hover:bg-purple-500 text-white"
                   >
