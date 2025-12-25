@@ -9,7 +9,7 @@ import os
 import time
 
 # Get backend URL from frontend .env
-BACKEND_URL = "https://docvault-84.preview.emergentagent.com"
+BACKEND_URL = "https://govvault.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class VaultDocumentOSTester:
