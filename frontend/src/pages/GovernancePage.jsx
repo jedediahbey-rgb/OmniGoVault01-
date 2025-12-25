@@ -356,6 +356,8 @@ export default function GovernancePage({ user }) {
           revision: record.current_version || 1,
           created_at: record.created_at,
           finalized_at: record.finalized_at,
+          // Use created_at as fallback for date_time display
+          date_time: record.created_at,
           // Default values for display
           meeting_type: 'regular',
           attendees: []
