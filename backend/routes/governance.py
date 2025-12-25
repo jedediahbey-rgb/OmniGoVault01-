@@ -394,11 +394,14 @@ async def create_meeting(data: dict, request: Request):
         return error_response("MISSING_PORTFOLIO_ID", "portfolio_id is required")
     
     try:
-        # Generate RM-ID using subject code 20 for Governance/Meetings
+        # Generate RM-ID using V2 allocator (atomic, unique)
         rm_id = ""
         try:
-            rm_id, _, _, _ = await generate_subject_rm_id(
-                portfolio_id, user.user_id, "20", "Meeting Minutes"
+            rm_id = await allocate_rm_id_for_governance(
+                portfolio_id=portfolio_id,
+                user_id=user.user_id,
+                module_type="minutes",
+                related_to=data.get("related_to")
             )
         except Exception as e:
             print(f"Warning: Could not generate RM-ID: {e}")
