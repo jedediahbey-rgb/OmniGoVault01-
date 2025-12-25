@@ -634,7 +634,7 @@ export default function CyberHomePage() {
               {/* OMNIGOVAULT Logo */}
               <motion.div 
                 variants={fadeInUp}
-                className="mb-6 flex justify-center lg:justify-start"
+                className="mb-2 flex justify-center lg:justify-start"
               >
                 <img 
                   src="/omnigovault-logo.png" 
