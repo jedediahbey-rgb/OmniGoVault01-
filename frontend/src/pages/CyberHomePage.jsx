@@ -955,19 +955,23 @@ export default function CyberHomePage() {
         </div>
       </section>
       
-      {/* Scroll to Top Button */}
+      {/* Sleek Scroll-to-Top Indicator */}
       <AnimatePresence>
         {showScrollTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            onClick={scrollToTop}
-            className="fixed bottom-20 right-6 z-50 w-12 h-12 bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] rounded-full flex items-center justify-center shadow-lg shadow-[#C6A87C]/20 transition-colors"
-            aria-label="Scroll to top"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
           >
-            <ArrowUp className="w-5 h-5" weight="bold" />
-          </motion.button>
+            <button
+              onClick={scrollToTop}
+              className="group flex flex-col items-center gap-1 px-4 py-2"
+              aria-label="Scroll to top"
+            >
+              <div className="w-10 h-1 rounded-full bg-white/20 group-hover:bg-[#C6A87C]/60 transition-colors" />
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
       
