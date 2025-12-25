@@ -66,17 +66,39 @@ const insuranceTypeConfig = {
   group: { icon: Users, color: 'text-cyan-400', bg: 'bg-cyan-500/20', label: 'Group Life' },
 };
 
-// Status config
-const statusConfig = {
-  draft: { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30', icon: PencilSimple },
+// Policy state badges (only shown when lifecycle is FINALIZED)
+const policyStateBadgeConfig = {
+  pending: { label: 'Pending', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30', icon: Timer },
   active: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30', icon: Check },
-  finalized: { label: 'Active', color: 'bg-emerald-500/30 text-emerald-400 border-emerald-400/30', icon: Check },
   lapsed: { label: 'Lapsed', color: 'bg-red-500/30 text-red-400 border-red-400/30', icon: X },
   paid_up: { label: 'Paid Up', color: 'bg-vault-gold/30 text-vault-gold border-vault-gold/30', icon: Check },
   surrendered: { label: 'Surrendered', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30', icon: X },
   claimed: { label: 'Claimed', color: 'bg-purple-500/30 text-purple-400 border-purple-400/30', icon: Check },
   expired: { label: 'Expired', color: 'bg-amber-500/30 text-amber-400 border-amber-400/30', icon: X },
 };
+
+/**
+ * Derived Insurance Badge Logic:
+ * - If lifecycle status !== "finalized" => show "Draft" badge only
+ * - Only when status === "finalized" may we show policyState badges
+ */
+function getInsuranceBadge(policy) {
+  const lifecycleStatus = policy?.status; // "draft" | "finalized" | "voided"
+  const policyState = policy?.policy_state || "pending";
+
+  // Draft records must NEVER display "Active" or any operational state
+  if (lifecycleStatus !== "finalized") {
+    return { label: 'Draft', color: 'bg-amber-500/20 text-amber-400 border-amber-400/30', icon: PencilSimple };
+  }
+
+  // Finalized records - show the policy state
+  const stateConfig = policyStateBadgeConfig[policyState];
+  if (stateConfig) {
+    return stateConfig;
+  }
+
+  return { label: policyState || 'Pending', color: 'bg-slate-500/30 text-slate-300 border-slate-400/30', icon: Timer };
+}
 
 export default function InsuranceEditorPage({ user }) {
   const { policyId } = useParams();
