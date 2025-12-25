@@ -795,7 +795,7 @@ class BinderService:
             </div>
             """)
             
-            html_parts.append(f"""
+            html_parts.append("""
             <div class="record-page">
                 <h2 style="color: #d4af37;">Trust Profile Summary</h2>
                 <div class="trust-profile-summary">
@@ -872,7 +872,7 @@ class BinderService:
                             # Complex list (attendees, agenda items, etc.)
                             html_parts.append(f'<div class="field-label">{label}</div>')
                             for i, v in enumerate(value, 1):
-                                html_parts.append(f'<div class="field-value" style="margin-left: 16px; margin-bottom: 8px;">')
+                                html_parts.append('<div class="field-value" style="margin-left: 16px; margin-bottom: 8px;">')
                                 html_parts.append(f'<strong>{i}.</strong> ')
                                 for vk, vv in v.items():
                                     if not vk.startswith("_"):
