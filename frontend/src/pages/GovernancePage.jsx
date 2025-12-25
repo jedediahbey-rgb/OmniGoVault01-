@@ -2496,6 +2496,15 @@ export default function GovernancePage({ user }) {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
+            {/* Ledger Thread Selector - TOP of form */}
+            <LedgerThreadSelector
+              portfolioId={selectedPortfolio}
+              moduleType="compensation"
+              selectedSubject={compensationThread}
+              onSubjectChange={setCompensationThread}
+              partyName={newCompensation.recipient_name}
+            />
+            
             <div>
               <label className="text-sm text-vault-muted mb-1 block">Title *</label>
               <Input
