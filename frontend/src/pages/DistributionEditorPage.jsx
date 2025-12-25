@@ -671,7 +671,6 @@ export default function DistributionEditorPage({ user }) {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-              </>
             )}
           </div>
         </GlassCard>
