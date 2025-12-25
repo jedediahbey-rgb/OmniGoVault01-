@@ -489,3 +489,45 @@ Date: Thu Dec 25 16:50:00 UTC 2025
 - Governance Checklists tab displays all modules and items
 - Tab switching works correctly
 
+
+
+## Ledger Thread Management (Merge, Split, Reassign) - IMPLEMENTED
+Date: Thu Dec 25 17:05:00 UTC 2025
+
+### Features Built
+1. **Backend APIs** (`/app/backend/routes/ledger_threads.py`)
+   - `POST /api/ledger-threads/{thread_id}/merge` - Merge threads into target
+   - `POST /api/ledger-threads/{thread_id}/split` - Split records into new thread
+   - `POST /api/ledger-threads/reassign` - Reassign records between threads
+   - `PUT /api/ledger-threads/{thread_id}` - Update thread metadata
+   - `DELETE /api/ledger-threads/{thread_id}` - Soft-delete empty thread
+
+2. **Frontend UI** (`/app/frontend/src/pages/LedgerThreadsPage.jsx`)
+   - Thread list with search and category filter
+   - Merge modal - select source threads to merge into target
+   - Split modal - select records to move to new thread
+   - Reassign modal - move records to existing thread
+   - Edit modal - update thread title, party, reference
+   - Delete modal - remove empty threads
+   - New Thread creation modal
+
+3. **Routing & Navigation**
+   - Route added to App.js at `/ledger-threads`
+   - Sidebar link added under TOOLS section as "Thread Manager"
+   - Portfolio context from query parameter
+
+### Files Created/Modified
+- /app/backend/routes/ledger_threads.py (Added merge, split, reassign, update, delete endpoints)
+- /app/frontend/src/pages/LedgerThreadsPage.jsx (NEW - Full management UI)
+- /app/frontend/src/App.js (Added route)
+- /app/frontend/src/components/layout/Sidebar.jsx (Added nav link)
+
+### Audit Trail
+- All merge/split/reassign operations are logged to `integrity_logs` collection
+- Records store history of their movements (merge_history, split_history, reassign_history)
+
+### Testing Status
+- Backend APIs verified via lint check ✓
+- Frontend page verified via screenshots ✓
+- Full testing pending
+
