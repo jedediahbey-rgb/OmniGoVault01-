@@ -635,6 +635,475 @@ async def suggest_threads(
         return error_response("SUGGEST_ERROR", str(e), status_code=500)
 
 
+# ============ THREAD MANAGEMENT: MERGE, SPLIT, REASSIGN ============
+
+@router.post("/{thread_id}/merge")
+async def merge_threads(thread_id: str, request: Request):
+    """
+    Merge records from source threads into a target thread.
+    The target thread (thread_id) absorbs all records from source threads.
+    Source threads are soft-deleted after merge.
+    
+    Body:
+    {
+        "source_thread_ids": ["thread_abc", "thread_def"],
+        "merge_reason": "Consolidating related records"
+    }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        source_ids = body.get("source_thread_ids", [])
+        merge_reason = body.get("merge_reason", "")
+        
+        if not source_ids:
+            return error_response("VALIDATION_ERROR", "source_thread_ids is required")
+        
+        # Verify target thread exists
+        target_thread = await db.rm_subjects.find_one(
+            {"id": thread_id, "user_id": user.user_id, "deleted_at": None},
+            {"_id": 0}
+        )
+        if not target_thread:
+            return error_response("NOT_FOUND", "Target thread not found", status_code=404)
+        
+        # Verify source threads exist and get their records
+        merged_count = 0
+        deleted_threads = []
+        
+        for source_id in source_ids:
+            if source_id == thread_id:
+                continue  # Skip self
+            
+            source_thread = await db.rm_subjects.find_one(
+                {"id": source_id, "user_id": user.user_id, "deleted_at": None},
+                {"_id": 0}
+            )
+            if not source_thread:
+                continue  # Skip non-existent threads
+            
+            # Get records from source thread
+            records = await db.governance_records.find(
+                {"rm_subject_id": source_id, "status": {"$ne": "voided"}},
+                {"_id": 0, "id": 1, "rm_id": 1, "rm_sub": 1}
+            ).to_list(1000)
+            
+            if records:
+                # For each record, allocate a new subnumber in target thread
+                for record in records:
+                    old_rm_id = record.get("rm_id", "")
+                    new_rm_id, new_sub, _, _, _ = await atomic_allocate_subnumber(thread_id, user.user_id)
+                    
+                    # Update record with new thread and RM-ID
+                    await db.governance_records.update_one(
+                        {"id": record["id"]},
+                        {
+                            "$set": {
+                                "rm_subject_id": thread_id,
+                                "rm_id": new_rm_id,
+                                "rm_sub": new_sub,
+                                "updated_at": datetime.now(timezone.utc).isoformat(),
+                                "merge_history": {
+                                    "merged_from_thread": source_id,
+                                    "old_rm_id": old_rm_id,
+                                    "merged_at": datetime.now(timezone.utc).isoformat(),
+                                    "merge_reason": merge_reason
+                                }
+                            }
+                        }
+                    )
+                    merged_count += 1
+            
+            # Soft-delete source thread
+            await db.rm_subjects.update_one(
+                {"id": source_id},
+                {
+                    "$set": {
+                        "deleted_at": datetime.now(timezone.utc).isoformat(),
+                        "deleted_reason": f"Merged into thread {thread_id}",
+                        "merged_into": thread_id
+                    }
+                }
+            )
+            deleted_threads.append(source_id)
+        
+        # Log the merge operation
+        await db.integrity_logs.insert_one({
+            "id": f"merge_{uuid.uuid4().hex[:12]}",
+            "action": "thread_merge",
+            "target_thread_id": thread_id,
+            "source_thread_ids": deleted_threads,
+            "records_merged": merged_count,
+            "merge_reason": merge_reason,
+            "performed_by": user.user_id,
+            "performed_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return success_response({
+            "target_thread_id": thread_id,
+            "merged_thread_ids": deleted_threads,
+            "records_merged": merged_count
+        }, message=f"Successfully merged {merged_count} records from {len(deleted_threads)} threads")
+        
+    except ValueError as e:
+        return error_response("MERGE_ERROR", str(e))
+    except Exception as e:
+        print(f"Error merging threads: {e}")
+        return error_response("MERGE_ERROR", str(e), status_code=500)
+
+
+@router.post("/{thread_id}/split")
+async def split_thread(thread_id: str, request: Request):
+    """
+    Split selected records from a thread into a new thread.
+    Creates a new thread and moves specified records to it.
+    
+    Body:
+    {
+        "record_ids": ["rec_123", "rec_456"],
+        "new_thread_title": "Split Thread Name",
+        "split_reason": "Separating unrelated records"
+    }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        record_ids = body.get("record_ids", [])
+        new_title = body.get("new_thread_title", "").strip()
+        split_reason = body.get("split_reason", "")
+        
+        if not record_ids:
+            return error_response("VALIDATION_ERROR", "record_ids is required")
+        if not new_title:
+            return error_response("VALIDATION_ERROR", "new_thread_title is required")
+        
+        # Verify source thread exists
+        source_thread = await db.rm_subjects.find_one(
+            {"id": thread_id, "user_id": user.user_id, "deleted_at": None},
+            {"_id": 0}
+        )
+        if not source_thread:
+            return error_response("NOT_FOUND", "Source thread not found", status_code=404)
+        
+        # Verify records belong to source thread
+        records = await db.governance_records.find(
+            {
+                "id": {"$in": record_ids},
+                "rm_subject_id": thread_id,
+                "status": {"$ne": "voided"}
+            },
+            {"_id": 0}
+        ).to_list(1000)
+        
+        if not records:
+            return error_response("VALIDATION_ERROR", "No valid records found in the specified thread")
+        
+        # Create new thread
+        new_thread_id, first_rm_id, _, rm_base, rm_group = await create_thread_and_allocate_first(
+            portfolio_id=source_thread["portfolio_id"],
+            user_id=user.user_id,
+            trust_id=source_thread.get("trust_id"),
+            title=new_title,
+            category=SubjectCategory(source_thread["category"]),
+            party_id=source_thread.get("primary_party_id"),
+            party_name=source_thread.get("primary_party_name"),
+            created_by=user.name if hasattr(user, 'name') else user.user_id
+        )
+        
+        # Move records to new thread (skip first since it's already allocated)
+        moved_count = 0
+        for i, record in enumerate(records):
+            old_rm_id = record.get("rm_id", "")
+            
+            if i == 0:
+                # First record uses the pre-allocated .001
+                new_rm_id = first_rm_id
+                new_sub = 1
+            else:
+                # Subsequent records get new subnumbers
+                new_rm_id, new_sub, _, _, _ = await atomic_allocate_subnumber(new_thread_id, user.user_id)
+            
+            await db.governance_records.update_one(
+                {"id": record["id"]},
+                {
+                    "$set": {
+                        "rm_subject_id": new_thread_id,
+                        "rm_id": new_rm_id,
+                        "rm_sub": new_sub,
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "split_history": {
+                            "split_from_thread": thread_id,
+                            "old_rm_id": old_rm_id,
+                            "split_at": datetime.now(timezone.utc).isoformat(),
+                            "split_reason": split_reason
+                        }
+                    }
+                }
+            )
+            moved_count += 1
+        
+        # Log the split operation
+        await db.integrity_logs.insert_one({
+            "id": f"split_{uuid.uuid4().hex[:12]}",
+            "action": "thread_split",
+            "source_thread_id": thread_id,
+            "new_thread_id": new_thread_id,
+            "records_moved": moved_count,
+            "record_ids": [r["id"] for r in records],
+            "split_reason": split_reason,
+            "performed_by": user.user_id,
+            "performed_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return success_response({
+            "source_thread_id": thread_id,
+            "new_thread_id": new_thread_id,
+            "new_thread_rm_group": rm_group,
+            "records_moved": moved_count,
+            "new_thread_rm_preview": format_rm_id_preview(rm_base, rm_group)
+        }, message=f"Successfully split {moved_count} records into new thread")
+        
+    except ValueError as e:
+        return error_response("SPLIT_ERROR", str(e))
+    except Exception as e:
+        print(f"Error splitting thread: {e}")
+        return error_response("SPLIT_ERROR", str(e), status_code=500)
+
+
+@router.post("/reassign")
+async def reassign_records(request: Request):
+    """
+    Reassign specific records from one thread to another existing thread.
+    
+    Body:
+    {
+        "record_ids": ["rec_123", "rec_456"],
+        "target_thread_id": "thread_xyz",
+        "reassign_reason": "Correcting thread assignment"
+    }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        record_ids = body.get("record_ids", [])
+        target_thread_id = body.get("target_thread_id", "")
+        reassign_reason = body.get("reassign_reason", "")
+        
+        if not record_ids:
+            return error_response("VALIDATION_ERROR", "record_ids is required")
+        if not target_thread_id:
+            return error_response("VALIDATION_ERROR", "target_thread_id is required")
+        
+        # Verify target thread exists
+        target_thread = await db.rm_subjects.find_one(
+            {"id": target_thread_id, "user_id": user.user_id, "deleted_at": None},
+            {"_id": 0}
+        )
+        if not target_thread:
+            return error_response("NOT_FOUND", "Target thread not found", status_code=404)
+        
+        # Get records to reassign
+        records = await db.governance_records.find(
+            {
+                "id": {"$in": record_ids},
+                "user_id": user.user_id,
+                "status": {"$ne": "voided"}
+            },
+            {"_id": 0}
+        ).to_list(1000)
+        
+        if not records:
+            return error_response("VALIDATION_ERROR", "No valid records found")
+        
+        # Reassign each record
+        reassigned_count = 0
+        source_threads = set()
+        
+        for record in records:
+            if record.get("rm_subject_id") == target_thread_id:
+                continue  # Already in target thread
+            
+            old_rm_id = record.get("rm_id", "")
+            old_thread_id = record.get("rm_subject_id", "")
+            source_threads.add(old_thread_id)
+            
+            # Allocate new subnumber in target thread
+            new_rm_id, new_sub, _, _, _ = await atomic_allocate_subnumber(target_thread_id, user.user_id)
+            
+            await db.governance_records.update_one(
+                {"id": record["id"]},
+                {
+                    "$set": {
+                        "rm_subject_id": target_thread_id,
+                        "rm_id": new_rm_id,
+                        "rm_sub": new_sub,
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "reassign_history": {
+                            "reassigned_from_thread": old_thread_id,
+                            "old_rm_id": old_rm_id,
+                            "reassigned_at": datetime.now(timezone.utc).isoformat(),
+                            "reassign_reason": reassign_reason
+                        }
+                    }
+                }
+            )
+            reassigned_count += 1
+        
+        # Log the reassign operation
+        await db.integrity_logs.insert_one({
+            "id": f"reassign_{uuid.uuid4().hex[:12]}",
+            "action": "records_reassigned",
+            "target_thread_id": target_thread_id,
+            "source_thread_ids": list(source_threads),
+            "records_reassigned": reassigned_count,
+            "record_ids": [r["id"] for r in records if r.get("rm_subject_id") != target_thread_id],
+            "reassign_reason": reassign_reason,
+            "performed_by": user.user_id,
+            "performed_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return success_response({
+            "target_thread_id": target_thread_id,
+            "source_thread_ids": list(source_threads),
+            "records_reassigned": reassigned_count
+        }, message=f"Successfully reassigned {reassigned_count} records")
+        
+    except ValueError as e:
+        return error_response("REASSIGN_ERROR", str(e))
+    except Exception as e:
+        print(f"Error reassigning records: {e}")
+        return error_response("REASSIGN_ERROR", str(e), status_code=500)
+
+
+@router.put("/{thread_id}")
+async def update_thread(thread_id: str, request: Request):
+    """
+    Update thread metadata (title, party, external_ref).
+    Does not change RM-ID or group number.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        
+        # Verify thread exists
+        thread = await db.rm_subjects.find_one(
+            {"id": thread_id, "user_id": user.user_id, "deleted_at": None},
+            {"_id": 0}
+        )
+        if not thread:
+            return error_response("NOT_FOUND", "Thread not found", status_code=404)
+        
+        # Build update
+        update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        
+        if "title" in body and body["title"].strip():
+            update_data["title"] = body["title"].strip()
+        if "primary_party_id" in body:
+            update_data["primary_party_id"] = body["primary_party_id"]
+        if "primary_party_name" in body:
+            update_data["primary_party_name"] = body["primary_party_name"]
+        if "external_ref" in body:
+            update_data["external_ref"] = body["external_ref"]
+        if "category" in body:
+            valid_categories = [c.value for c in SubjectCategory]
+            if body["category"] in valid_categories:
+                update_data["category"] = body["category"]
+        
+        await db.rm_subjects.update_one(
+            {"id": thread_id},
+            {"$set": update_data}
+        )
+        
+        # Return updated thread
+        updated = await db.rm_subjects.find_one({"id": thread_id}, {"_id": 0})
+        
+        return success_response({
+            "thread": {
+                "id": updated["id"],
+                "rm_group": updated["rm_group"],
+                "title": updated["title"],
+                "category": updated["category"],
+                "primary_party_id": updated.get("primary_party_id"),
+                "primary_party_name": updated.get("primary_party_name"),
+                "external_ref": updated.get("external_ref"),
+                "updated_at": updated.get("updated_at")
+            }
+        }, message="Thread updated successfully")
+        
+    except Exception as e:
+        print(f"Error updating thread: {e}")
+        return error_response("UPDATE_ERROR", str(e), status_code=500)
+
+
+@router.delete("/{thread_id}")
+async def delete_thread(thread_id: str, request: Request):
+    """
+    Soft-delete a ledger thread.
+    Only allowed if thread has no records.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        # Verify thread exists
+        thread = await db.rm_subjects.find_one(
+            {"id": thread_id, "user_id": user.user_id, "deleted_at": None},
+            {"_id": 0}
+        )
+        if not thread:
+            return error_response("NOT_FOUND", "Thread not found", status_code=404)
+        
+        # Check for records
+        record_count = await db.governance_records.count_documents({
+            "rm_subject_id": thread_id,
+            "status": {"$ne": "voided"}
+        })
+        
+        if record_count > 0:
+            return error_response(
+                "HAS_RECORDS",
+                f"Cannot delete thread with {record_count} records. Move or void records first."
+            )
+        
+        # Soft delete
+        await db.rm_subjects.update_one(
+            {"id": thread_id},
+            {
+                "$set": {
+                    "deleted_at": datetime.now(timezone.utc).isoformat(),
+                    "deleted_reason": "User deleted"
+                }
+            }
+        )
+        
+        return success_response({
+            "thread_id": thread_id,
+            "deleted": True
+        }, message="Thread deleted successfully")
+        
+    except Exception as e:
+        print(f"Error deleting thread: {e}")
+        return error_response("DELETE_ERROR", str(e), status_code=500)
+
+
 # ============ EXPORTS FOR USE IN OTHER ROUTES ============
 
 __all__ = [
