@@ -190,15 +190,46 @@ export default function MeetingEditorPage({ user }) {
     
     const fetchMeeting = async () => {
       try {
-        const res = await axios.get(`${API}/governance/meetings/${meetingId}`, {
+        // Use V2 API for meetings
+        const res = await axios.get(`${API}/governance/v2/records/${meetingId}`, {
           signal: abortController.signal
         });
         
         if (!isMounted) return;
         
-        // Handle new envelope format: { ok: true, item: {...} }
         const data = res.data;
-        const meetingData = data.item || data; // Support both envelope and direct format
+        if (!data.ok || !data.data?.record) {
+          throw new Error(data.error?.message || 'Failed to load meeting');
+        }
+        
+        const record = data.data.record;
+        const revision = data.data.current_revision;
+        const payload = revision?.payload_json || {};
+        
+        // Transform V2 record to expected meeting format
+        const meetingData = {
+          id: record.id,
+          meeting_id: record.id,
+          title: record.title,
+          rm_id: record.rm_id,
+          status: record.status,
+          locked: record.status === 'finalized',
+          portfolio_id: record.portfolio_id,
+          created_at: record.created_at,
+          finalized_at: record.finalized_at,
+          // Extract from payload
+          meeting_type: payload.meeting_type || 'regular',
+          date_time: payload.date_time || '',
+          location: payload.location || '',
+          called_by: payload.called_by || '',
+          agenda_items: payload.agenda_items || [],
+          attendees: payload.attendees || [],
+          notes: payload.notes || '',
+          resolutions: payload.resolutions || [],
+          // V2 specific
+          current_version: revision?.version || 1,
+          current_revision_id: record.current_revision_id
+        };
         
         setMeeting(meetingData);
         setEditedHeader({
@@ -265,10 +296,37 @@ export default function MeetingEditorPage({ user }) {
     if (!meetingId) return;
     
     try {
-      const res = await axios.get(`${API}/governance/meetings/${meetingId}`);
-      // Handle new envelope format: { ok: true, item: {...} }
+      const res = await axios.get(`${API}/governance/v2/records/${meetingId}`);
       const data = res.data;
-      const meetingData = data.item || data; // Support both envelope and direct format
+      if (!data.ok || !data.data?.record) {
+        throw new Error('Failed to load meeting');
+      }
+      
+      const record = data.data.record;
+      const revision = data.data.current_revision;
+      const payload = revision?.payload_json || {};
+      
+      const meetingData = {
+        id: record.id,
+        meeting_id: record.id,
+        title: record.title,
+        rm_id: record.rm_id,
+        status: record.status,
+        locked: record.status === 'finalized',
+        portfolio_id: record.portfolio_id,
+        created_at: record.created_at,
+        finalized_at: record.finalized_at,
+        meeting_type: payload.meeting_type || 'regular',
+        date_time: payload.date_time || '',
+        location: payload.location || '',
+        called_by: payload.called_by || '',
+        agenda_items: payload.agenda_items || [],
+        attendees: payload.attendees || [],
+        notes: payload.notes || '',
+        resolutions: payload.resolutions || [],
+        current_version: revision?.version || 1,
+        current_revision_id: record.current_revision_id
+      };
       
       setMeeting(meetingData);
       setEditedHeader({
