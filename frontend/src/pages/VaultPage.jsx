@@ -57,7 +57,9 @@ export default function VaultPage({ user, initialView }) {
   const [portfolios, setPortfolios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedPortfolio, setSelectedPortfolio] = useState(null);
+  // Get default portfolio from localStorage
+  const defaultPortfolioId = localStorage.getItem('defaultPortfolioId') || null;
+  const [selectedPortfolio, setSelectedPortfolio] = useState(defaultPortfolioId);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [showTrash, setShowTrash] = useState(initialView === 'trash');
