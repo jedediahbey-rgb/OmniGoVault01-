@@ -80,25 +80,41 @@ export default function DashboardPage({ user }) {
     }
   }, []);
 
-  // Set a portfolio as the global default
-  const setAsDefault = (portfolioId, e) => {
+  // Set a portfolio as the global default (persists to both localStorage and backend)
+  const setAsDefault = async (portfolioId, e) => {
     e.stopPropagation();
+    // Update localStorage immediately for instant UI feedback
     localStorage.setItem('defaultPortfolioId', portfolioId);
     setDefaultPortfolioId(portfolioId);
     toast.success('Default portfolio set - will be auto-selected across the app');
+    
+    // Persist to backend for cross-device/session persistence
+    try {
+      await axios.put(`${API}/user/preferences`, { default_portfolio_id: portfolioId });
+    } catch (error) {
+      console.log('Backend sync failed, localStorage will be used');
+    }
   };
 
   // Clear default portfolio
-  const clearDefault = (e) => {
+  const clearDefault = async (e) => {
     e.stopPropagation();
     localStorage.removeItem('defaultPortfolioId');
     setDefaultPortfolioId('');
     toast.success('Default portfolio cleared');
+    
+    // Clear from backend too
+    try {
+      await axios.put(`${API}/user/preferences`, { default_portfolio_id: null });
+    } catch (error) {
+      console.log('Backend sync failed');
+    }
   };
 
   useEffect(() => {
+    loadDefaultPortfolio();
     fetchDashboardData();
-  }, []);
+  }, [loadDefaultPortfolio]);
 
   const fetchDashboardData = async () => {
     try {
