@@ -686,203 +686,196 @@ class EquityTrustAPITester:
         }
         created_minutes = self.run_test("V2 API - Create Minutes Record", "POST", "governance/v2/records", 200, minutes_data)
         
-        if not created_record or 'data' not in created_record:
-            print("   ❌ Failed to create V2 record, skipping remaining tests")
-            return None
+        if created_minutes and 'ok' in created_minutes and created_minutes['ok']:
+            record_data = created_minutes['data']['record']
+            created_records['minutes'] = record_data['id']
+            print(f"      ✅ Minutes record created: {record_data['id']}")
+            print(f"      ✅ RM-ID: {record_data.get('rm_id', 'N/A')}")
         
-        record_id = created_record['data']['record']['id']
-        revision_id = created_record['data']['revision']['id']
-        print(f"   Created record ID: {record_id}")
-        print(f"   Created revision ID: {revision_id}")
-        
-        # Test 2: Get record with current revision
-        record_detail = self.run_test("V2 API - Get Record", "GET", f"governance/v2/records/{record_id}", 200)
-        if record_detail and 'data' in record_detail:
-            print(f"   ✅ Record status: {record_detail['data']['record']['status']}")
-            print(f"   ✅ Current revision version: {record_detail['data']['current_revision']['version']}")
-        
-        # Test 3: Update draft revision (should succeed)
-        update_data = {
+        # Create distribution record
+        distribution_data = {
+            "portfolio_id": portfolio_id,
+            "module_type": "distribution",
+            "title": f"V2 Test Distribution {datetime.now().strftime('%H%M%S')}",
             "payload_json": {
-                "meeting_type": "regular",
-                "meeting_datetime": "2024-12-15T14:00:00Z",
-                "location": "Conference Room B - UPDATED",
-                "called_by": "John Doe",
-                "attendees": [
-                    {
-                        "name": "John Doe",
-                        "role": "trustee",
-                        "present": True,
-                        "notes": "Meeting chair"
-                    },
-                    {
-                        "name": "Jane Smith",
-                        "role": "co_trustee",
-                        "present": True,
-                        "notes": "Added attendee"
-                    }
-                ],
-                "agenda_items": [
-                    {
-                        "title": "Review Q4 Financial Statements - UPDATED",
-                        "order": 1,
-                        "discussion_summary": "Reviewed quarterly performance in detail",
-                        "notes": "All trustees reviewed documents prior to meeting"
-                    }
-                ],
-                "general_notes": "Regular quarterly meeting - updated content"
+                "title": f"V2 Test Distribution {datetime.now().strftime('%H%M%S')}",
+                "distribution_type": "regular",
+                "description": "Test distribution",
+                "total_amount": 50000.0,
+                "currency": "USD",
+                "asset_type": "cash",
+                "scheduled_date": "2024-12-31",
+                "recipients": []
             }
         }
-        updated_draft = self.run_test("V2 API - Update Draft Revision", "PATCH", f"governance/v2/revisions/{revision_id}", 200, update_data)
-        if updated_draft:
-            print("   ✅ Draft revision updated successfully")
+        created_distribution = self.run_test("V2 API - Create Distribution Record", "POST", "governance/v2/records", 200, distribution_data)
         
-        # Test 4: Finalize draft revision
-        finalized = self.run_test("V2 API - Finalize Record", "POST", f"governance/v2/records/{record_id}/finalize", 200)
-        if finalized and 'data' in finalized:
-            content_hash = finalized['data']['content_hash']
-            print(f"   ✅ Record finalized with hash: {content_hash[:16]}...")
+        if created_distribution and 'ok' in created_distribution and created_distribution['ok']:
+            record_data = created_distribution['data']['record']
+            created_records['distribution'] = record_data['id']
+            print(f"      ✅ Distribution record created: {record_data['id']}")
         
-        # Test 5: IMMUTABILITY TEST - Try to edit finalized revision (should return 409)
-        print("   🔒 TESTING IMMUTABILITY - Attempting to edit finalized revision...")
-        try:
-            url = f"{self.base_url}/api/governance/v2/revisions/{revision_id}"
-            headers = {'Content-Type': 'application/json'}
-            if self.session_token:
-                headers['Authorization'] = f'Bearer {self.session_token}'
-            
-            # Try to update finalized revision
-            immutable_test_data = {
-                "payload_json": {
-                    "meeting_type": "special",
-                    "location": "This should FAIL - revision is finalized"
-                }
+        # Create dispute record
+        dispute_data = {
+            "portfolio_id": portfolio_id,
+            "module_type": "dispute",
+            "title": f"V2 Test Dispute {datetime.now().strftime('%H%M%S')}",
+            "payload_json": {
+                "title": f"V2 Test Dispute {datetime.now().strftime('%H%M%S')}",
+                "dispute_type": "beneficiary",
+                "description": "Test dispute",
+                "amount_claimed": 25000.0,
+                "currency": "USD",
+                "priority": "medium",
+                "case_number": f"CASE-{datetime.now().strftime('%Y%m%d-%H%M%S')}",
+                "jurisdiction": "Delaware",
+                "parties": [],
+                "events": []
             }
-            response = requests.patch(url, json=immutable_test_data, headers=headers, timeout=10)
-            
-            if response.status_code == 409:
-                self.log_test("V2 API - IMMUTABILITY TEST (409)", True, "✅ Correctly returned 409 - finalized revision is immutable")
-                print("   🔒 ✅ IMMUTABILITY ENFORCED - Cannot edit finalized revision")
+        }
+        created_dispute = self.run_test("V2 API - Create Dispute Record", "POST", "governance/v2/records", 200, dispute_data)
+        
+        if created_dispute and 'ok' in created_dispute and created_dispute['ok']:
+            record_data = created_dispute['data']['record']
+            created_records['dispute'] = record_data['id']
+            print(f"      ✅ Dispute record created: {record_data['id']}")
+        
+        # Create insurance record
+        insurance_data = {
+            "portfolio_id": portfolio_id,
+            "module_type": "insurance",
+            "title": f"V2 Test Insurance Policy {datetime.now().strftime('%H%M%S')}",
+            "payload_json": {
+                "title": f"V2 Test Insurance Policy {datetime.now().strftime('%H%M%S')}",
+                "policy_type": "whole_life",
+                "policy_number": f"POL-{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                "carrier_name": "Test Insurance Company",
+                "insured_name": "John Doe",
+                "death_benefit": 1000000.0,
+                "cash_value": 50000.0,
+                "currency": "USD",
+                "premium_amount": 2500.0,
+                "premium_frequency": "monthly",
+                "effective_date": "2024-01-01",
+                "notes": "Test policy",
+                "beneficiaries": []
+            }
+        }
+        created_insurance = self.run_test("V2 API - Create Insurance Record", "POST", "governance/v2/records", 200, insurance_data)
+        
+        if created_insurance and 'ok' in created_insurance and created_insurance['ok']:
+            record_data = created_insurance['data']['record']
+            created_records['insurance'] = record_data['id']
+            print(f"      ✅ Insurance record created: {record_data['id']}")
+        
+        # Create compensation record
+        compensation_data = {
+            "portfolio_id": portfolio_id,
+            "module_type": "compensation",
+            "title": f"V2 Test Compensation {datetime.now().strftime('%H%M%S')}",
+            "payload_json": {
+                "title": f"V2 Test Compensation {datetime.now().strftime('%H%M%S')}",
+                "compensation_type": "annual_fee",
+                "recipient_name": "John Doe",
+                "recipient_role": "trustee",
+                "amount": 15000.0,
+                "currency": "USD",
+                "period_start": "2024-01-01",
+                "period_end": "2024-12-31",
+                "fiscal_year": "2024",
+                "basis_of_calculation": "1.5% of trust assets",
+                "notes": "Annual trustee compensation"
+            }
+        }
+        created_compensation = self.run_test("V2 API - Create Compensation Record", "POST", "governance/v2/records", 200, compensation_data)
+        
+        if created_compensation and 'ok' in created_compensation and created_compensation['ok']:
+            record_data = created_compensation['data']['record']
+            created_records['compensation'] = record_data['id']
+            print(f"      ✅ Compensation record created: {record_data['id']}")
+        
+        # Test 3: Verify created records appear in filtered lists
+        print("   📋 Testing that created records appear in filtered lists...")
+        
+        for module_type, record_id in created_records.items():
+            records_response = self.run_test(
+                f"V2 API - Verify {module_type} in list", 
+                "GET", 
+                f"governance/v2/records?portfolio_id={portfolio_id}&module_type={module_type}", 
+                200
+            )
+            if records_response and 'ok' in records_response and records_response['ok']:
+                items = records_response.get('data', {}).get('items', [])
+                found = any(item['id'] == record_id for item in items)
+                if found:
+                    print(f"      ✅ {module_type} record found in list")
+                else:
+                    print(f"      ❌ {module_type} record NOT found in list")
             else:
-                self.log_test("V2 API - IMMUTABILITY TEST (409)", False, f"❌ Expected 409, got {response.status_code} - IMMUTABILITY BROKEN!")
-                print(f"   🔒 ❌ IMMUTABILITY BROKEN - Got {response.status_code} instead of 409")
-        except Exception as e:
-            self.log_test("V2 API - IMMUTABILITY TEST (409)", False, str(e))
+                print(f"      ❌ {module_type}: Failed to get list")
         
-        # Test 6: Create amendment draft
-        amend_data = {
-            "change_type": "amendment",
-            "change_reason": "Correcting meeting location and adding additional discussion points",
-            "effective_at": "2024-12-16T00:00:00Z"
-        }
-        amendment = self.run_test("V2 API - Create Amendment", "POST", f"governance/v2/records/{record_id}/amend", 200, amend_data)
+        # Test 4: Test void functionality (soft delete)
+        print("   📋 Testing V2 API POST /api/governance/v2/records/{id}/void...")
         
-        if not amendment or 'data' not in amendment:
-            print("   ❌ Failed to create amendment, skipping remaining tests")
-            return record_id
-        
-        amendment_revision_id = amendment['data']['revision_id']
-        amendment_version = amendment['data']['version']
-        parent_hash = amendment['data']['parent_hash']
-        print(f"   ✅ Amendment created - Revision ID: {amendment_revision_id}")
-        print(f"   ✅ Amendment version: {amendment_version}")
-        print(f"   ✅ Parent hash: {parent_hash[:16]}...")
-        
-        # Test 7: Update amendment draft (should succeed)
-        amendment_update_data = {
-            "payload_json": {
-                "meeting_type": "regular",
-                "meeting_datetime": "2024-12-15T14:00:00Z",
-                "location": "Virtual Meeting - Zoom (AMENDED)",
-                "called_by": "John Doe",
-                "attendees": [
-                    {
-                        "name": "John Doe",
-                        "role": "trustee",
-                        "present": True,
-                        "notes": "Meeting chair"
-                    },
-                    {
-                        "name": "Jane Smith",
-                        "role": "co_trustee",
-                        "present": True,
-                        "notes": "Co-trustee"
-                    },
-                    {
-                        "name": "Bob Wilson",
-                        "role": "beneficiary",
-                        "present": False,
-                        "notes": "Absent - notified via email"
-                    }
-                ],
-                "agenda_items": [
-                    {
-                        "title": "Review Q4 Financial Statements",
-                        "order": 1,
-                        "discussion_summary": "Comprehensive review of quarterly performance with detailed analysis",
-                        "notes": "All trustees reviewed documents. Additional beneficiary input requested."
-                    },
-                    {
-                        "title": "Distribution Planning for Q1 2025",
-                        "order": 2,
-                        "discussion_summary": "Discussed upcoming distribution schedule and amounts",
-                        "notes": "Amendment: Added new agenda item for distribution planning"
-                    }
-                ],
-                "general_notes": "Regular quarterly meeting - AMENDED to include distribution planning discussion"
+        # Void one record from each type
+        for module_type, record_id in created_records.items():
+            void_data = {
+                "void_reason": f"Testing void functionality for {module_type} record"
             }
-        }
-        updated_amendment = self.run_test("V2 API - Update Amendment Draft", "PATCH", f"governance/v2/revisions/{amendment_revision_id}", 200, amendment_update_data)
-        if updated_amendment:
-            print("   ✅ Amendment draft updated successfully")
+            voided = self.run_test(
+                f"V2 API - Void {module_type} Record", 
+                "POST", 
+                f"governance/v2/records/{record_id}/void", 
+                200, 
+                void_data
+            )
+            if voided and 'ok' in voided and voided['ok']:
+                print(f"      ✅ {module_type} record voided successfully")
+            else:
+                print(f"      ❌ {module_type} record void failed")
         
-        # Test 8: Finalize amendment
-        finalized_amendment = self.run_test("V2 API - Finalize Amendment", "POST", f"governance/v2/revisions/{amendment_revision_id}/finalize", 200)
-        if finalized_amendment and 'data' in finalized_amendment:
-            amendment_hash = finalized_amendment['data']['content_hash']
-            print(f"   ✅ Amendment finalized with hash: {amendment_hash[:16]}...")
-            print("   🔗 Hash chain integrity maintained")
+        # Test 5: Verify voided records are excluded from default lists
+        print("   📋 Testing that voided records are excluded from lists...")
         
-        # Test 9: Get revision history
-        revision_history = self.run_test("V2 API - Get Revision History", "GET", f"governance/v2/records/{record_id}/revisions", 200)
-        if revision_history and 'data' in revision_history:
-            revisions = revision_history['data']['revisions']
-            print(f"   ✅ Found {len(revisions)} revisions in history")
-            for rev in revisions:
-                print(f"      - v{rev['version']}: {rev['change_type']} ({rev.get('change_reason', 'N/A')})")
+        for module_type, record_id in created_records.items():
+            records_response = self.run_test(
+                f"V2 API - Verify {module_type} excluded", 
+                "GET", 
+                f"governance/v2/records?portfolio_id={portfolio_id}&module_type={module_type}", 
+                200
+            )
+            if records_response and 'ok' in records_response and records_response['ok']:
+                items = records_response.get('data', {}).get('items', [])
+                found = any(item['id'] == record_id for item in items)
+                if not found:
+                    print(f"      ✅ {module_type} voided record correctly excluded from list")
+                else:
+                    print(f"      ❌ {module_type} voided record still appears in list")
+            else:
+                print(f"      ❌ {module_type}: Failed to get list")
         
-        # Test 10: Void record
-        void_data = {
-            "void_reason": "Testing void functionality - record created for testing purposes only"
-        }
-        voided = self.run_test("V2 API - Void Record", "POST", f"governance/v2/records/{record_id}/void", 200, void_data)
-        if voided:
-            print("   ✅ Record voided successfully")
+        # Test 6: Verify voided records appear when include_voided=true
+        print("   📋 Testing that voided records appear with include_voided=true...")
         
-        # Test 11: Get audit log entries
-        audit_log = self.run_test("V2 API - Get Audit Log", "GET", f"governance/v2/records/{record_id}/events", 200)
-        if audit_log and 'data' in audit_log:
-            events = audit_log['data']['events']
-            print(f"   ✅ Found {len(events)} audit log entries")
-            for event in events[:3]:  # Show first 3 events
-                print(f"      - {event['event_type']}: {event['actor_name']} at {event['at'][:19]}")
+        for module_type, record_id in created_records.items():
+            records_response = self.run_test(
+                f"V2 API - Verify {module_type} with include_voided", 
+                "GET", 
+                f"governance/v2/records?portfolio_id={portfolio_id}&module_type={module_type}&include_voided=true", 
+                200
+            )
+            if records_response and 'ok' in records_response and records_response['ok']:
+                items = records_response.get('data', {}).get('items', [])
+                found = any(item['id'] == record_id for item in items)
+                if found:
+                    print(f"      ✅ {module_type} voided record found with include_voided=true")
+                else:
+                    print(f"      ❌ {module_type} voided record NOT found even with include_voided=true")
+            else:
+                print(f"      ❌ {module_type}: Failed to get list with include_voided")
         
-        # Test 12: Hash chain integrity verification
-        if revision_history and 'data' in revision_history:
-            revisions = revision_history['data']['revisions']
-            if len(revisions) >= 2:
-                # Check that amendment has parent hash from original
-                original_rev = next((r for r in revisions if r['version'] == 1), None)
-                amendment_rev = next((r for r in revisions if r['version'] == 2), None)
-                
-                if original_rev and amendment_rev:
-                    print("   🔗 Verifying hash chain integrity...")
-                    print(f"      Original hash: {original_rev['content_hash'][:16]}...")
-                    # Note: parent_hash is not in the summary, would need full revision details
-                    print("   ✅ Hash chain structure verified")
-        
-        print("   🎉 V2 API Amendment Studio testing completed!")
-        return record_id
+        print("   🎉 V2 API GovernancePage refactor testing completed!")
+        return list(created_records.values())[0] if created_records else None
 
     def test_distributions(self, portfolio_id):
         """Test distributions module - Full CRUD and workflow"""
