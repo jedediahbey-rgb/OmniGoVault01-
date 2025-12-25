@@ -425,28 +425,32 @@ class BinderService:
         }
         
         for record in governance_records:
-            module = record.get("module_type", "minutes")
+            module = safe_get(record, "module_type", "minutes")
             section = module_section_map.get(module, "governance_minutes")
             
-            # Get revision payload
+            # Get revision payload safely
             payload = {}
-            if record.get("current_revision_id"):
+            current_rev_id = safe_get(record, "current_revision_id")
+            if current_rev_id:
                 revision = await self.db.governance_revisions.find_one(
-                    {"id": record["current_revision_id"]},
+                    {"id": current_rev_id},
                     {"_id": 0}
                 )
                 if revision:
-                    payload = revision.get("payload_json", {})
+                    payload = safe_get(revision, "payload_json", {})
+            
+            # Use safe_title for record title
+            record_title = safe_title(record, f"{module.title() if module else 'Unknown'} Record")
             
             content[section].append({
                 "type": f"governance_{module}",
-                "title": record.get("title", f"{module.title()} Record"),
-                "id": record.get("id"),
-                "rm_id": record.get("rm_id"),
-                "rm_subject_id": record.get("rm_subject_id"),
-                "status": record.get("status"),
-                "finalized_at": record.get("finalized_at"),
-                "created_at": record.get("created_at"),
+                "title": record_title,
+                "id": safe_get(record, "id"),
+                "rm_id": safe_get(record, "rm_id"),
+                "rm_subject_id": safe_get(record, "rm_subject_id"),
+                "status": safe_get(record, "status"),
+                "finalized_at": safe_get(record, "finalized_at"),
+                "created_at": safe_get(record, "created_at"),
                 "data": record,
                 "payload": payload
             })
