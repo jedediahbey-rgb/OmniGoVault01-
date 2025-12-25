@@ -959,18 +959,18 @@ export default function InsuranceEditorPage({ user }) {
         <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
-              <Lock className="w-5 h-5" />
+              <CheckCircle className="w-5 h-5" />
               Finalize Insurance Policy
             </DialogTitle>
             <DialogDescription className="text-vault-muted">
-              Once finalized, this policy record will be permanently locked and cannot be edited.
+              Once finalized, this policy will become Active and can only be amended.
             </DialogDescription>
           </DialogHeader>
           
           <div className="py-4">
             <div className="p-4 bg-vault-gold/10 border border-vault-gold/30 rounded-lg">
               <p className="text-sm text-vault-gold">
-                <strong>{policy?.title}</strong> will be locked. Make sure all details are correct before finalizing.
+                <strong>{policy?.title}</strong> will be finalized and marked as Active. Make sure all details are correct.
               </p>
             </div>
           </div>
@@ -996,8 +996,8 @@ export default function InsuranceEditorPage({ user }) {
                 </>
               ) : (
                 <>
-                  <Lock className="w-4 h-4 mr-2" />
-                  Finalize & Lock
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Finalize
                 </>
               )}
             </Button>
