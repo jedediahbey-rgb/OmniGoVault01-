@@ -434,7 +434,9 @@ export default function DisputeEditorPage({ user }) {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await axios.delete(`${API}/governance/disputes/${disputeId}`);
+      await axios.post(`${API}/governance/v2/records/${disputeId}/void`, {
+        void_reason: 'Deleted by user'
+      });
       toast.success('Dispute deleted successfully');
       navigate('/vault/governance?tab=disputes');
     } catch (error) {
