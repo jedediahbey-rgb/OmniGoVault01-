@@ -13,17 +13,17 @@ import time
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://recordhealth.preview.emergentagent.com/api"
 
-class GovernanceV2Tester:
+class DataIntegrityTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'GovernanceV2-Tester/1.0'
+            'User-Agent': 'DataIntegrity-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
-        self.created_records = []  # Track for cleanup
+        self.scan_result = None  # Store scan result for testing
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
@@ -43,7 +43,10 @@ class GovernanceV2Tester:
             elif method == 'PUT':
                 response = self.session.put(url, json=data)
             elif method == 'DELETE':
-                response = self.session.delete(url)
+                if data:
+                    response = self.session.delete(url, json=data)
+                else:
+                    response = self.session.delete(url)
             else:
                 raise ValueError(f"Unsupported method: {method}")
             
@@ -69,271 +72,216 @@ class GovernanceV2Tester:
             self.log(f"❌ FAIL - Exception: {str(e)}")
             return None
 
-    def create_test_record(self, module_type, title_suffix=""):
-        """Create a test record for amendment testing"""
-        test_data = {
-            "trust_id": "test_trust_001",
-            "portfolio_id": "test_portfolio_001", 
-            "module_type": module_type,
-            "title": f"Test {module_type.title()} Record{title_suffix}",
-            "payload_json": self.get_test_payload(module_type)
-        }
+    def test_integrity_scan(self):
+        """Test POST /api/integrity/scan endpoint"""
+        self.log("\n=== Testing Integrity Scan Endpoint ===")
         
         result = self.test_endpoint(
-            'POST', 
-            '/governance/v2/records',
-            200,
-            test_data,
-            f"Create {module_type} record"
-        )
-        
-        if result and result.get('ok'):
-            record_id = result['data']['record']['id']
-            self.created_records.append(record_id)
-            return record_id
-        return None
-
-    def get_test_payload(self, module_type):
-        """Get appropriate test payload for each module type"""
-        payloads = {
-            "minutes": {
-                "meeting_type": "regular",
-                "date_time": "2024-01-15T10:00:00Z",
-                "location": "Conference Room A",
-                "called_by": "John Trustee",
-                "agenda_items": [],
-                "attendees": [],
-                "notes": "Test meeting minutes"
-            },
-            "distribution": {
-                "distribution_type": "regular",
-                "description": "Test distribution",
-                "total_amount": 10000.00,
-                "currency": "USD",
-                "asset_type": "cash",
-                "scheduled_date": "2024-02-01",
-                "recipients": []
-            },
-            "dispute": {
-                "dispute_type": "beneficiary",
-                "description": "Test dispute case",
-                "case_number": "CASE-2024-001",
-                "jurisdiction": "State Court",
-                "amount_claimed": 5000.00,
-                "currency": "USD",
-                "priority": "medium",
-                "parties": [],
-                "events": []
-            },
-            "insurance": {
-                "policy_type": "whole_life",
-                "policy_number": "POL-2024-001",
-                "carrier_name": "Test Insurance Co",
-                "insured_name": "John Doe",
-                "death_benefit": 100000.00,
-                "cash_value": 5000.00,
-                "currency": "USD",
-                "premium_amount": 500.00,
-                "premium_frequency": "monthly",
-                "policy_state": "pending",
-                "beneficiaries": []
-            },
-            "compensation": {
-                "compensation_type": "annual_fee",
-                "recipient_name": "Jane Trustee",
-                "recipient_role": "trustee",
-                "amount": 2500.00,
-                "currency": "USD",
-                "fiscal_year": "2024",
-                "basis_of_calculation": "Fixed annual fee for trustee services"
-            }
-        }
-        return payloads.get(module_type, {})
-
-    def test_amendment_workflow(self, module_type):
-        """Test complete amendment workflow for a module type"""
-        self.log(f"\n=== Testing Amendment Workflow for {module_type.upper()} ===")
-        
-        # 1. Create a test record
-        record_id = self.create_test_record(module_type, f" for Amendment Test")
-        if not record_id:
-            self.log(f"❌ Failed to create {module_type} record")
-            return False
-        
-        # 2. Finalize the record (required for amendments)
-        finalize_result = self.test_endpoint(
             'POST',
-            f'/governance/v2/records/{record_id}/finalize',
+            '/integrity/scan',
             200,
             {},
-            f"Finalize {module_type} record"
-        )
-        
-        if not finalize_result or not finalize_result.get('ok'):
-            self.log(f"❌ Failed to finalize {module_type} record")
-            return False
-        
-        # 3. Create amendment
-        amendment_data = {
-            "change_reason": f"Test amendment for {module_type} record - updating for compliance",
-            "change_type": "amendment",
-            "effective_at": "2024-02-01T00:00:00Z"
-        }
-        
-        amend_result = self.test_endpoint(
-            'POST',
-            f'/governance/v2/records/{record_id}/amend',
-            200,
-            amendment_data,
-            f"Create amendment for {module_type} record"
-        )
-        
-        if not amend_result or not amend_result.get('ok'):
-            self.log(f"❌ Failed to create amendment for {module_type} record")
-            return False
-        
-        # 4. Verify revision history
-        revisions_result = self.test_endpoint(
-            'GET',
-            f'/governance/v2/records/{record_id}/revisions',
-            200,
-            None,
-            f"Get revision history for {module_type} record"
-        )
-        
-        if not revisions_result or not revisions_result.get('ok'):
-            self.log(f"❌ Failed to get revision history for {module_type} record")
-            return False
-        
-        revisions = revisions_result.get('data', {}).get('revisions', [])
-        if len(revisions) < 2:
-            self.log(f"❌ Expected at least 2 revisions, got {len(revisions)}")
-            return False
-        
-        self.log(f"✅ Amendment workflow completed for {module_type} - {len(revisions)} revisions found")
-        return True
-
-    def test_revision_history_endpoint(self):
-        """Test the revision history endpoint specifically"""
-        self.log("\n=== Testing Revision History Endpoint ===")
-        
-        # Create and amend a record
-        record_id = self.create_test_record("minutes", " for Revision History Test")
-        if not record_id:
-            return False
-        
-        # Finalize
-        self.test_endpoint('POST', f'/governance/v2/records/{record_id}/finalize', 200, {})
-        
-        # Create amendment
-        self.test_endpoint(
-            'POST', 
-            f'/governance/v2/records/{record_id}/amend',
-            200,
-            {"change_reason": "Test revision history", "change_type": "amendment"}
-        )
-        
-        # Test revision history endpoint
-        result = self.test_endpoint(
-            'GET',
-            f'/governance/v2/records/{record_id}/revisions',
-            200,
-            None,
-            "Get detailed revision history"
+            "Run integrity scan"
         )
         
         if result and result.get('ok'):
-            revisions = result.get('data', {}).get('revisions', [])
-            self.log(f"✅ Found {len(revisions)} revisions in history")
+            self.scan_result = result.get('data', {})
             
-            # Verify revision structure
-            for rev in revisions:
-                required_fields = ['id', 'version', 'change_type', 'created_at']
-                missing_fields = [field for field in required_fields if field not in rev]
-                if missing_fields:
-                    self.log(f"❌ Revision missing fields: {missing_fields}")
-                    return False
+            # Verify scan result structure
+            required_fields = [
+                'scan_id', 'started_at', 'completed_at', 
+                'total_records_scanned', 'total_issues_found',
+                'issues_by_severity', 'issues'
+            ]
             
-            self.log("✅ All revisions have required fields")
-            return True
-        
-        return False
-
-    def test_amendment_stays_on_page(self):
-        """Test that amendment creation doesn't navigate away (API behavior)"""
-        self.log("\n=== Testing Amendment API Response ===")
-        
-        record_id = self.create_test_record("distribution", " for Navigation Test")
-        if not record_id:
-            return False
-        
-        # Finalize
-        self.test_endpoint('POST', f'/governance/v2/records/{record_id}/finalize', 200, {})
-        
-        # Create amendment and verify response structure
-        amendment_data = {
-            "change_reason": "Testing API response structure",
-            "change_type": "amendment"
-        }
-        
-        result = self.test_endpoint(
-            'POST',
-            f'/governance/v2/records/{record_id}/amend',
-            200,
-            amendment_data,
-            "Test amendment API response"
-        )
-        
-        if result and result.get('ok'):
-            # Verify response contains necessary data for staying on page
-            data = result.get('data', {})
-            required_fields = ['record_id', 'revision_id', 'version']
-            missing_fields = [field for field in required_fields if field not in data]
-            
+            missing_fields = [field for field in required_fields if field not in self.scan_result]
             if missing_fields:
-                self.log(f"❌ Amendment response missing fields: {missing_fields}")
+                self.log(f"❌ Scan result missing fields: {missing_fields}")
                 return False
             
-            self.log("✅ Amendment response contains all required fields for page refresh")
+            self.log(f"✅ Scan completed - {self.scan_result['total_records_scanned']} records scanned")
+            self.log(f"✅ Found {self.scan_result['total_issues_found']} issues")
+            
+            # Log issues by severity
+            for severity, count in self.scan_result.get('issues_by_severity', {}).items():
+                if count > 0:
+                    self.log(f"   {severity}: {count} issues")
+            
             return True
         
         return False
 
-    def cleanup_test_records(self):
-        """Clean up created test records"""
-        self.log(f"\n=== Cleaning up {len(self.created_records)} test records ===")
+    def test_delete_single_record(self):
+        """Test DELETE /api/integrity/records/{record_id} endpoint"""
+        self.log("\n=== Testing Single Record Deletion ===")
         
-        for record_id in self.created_records:
-            try:
-                self.test_endpoint(
-                    'POST',
-                    f'/governance/v2/records/{record_id}/void',
-                    200,
-                    {"void_reason": "Test cleanup"},
-                    f"Cleanup record {record_id}"
-                )
-            except Exception as e:
-                self.log(f"Warning: Failed to cleanup record {record_id}: {e}")
+        if not self.scan_result or not self.scan_result.get('issues'):
+            self.log("❌ No scan result or issues available for testing deletion")
+            return False
+        
+        # Find a fixable issue (missing_fk type)
+        fixable_issue = None
+        for issue in self.scan_result['issues']:
+            if issue.get('issue_type') == 'missing_fk':
+                fixable_issue = issue
+                break
+        
+        if not fixable_issue:
+            self.log("ℹ️  No fixable issues found for deletion test")
+            return True  # Not a failure, just no data to test with
+        
+        record_id = fixable_issue['record_id']
+        
+        result = self.test_endpoint(
+            'DELETE',
+            f'/integrity/records/{record_id}',
+            200,
+            None,
+            f"Delete orphaned record {record_id}"
+        )
+        
+        if result and result.get('ok'):
+            self.log(f"✅ Successfully deleted record {record_id}")
+            return True
+        
+        return False
+
+    def test_bulk_delete_records(self):
+        """Test DELETE /api/integrity/records/bulk endpoint"""
+        self.log("\n=== Testing Bulk Record Deletion ===")
+        
+        if not self.scan_result or not self.scan_result.get('issues'):
+            self.log("❌ No scan result or issues available for testing bulk deletion")
+            return False
+        
+        # Find fixable issues for bulk deletion
+        fixable_record_ids = []
+        for issue in self.scan_result['issues']:
+            if issue.get('issue_type') == 'missing_fk' and len(fixable_record_ids) < 3:
+                fixable_record_ids.append(issue['record_id'])
+        
+        if not fixable_record_ids:
+            self.log("ℹ️  No fixable issues found for bulk deletion test")
+            return True  # Not a failure, just no data to test with
+        
+        bulk_data = {
+            "record_ids": fixable_record_ids
+        }
+        
+        result = self.test_endpoint(
+            'DELETE',
+            '/integrity/records/bulk',
+            200,
+            bulk_data,
+            f"Bulk delete {len(fixable_record_ids)} orphaned records"
+        )
+        
+        if result and result.get('ok'):
+            deleted_count = result.get('data', {}).get('deleted_count', 0)
+            self.log(f"✅ Successfully deleted {deleted_count} records")
+            return True
+        
+        return False
+
+    def test_scan_history(self):
+        """Test GET /api/integrity/scans endpoint"""
+        self.log("\n=== Testing Scan History Endpoint ===")
+        
+        result = self.test_endpoint(
+            'GET',
+            '/integrity/scans',
+            200,
+            None,
+            "Get scan history"
+        )
+        
+        if result and result.get('ok'):
+            scans = result.get('data', {}).get('scans', [])
+            self.log(f"✅ Found {len(scans)} previous scans")
+            
+            # Verify scan summary structure
+            if scans:
+                scan = scans[0]
+                required_fields = ['scan_id', 'started_at', 'total_records_scanned', 'total_issues_found']
+                missing_fields = [field for field in required_fields if field not in scan]
+                if missing_fields:
+                    self.log(f"❌ Scan summary missing fields: {missing_fields}")
+                    return False
+            
+            return True
+        
+        return False
+
+    def test_specific_scan_result(self):
+        """Test GET /api/integrity/scans/{scan_id} endpoint"""
+        self.log("\n=== Testing Specific Scan Result Endpoint ===")
+        
+        if not self.scan_result or not self.scan_result.get('scan_id'):
+            self.log("❌ No scan result available for testing specific scan endpoint")
+            return False
+        
+        scan_id = self.scan_result['scan_id']
+        
+        result = self.test_endpoint(
+            'GET',
+            f'/integrity/scans/{scan_id}',
+            200,
+            None,
+            f"Get specific scan result {scan_id}"
+        )
+        
+        if result and result.get('ok'):
+            scan_data = result.get('data', {})
+            if scan_data.get('scan_id') == scan_id:
+                self.log(f"✅ Successfully retrieved scan {scan_id}")
+                return True
+            else:
+                self.log(f"❌ Scan ID mismatch: expected {scan_id}, got {scan_data.get('scan_id')}")
+        
+        return False
+
+    def test_lifecycle_validation(self):
+        """Test lifecycle validation endpoints"""
+        self.log("\n=== Testing Lifecycle Validation Endpoints ===")
+        
+        # Test derive operational status endpoint
+        result = self.test_endpoint(
+            'GET',
+            '/integrity/lifecycle/derive-status?module_type=minutes&lifecycle_status=draft',
+            200,
+            None,
+            "Test derive operational status"
+        )
+        
+        if result and result.get('ok'):
+            derived_status = result.get('data', {}).get('derived_operational_status')
+            self.log(f"✅ Derived status: {derived_status}")
+            return True
+        
+        return False
 
     def run_all_tests(self):
-        """Run all amendment system tests"""
-        self.log("🚀 Starting Governance V2 Amendment System Tests")
+        """Run all data integrity system tests"""
+        self.log("🚀 Starting Data Integrity & Diagnostics System Tests")
         self.log(f"Testing against: {self.base_url}")
         
-        # Test amendment workflow for all 5 editor pages
-        module_types = ["minutes", "distribution", "dispute", "insurance", "compensation"]
+        # Test core integrity endpoints
+        tests = [
+            self.test_integrity_scan,
+            self.test_scan_history,
+            self.test_specific_scan_result,
+            self.test_delete_single_record,
+            self.test_bulk_delete_records,
+            self.test_lifecycle_validation
+        ]
         
-        for module_type in module_types:
-            success = self.test_amendment_workflow(module_type)
-            if not success:
-                self.log(f"❌ Amendment workflow failed for {module_type}")
-        
-        # Test specific endpoints
-        self.test_revision_history_endpoint()
-        self.test_amendment_stays_on_page()
-        
-        # Cleanup
-        self.cleanup_test_records()
+        for test in tests:
+            try:
+                success = test()
+                if not success:
+                    self.log(f"❌ Test failed: {test.__name__}")
+            except Exception as e:
+                self.log(f"❌ Test error in {test.__name__}: {str(e)}")
         
         # Summary
         self.log(f"\n📊 Test Results: {self.tests_passed}/{self.tests_run} passed")
@@ -343,7 +291,7 @@ class GovernanceV2Tester:
         return self.tests_passed == self.tests_run
 
 def main():
-    tester = GovernanceV2Tester()
+    tester = DataIntegrityTester()
     success = tester.run_all_tests()
     return 0 if success else 1
 
