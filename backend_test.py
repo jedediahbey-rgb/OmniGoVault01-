@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Ledger Thread Management Tools
-Tests merge, split, and reassign ledger threads functionality.
+Backend API Testing for Trust Management Application
+Testing P1 (Integrity Seals) and P2 (Scheduled Binder Generation) features
 """
 
 import requests
@@ -14,7 +14,7 @@ import uuid
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://portfolio-sync-10.preview.emergentagent.com/api"
 
-class LedgerThreadAPITester:
+class TrustManagementAPITester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
