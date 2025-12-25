@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Smart Trust Score Rules Editor & Governance Compliance Checklists
-Tests all configuration APIs for health rules and checklists.
+Backend API Testing for Ledger Thread Management Tools
+Tests merge, split, and reassign ledger threads functionality.
 """
 
 import requests
@@ -9,11 +9,12 @@ import json
 import sys
 from datetime import datetime
 import time
+import uuid
 
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://trustscore-manager.preview.emergentagent.com/api"
 
-class ConfigAPITester:
+class LedgerThreadAPITester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
