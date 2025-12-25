@@ -885,7 +885,6 @@ export default function GovernancePage({ user }) {
           basis_of_calculation: '',
           notes: '',
         });
-        setCompensationThread(null);
         
         fetchCompensationEntries();
       } else {
