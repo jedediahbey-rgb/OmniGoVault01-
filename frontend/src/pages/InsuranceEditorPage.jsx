@@ -698,7 +698,7 @@ export default function InsuranceEditorPage({ user }) {
               <Calendar className="w-5 h-5 text-vault-gold" />
               Premium Payments
             </h3>
-            {!isLocked && (
+            {isDraft && (
               <Button
                 size="sm"
                 onClick={() => setShowAddPayment(true)}
