@@ -457,8 +457,9 @@ export default function DisputeEditorPage({ user }) {
 
   const handleDeleteEvent = async (eventId) => {
     try {
-      await axios.delete(`${API}/governance/disputes/${disputeId}/events/${eventId}`);
-      await refetchDispute();
+      // Use V2 API - remove event from array and save
+      const updatedEvents = (dispute.events || []).filter(e => e.event_id !== eventId);
+      await saveDispute({ events: updatedEvents });
       toast.success('Event removed');
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to remove event');
@@ -467,9 +468,18 @@ export default function DisputeEditorPage({ user }) {
 
   const handleResolve = async () => {
     try {
-      await axios.post(`${API}/governance/disputes/${disputeId}/resolve`, {
-        ...resolution,
-        monetary_award: parseFloat(resolution.monetary_award) || 0,
+      // Use V2 API - update status and save resolution
+      await axios.put(`${API}/governance/v2/records/${disputeId}`, {
+        title: dispute.title,
+        status: 'settled',
+        payload_json: {
+          ...dispute,
+          resolution: {
+            ...resolution,
+            monetary_award: parseFloat(resolution.monetary_award) || 0,
+          },
+          resolved_at: new Date().toISOString()
+        }
       });
       await refetchDispute();
       setShowResolve(false);
