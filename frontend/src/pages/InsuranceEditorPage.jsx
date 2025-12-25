@@ -409,12 +409,12 @@ export default function InsuranceEditorPage({ user }) {
   const typeConfig = insuranceTypeConfig[policy.policy_type] || insuranceTypeConfig.whole_life;
   const TypeIcon = typeConfig.icon;
   
-  // Status logic: Draft until finalized, then Active
+  // Status logic: Use derived badge - Draft until finalized
   const isDraft = policy.status === 'draft';
   const isFinalized = policy.status === 'finalized';
-  const effectiveStatus = policy.status || 'draft';
-  const status = statusConfig[effectiveStatus] || statusConfig.draft;
-  const StatusIcon = status.icon;
+  // Use derived badge logic - Draft records NEVER show "Active"
+  const badge = getInsuranceBadge(policy);
+  const StatusIcon = badge.icon;
 
   return (
     <motion.div
