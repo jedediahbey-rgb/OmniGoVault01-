@@ -487,8 +487,23 @@ export default function CyberHomePage() {
   const [demoMode, setDemoMode] = useState(true);
   const [liveSignals, setLiveSignals] = useState([]);
   const [signalsLoading, setSignalsLoading] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
+  
+  // Handle scroll to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   
   // Map activity types to icons
   const typeIcons = {
