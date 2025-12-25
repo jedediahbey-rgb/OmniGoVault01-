@@ -531,7 +531,7 @@ export default function InsuranceEditorPage({ user }) {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleAmend}
+                    onClick={() => setShowAmendmentStudio(true)}
                     className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
                   >
                     <PlusCircle className="w-4 h-4 mr-2" />
