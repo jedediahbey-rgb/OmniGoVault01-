@@ -626,14 +626,10 @@ export default function GovernancePage({ user }) {
       toast.error('Please select a portfolio');
       return;
     }
-    if (!distributionThread) {
-      toast.error('Please select or create a Ledger Thread (RM-ID)');
-      return;
-    }
     
     setCreatingDistribution(true);
     try {
-      // Build request with ledger thread info
+      // Build request with optional ledger thread info
       const requestData = {
         module_type: MODULE_TYPES.distributions,
         portfolio_id: selectedPortfolio,
@@ -650,14 +646,16 @@ export default function GovernancePage({ user }) {
         }
       };
       
-      // Add ledger thread info
-      if (distributionThread.is_new) {
-        requestData.create_new_subject = true;
-        requestData.new_subject_title = distributionThread.title;
-        requestData.new_subject_party_name = distributionThread.primary_party_name;
-        requestData.new_subject_external_ref = distributionThread.external_ref;
-      } else {
-        requestData.rm_subject_id = distributionThread.id;
+      // Add ledger thread info if selected
+      if (distributionThread) {
+        if (distributionThread.is_new) {
+          requestData.create_new_subject = true;
+          requestData.new_subject_title = distributionThread.title;
+          requestData.new_subject_party_name = distributionThread.primary_party_name;
+          requestData.new_subject_external_ref = distributionThread.external_ref;
+        } else {
+          requestData.rm_subject_id = distributionThread.id;
+        }
       }
       
       const res = await axios.post(`${API_V2}/records`, requestData);
