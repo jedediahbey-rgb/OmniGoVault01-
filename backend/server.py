@@ -3423,6 +3423,11 @@ from routes.governance import router as governance_router, init_governance_route
 init_governance_routes(db, get_current_user, generate_subject_rm_id)
 app.include_router(governance_router)
 
+# Initialize and include Governance V2 routes (Amendment Studio)
+from routes.governance_v2 import router as governance_v2_router, init_governance_v2_routes
+init_governance_v2_routes(db, get_current_user, generate_subject_rm_id)
+app.include_router(governance_v2_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
