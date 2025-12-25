@@ -494,8 +494,47 @@ export default function DisputeEditorPage({ user }) {
   };
 
   const handleChangeStatus = async (newStatus) => {
-    await saveDispute({ status: newStatus });
-    setShowChangeStatus(false);
+    console.log('handleChangeStatus called with:', newStatus);
+    setSaving(true);
+    try {
+      // Directly update the dispute_status in payload
+      const payload = {
+        title: dispute.title,
+        dispute_type: dispute.dispute_type,
+        description: dispute.description,
+        case_number: dispute.case_number,
+        jurisdiction: dispute.jurisdiction,
+        amount_claimed: dispute.amount_claimed,
+        currency: dispute.currency,
+        estimated_exposure: dispute.estimated_exposure,
+        priority: dispute.priority,
+        primary_counsel: dispute.primary_counsel,
+        counsel_firm: dispute.counsel_firm,
+        next_deadline: dispute.next_deadline,
+        next_hearing_date: dispute.next_hearing_date,
+        parties: dispute.parties || [],
+        events: dispute.events || [],
+        notes: dispute.notes,
+        // Set the new operational status explicitly
+        dispute_status: newStatus,
+      };
+      
+      console.log('Saving payload with dispute_status:', payload.dispute_status);
+      
+      await axios.put(`${API}/governance/v2/records/${disputeId}`, {
+        title: payload.title,
+        payload_json: payload
+      });
+      
+      await refetchDispute();
+      setShowChangeStatus(false);
+      toast.success(`Status changed to ${statusConfig[newStatus]?.label || newStatus}`);
+    } catch (error) {
+      console.error('Failed to change status:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to change status');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSetOutcome = async (outcome) => {
