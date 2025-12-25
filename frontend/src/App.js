@@ -33,6 +33,7 @@ import CompensationEditorPage from './pages/CompensationEditorPage';
 import GovernanceRecordPage from './pages/GovernanceRecordPage';
 import DiagnosticsPage from './pages/DiagnosticsPage';
 import TrustHealthDashboard from './pages/TrustHealthDashboard';
+import SettingsPage from './pages/SettingsPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -197,6 +198,13 @@ const AppRouter = ({ auth }) => {
       <Route path="/health" element={
         <AuthLayout auth={auth}>
           <TrustHealthDashboard />
+        </AuthLayout>
+      } />
+      
+      {/* Settings Page */}
+      <Route path="/settings" element={
+        <AuthLayout auth={auth}>
+          <SettingsPage />
         </AuthLayout>
       } />
       
