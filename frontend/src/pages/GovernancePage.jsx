@@ -478,14 +478,33 @@ export default function GovernancePage({ user }) {
     if (!selectedPortfolio) return;
     setCompensationLoading(true);
     try {
-      const res = await axios.get(`${API}/governance/compensation`, {
-        params: { portfolio_id: selectedPortfolio }
+      // Use V2 API for compensation entries
+      const res = await axios.get(`${API_V2}/records`, {
+        params: { 
+          portfolio_id: selectedPortfolio, 
+          module_type: MODULE_TYPES.compensation
+        }
       });
+      
       const data = res.data;
-      if (data.ok && data.items) {
-        setCompensationEntries(data.items);
-      } else if (Array.isArray(data)) {
-        setCompensationEntries(data);
+      if (data.ok && data.data?.items) {
+        const transformedEntries = data.data.items.map(record => ({
+          compensation_id: record.id,
+          id: record.id,
+          title: record.title,
+          rm_id: record.rm_id,
+          status: record.status,
+          locked: record.status === 'finalized',
+          created_at: record.created_at,
+          finalized_at: record.finalized_at,
+          // Default values
+          compensation_type: 'annual_fee',
+          recipient_name: '',
+          recipient_role: 'trustee',
+          amount: 0,
+          currency: 'USD'
+        }));
+        setCompensationEntries(transformedEntries);
       } else {
         setCompensationEntries([]);
       }
