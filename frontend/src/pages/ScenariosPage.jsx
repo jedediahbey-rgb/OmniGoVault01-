@@ -208,8 +208,10 @@ export default function ScenariosPage() {
     });
     setVariables(defaults);
     setResults(null);
-    // Scroll to top when selecting a scenario
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll to top after React re-renders the new view
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 50);
   };
 
   const updateVariable = (name, value) => {
