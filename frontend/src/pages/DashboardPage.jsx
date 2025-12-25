@@ -254,53 +254,86 @@ export default function DashboardPage({ user }) {
             
             {portfolios.length > 0 ? (
               <div className="space-y-3">
-                {portfolios.map((portfolio) => (
-                  <div 
-                    key={portfolio.portfolio_id}
-                    onClick={() => navigate(`/vault/portfolio/${portfolio.portfolio_id}`)}
-                    className="flex items-center gap-4 p-4 rounded-lg border border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5 cursor-pointer transition-all group"
-                  >
-                    <div className="w-12 h-12 rounded-lg bg-vault-gold/10 flex items-center justify-center">
-                      <FolderSimple className="w-6 h-6 text-vault-gold" weight="duotone" />
+                {portfolios.map((portfolio) => {
+                  const isDefault = portfolio.portfolio_id === defaultPortfolioId;
+                  return (
+                    <div 
+                      key={portfolio.portfolio_id}
+                      onClick={() => navigate(`/vault/portfolio/${portfolio.portfolio_id}`)}
+                      className={`flex items-center gap-4 p-4 rounded-lg border transition-all cursor-pointer group ${
+                        isDefault 
+                          ? 'border-vault-gold/40 bg-vault-gold/5 hover:bg-vault-gold/10' 
+                          : 'border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5'
+                      }`}
+                    >
+                      <div className="w-12 h-12 rounded-lg bg-vault-gold/10 flex items-center justify-center shrink-0">
+                        <FolderSimple className="w-6 h-6 text-vault-gold" weight="duotone" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-white font-medium truncate">{portfolio.name}</p>
+                          {isDefault && (
+                            <span className="px-2 py-0.5 text-[10px] font-medium bg-vault-gold/20 text-vault-gold rounded-full shrink-0">
+                              Default
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-white/40 text-sm truncate">
+                          {portfolio.description || 'No description'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                        <span className="hidden sm:inline text-white/30 text-xs">
+                          {new Date(portfolio.created_at).toLocaleDateString()}
+                        </span>
+                        {/* Set as Default Button */}
+                        <button
+                          onClick={(e) => isDefault ? clearDefault(e) : setAsDefault(portfolio.portfolio_id, e)}
+                          className={`p-2 rounded transition-colors ${
+                            isDefault 
+                              ? 'text-vault-gold hover:text-vault-gold/70' 
+                              : 'text-white/30 hover:text-vault-gold'
+                          }`}
+                          title={isDefault ? 'Remove as default' : 'Set as default portfolio'}
+                        >
+                          <Star className="w-4 h-4" weight={isDefault ? 'fill' : 'regular'} />
+                        </button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button 
+                              onClick={e => e.stopPropagation()}
+                              className="p-1.5 text-white/30 hover:text-white hover:bg-white/10 rounded"
+                            >
+                              <DotsThreeVertical className="w-4 h-4" weight="duotone" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-vault-navy border-white/10">
+                            <DropdownMenuItem 
+                              onClick={(e) => isDefault ? clearDefault(e) : setAsDefault(portfolio.portfolio_id, e)}
+                              className="text-white/70 hover:text-white focus:text-white"
+                            >
+                              <Star className="w-4 h-4 mr-2" weight={isDefault ? 'fill' : 'regular'} /> 
+                              {isDefault ? 'Remove Default' : 'Set as Default'}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={(e) => openEditDialog(portfolio, e)}
+                              className="text-white/70 hover:text-white focus:text-white"
+                            >
+                              <PencilSimple className="w-4 h-4 mr-2" weight="duotone" /> Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={(e) => { e.stopPropagation(); deletePortfolio(portfolio); }}
+                              className="text-red-400 hover:text-red-300 focus:text-red-300"
+                            >
+                              <Trash className="w-4 h-4 mr-2" weight="duotone" /> Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-vault-gold transition-colors" weight="duotone" />
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white font-medium truncate">{portfolio.name}</p>
-                      <p className="text-white/40 text-sm truncate">
-                        {portfolio.description || 'No description'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-white/30 text-xs">
-                        {new Date(portfolio.created_at).toLocaleDateString()}
-                      </span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button 
-                            onClick={e => e.stopPropagation()}
-                            className="p-1.5 text-white/30 hover:text-white hover:bg-white/10 rounded"
-                          >
-                            <DotsThreeVertical className="w-4 h-4" weight="duotone" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-vault-navy border-white/10">
-                          <DropdownMenuItem 
-                            onClick={(e) => openEditDialog(portfolio, e)}
-                            className="text-white/70 hover:text-white focus:text-white"
-                          >
-                            <PencilSimple className="w-4 h-4 mr-2" weight="duotone" /> Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={(e) => { e.stopPropagation(); deletePortfolio(portfolio); }}
-                            className="text-red-400 hover:text-red-300 focus:text-red-300"
-                          >
-                            <Trash className="w-4 h-4 mr-2" weight="duotone" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-vault-gold transition-colors" weight="duotone" />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-12">
