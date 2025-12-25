@@ -1615,7 +1615,8 @@ export default function GovernancePage({ user }) {
                   const policyId = policy.policy_id || policy.id;
                   const typeConfig = insuranceTypeConfig[policy.policy_type] || insuranceTypeConfig.whole_life;
                   const TypeIcon = typeConfig.icon;
-                  const statusConf = insuranceStatusConfig[policy.status] || insuranceStatusConfig.draft;
+                  // Use derived badge logic - Draft records NEVER show "Active"
+                  const badge = getInsuranceBadge(policy);
                   
                   return (
                     <motion.div
@@ -1636,8 +1637,8 @@ export default function GovernancePage({ user }) {
                             
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <Badge className={`${statusConf.color} border text-xs`}>
-                                  {statusConf.label}
+                                <Badge className={`${badge.color} border text-xs`}>
+                                  {badge.label}
                                 </Badge>
                                 <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
                                   {typeConfig.label}
