@@ -53,6 +53,7 @@ import {
 } from '../components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { AmendmentStudio, RevisionHistory } from '../components/governance';
+import { FinalizeConfirmationModal } from '../components/governance/FinalizeConfirmationModal';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
