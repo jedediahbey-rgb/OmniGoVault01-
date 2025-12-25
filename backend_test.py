@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Governance V2 Amendment System
-Tests the unified V2 API endpoints for amendments and revision history.
+Backend API Testing for Data Integrity & Diagnostics System
+Tests the integrity scan and repair endpoints for Phase 1 implementation.
 """
 
 import requests
