@@ -1426,6 +1426,86 @@ class BinderService:
     
     # ============ MAIN GENERATION ENTRY POINT ============
     
+    async def preflight_validate(
+        self,
+        portfolio_id: str,
+        user_id: str,
+        rules: Dict
+    ) -> Dict:
+        """
+        Validate binder content before generation.
+        Returns validation result with any missing/problematic items.
+        """
+        validation = {
+            "valid": True,
+            "warnings": [],
+            "errors": [],
+            "missing_items": []
+        }
+        
+        try:
+            # Check portfolio exists
+            portfolio = await self.db.portfolios.find_one(
+                {"portfolio_id": portfolio_id},
+                {"_id": 0}
+            )
+            if not portfolio:
+                validation["valid"] = False
+                validation["errors"].append({
+                    "code": "PORTFOLIO_NOT_FOUND",
+                    "message": f"Portfolio {portfolio_id} not found"
+                })
+                return validation
+            
+            # Check if specific record IDs are referenced in rules
+            case_thread_ids = rules.get("case_thread_ids", [])
+            dispute_id = rules.get("dispute_id")
+            
+            if case_thread_ids:
+                for thread_id in case_thread_ids:
+                    record = await self.db.governance_records.find_one(
+                        {"rm_subject_id": thread_id, "portfolio_id": portfolio_id},
+                        {"_id": 0, "id": 1}
+                    )
+                    if not record:
+                        validation["warnings"].append({
+                            "code": "THREAD_NOT_FOUND",
+                            "record_id": thread_id,
+                            "type": "case_thread",
+                            "reason": f"Case thread {thread_id} not found in portfolio"
+                        })
+                        validation["missing_items"].append({
+                            "record_id": thread_id,
+                            "type": "case_thread",
+                            "reason": "Not found in portfolio"
+                        })
+            
+            if dispute_id:
+                dispute = await self.db.governance_records.find_one(
+                    {"id": dispute_id, "portfolio_id": portfolio_id, "module_type": "dispute"},
+                    {"_id": 0, "id": 1}
+                )
+                if not dispute:
+                    validation["warnings"].append({
+                        "code": "DISPUTE_NOT_FOUND",
+                        "record_id": dispute_id,
+                        "type": "dispute",
+                        "reason": f"Dispute {dispute_id} not found in portfolio"
+                    })
+                    validation["missing_items"].append({
+                        "record_id": dispute_id,
+                        "type": "dispute",
+                        "reason": "Not found in portfolio"
+                    })
+            
+        except Exception as e:
+            validation["warnings"].append({
+                "code": "VALIDATION_ERROR",
+                "message": str(e)
+            })
+        
+        return validation
+    
     async def generate_binder(
         self,
         portfolio_id: str,
@@ -1435,13 +1515,19 @@ class BinderService:
         """
         Main entry point for binder generation.
         Creates a run, collects content, generates PDF, and stores result.
+        Now includes preflight validation and graceful handling of missing items.
         """
+        import traceback
+        
         # Get profile
         profile = await self.get_profile(profile_id)
         if not profile:
             return {"success": False, "error": "Profile not found"}
         
         rules = profile.get("rules_json", {})
+        
+        # Preflight validation
+        validation = await self.preflight_validate(portfolio_id, user_id, rules)
         
         # Create run record
         run = await self.create_run(
@@ -1460,10 +1546,14 @@ class BinderService:
             # Collect content
             content = await self.collect_binder_content(portfolio_id, user_id, rules)
             
+            # Add missing items info to content for inclusion in PDF
+            content["_missing_items"] = validation.get("missing_items", [])
+            content["_validation_warnings"] = validation.get("warnings", [])
+            
             # Generate manifest
             manifest = self.generate_manifest(content)
             
-            # Generate PDF
+            # Generate PDF (will include missing items page if needed)
             pdf_bytes = await self.generate_pdf(
                 portfolio_id, user_id, profile, content, manifest
             )
@@ -1471,6 +1561,12 @@ class BinderService:
             # Encode PDF as base64 for storage
             import base64
             pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
+            
+            # Prepare run metadata including validation info
+            run_metadata = {
+                "validation": validation,
+                "generated_with_warnings": len(validation.get("warnings", [])) > 0
+            }
             
             # Update run with success
             await self.update_run_status(
@@ -1481,28 +1577,68 @@ class BinderService:
                 total_items=len(manifest)
             )
             
+            # Store additional metadata
+            await self.db.binder_runs.update_one(
+                {"id": run["id"]},
+                {"$set": {
+                    "metadata_json": run_metadata,
+                    "missing_items": validation.get("missing_items", [])
+                }}
+            )
+            
             return {
                 "success": True,
                 "run_id": run["id"],
                 "status": BinderStatus.COMPLETE.value,
                 "total_items": len(manifest),
-                "message": "Binder generated successfully"
+                "message": "Binder generated successfully",
+                "warnings": validation.get("warnings", [])
             }
             
         except Exception as e:
+            # Capture full stack trace for debugging
+            stack_trace = traceback.format_exc()
+            
+            # Create detailed error info
+            error_info = {
+                "message": str(e),
+                "type": type(e).__name__,
+                "stack_trace": stack_trace,
+                "user_message": self._get_user_friendly_error(e)
+            }
+            
             # Update run with failure
             await self.update_run_status(
                 run["id"],
                 BinderStatus.FAILED,
-                error={"message": str(e), "type": type(e).__name__}
+                error=error_info
             )
             
             return {
                 "success": False,
                 "run_id": run["id"],
                 "status": BinderStatus.FAILED.value,
-                "error": str(e)
+                "error": error_info["user_message"]
             }
+    
+    def _get_user_friendly_error(self, e: Exception) -> str:
+        """Convert technical errors to user-friendly messages."""
+        error_str = str(e).lower()
+        
+        if "libpango" in error_str or "pango" in error_str:
+            return "PDF generation library error. Please contact support."
+        if "libcairo" in error_str or "cairo" in error_str:
+            return "PDF rendering library error. Please contact support."
+        if "none" in error_str and "title" in error_str:
+            return "A record is missing required data. The binder will be generated with available items."
+        if "attribute" in error_str and "'nonetype'" in error_str:
+            return "Some data could not be loaded. The binder will be generated with available items."
+        if "timeout" in error_str:
+            return "Generation took too long. Try reducing the date range or sections."
+        if "memory" in error_str:
+            return "Not enough memory to generate binder. Try reducing the date range."
+        
+        return f"Binder generation failed: {str(e)[:100]}"
 
 
 # Factory function
