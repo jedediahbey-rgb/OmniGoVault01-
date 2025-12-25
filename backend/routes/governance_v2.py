@@ -711,6 +711,131 @@ async def create_record(request: Request):
         return error_response("CREATE_ERROR", "Failed to create record", {"error": str(e)}, status_code=500)
 
 
+# ============ UPDATE (PUT) ENDPOINT ============
+
+@router.put("/records/{record_id}")
+async def update_record(record_id: str, request: Request):
+    """
+    Update a draft record's title and payload.
+    - Only draft records can be updated
+    - Updates the current revision's payload
+    - Creates audit event
+    
+    Body: { title?: string, payload_json?: dict }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        
+        record = await db.governance_records.find_one(
+            {"id": record_id, "user_id": user.user_id}
+        )
+        
+        if not record:
+            return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # Check if record is finalized
+        if record.get("status") == "finalized":
+            return error_response(
+                "ALREADY_FINALIZED",
+                "This record is finalized and cannot be edited. Use 'Amend' to create a new revision.",
+                status_code=409
+            )
+        
+        if record.get("status") == "voided":
+            return error_response("VOIDED", "Cannot update a voided record", status_code=400)
+        
+        # Get current revision
+        revision = None
+        if record.get("current_revision_id"):
+            revision = await db.governance_revisions.find_one(
+                {"id": record["current_revision_id"]}
+            )
+        
+        if revision and revision.get("finalized_at"):
+            return error_response(
+                "REVISION_FINALIZED",
+                "Current revision is finalized. Use 'Amend' to create a new revision.",
+                status_code=409
+            )
+        
+        # Prepare updates
+        now = datetime.now(timezone.utc).isoformat()
+        record_updates = {"updated_at": now}
+        revision_updates = {}
+        
+        # Update title if provided
+        new_title = body.get("title")
+        if new_title and new_title.strip():
+            record_updates["title"] = new_title.strip()
+        
+        # Update payload if provided
+        new_payload = body.get("payload_json")
+        if new_payload is not None:
+            # Validate payload for the module type
+            is_valid, error_msg, validated_payload = validate_payload(
+                ModuleType(record["module_type"]),
+                new_payload,
+                is_finalized=False
+            )
+            
+            if not is_valid:
+                return error_response("VALIDATION_ERROR", error_msg)
+            
+            revision_updates["payload_json"] = validated_payload
+            # Also update title in payload if it exists
+            if new_title:
+                revision_updates["payload_json"]["title"] = new_title.strip()
+        
+        # Apply record updates
+        if record_updates:
+            await db.governance_records.update_one(
+                {"id": record_id},
+                {"$set": record_updates}
+            )
+        
+        # Apply revision updates
+        if revision_updates and revision:
+            await db.governance_revisions.update_one(
+                {"id": revision["id"]},
+                {"$set": revision_updates}
+            )
+        
+        # Log audit event
+        await log_event(
+            event_type=EventType.UPDATED,
+            record_id=record_id,
+            revision_id=revision["id"] if revision else None,
+            portfolio_id=record.get("portfolio_id"),
+            actor_id=user.user_id,
+            actor_name=user.name if hasattr(user, 'name') else user.user_id,
+            details={"updated_fields": list(body.keys())}
+        )
+        
+        # Refetch and return updated record
+        updated_record = await db.governance_records.find_one(
+            {"id": record_id}, {"_id": 0}
+        )
+        updated_revision = None
+        if updated_record.get("current_revision_id"):
+            updated_revision = await db.governance_revisions.find_one(
+                {"id": updated_record["current_revision_id"]}, {"_id": 0}
+            )
+        
+        return success_response({
+            "record": serialize_doc(updated_record),
+            "current_revision": serialize_doc(updated_revision) if updated_revision else None
+        }, message="Record updated successfully")
+        
+    except Exception as e:
+        print(f"Error updating record: {e}")
+        return error_response("UPDATE_ERROR", "Failed to update record", {"error": str(e)}, status_code=500)
+
+
 # ============ FINALIZE ENDPOINT ============
 
 @router.post("/records/{record_id}/finalize")
