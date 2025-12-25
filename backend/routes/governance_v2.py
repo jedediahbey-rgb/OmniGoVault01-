@@ -498,7 +498,7 @@ async def get_revision(revision_id: str, request: Request):
 # ============ CREATE ENDPOINT ============
 
 @router.post("/records")
-async def create_record(data: RecordCreateRequest, request: Request):
+async def create_record(request: Request):
     """
     Create a new governance record with initial draft revision (v1).
     
@@ -511,6 +511,15 @@ async def create_record(data: RecordCreateRequest, request: Request):
         user = await get_current_user(request)
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    # Parse and validate request body
+    try:
+        body = await request.json()
+        print(f"[DEBUG] create_record received body: {body}")
+        data = RecordCreateRequest(**body)
+    except Exception as e:
+        print(f"[ERROR] Failed to parse request: {e}")
+        return error_response("VALIDATION_ERROR", f"Invalid request: {str(e)}")
     
     try:
         # Validate payload
