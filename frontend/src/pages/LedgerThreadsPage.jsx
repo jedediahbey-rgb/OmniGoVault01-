@@ -66,9 +66,13 @@ const CATEGORY_LABELS = {
 
 export default function LedgerThreadsPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const portfolioId = searchParams.get('portfolio') || '';
+  const [searchParams, setSearchParams] = useSearchParams();
+  const portfolioIdFromUrl = searchParams.get('portfolio') || '';
   const { toast } = useToast();
+
+  // Portfolio state
+  const [portfolios, setPortfolios] = useState([]);
+  const [portfolioId, setPortfolioId] = useState(portfolioIdFromUrl);
 
   // Data state
   const [threads, setThreads] = useState([]);
@@ -79,6 +83,36 @@ export default function LedgerThreadsPage() {
   // Selection state for operations
   const [selectedThreads, setSelectedThreads] = useState([]);
   const [selectedRecords, setSelectedRecords] = useState([]);
+
+  // Fetch portfolios on mount
+  useEffect(() => {
+    const fetchPortfolios = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/portfolios`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setPortfolios(data);
+          // Auto-select first portfolio if none selected
+          if (!portfolioId && data.length > 0) {
+            setPortfolioId(data[0].portfolio_id);
+            setSearchParams({ portfolio: data[0].portfolio_id });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching portfolios:', error);
+      }
+    };
+    fetchPortfolios();
+  }, []);
+
+  // Handle portfolio change
+  const handlePortfolioChange = (newPortfolioId) => {
+    setPortfolioId(newPortfolioId);
+    setSearchParams({ portfolio: newPortfolioId });
+    setThreads([]);
+    setSelectedThreads([]);
+    setSelectedRecords([]);
+  };
 
   // Modal state
   const [showMergeModal, setShowMergeModal] = useState(false);
