@@ -86,6 +86,25 @@ import { toast } from 'sonner';
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const API_V2 = `${process.env.REACT_APP_BACKEND_URL}/api/governance/v2`;
 
+// Helper to extract detailed error messages
+const extractError = (error) => {
+  const status = error.response?.status || 'NETWORK';
+  const code = error.response?.data?.error?.code || error.response?.data?.detail?.[0]?.type || 'UNKNOWN';
+  const message = error.response?.data?.error?.message 
+    || error.response?.data?.detail?.[0]?.msg
+    || error.response?.data?.detail
+    || error.message 
+    || 'Unknown error';
+  const details = error.response?.data?.error?.details || error.response?.data || null;
+  
+  // Log full details to console
+  console.error(`[API_ERROR] Status: ${status}, Code: ${code}`);
+  console.error(`[API_ERROR] Message: ${message}`);
+  if (details) console.error(`[API_ERROR] Details:`, details);
+  
+  return { status, code, message, details };
+};
+
 // Module type mapping for V2 API
 const MODULE_TYPES = {
   meetings: 'minutes',
