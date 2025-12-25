@@ -609,85 +609,97 @@ export default function LedgerThreadsPage() {
             </Button>
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {threads.map((thread) => (
               <motion.div
                 key={thread.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-[#0B1221]/80 rounded-lg border border-vault-gold/10 p-4 hover:border-vault-gold/30 transition-colors"
+                className="bg-[#0B1221]/80 rounded-lg border border-vault-gold/10 hover:border-vault-gold/30 transition-colors"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="font-mono text-vault-gold text-sm bg-vault-gold/10 px-2 py-0.5 rounded">
-                        {thread.rm_id_preview}
-                      </span>
-                      <Badge className={`text-xs ${CATEGORY_COLORS[thread.category] || CATEGORY_COLORS.misc}`}>
-                        {CATEGORY_LABELS[thread.category] || thread.category}
-                      </Badge>
-                      <span className="text-vault-muted text-xs">
-                        {thread.record_count} record{thread.record_count !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-                    <h3 className="text-white font-medium mb-1">{thread.title}</h3>
+                {/* Card Header with RM-ID and Actions */}
+                <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-vault-gold/5">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="font-mono text-vault-gold text-xs bg-vault-gold/10 px-2 py-1 rounded shrink-0">
+                      {thread.rm_id_preview}
+                    </span>
+                    <Badge className={`text-xs shrink-0 ${CATEGORY_COLORS[thread.category] || CATEGORY_COLORS.misc}`}>
+                      {CATEGORY_LABELS[thread.category] || thread.category}
+                    </Badge>
+                  </div>
+                  
+                  {/* Actions Dropdown - Mobile Friendly */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 w-9 p-0 text-vault-muted hover:text-white hover:bg-vault-gold/10"
+                      >
+                        <DotsThreeVertical className="w-5 h-5" weight="bold" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent 
+                      align="end" 
+                      className="bg-[#0B1221] border-vault-gold/30 w-48"
+                    >
+                      <DropdownMenuItem 
+                        onClick={() => openMergeModal(thread)}
+                        className="text-white hover:bg-blue-500/20 cursor-pointer"
+                      >
+                        <GitMerge className="w-4 h-4 mr-3 text-blue-400" />
+                        Merge Into
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => openSplitModal(thread)}
+                        disabled={thread.record_count === 0}
+                        className="text-white hover:bg-green-500/20 cursor-pointer disabled:opacity-50"
+                      >
+                        <GitFork className="w-4 h-4 mr-3 text-green-400" />
+                        Split Records
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => openReassignModal(thread)}
+                        disabled={thread.record_count === 0}
+                        className="text-white hover:bg-purple-500/20 cursor-pointer disabled:opacity-50"
+                      >
+                        <ArrowsLeftRight className="w-4 h-4 mr-3 text-purple-400" />
+                        Reassign Records
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-vault-gold/20" />
+                      <DropdownMenuItem 
+                        onClick={() => openEditModal(thread)}
+                        className="text-white hover:bg-amber-500/20 cursor-pointer"
+                      >
+                        <PencilSimple className="w-4 h-4 mr-3 text-amber-400" />
+                        Edit Thread
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => openDeleteModal(thread)}
+                        disabled={thread.record_count > 0}
+                        className="text-red-400 hover:bg-red-500/20 cursor-pointer disabled:opacity-50"
+                      >
+                        <Trash className="w-4 h-4 mr-3" />
+                        Delete Thread
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                
+                {/* Card Body */}
+                <div className="px-4 py-3">
+                  <h3 className="text-white font-medium text-base mb-2 leading-snug">{thread.title}</h3>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-vault-muted">
+                    <span className="flex items-center gap-1">
+                      <FileText className="w-3.5 h-3.5" />
+                      {thread.record_count} record{thread.record_count !== 1 ? 's' : ''}
+                    </span>
                     {thread.primary_party_name && (
-                      <p className="text-vault-muted text-sm">Party: {thread.primary_party_name}</p>
+                      <span>Party: {thread.primary_party_name}</span>
                     )}
                     {thread.external_ref && (
-                      <p className="text-vault-muted text-sm">Ref: {thread.external_ref}</p>
+                      <span>Ref: {thread.external_ref}</span>
                     )}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openMergeModal(thread)}
-                      className="text-vault-muted hover:text-blue-400 hover:bg-blue-500/10"
-                      title="Merge into this thread"
-                    >
-                      <GitMerge className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openSplitModal(thread)}
-                      className="text-vault-muted hover:text-green-400 hover:bg-green-500/10"
-                      title="Split records from this thread"
-                      disabled={thread.record_count === 0}
-                    >
-                      <GitFork className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openReassignModal(thread)}
-                      className="text-vault-muted hover:text-purple-400 hover:bg-purple-500/10"
-                      title="Reassign records"
-                      disabled={thread.record_count === 0}
-                    >
-                      <ArrowsLeftRight className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditModal(thread)}
-                      className="text-vault-muted hover:text-amber-400 hover:bg-amber-500/10"
-                      title="Edit thread"
-                    >
-                      <PencilSimple className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openDeleteModal(thread)}
-                      className="text-vault-muted hover:text-red-400 hover:bg-red-500/10"
-                      title="Delete thread"
-                      disabled={thread.record_count > 0}
-                    >
-                      <Trash className="w-4 h-4" />
-                    </Button>
                   </div>
                 </div>
               </motion.div>
