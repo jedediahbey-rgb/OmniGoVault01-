@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Governance V2 Record Creation
-Testing the exact issue user is reporting: "STILL CANNOT CREATE NO RECORDSSSS!!!!"
+Backend API Testing for Governance V2 PUT Endpoint
+Testing the fix for 'Failed to update record' error toast issue.
+The main agent fixed the PUT /api/governance/v2/records/{record_id} endpoint.
 """
 
 import requests
