@@ -444,7 +444,7 @@ export default function DashboardPage({ user }) {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowEditPortfolio(false)}>Cancel</Button>
-            <Button onClick={updatePortfolio} className="btn-primary">FloppyDisk Changes</Button>
+            <Button onClick={updatePortfolio} className="btn-primary">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

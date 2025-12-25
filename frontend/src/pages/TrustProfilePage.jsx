@@ -147,7 +147,7 @@ export default function TrustProfilePage({ user }) {
         fetchData();
       }
     } catch (error) {
-      console.error('FloppyDisk profile error:', error);
+      console.error('Save profile error:', error);
       toast.error(error.response?.data?.detail || 'Failed to save trust profile');
     } finally {
       setSaving(false);
@@ -536,7 +536,7 @@ export default function TrustProfilePage({ user }) {
             </div>
 
             {!profile && (
-              <p className="text-white/40">FloppyDisk the trust profile first to enable mail event logging.</p>
+              <p className="text-white/40">Save the trust profile first to enable mail event logging.</p>
             )}
 
             {profile && mailEvents.length === 0 && (

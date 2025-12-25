@@ -631,7 +631,7 @@ export default function DocumentEditorPage({ user }) {
 
               <Button onClick={saveDocument} disabled={saving || !hasChanges} variant="outline" className="btn-secondary text-xs sm:text-sm px-2 sm:px-4">
                 <FloppyDisk className="w-4 h-4 sm:mr-2" weight="duotone" />
-                <span className="hidden sm:inline">{saving ? 'Saving...' : 'FloppyDisk'}</span>
+                <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
               </Button>
               <Button onClick={exportToPDF} variant="outline" className="hidden sm:flex btn-secondary">
                 <Download className="w-4 h-4 mr-2" weight="duotone" />
