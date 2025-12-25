@@ -497,9 +497,11 @@ export default function BinderPage() {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-medium text-white">{latestRun.profile_name}</h3>
-                      <p className="text-vault-muted text-sm">
-                        Generated {new Date(latestRun.finished_at).toLocaleString()}
-                      </p>
+                      {latestRun.finished_at && (
+                        <p className="text-vault-muted text-sm">
+                          Generated {new Date(latestRun.finished_at).toLocaleString()}
+                        </p>
+                      )}
                       <p className="text-vault-muted text-xs">
                         {latestRun.total_items} items • {latestRun.total_pages || 'N/A'} pages
                       </p>
@@ -507,41 +509,55 @@ export default function BinderPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <Button
-                    onClick={() => window.open(`${API_URL}/api/binder/runs/${latestRun.id}/view`, '_blank')}
-                    className="flex-1 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    View
-                  </Button>
-                  <Button
-                    onClick={() => window.open(`${API_URL}/api/binder/runs/${latestRun.id}/download`, '_blank')}
-                    variant="outline"
-                    className="flex-1 border-vault-gold/30 text-white hover:bg-vault-gold/10"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      const url = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
-                      const printWindow = window.open(url, '_blank');
-                      printWindow?.addEventListener('load', () => printWindow.print());
-                    }}
-                    variant="outline"
-                    className="border-vault-gold/30 text-white hover:bg-vault-gold/10"
-                  >
-                    <Printer className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    onClick={() => handleViewManifest(latestRun.id)}
-                    variant="ghost"
-                    className="text-vault-muted hover:text-white"
-                  >
-                    <FileText className="w-4 h-4" />
-                  </Button>
-                </div>
+                {/* Only show action buttons for completed binders */}
+                {latestRun.status === 'complete' ? (
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => window.open(`${API_URL}/api/binder/runs/${latestRun.id}/view`, '_blank')}
+                      className="flex-1 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      View
+                    </Button>
+                    <Button
+                      onClick={() => window.open(`${API_URL}/api/binder/runs/${latestRun.id}/download`, '_blank')}
+                      variant="outline"
+                      className="flex-1 border-vault-gold/30 text-white hover:bg-vault-gold/10"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        const url = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
+                        const printWindow = window.open(url, '_blank');
+                        printWindow?.addEventListener('load', () => printWindow.print());
+                      }}
+                      variant="outline"
+                      className="border-vault-gold/30 text-white hover:bg-vault-gold/10"
+                    >
+                      <Printer className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      onClick={() => handleViewManifest(latestRun.id)}
+                      variant="ghost"
+                      className="text-vault-muted hover:text-white"
+                    >
+                      <FileText className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : latestRun.status === 'failed' ? (
+                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <p className="text-red-400 text-sm">
+                      {latestRun.error_json?.user_message || latestRun.error_json?.message || 'Generation failed'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center p-3 text-vault-muted text-sm">
+                    <ArrowClockwise className="w-4 h-4 mr-2 animate-spin" />
+                    Generating...
+                  </div>
+                )}
               </motion.div>
             )}
           </div>
