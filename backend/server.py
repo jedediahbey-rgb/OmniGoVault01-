@@ -3444,6 +3444,17 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+async def startup_init():
+    """Initialize services on startup"""
+    global rmid_allocator
+    try:
+        rmid_allocator = await init_allocator(db)
+        logger.info("✅ RM-ID V2 Allocator initialized with indexes")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize RM-ID V2 Allocator: {e}")
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
