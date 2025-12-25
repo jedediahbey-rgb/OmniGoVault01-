@@ -2710,9 +2710,12 @@ async def create_insurance_policy(data: dict, request: Request):
         if not portfolio_id:
             return error_response("MISSING_PORTFOLIO", "portfolio_id is required")
         
-        # Generate RM-ID for the policy (subject code 23 = Insurance)
-        rm_id, subject_code, seq_num, subject_name = await generate_subject_rm_id(
-            portfolio_id, user.user_id, "23", "Insurance"
+        # Generate RM-ID using V2 allocator (atomic, unique)
+        rm_id = await allocate_rm_id_for_governance(
+            portfolio_id=portfolio_id,
+            user_id=user.user_id,
+            module_type="insurance",
+            related_to=data.get("related_to")
         )
         
         policy = InsurancePolicy(
