@@ -64,8 +64,10 @@ import {
 import { Checkbox } from '../components/ui/checkbox';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import { toast } from 'sonner';
+import { AmendmentStudio, RevisionHistory } from '../components/governance';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API_V2 = `${process.env.REACT_APP_BACKEND_URL}/api/governance/v2`;
 
 // Dynamic Calendar Icon that shows the day number
 const DynamicCalendarIcon = ({ day, className = "w-8 h-8" }) => {
