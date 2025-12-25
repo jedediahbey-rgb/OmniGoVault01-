@@ -1427,7 +1427,7 @@ export default function GovernancePage({ user }) {
               <GlassCard className="p-8 sm:p-12 text-center">
                 <Scales className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
                 <h3 className="text-lg sm:text-xl font-heading text-white mb-2">No Disputes</h3>
-                <p className="text-sm sm:text-base text-vault-muted mb-6">Track litigation, claims, and dispute resolutions</p>
+                <p className="text-sm sm:text-base text-vault-muted">Tap the "New" button above to track disputes</p>
                 <Button
                   onClick={() => setShowNewDispute(true)}
                   className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
