@@ -493,7 +493,7 @@ export default function DisputeEditorPage({ user }) {
         toast.success('Amendment draft created - you can now edit the new version');
         setShowAmendmentStudio(false);
         // Refetch to show the new draft version
-        await fetchDispute();
+        await refetchDispute();
       } else {
         throw new Error(data.error?.message || 'Failed to create amendment');
       }

@@ -442,7 +442,7 @@ export default function DistributionEditorPage({ user }) {
         toast.success('Amendment draft created - you can now edit the new version');
         setShowAmendmentStudio(false);
         // Refetch to show the new draft version
-        await fetchDistribution();
+        await refetchDistribution();
       } else {
         throw new Error(data.error?.message || 'Failed to create amendment');
       }
