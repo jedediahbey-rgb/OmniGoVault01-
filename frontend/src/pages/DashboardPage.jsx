@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -45,9 +45,40 @@ export default function DashboardPage({ user }) {
   const [editingPortfolio, setEditingPortfolio] = useState(null);
   const [newPortfolioName, setNewPortfolioName] = useState('');
   const [newPortfolioDesc, setNewPortfolioDesc] = useState('');
-  const [defaultPortfolioId, setDefaultPortfolioId] = useState(localStorage.getItem('defaultPortfolioId') || '');
+  const [defaultPortfolioId, setDefaultPortfolioId] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState(null);
+
+  // Load default portfolio from backend first, then fallback to localStorage
+  const loadDefaultPortfolio = useCallback(async () => {
+    try {
+      // First check localStorage for immediate UI response
+      const localDefault = localStorage.getItem('defaultPortfolioId');
+      if (localDefault) {
+        setDefaultPortfolioId(localDefault);
+      }
+      
+      // Then sync with backend
+      const res = await axios.get(`${API}/user/preferences`);
+      const backendDefault = res.data?.default_portfolio_id;
+      
+      if (backendDefault) {
+        // Backend has a default, use it and sync localStorage
+        localStorage.setItem('defaultPortfolioId', backendDefault);
+        setDefaultPortfolioId(backendDefault);
+      } else if (localDefault) {
+        // localStorage has default but backend doesn't, sync to backend
+        await axios.put(`${API}/user/preferences`, { default_portfolio_id: localDefault });
+      }
+    } catch (error) {
+      console.log('Using localStorage for default portfolio');
+      // Fallback to localStorage only
+      const localDefault = localStorage.getItem('defaultPortfolioId');
+      if (localDefault) {
+        setDefaultPortfolioId(localDefault);
+      }
+    }
+  }, []);
 
   // Set a portfolio as the global default
   const setAsDefault = (portfolioId, e) => {
