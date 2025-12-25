@@ -3598,6 +3598,18 @@ async def startup_init():
         logger.info("✅ RM Subject indexes initialized")
     except Exception as e:
         logger.error(f"❌ Failed to initialize RM Subject indexes: {e}")
+    
+    # Initialize Ledger Thread indexes for collision prevention
+    try:
+        await db.rm_subjects.create_index(
+            [("portfolio_id", 1), ("rm_base", 1), ("rm_group", 1), ("user_id", 1)],
+            unique=True,
+            name="unique_thread_whole_number",
+            partialFilterExpression={"deleted_at": None}
+        )
+        logger.info("✅ Ledger Thread unique indexes initialized")
+    except Exception as e:
+        logger.warning(f"Ledger Thread index may already exist: {e}")
 
 
 @app.on_event("shutdown")
