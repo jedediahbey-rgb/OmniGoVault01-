@@ -156,6 +156,16 @@ const AppRouter = ({ auth }) => {
           <DiagramsPage />
         </AuthLayout>
       } />
+      <Route path="/node-map" element={
+        <AuthLayout auth={auth}>
+          <NodeMapPage />
+        </AuthLayout>
+      } />
+      <Route path="/node-map/:portfolioId" element={
+        <AuthLayout auth={auth}>
+          <NodeMapPage />
+        </AuthLayout>
+      } />
       <Route path="/assistant" element={
         <AuthLayout auth={auth}>
           <AssistantPage user={user} />
