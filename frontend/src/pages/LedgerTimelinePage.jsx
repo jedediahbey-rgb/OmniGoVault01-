@@ -283,7 +283,7 @@ export default function LedgerTimelinePage() {
                 <Funnel className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="All Modules" />
               </SelectTrigger>
-              <SelectContent className="bg-vault-dark border-vault-gold/30">
+              <SelectContent className="!bg-[#0a0a0f] bg-opacity-100 border-vault-gold/30 backdrop-blur-none z-50">
                 <SelectItem value="all">All Modules</SelectItem>
                 <SelectItem value="minutes">Meeting Minutes</SelectItem>
                 <SelectItem value="distribution">Distributions</SelectItem>
@@ -298,7 +298,7 @@ export default function LedgerTimelinePage() {
               <SelectTrigger className="w-[150px] bg-vault-dark border-vault-gold/30">
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
-              <SelectContent className="bg-vault-dark border-vault-gold/30">
+              <SelectContent className="!bg-[#0a0a0f] bg-opacity-100 border-vault-gold/30 backdrop-blur-none z-50">
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="draft">Draft</SelectItem>
                 <SelectItem value="finalized">Finalized</SelectItem>
