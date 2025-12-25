@@ -172,7 +172,10 @@ export default function NodeMapPage() {
         const res = await axios.get(`${API}/portfolios`);
         setPortfolios(res.data || []);
         if (!selectedPortfolio && res.data?.length > 0) {
-          setSelectedPortfolio(res.data[0].portfolio_id);
+          // Prioritize: URL param > default portfolio > first portfolio
+          const defaultId = localStorage.getItem('defaultPortfolioId');
+          const hasDefault = defaultId && res.data.some(p => p.portfolio_id === defaultId);
+          setSelectedPortfolio(hasDefault ? defaultId : res.data[0].portfolio_id);
         }
       } catch (error) {
         console.error('Failed to fetch portfolios:', error);
