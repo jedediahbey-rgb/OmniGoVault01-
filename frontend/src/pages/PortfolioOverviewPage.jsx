@@ -44,10 +44,63 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
 } from '../components/ui/alert-dialog';
+import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import { humanizeSlug, formatCurrency as formatCurrencyUtil, formatCurrencyCompact, formatDate } from '../lib/utils';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Module type configurations for governance records
+const moduleConfig = {
+  minutes: {
+    icon: Newspaper,
+    color: 'blue',
+    label: 'Meeting Minutes',
+    bgClass: 'bg-blue-500/20',
+    borderClass: 'border-blue-500/30',
+    textClass: 'text-blue-400',
+  },
+  distribution: {
+    icon: HandCoins,
+    color: 'green',
+    label: 'Distribution',
+    bgClass: 'bg-green-500/20',
+    borderClass: 'border-green-500/30',
+    textClass: 'text-green-400',
+  },
+  dispute: {
+    icon: Scales,
+    color: 'red',
+    label: 'Dispute',
+    bgClass: 'bg-red-500/20',
+    borderClass: 'border-red-500/30',
+    textClass: 'text-red-400',
+  },
+  insurance: {
+    icon: ShieldCheck,
+    color: 'purple',
+    label: 'Insurance',
+    bgClass: 'bg-purple-500/20',
+    borderClass: 'border-purple-500/30',
+    textClass: 'text-purple-400',
+  },
+  compensation: {
+    icon: CurrencyDollar,
+    color: 'amber',
+    label: 'Compensation',
+    bgClass: 'bg-amber-500/20',
+    borderClass: 'border-amber-500/30',
+    textClass: 'text-amber-400',
+  },
+};
+
+// Status badge configurations
+const statusConfig = {
+  draft: { label: 'Draft', bgClass: 'bg-amber-500/20', textClass: 'text-amber-400', borderClass: 'border-amber-500/30' },
+  finalized: { label: 'Finalized', bgClass: 'bg-green-500/20', textClass: 'text-green-400', borderClass: 'border-green-500/30' },
+  voided: { label: 'Voided', bgClass: 'bg-red-500/20', textClass: 'text-red-400', borderClass: 'border-red-500/30' },
+  amended: { label: 'Amended', bgClass: 'bg-blue-500/20', textClass: 'text-blue-400', borderClass: 'border-blue-500/30' },
+};
 
 export default function PortfolioOverviewPage({ user }) {
   const { portfolioId } = useParams();
@@ -58,6 +111,7 @@ export default function PortfolioOverviewPage({ user }) {
   const [assets, setAssets] = useState([]);
   const [parties, setParties] = useState([]);
   const [ledger, setLedger] = useState({ entries: [], summary: {} });
+  const [governanceRecords, setGovernanceRecords] = useState([]);
   const [subjectCategories, setSubjectCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
