@@ -366,17 +366,11 @@ export default function BinderPage() {
                 ))}
               </SelectContent>
             </Select>
-            {/* Set as Default Button */}
-            {portfolioId && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setAsDefault(portfolioId)}
-                className={`shrink-0 p-2 ${isDefaultPortfolio ? 'text-vault-gold' : 'text-vault-muted hover:text-vault-gold'}`}
-                title={isDefaultPortfolio ? 'Default portfolio' : 'Set as default'}
-              >
-                <Star className="w-4 h-4" weight={isDefaultPortfolio ? 'fill' : 'regular'} />
-              </Button>
+            {/* Default Badge (read-only) */}
+            {portfolioId && isDefaultPortfolio && (
+              <span className="px-2 py-1 text-[10px] font-medium bg-vault-gold/20 text-vault-gold rounded shrink-0">
+                Default
+              </span>
             )}
           </div>
 
