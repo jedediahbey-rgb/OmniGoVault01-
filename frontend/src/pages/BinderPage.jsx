@@ -598,6 +598,7 @@ export default function BinderPage() {
             </motion.div>
           </div>
         </div>
+        )}
 
         {/* Config Modal */}
         <Dialog open={showConfigModal} onOpenChange={setShowConfigModal}>
