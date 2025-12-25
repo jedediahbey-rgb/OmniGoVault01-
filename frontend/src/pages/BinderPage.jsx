@@ -259,14 +259,27 @@ export default function BinderPage() {
   // Get profile by ID
   const getProfile = (id) => profiles.find(p => p.id === id);
   const currentProfile = getProfile(selectedProfile);
+  const currentPortfolio = portfolios.find(p => p.portfolio_id === portfolioId);
 
-  if (!portfolioId) {
+  // Show portfolio selector if no portfolios or no selection
+  if (portfolios.length === 0 && loading) {
     return (
       <div className="min-h-screen bg-vault-dark p-6">
         <div className="max-w-4xl mx-auto text-center py-20">
-          <FilePdf className="w-16 h-16 text-vault-gold mx-auto mb-4" />
-          <h1 className="text-2xl font-heading text-white mb-2">Portfolio Binder</h1>
-          <p className="text-vault-muted mb-6">Select a portfolio to generate binders</p>
+          <ArrowClockwise className="w-12 h-12 text-vault-gold mx-auto mb-4 animate-spin" />
+          <p className="text-vault-muted">Loading portfolios...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (portfolios.length === 0) {
+    return (
+      <div className="min-h-screen bg-vault-dark p-6">
+        <div className="max-w-4xl mx-auto text-center py-20">
+          <FolderSimple className="w-16 h-16 text-vault-gold mx-auto mb-4" />
+          <h1 className="text-2xl font-heading text-white mb-2">No Portfolios Found</h1>
+          <p className="text-vault-muted mb-6">Create a portfolio first to generate binders</p>
           <Button onClick={() => navigate('/vault')} className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark">
             Go to Vault
           </Button>
@@ -278,7 +291,7 @@ export default function BinderPage() {
   return (
     <div className="min-h-screen bg-vault-dark p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {/* Header with Portfolio Selector */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Button
