@@ -112,17 +112,39 @@
 
 /* Custom utility classes */
 @layer utilities {
+  /* Display/Headlines - Instrument Serif */
+  .font-display {
+    font-family: 'Instrument Serif', 'Fraunces', serif;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
   .font-heading {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Instrument Serif', 'Fraunces', serif;
+    letter-spacing: -0.02em;
   }
+  
+  /* Body - Inter */
   .font-body {
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Inter', 'Manrope', sans-serif;
   }
+  
+  /* Mono - IBM Plex Mono */
   .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
   }
+  
+  /* Legacy */
   .font-legal {
     font-family: 'Crimson Pro', serif;
+  }
+  
+  /* ID Chip styling */
+  .id-chip {
+    @apply font-mono text-xs text-vault-gold/80 bg-vault-gold/10 px-1.5 py-0.5 rounded border border-vault-gold/20;
+  }
+  
+  .id-chip-muted {
+    @apply font-mono text-xs text-white/50 bg-white/5 px-1.5 py-0.5 rounded border border-white/10;
   }
 }
 
