@@ -570,8 +570,16 @@ export default function MeetingEditorPage({ user }) {
     }
     
     try {
-      await axios.post(`${API}/governance/meetings/${meetingId}/attest`, attestation);
-      await refetchMeeting();
+      // Use V2 API - add attestation to array and save
+      const attestationWithId = {
+        ...attestation,
+        attestation_id: `attest-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        attested_at: new Date().toISOString()
+      };
+      
+      const updatedAttestations = [...(meeting.attestations || []), attestationWithId];
+      await saveMeeting({ attestations: updatedAttestations });
+      
       setShowAttest(false);
       setAttestation({ party_name: '', party_role: 'trustee', signature_data: '' });
       toast.success('Attestation added');
