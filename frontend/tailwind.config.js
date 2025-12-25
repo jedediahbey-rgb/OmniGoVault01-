@@ -54,16 +54,36 @@ module.exports = {
         // Custom Vault Colors
         'vault-navy': '#0B1221',
         'vault-void': '#05080F',
+        'vault-surface': '#111623',
         'vault-paper': '#1A202C',
-        'vault-gold': '#C6A87C',
+        'vault-gold': '#D4AF37',
+        'vault-gold-light': '#F3E5AB',
         'vault-gold-dim': '#8C7350',
         'vault-blue': '#3B82F6',
+        'vault-dark': '#020408',
+        'vault-muted': '#64748B',
+        // Status colors
+        'status-live': '#39FF14',
+        'status-error': '#FF3333',
       },
       fontFamily: {
-        heading: ['Cormorant Garamond', 'serif'],
-        body: ['Manrope', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        // Display - Luxury serif for headlines
+        display: ['Instrument Serif', 'Fraunces', 'serif'],
+        heading: ['Instrument Serif', 'Fraunces', 'serif'],
+        // Body - Clean modern sans
+        body: ['Inter', 'Manrope', 'sans-serif'],
+        sans: ['Inter', 'Manrope', 'sans-serif'],
+        // Mono - System identity for IDs
+        mono: ['IBM Plex Mono', 'JetBrains Mono', 'monospace'],
+        // Legacy support
         legal: ['Crimson Pro', 'serif'],
+      },
+      letterSpacing: {
+        'display': '-0.02em',
+      },
+      lineHeight: {
+        'display': '1.05',
+        'display-relaxed': '1.15',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -88,8 +108,12 @@ module.exports = {
           to: { transform: "translateX(0)" },
         },
         "pulse-gold": {
-          "0%, 100%": { boxShadow: "0 0 20px rgba(198, 168, 124, 0.2)" },
-          "50%": { boxShadow: "0 0 40px rgba(198, 168, 124, 0.4)" },
+          "0%, 100%": { boxShadow: "0 0 20px rgba(212, 175, 55, 0.2)" },
+          "50%": { boxShadow: "0 0 40px rgba(212, 175, 55, 0.4)" },
+        },
+        "shine-sweep": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
         },
       },
       animation: {
@@ -98,10 +122,17 @@ module.exports = {
         "fade-in": "fade-in 0.5s ease-out",
         "slide-in-right": "slide-in-right 0.3s ease-out",
         "pulse-gold": "pulse-gold 3s ease-in-out infinite",
+        "shine-sweep": "shine-sweep 3s ease-in-out infinite",
       },
       backgroundImage: {
-        'gold-gradient': 'linear-gradient(to right, #C6A87C, #E8D5B5, #C6A87C)',
-        'void-fade': 'linear-gradient(to bottom, transparent, #05080F)',
+        'gold-gradient': 'linear-gradient(to right, #D4AF37, #F3E5AB, #D4AF37)',
+        'void-fade': 'linear-gradient(to bottom, transparent, #020408)',
+        'shine-gradient': 'linear-gradient(90deg, transparent, rgba(212,175,55,0.1), transparent)',
+      },
+      boxShadow: {
+        'emboss': 'inset 0 1px 0 0 rgba(255,255,255,0.05)',
+        'gold-glow': '0 0 15px rgba(212,175,55,0.15)',
+        'gold-glow-lg': '0 0 25px rgba(212,175,55,0.25)',
       },
     },
   },
