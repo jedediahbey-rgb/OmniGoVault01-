@@ -8,6 +8,7 @@ Core Rules:
 3. All actions logged to audit trail
 4. Hash chain ensures tamper evidence
 5. RM-ID linking via RMSubject (Ledger Thread)
+6. Lifecycle engine enforces status transitions
 """
 
 from fastapi import APIRouter, HTTPException, Request, Query
@@ -32,6 +33,7 @@ from models.rm_subject import (
     RMSubject, SubjectCategory, MODULE_TO_CATEGORY,
     generate_subject_id
 )
+from services.lifecycle_engine import lifecycle_engine, LifecycleStatus
 
 router = APIRouter(prefix="/api/governance/v2", tags=["governance-v2"])
 
@@ -47,6 +49,7 @@ def init_governance_v2_routes(database, auth_func, rmid_func):
     db = database
     get_current_user = auth_func
     generate_subject_rm_id = rmid_func
+
 
 
 # ============ RM SUBJECT HELPERS ============
