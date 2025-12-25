@@ -904,11 +904,15 @@ export default function GovernancePage({ user }) {
       toast.error('Please select a portfolio');
       return;
     }
+    if (!compensationThread) {
+      toast.error('Please select or create a Ledger Thread (RM-ID)');
+      return;
+    }
     
     setCreatingCompensation(true);
     try {
-      // Use V2 API for creating compensation entries
-      const res = await axios.post(`${API_V2}/records`, {
+      // Build request with ledger thread info
+      const requestData = {
         module_type: MODULE_TYPES.compensation,
         portfolio_id: selectedPortfolio,
         title: newCompensation.title,
@@ -925,7 +929,19 @@ export default function GovernancePage({ user }) {
           basis_of_calculation: newCompensation.basis_of_calculation,
           notes: newCompensation.notes
         }
-      });
+      };
+      
+      // Add ledger thread info
+      if (compensationThread.is_new) {
+        requestData.create_new_subject = true;
+        requestData.new_subject_title = compensationThread.title;
+        requestData.new_subject_party_name = compensationThread.primary_party_name || newCompensation.recipient_name;
+        requestData.new_subject_external_ref = compensationThread.external_ref;
+      } else {
+        requestData.rm_subject_id = compensationThread.id;
+      }
+      
+      const res = await axios.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
       if (data.ok && data.data?.record) {
@@ -944,6 +960,7 @@ export default function GovernancePage({ user }) {
           basis_of_calculation: '',
           notes: '',
         });
+        setCompensationThread(null);
         
         fetchCompensationEntries();
       } else {
