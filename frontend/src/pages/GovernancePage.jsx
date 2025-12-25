@@ -1601,9 +1601,12 @@ export default function GovernancePage({ user }) {
                 {filteredDisputes.map((dispute, index) => {
                   const typeConfig = disputeTypeConfig[dispute.dispute_type] || disputeTypeConfig.beneficiary;
                   const TypeIcon = typeConfig.icon;
-                  // Use draft status if not yet finalized
-                  const effectiveStatus = dispute.locked ? 'finalized' : (dispute.status || 'draft');
-                  const status = disputeStatusConfig[effectiveStatus] || disputeStatusConfig.draft;
+                  // Lifecycle status (draft/finalized)
+                  const lifecycleStatus = dispute.locked ? 'finalized' : (dispute.status || 'draft');
+                  const lifecycleConfig = disputeStatusConfig[lifecycleStatus] || disputeStatusConfig.draft;
+                  // Operational status (open/in_progress/litigation/etc.)
+                  const operationalStatus = dispute.dispute_status || 'open';
+                  const operationalConfig = disputeStatusConfig[operationalStatus] || disputeStatusConfig.open;
                   const priority = priorityConfig[dispute.priority] || priorityConfig.medium;
                   const disputeId = dispute.id || dispute.dispute_id;
                   
@@ -1615,23 +1618,26 @@ export default function GovernancePage({ user }) {
                       transition={{ delay: index * 0.05 }}
                     >
                       <GlassCard 
-                        className="p-4 hover:border-vault-gold/50 transition-all group"
+                        className="p-4 cursor-pointer hover:border-vault-gold/50 transition-all group"
+                        onClick={() => navigate(`/vault/governance/disputes/${disputeId}`)}
                       >
                         <div className="flex items-start justify-between gap-4">
-                          <div 
-                            className="flex items-start gap-3 flex-1 min-w-0 cursor-pointer"
-                            onClick={() => navigate(`/vault/governance/disputes/${disputeId}`)}
-                          >
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
                             {/* Icon - consistent p-2 rounded-lg */}
                             <div className={`p-2 rounded-lg ${typeConfig.bg} shrink-0`}>
                               <TypeIcon className={`w-5 h-5 ${typeConfig.color}`} weight="duotone" />
                             </div>
                             
                             <div className="flex-1 min-w-0">
-                              {/* Badges row - status first, then type, then priority */}
+                              {/* Badges row - lifecycle, operational status, type, priority */}
                               <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <Badge className={`${status.color} border text-xs`}>
-                                  {status.label}
+                                {/* Lifecycle Badge (Draft/Finalized) */}
+                                <Badge className={`${lifecycleConfig.color} border text-xs`}>
+                                  {lifecycleConfig.label}
+                                </Badge>
+                                {/* Operational Status Badge (Open/In Progress/Litigation/etc.) */}
+                                <Badge className={`${operationalConfig.color} border text-xs`}>
+                                  {operationalConfig.label}
                                 </Badge>
                                 <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
                                   {typeConfig.label}
@@ -1681,43 +1687,13 @@ export default function GovernancePage({ user }) {
                             </div>
                           </div>
                           
-                          {/* Actions - Change Status & Navigate */}
-                          <div className="flex items-center gap-2 shrink-0">
-                            {/* Change Status Dropdown */}
-                            {!dispute.locked && (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 w-8 p-0 hover:bg-vault-gold/20"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <ArrowsClockwise className="w-4 h-4 text-vault-gold" weight="duotone" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="bg-[#0B1221] border-vault-gold/30 min-w-[160px]">
-                                  <div className="px-2 py-1.5 text-xs font-semibold text-vault-muted">Change Status</div>
-                                  {Object.entries(disputeStatusConfig)
-                                    .filter(([key]) => key !== 'finalized' && key !== effectiveStatus)
-                                    .map(([key, config]) => (
-                                      <DropdownMenuItem
-                                        key={key}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleUpdateDisputeStatus(disputeId, key);
-                                        }}
-                                        className="text-white hover:bg-vault-gold/20 cursor-pointer"
-                                      >
-                                        <span className={`w-2 h-2 rounded-full mr-2 ${config.color.split(' ')[0]}`}></span>
-                                        {config.label}
-                                      </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            )}
-                            
-                            {/* Navigate Arrow */}
+                          {/* Navigate Arrow */}
+                          <CaretRight className="w-5 h-5 text-vault-muted shrink-0" />
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  );
+                })}
                             <CaretRight 
                               className="w-5 h-5 text-vault-muted cursor-pointer" 
                               onClick={() => navigate(`/vault/governance/disputes/${disputeId}`)}
