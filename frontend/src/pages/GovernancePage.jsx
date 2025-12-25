@@ -1121,7 +1121,7 @@ export default function GovernancePage({ user }) {
                   <SelectTrigger className="bg-vault-dark/50 border-vault-gold/20 text-white">
                     <SelectValue placeholder="Select Portfolio" className="truncate" />
                   </SelectTrigger>
-                  <SelectContent className="bg-vault-dark border-vault-gold/30">
+                  <SelectContent className="bg-[#0B1221] border-vault-gold/30">
                     {portfolios.map(p => (
                       <SelectItem 
                         key={p.portfolio_id} 
