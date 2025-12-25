@@ -519,6 +519,24 @@ export default function DashboardPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="bg-vault-navy border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-white font-heading">Delete Portfolio</DialogTitle>
+            <DialogDescription className="text-white/50">
+              Are you sure you want to delete "{portfolioToDelete?.name}"? This will permanently delete all documents and data associated with this portfolio.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="ghost" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
+            <Button onClick={confirmDeletePortfolio} className="bg-red-500 hover:bg-red-600 text-white">
+              Delete Portfolio
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
