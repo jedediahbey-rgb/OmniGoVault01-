@@ -2407,7 +2407,7 @@ async def get_templates():
         {
             "id": "declaration_of_trust",
             "name": "Declaration of Trust",
-            "description": "Establishes a pure equity trust with defined roles for grantor/settlor, trustee, and beneficiary. Includes maxims of equity and governing statements.",
+            "description": "Establishes an exclusive equity trust with defined roles for grantor/settlor, trustee, and beneficiary. Includes maxims of equity and governing statements.",
             "source": "Pure Trust Under Equity, Pages 1-5",
             "icon": "scroll",
             "subject_code": "01",
@@ -2561,7 +2561,7 @@ async def get_knowledge_topics():
         {
             "id": "pure_trust_structure",
             "title": "Pure Trust Structure",
-            "description": "The specific structure and requirements of a pure equity trust.",
+            "description": "The specific structure and requirements of an exclusive equity trust.",
             "source": "Pure Trust Under Equity",
             "subtopics": ["Declaration", "Parties", "Transfer", "Administration"]
         }
@@ -2735,7 +2735,7 @@ async def get_sources():
             "name": "Pure Trust Under Equity",
             "full_name": "Pure Trust Under Equity",
             "url": PDF_SOURCES["pure_trust"]["url"],
-            "description": "Template documents and forms for establishing pure equity trusts."
+            "description": "Template documents and forms for establishing exclusive equity trusts."
         }
     ]
 
@@ -2780,7 +2780,7 @@ async def chat_with_assistant(data: ChatRequest, request: Request):
         from emergentintegrations.llm.chat import LlmChat, UserMessage
         
         # System message for grounded responses
-        system_message = """You are the Equity Trust Assistant, an AI expert on pure equity trusts and equitable jurisprudence.
+        system_message = """You are the Equity Trust Assistant, an AI expert on exclusive equity trusts and equitable jurisprudence.
 
 YOUR KNOWLEDGE BASE:
 You have deep knowledge from two authoritative source documents:
