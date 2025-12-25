@@ -980,20 +980,51 @@ export default function PortfolioOverviewPage({ user }) {
 
         {/* Ledger Tab */}
         <TabsContent value="ledger" className="mt-6">
-          {/* Governance Activity Section */}
-          {governanceRecords.length > 0 && (
-            <GlassCard className="mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-heading text-lg text-white">Governance Activity</h3>
-                  <p className="text-white/40 text-sm">Records linked to this portfolio</p>
-                </div>
-                <Link to="/ledger">
-                  <Button variant="ghost" className="text-vault-gold text-sm">
-                    View Full Ledger →
-                  </Button>
-                </Link>
+          <GlassCard>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-heading text-lg text-white">Trust Ledger</h3>
+                <p className="text-white/40 text-sm">Track all governance activity in the trust</p>
               </div>
+              <Link to="/ledger">
+                <Button variant="ghost" className="text-vault-gold text-sm">
+                  View Full Ledger →
+                </Button>
+              </Link>
+            </div>
+
+            {/* Stats Summary */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 p-3 sm:p-4 bg-white/5 rounded-lg overflow-hidden">
+              <div className="min-w-0">
+                <p className="text-white/40 text-xs uppercase">Total Records</p>
+                <p className="text-white text-lg sm:text-xl font-heading tabular-nums">{governanceRecords.length}</p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-white/40 text-xs uppercase">Drafts</p>
+                <p className="text-amber-400 text-lg sm:text-xl font-heading tabular-nums">
+                  {governanceRecords.filter(r => r.status === 'draft').length}
+                </p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-white/40 text-xs uppercase">Finalized</p>
+                <p className="text-green-400 text-lg sm:text-xl font-heading tabular-nums">
+                  {governanceRecords.filter(r => r.status === 'finalized').length}
+                </p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-white/40 text-xs uppercase">This Month</p>
+                <p className="text-blue-400 text-lg sm:text-xl font-heading tabular-nums">
+                  {governanceRecords.filter(r => {
+                    const date = new Date(r.created_at);
+                    const now = new Date();
+                    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+                  }).length}
+                </p>
+              </div>
+            </div>
+
+            {/* Records List */}
+            {governanceRecords.length > 0 ? (
               <div className="space-y-3">
                 {governanceRecords.map(record => {
                   const config = moduleConfig[record.module_type] || moduleConfig.minutes;
@@ -1052,147 +1083,18 @@ export default function PortfolioOverviewPage({ user }) {
                   );
                 })}
               </div>
-            </GlassCard>
-          )}
-
-          {/* Financial Ledger Section */}
-          <GlassCard>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="font-heading text-lg text-white">Trust Ledger</h3>
-                <p className="text-white/40 text-sm">Track all res (property) movements in and out of the trust</p>
+            ) : (
+              <div className="text-center py-8">
+                <Gavel className="w-12 h-12 mx-auto text-vault-gold/30 mb-3" />
+                <p className="text-white/40 mb-4">No governance records yet</p>
+                <Link to="/vault/governance">
+                  <Button className="btn-primary">
+                    <Plus className="w-4 h-4 mr-2" weight="duotone" />
+                    Create First Record
+                  </Button>
+                </Link>
               </div>
-              <Button onClick={() => { resetLedgerForm(); setShowLedgerDialog(true); }} className="btn-primary">
-                <Plus className="w-4 h-4 mr-2" weight="duotone" /> Add Entry
-              </Button>
-            </div>
-
-            {/* Balance Summary */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 p-3 sm:p-4 bg-white/5 rounded-lg overflow-hidden">
-              <div className="min-w-0">
-                <p className="text-white/40 text-xs uppercase">Entries</p>
-                <p className="text-white text-lg sm:text-xl font-heading tabular-nums">{ledger.summary?.entry_count || 0}</p>
-              </div>
-              <div className="min-w-0 overflow-hidden">
-                <p className="text-white/40 text-xs uppercase">Total Credits</p>
-                <CurrencyDisplay value={ledger.summary?.total_deposits} variant="green" size="sm" />
-              </div>
-              <div className="min-w-0 overflow-hidden">
-                <p className="text-white/40 text-xs uppercase">Total Debits</p>
-                <CurrencyDisplay value={ledger.summary?.total_withdrawals} variant="red" size="sm" />
-              </div>
-              <div className="min-w-0 overflow-hidden">
-                <p className="text-white/40 text-xs uppercase">Balance</p>
-                <CurrencyDisplay value={ledger.summary?.balance} variant="auto" size="sm" />
-              </div>
-            </div>
-
-            {/* Filters */}
-            <div className="flex items-center gap-3 mb-4">
-              <Funnel className="w-4 h-4 text-white/40" weight="duotone" />
-              <Select value={ledgerFilter} onValueChange={setLedgerFilter}>
-                <SelectTrigger className="w-40 bg-white/5 border-white/10">
-                  <SelectValue placeholder="Funnel" />
-                </SelectTrigger>
-                <SelectContent className="bg-vault-navy border-white/10">
-                  <SelectItem value="all">All Entries</SelectItem>
-                  <SelectItem value="credits">Credits Only</SelectItem>
-                  <SelectItem value="debits">Debits Only</SelectItem>
-                  {subjectCategories.map(cat => (
-                    <SelectItem key={cat.code} value={cat.code}>
-                      {cat.code} - {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span className="text-white/40 text-sm">
-                Showing {filteredLedgerEntries.length} of {ledger.entries?.length || 0} entries
-              </span>
-            </div>
-
-            {/* Ledger Entries Table */}
-            <div className="overflow-x-auto -mx-4 sm:mx-0">
-              <table className="w-full min-w-[600px]">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Date</th>
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">RM-ID</th>
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2 hidden sm:table-cell">Subject</th>
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Type</th>
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2 hidden md:table-cell">Description</th>
-                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Credit</th>
-                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Debit</th>
-                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredLedgerEntries.map(entry => (
-                    <tr key={entry.entry_id} className="border-b border-white/5 hover:bg-white/5">
-                      <td className="py-3 px-2">
-                        <span className="text-white/60 text-xs sm:text-sm">
-                          {new Date(entry.recorded_date).toLocaleDateString()}
-                        </span>
-                      </td>
-                      <td className="py-3 px-2 max-w-[120px] sm:max-w-[180px]">
-                        <RmIdDisplay rmId={entry.rm_id} />
-                      </td>
-                      <td className="py-3 px-2 hidden sm:table-cell">
-                        <span className="text-white/60 text-sm">{entry.subject_name || 'General'}</span>
-                      </td>
-                      <td className="py-3 px-2">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          entry.balance_effect === 'credit' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                        }`}>
-                          {entry.entry_type}
-                        </span>
-                      </td>
-                      <td className="py-3 px-2 hidden md:table-cell">
-                        <span className="text-white">{entry.description}</span>
-                        {entry.notes && (
-                          <p className="text-white/40 text-xs">{entry.notes}</p>
-                        )}
-                      </td>
-                      <td className="py-3 px-2 text-right overflow-hidden">
-                        {entry.balance_effect === 'credit' && entry.value ? (
-                          <span className="text-green-400 text-xs sm:text-sm whitespace-nowrap">{formatCurrency(entry.value)}</span>
-                        ) : '-'}
-                      </td>
-                      <td className="py-3 px-2 text-right overflow-hidden">
-                        {entry.balance_effect === 'debit' && entry.value ? (
-                          <span className="text-red-400 text-xs sm:text-sm whitespace-nowrap">{formatCurrency(entry.value)}</span>
-                        ) : '-'}
-                      </td>
-                      <td className="py-3 px-2 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => openEditLedger(entry)}
-                            className="text-white/40 hover:text-white p-1"
-                            title="Edit entry"
-                          >
-                            <PencilSimple className="w-4 h-4" weight="duotone" />
-                          </button>
-                          {!entry.asset_id && (
-                            <button
-                              onClick={() => setDeleteLedgerId(entry.entry_id)}
-                              className="text-red-400 hover:text-red-300 p-1"
-                              title="Delete entry"
-                            >
-                              <Trash className="w-4 h-4" weight="duotone" />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {filteredLedgerEntries.length === 0 && governanceRecords.length === 0 && (
-                <p className="text-white/30 text-center py-8">No ledger entries match filter</p>
-              )}
-              {filteredLedgerEntries.length === 0 && governanceRecords.length > 0 && (
-                <p className="text-white/30 text-center py-8">No financial entries yet. Governance activity shown above.</p>
-              )}
-            </div>
+            )}
           </GlassCard>
         </TabsContent>
 
