@@ -1270,7 +1270,7 @@ export default function DisputeEditorPage({ user }) {
               <Button
                 key={s}
                 variant="outline"
-                className={`w-full justify-start ${dispute?.status === s ? 'border-vault-gold bg-vault-gold/10' : 'border-vault-gold/30'}`}
+                className={`w-full justify-start ${dispute?.dispute_status === s ? 'border-vault-gold bg-vault-gold/10' : 'border-vault-gold/30'}`}
                 onClick={() => isLocked ? handleSetOutcome(s) : handleChangeStatus(s)}
               >
                 {statusConfig[s]?.label || s}
