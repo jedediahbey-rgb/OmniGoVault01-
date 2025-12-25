@@ -553,7 +553,7 @@ export default function InsuranceEditorPage({ user }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
-                    {!isLocked && (
+                    {isDraft && (
                       <>
                         <DropdownMenuItem onClick={() => setEditingHeader(true)} className="text-white hover:bg-vault-gold/20">
                           <PencilSimple className="w-4 h-4 mr-2" />
