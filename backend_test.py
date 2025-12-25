@@ -877,6 +877,318 @@ class EquityTrustAPITester:
         print("   🎉 V2 API GovernancePage refactor testing completed!")
         return list(created_records.values())[0] if created_records else None
 
+    def test_rm_subjects_api(self, portfolio_id):
+        """Test RM Subject (Ledger Thread) API endpoints"""
+        if not portfolio_id:
+            print("\n⚠️ Skipping RM Subject tests - no portfolio ID")
+            return None
+            
+        print("\n📋 Testing RM Subject (Ledger Thread) API...")
+        print("   🎯 TESTING RM-ID SUBJECT MATTER LINKING SYSTEM")
+        
+        # Test 1: GET /api/rm/subjects (should be empty initially or have migrated data)
+        print("   📋 Testing GET /api/rm/subjects...")
+        subjects_response = self.run_test(
+            "RM Subjects - Get All", 
+            "GET", 
+            f"rm/subjects?portfolio_id={portfolio_id}", 
+            200
+        )
+        
+        initial_subjects = []
+        if subjects_response and 'ok' in subjects_response and subjects_response['ok']:
+            initial_subjects = subjects_response.get('data', {}).get('items', [])
+            total = subjects_response.get('data', {}).get('total', 0)
+            print(f"      ✅ Found {len(initial_subjects)} existing subjects, total: {total}")
+            for subj in initial_subjects[:3]:  # Show first 3
+                print(f"         - #{subj.get('rm_group')}: {subj.get('title', 'Unknown')}")
+        
+        # Test 2: GET /api/rm/subjects with category filter
+        print("   📋 Testing GET /api/rm/subjects with category filter...")
+        categories = ["minutes", "distribution", "dispute", "insurance", "trustee_compensation", "misc"]
+        for category in categories:
+            filtered_response = self.run_test(
+                f"RM Subjects - Filter by {category}", 
+                "GET", 
+                f"rm/subjects?portfolio_id={portfolio_id}&category={category}", 
+                200
+            )
+            if filtered_response and 'ok' in filtered_response and filtered_response['ok']:
+                items = filtered_response.get('data', {}).get('items', [])
+                print(f"      ✅ {category}: {len(items)} subjects")
+        
+        # Test 3: GET /api/rm/subjects/suggest (auto-suggest functionality)
+        print("   📋 Testing GET /api/rm/subjects/suggest...")
+        
+        # Test suggest with category only
+        suggest_response = self.run_test(
+            "RM Subjects - Suggest by category", 
+            "GET", 
+            f"rm/subjects/suggest?portfolio_id={portfolio_id}&category=minutes", 
+            200
+        )
+        if suggest_response and 'ok' in suggest_response and suggest_response['ok']:
+            data = suggest_response['data']
+            match_type = data.get('match_type', 'unknown')
+            print(f"      ✅ Suggest result: {match_type}")
+            if data.get('exact_match'):
+                print(f"         Exact match: {data['exact_match']['title']}")
+            elif data.get('suggestions'):
+                print(f"         Found {len(data['suggestions'])} suggestions")
+            elif data.get('should_create_new'):
+                print(f"         Should create new: {data['should_create_new']}")
+        
+        # Test suggest with module_type
+        suggest_module_response = self.run_test(
+            "RM Subjects - Suggest by module_type", 
+            "GET", 
+            f"rm/subjects/suggest?portfolio_id={portfolio_id}&module_type=minutes", 
+            200
+        )
+        
+        # Test 4: POST /api/rm/subjects (create new subject)
+        print("   📋 Testing POST /api/rm/subjects...")
+        
+        timestamp = datetime.now().strftime('%H%M%S')
+        new_subject_data = {
+            "portfolio_id": portfolio_id,
+            "title": f"Test Ledger Thread {timestamp}",
+            "category": "minutes",
+            "primary_party_name": "Test Party",
+            "external_ref": f"TEST-REF-{timestamp}"
+        }
+        
+        created_subject = self.run_test(
+            "RM Subjects - Create New", 
+            "POST", 
+            "rm/subjects", 
+            200, 
+            new_subject_data
+        )
+        
+        subject_id = None
+        if created_subject and 'ok' in created_subject and created_subject['ok']:
+            subject_data = created_subject['data']['subject']
+            subject_id = subject_data['id']
+            rm_group = subject_data['rm_group']
+            rm_id_preview = created_subject['data']['rm_id_preview']
+            first_rm_id = created_subject['data']['first_rm_id']
+            print(f"      ✅ Subject created: {subject_id}")
+            print(f"         RM Group: {rm_group}")
+            print(f"         RM-ID Preview: {rm_id_preview}")
+            print(f"         First RM-ID: {first_rm_id}")
+        
+        if not subject_id:
+            print("      ❌ Failed to create subject, skipping dependent tests")
+            return None
+        
+        # Test 5: GET /api/rm/subjects/{id} (get subject detail)
+        print("   📋 Testing GET /api/rm/subjects/{id}...")
+        subject_detail = self.run_test(
+            "RM Subjects - Get Detail", 
+            "GET", 
+            f"rm/subjects/{subject_id}", 
+            200
+        )
+        if subject_detail and 'ok' in subject_detail and subject_detail['ok']:
+            subject = subject_detail['data']['subject']
+            record_count = subject_detail['data']['record_count']
+            next_rm_id = subject_detail['data']['next_rm_id']
+            print(f"      ✅ Subject detail: {subject['title']}")
+            print(f"         Record count: {record_count}")
+            print(f"         Next RM-ID: {next_rm_id}")
+        
+        # Test 6: GET /api/rm/subjects/{id}/preview (preview next RM-ID)
+        print("   📋 Testing GET /api/rm/subjects/{id}/preview...")
+        preview_response = self.run_test(
+            "RM Subjects - Preview Next RM-ID", 
+            "GET", 
+            f"rm/subjects/{subject_id}/preview", 
+            200
+        )
+        if preview_response and 'ok' in preview_response and preview_response['ok']:
+            data = preview_response['data']
+            next_rm_id = data['next_rm_id']
+            next_sub = data['next_sub']
+            print(f"      ✅ Next RM-ID preview: {next_rm_id}")
+            print(f"         Next subnumber: {next_sub}")
+        
+        # Test 7: POST /api/rm/subjects/{id}/allocate (atomic subnumber allocation)
+        print("   📋 Testing POST /api/rm/subjects/{id}/allocate...")
+        allocation_response = self.run_test(
+            "RM Subjects - Allocate Subnumber", 
+            "POST", 
+            f"rm/subjects/{subject_id}/allocate", 
+            200
+        )
+        if allocation_response and 'ok' in allocation_response and allocation_response['ok']:
+            data = allocation_response['data']
+            rm_id_display = data['rm_id_display']
+            rm_sub = data['rm_sub']
+            is_first_entry = data['is_first_entry']
+            print(f"      ✅ Allocated RM-ID: {rm_id_display}")
+            print(f"         Subnumber: {rm_sub}")
+            print(f"         Is first entry: {is_first_entry}")
+        
+        # Test 8: Test concurrent allocations (simulate race condition)
+        print("   📋 Testing concurrent subnumber allocations...")
+        import threading
+        import time
+        
+        allocation_results = []
+        allocation_errors = []
+        
+        def allocate_subnumber():
+            try:
+                url = f"{self.base_url}/api/rm/subjects/{subject_id}/allocate"
+                headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': f'Bearer {self.session_token}'
+                }
+                response = requests.post(url, headers=headers, timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('ok'):
+                        allocation_results.append(data['data']['rm_sub'])
+                    else:
+                        allocation_errors.append(f"API error: {data.get('error', {}).get('message', 'Unknown')}")
+                else:
+                    allocation_errors.append(f"HTTP {response.status_code}")
+            except Exception as e:
+                allocation_errors.append(f"Exception: {str(e)}")
+        
+        # Launch 5 concurrent allocation requests
+        threads = []
+        for i in range(5):
+            thread = threading.Thread(target=allocate_subnumber)
+            threads.append(thread)
+        
+        # Start all threads simultaneously
+        for thread in threads:
+            thread.start()
+        
+        # Wait for all threads to complete
+        for thread in threads:
+            thread.join()
+        
+        # Check results
+        unique_subnumbers = set(allocation_results)
+        if len(allocation_results) == len(unique_subnumbers):
+            self.log_test("RM Subjects - Concurrent Allocation (No Duplicates)", True)
+            print(f"      ✅ Allocated subnumbers: {sorted(allocation_results)}")
+        else:
+            self.log_test("RM Subjects - Concurrent Allocation (No Duplicates)", False, 
+                         f"Duplicate subnumbers found: {allocation_results}")
+        
+        if allocation_errors:
+            print(f"      ⚠️ Allocation errors: {len(allocation_errors)}")
+            for error in allocation_errors[:3]:  # Show first 3 errors
+                print(f"         - {error}")
+        
+        # Test 9: Test governance record creation with RM Subject linking
+        print("   📋 Testing governance record creation with RM Subject linking...")
+        
+        # Create a governance record linked to the subject
+        governance_data = {
+            "portfolio_id": portfolio_id,
+            "module_type": "minutes",
+            "title": f"Test Meeting with RM Subject {timestamp}",
+            "rm_subject_id": subject_id,  # Link to existing subject
+            "payload_json": {
+                "title": f"Test Meeting with RM Subject {timestamp}",
+                "meeting_type": "regular",
+                "date_time": "2024-12-15T15:00:00Z",
+                "location": "Test Room",
+                "called_by": "Test User",
+                "attendees": [],
+                "agenda_items": []
+            }
+        }
+        
+        linked_record = self.run_test(
+            "Governance V2 - Create with RM Subject Link", 
+            "POST", 
+            "governance/v2/records", 
+            200, 
+            governance_data
+        )
+        
+        if linked_record and 'ok' in linked_record and linked_record['ok']:
+            record_data = linked_record['data']['record']
+            record_rm_id = record_data.get('rm_id', '')
+            record_rm_subject_id = record_data.get('rm_subject_id', '')
+            record_rm_sub = record_data.get('rm_sub', 0)
+            print(f"      ✅ Record created with RM Subject link")
+            print(f"         Record RM-ID: {record_rm_id}")
+            print(f"         Linked to subject: {record_rm_subject_id}")
+            print(f"         Subnumber: {record_rm_sub}")
+        
+        # Test 10: Test governance record creation with new subject creation
+        print("   📋 Testing governance record creation with new subject spawn...")
+        
+        governance_new_subject_data = {
+            "portfolio_id": portfolio_id,
+            "module_type": "distribution",
+            "title": f"Test Distribution with New Subject {timestamp}",
+            "create_new_subject": True,
+            "new_subject_title": f"Distribution Thread {timestamp}",
+            "new_subject_party_name": "Test Beneficiary",
+            "new_subject_external_ref": f"DIST-{timestamp}",
+            "payload_json": {
+                "title": f"Test Distribution with New Subject {timestamp}",
+                "distribution_type": "regular",
+                "description": "Test distribution with new subject",
+                "total_amount": 10000.0,
+                "currency": "USD",
+                "asset_type": "cash",
+                "scheduled_date": "2024-12-31",
+                "recipients": []
+            }
+        }
+        
+        new_subject_record = self.run_test(
+            "Governance V2 - Create with New Subject", 
+            "POST", 
+            "governance/v2/records", 
+            200, 
+            governance_new_subject_data
+        )
+        
+        if new_subject_record and 'ok' in new_subject_record and new_subject_record['ok']:
+            record_data = new_subject_record['data']['record']
+            record_rm_id = record_data.get('rm_id', '')
+            record_rm_subject_id = record_data.get('rm_subject_id', '')
+            record_rm_sub = record_data.get('rm_sub', 0)
+            print(f"      ✅ Record created with new subject spawn")
+            print(f"         Record RM-ID: {record_rm_id}")
+            print(f"         New subject ID: {record_rm_subject_id}")
+            print(f"         Subnumber: {record_rm_sub}")
+        
+        # Test 11: Verify subject record count increased
+        print("   📋 Testing subject record count update...")
+        updated_subject_detail = self.run_test(
+            "RM Subjects - Verify Record Count", 
+            "GET", 
+            f"rm/subjects/{subject_id}", 
+            200
+        )
+        if updated_subject_detail and 'ok' in updated_subject_detail and updated_subject_detail['ok']:
+            updated_record_count = updated_subject_detail['data']['record_count']
+            print(f"      ✅ Subject record count: {updated_record_count}")
+        
+        # Test 12: Test subject deletion (should fail if records exist)
+        print("   📋 Testing subject deletion with linked records...")
+        delete_response = self.run_test(
+            "RM Subjects - Delete with Records (Should Fail)", 
+            "DELETE", 
+            f"rm/subjects/{subject_id}", 
+            400  # Should fail with 400 because records are linked
+        )
+        # This should fail, which is expected behavior
+        
+        print(f"   ✅ RM Subject API testing completed")
+        return subject_id
+
     def test_distributions(self, portfolio_id):
         """Test distributions module - Full CRUD and workflow"""
         if not portfolio_id:
