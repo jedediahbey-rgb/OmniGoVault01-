@@ -29,7 +29,7 @@ const navItems = [
   { name: 'Dashboard', href: '/vault', icon: House, section: 'main' },
   { name: 'Learn', href: '/learn', icon: BookOpen, section: 'knowledge' },
   { name: 'Maxims', href: '/maxims', icon: Sparkle, section: 'knowledge' },
-  { name: 'Glossary', href: '/glossary', icon: BookOpen, section: 'knowledge' },
+  { name: 'Glossary', href: '/glossary', icon: Book, section: 'knowledge' },
   { name: 'Diagrams', href: '/diagrams', icon: GitBranch, section: 'knowledge' },
   { name: 'Node Map', href: '/node-map', icon: MapTrifold, section: 'workspace' },
   { name: 'Scenarios', href: '/scenarios', icon: ChartLine, section: 'workspace' },
