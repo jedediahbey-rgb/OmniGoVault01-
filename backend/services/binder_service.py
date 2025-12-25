@@ -1120,35 +1120,46 @@ class BinderService:
             html_parts.append("</div></div>")
             section_counter += 1
         
-        # 4. Governance Sections
+        # 5. Governance Sections with enhanced dividers and bookmarks
         governance_sections = [
-            ("governance_minutes", "Meeting Minutes"),
-            ("governance_distributions", "Distributions"),
-            ("governance_compensation", "Compensation"),
-            ("governance_disputes", "Disputes"),
-            ("governance_insurance", "Insurance Policies")
+            ("governance_minutes", "Meeting Minutes", "📝"),
+            ("governance_distributions", "Distributions", "💰"),
+            ("governance_compensation", "Compensation", "👥"),
+            ("governance_disputes", "Disputes", "⚖️"),
+            ("governance_insurance", "Insurance Policies", "🛡️")
         ]
         
-        for section_key, section_title in governance_sections:
+        for section_key, section_title, section_icon in governance_sections:
             items = content.get(section_key, [])
             if not items:
                 continue
             
             html_parts.append(f"""
-            <div class="section-divider">
+            <div class="section-divider" id="section-{section_key}">
+                <h1 class="bookmark-l1" data-bookmark="Section {section_counter}: {section_title}" style="visibility: hidden; height: 0; margin: 0;">{section_title}</h1>
+                <div class="section-icon">
+                    <span class="section-icon-text">{section_icon}</span>
+                </div>
+                <div class="section-number">Section {section_counter}</div>
                 <div class="section-title">{section_title}</div>
                 <div class="section-subtitle">{len(items)} Record{'s' if len(items) != 1 else ''}</div>
+                <div class="section-meta">
+                    Governance records for portfolio administration
+                </div>
             </div>
             """)
             
             for item in items:
                 data = item.get("data", {})
                 payload = item.get("payload", {})
+                item_id = item.get("id", "unknown")
+                item_title = item.get("title", "Record")
                 
                 html_parts.append(f"""
-                <div class="record-page">
+                <div class="record-page" id="item-{item_id}">
+                    <h2 class="bookmark-l2" data-bookmark="{item_title[:40]}" style="visibility: hidden; height: 0; margin: 0;">{item_title}</h2>
                     <div class="record-header">
-                        <div class="record-title">{item.get('title', 'Record')}</div>
+                        <div class="record-title">{item_title}</div>
                         <div class="record-meta">
                             <span class="record-badge">{item.get('status', 'unknown').upper()}</span>
                             &nbsp;&nbsp;
