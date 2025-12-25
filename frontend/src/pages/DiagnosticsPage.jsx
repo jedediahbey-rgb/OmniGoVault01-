@@ -148,7 +148,7 @@ export default function DiagnosticsPage() {
       <PageHeader 
         title="System Diagnostics" 
         subtitle="Data integrity monitoring and repair tools"
-        icon={<Activity className="w-8 h-8 text-vault-gold" weight="duotone" />}
+        icon={Activity}
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
