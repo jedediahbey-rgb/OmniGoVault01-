@@ -3422,7 +3422,7 @@ async def update_compensation_entry(compensation_id: str, data: dict, request: R
 
 @router.delete("/compensation/{compensation_id}")
 async def delete_compensation_entry(compensation_id: str, request: Request):
-    """Soft delete a compensation entry"""
+    """Delete a compensation entry - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -3436,8 +3436,28 @@ async def delete_compensation_entry(compensation_id: str, request: Request):
         if not entry:
             return error_response("NOT_FOUND", "Compensation entry not found", status_code=404)
         
-        if entry.get("locked"):
-            return error_response("LOCKED", "Cannot delete a locked entry", status_code=409)
+        # Allow deletion of drafts and amendments
+        is_finalized = entry.get("locked") or entry.get("status") in ("finalized", "paid", "approved")
+        if is_finalized and not entry.get("is_amendment"):
+            return error_response("LOCKED", "Cannot delete finalized entry. Create an amendment instead.", status_code=409)
+        
+        # If this is an amendment, clean up the parent's amended_by_id
+        parent_id = entry.get("amends_compensation_id") or entry.get("parent_compensation_id")
+        if parent_id and entry.get("is_amendment"):
+            other_amendments = await db.compensation_entries.count_documents({
+                "compensation_id": {"$ne": compensation_id},
+                "$or": [
+                    {"amends_compensation_id": parent_id},
+                    {"parent_compensation_id": parent_id}
+                ],
+                "deleted_at": None
+            })
+            
+            if other_amendments == 0:
+                await db.compensation_entries.update_one(
+                    {"compensation_id": parent_id},
+                    {"$set": {"amended_by_id": None}}
+                )
         
         await db.compensation_entries.update_one(
             {"compensation_id": compensation_id},
