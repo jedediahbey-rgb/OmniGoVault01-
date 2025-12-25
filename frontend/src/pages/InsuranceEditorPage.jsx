@@ -257,6 +257,70 @@ export default function InsuranceEditorPage({ user }) {
     };
   }, [policyId, navigate]);
 
+  // Refetch policy data
+  const refetchPolicy = async () => {
+    try {
+      const res = await axios.get(`${API}/governance/v2/records/${policyId}`);
+      const data = res.data;
+      if (!data.ok || !data.data?.record) {
+        throw new Error(data.error?.message || 'Failed to load policy');
+      }
+      
+      const record = data.data.record;
+      const revision = data.data.current_revision;
+      const payload = revision?.payload_json || {};
+      
+      const policyData = {
+        id: record.id,
+        policy_id: record.id,
+        title: record.title,
+        rm_id: record.rm_id,
+        status: record.status,
+        policy_state: payload.policy_state || 'pending',
+        locked: record.status === 'finalized',
+        portfolio_id: record.portfolio_id,
+        created_at: record.created_at,
+        finalized_at: record.finalized_at,
+        revision: revision?.version || 1,
+        policy_type: payload.policy_type || 'whole_life',
+        policy_number: payload.policy_number || '',
+        carrier_name: payload.carrier_name || payload.insurer || '',
+        insured_name: payload.insured_name || '',
+        death_benefit: payload.death_benefit || payload.face_value || 0,
+        cash_value: payload.cash_value || 0,
+        currency: payload.currency || 'USD',
+        premium_amount: payload.premium_amount || payload.premium || 0,
+        premium_frequency: payload.premium_frequency || 'monthly',
+        effective_date: payload.effective_date || '',
+        beneficiaries: payload.beneficiaries || [],
+        premium_due_date: payload.premium_due_date || '',
+        lapse_risk: payload.lapse_risk || false,
+        notes: payload.notes || '',
+        current_version: revision?.version || 1,
+        current_revision_id: record.current_revision_id
+      };
+      
+      setPolicy(policyData);
+      setEditedHeader({
+        title: policyData.title,
+        policy_type: policyData.policy_type,
+        policy_number: policyData.policy_number,
+        carrier_name: policyData.carrier_name,
+        insured_name: policyData.insured_name,
+        death_benefit: policyData.death_benefit,
+        cash_value: policyData.cash_value,
+        currency: policyData.currency,
+        premium_amount: policyData.premium_amount,
+        premium_frequency: policyData.premium_frequency,
+        effective_date: policyData.effective_date?.slice(0, 10) || '',
+        notes: policyData.notes,
+      });
+    } catch (error) {
+      console.error('Failed to refetch policy:', error);
+      toast.error('Failed to refresh policy data');
+    }
+  };
+
   const handleSaveHeader = async () => {
     setSaving(true);
     try {
