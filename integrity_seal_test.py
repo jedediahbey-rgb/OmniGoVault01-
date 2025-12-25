@@ -12,7 +12,7 @@ import time
 import uuid
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://fiduciary-vault.preview.emergentagent.com/api"
+BASE_URL = "https://ledger-keeper-5.preview.emergentagent.com/api"
 
 class IntegritySealAPITester:
     def __init__(self):

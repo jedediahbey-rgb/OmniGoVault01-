@@ -9,7 +9,7 @@ import os
 import time
 
 # Get backend URL from frontend .env
-BACKEND_URL = "https://fiduciary-vault.preview.emergentagent.com"
+BACKEND_URL = "https://ledger-keeper-5.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class VaultDocumentOSTester:
