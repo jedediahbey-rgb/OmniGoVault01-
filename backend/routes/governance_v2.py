@@ -847,7 +847,7 @@ async def update_record(record_id: str, request: Request):
             portfolio_id=record.get("portfolio_id"),
             actor_id=user.user_id,
             actor_name=user.name if hasattr(user, 'name') else user.user_id,
-            details={"updated_fields": list(body.keys()), "resolver_path": resolver_path}
+            meta={"updated_fields": list(body.keys()), "resolver_path": resolver_path}
         )
         
         # Refetch and return updated record
