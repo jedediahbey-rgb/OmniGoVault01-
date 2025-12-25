@@ -637,27 +637,23 @@ export default function CyberHomePage() {
               variants={staggerContainer}
               className="text-center lg:text-left"
             >
-              <motion.div variants={fadeInUp} className="flex justify-center lg:justify-start">
-                <IconChip icon={Key} label="Exclusive Equity" variant="gold" />
-              </motion.div>
+              <motion.p 
+                variants={fadeInUp}
+                className="text-base sm:text-lg text-slate-400 italic"
+              >
+                "a matrix system for trust governance"
+              </motion.p>
               
               <motion.h1 
                 variants={fadeInUp}
-                className="mt-4 text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]"
+                className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]"
               >
                 <span className="text-[#C6A87C]">OMNIGOVAULT</span>
               </motion.h1>
               
-              <motion.h2
-                variants={fadeInUp}
-                className="mt-3 text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light"
-              >
-                A matrix system for trust governance.
-              </motion.h2>
-              
               <motion.p 
                 variants={fadeInUp}
-                className="mt-4 text-base sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed italic text-center lg:text-left"
+                className="text-base sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed italic text-center lg:text-left"
               >
                 "In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will."&nbsp;&nbsp;<span className="text-sm text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
