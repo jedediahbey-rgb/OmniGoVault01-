@@ -535,6 +535,18 @@ export default function LedgerThreadsPage() {
                 ))}
               </SelectContent>
             </Select>
+            {/* Set as Default Button */}
+            {portfolioId && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setAsDefault(portfolioId)}
+                className={`shrink-0 p-2 ${isDefaultPortfolio ? 'text-vault-gold' : 'text-vault-muted hover:text-vault-gold'}`}
+                title={isDefaultPortfolio ? 'Default portfolio' : 'Set as default'}
+              >
+                <Star className="w-4 h-4" weight={isDefaultPortfolio ? 'fill' : 'regular'} />
+              </Button>
+            )}
             <Button
               onClick={() => setShowNewModal(true)}
               disabled={!portfolioId}
