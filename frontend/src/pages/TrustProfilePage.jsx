@@ -178,7 +178,7 @@ export default function TrustProfilePage({ user }) {
         actions={
           <Button onClick={saveProfile} disabled={saving} className="btn-primary">
             <FloppyDisk className="w-4 h-4 mr-2" weight="duotone" />
-            {saving ? 'Saving...' : 'FloppyDisk Profile'}
+            {saving ? 'Saving...' : 'Save Profile'}
           </Button>
         }
       />
