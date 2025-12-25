@@ -748,16 +748,58 @@ export default function GovernancePage({ user }) {
     
     setCreatingInsurance(true);
     try {
-      const res = await axios.post(`${API}/governance/insurance-policies`, {
-        ...newInsurance,
+      // Use V2 API for creating insurance policies
+      const res = await axios.post(`${API_V2}/records`, {
+        module_type: MODULE_TYPES.insurance,
         portfolio_id: selectedPortfolio,
-        death_benefit: parseFloat(newInsurance.death_benefit) || 0,
-        cash_value: parseFloat(newInsurance.cash_value) || 0,
-        premium_amount: parseFloat(newInsurance.premium_amount) || 0,
+        title: newInsurance.title,
+        payload_json: {
+          title: newInsurance.title,
+          policy_type: newInsurance.policy_type,
+          policy_number: newInsurance.policy_number,
+          carrier_name: newInsurance.carrier_name,
+          insured_name: newInsurance.insured_name,
+          death_benefit: parseFloat(newInsurance.death_benefit) || 0,
+          cash_value: parseFloat(newInsurance.cash_value) || 0,
+          currency: newInsurance.currency,
+          premium_amount: parseFloat(newInsurance.premium_amount) || 0,
+          premium_frequency: newInsurance.premium_frequency,
+          effective_date: newInsurance.effective_date,
+          notes: newInsurance.notes,
+          beneficiaries: []
+        }
       });
       
       const data = res.data;
-      const policyData = data.item || data;
+      if (data.ok && data.data?.record) {
+        toast.success('Insurance policy created');
+        setShowNewInsurance(false);
+        setNewInsurance({
+          title: '',
+          policy_type: 'whole_life',
+          policy_number: '',
+          carrier_name: '',
+          insured_name: '',
+          death_benefit: '',
+          cash_value: '',
+          currency: 'USD',
+          premium_amount: '',
+          premium_frequency: 'monthly',
+          effective_date: '',
+          notes: '',
+        });
+        
+        navigate(`/vault/governance/insurance/${data.data.record.id}`);
+      } else {
+        throw new Error(data.error?.message || 'Failed to create insurance policy');
+      }
+    } catch (error) {
+      console.error('Failed to create insurance policy:', error);
+      toast.error(error.response?.data?.error?.message || error.message || 'Failed to create insurance policy');
+    } finally {
+      setCreatingInsurance(false);
+    }
+  };ata = data.item || data;
       
       toast.success('Insurance policy created');
       setShowNewInsurance(false);
