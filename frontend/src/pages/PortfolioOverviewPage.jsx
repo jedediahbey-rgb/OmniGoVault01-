@@ -1394,7 +1394,7 @@ export default function PortfolioOverviewPage({ user }) {
               {editingAsset ? 'Edit Asset' : 'Add Asset to Trust'}
             </DialogTitle>
             <DialogDescription className="text-white/50">
-              {editingAsset ? 'Update asset details (RM-ID cannot be changed)' : 'Assets will be assigned a unique RM-ID automatically'}
+              {editingAsset ? 'Update asset details (RM-ID cannot be changed)' : 'A unique RM-ID will be randomly generated for this asset'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -1402,6 +1402,15 @@ export default function PortfolioOverviewPage({ user }) {
               <div className="p-3 bg-vault-gold/10 rounded-lg">
                 <p className="text-white/40 text-xs uppercase">Current RM-ID</p>
                 <p className="text-vault-gold font-mono">{editingAsset.rm_id}</p>
+              </div>
+            )}
+            {!editingAsset && (
+              <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <Hash className="w-4 h-4 text-emerald-400" weight="bold" />
+                  <p className="text-emerald-400 text-sm font-medium">Ledger Thread RM-ID</p>
+                </div>
+                <p className="text-white/50 text-xs">A random group number (1-99) will be assigned to create a unique RM-ID for tracking this asset in the trust ledger.</p>
               </div>
             )}
             <div>
@@ -1413,41 +1422,22 @@ export default function PortfolioOverviewPage({ user }) {
                 className="bg-white/5 border-white/10"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-white/60 text-sm mb-2 block">Subject Category</label>
-                <Select value={newAssetSubjectCode} onValueChange={setNewAssetSubjectCode} disabled={!!editingAsset}>
-                  <SelectTrigger className="bg-white/5 border-white/10">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-vault-navy border-white/10 z-[100]" position="popper" sideOffset={4}>
-                    {assetCategories.map(cat => (
-                      <SelectItem key={cat.code} value={cat.code}>
-                        {cat.code} - {cat.name}
-                      </SelectItem>
-                    ))}
-                    {assetCategories.length === 0 && (
-                      <SelectItem value="10">10 - Real Estate</SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-white/60 text-sm mb-2 block">Asset Type</label>
-                <Select value={newAssetType} onValueChange={setNewAssetType}>
-                  <SelectTrigger className="bg-white/5 border-white/10">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-vault-navy border-white/10 z-[100]" position="popper" sideOffset={4}>
-                    <SelectItem value="real_property">Real Property</SelectItem>
-                    <SelectItem value="personal_property">Personal Property</SelectItem>
-                    <SelectItem value="financial_account">Financial Account</SelectItem>
-                    <SelectItem value="securities">Securities</SelectItem>
-                    <SelectItem value="intellectual_property">Intellectual Property</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Asset Type</label>
+              <Select value={newAssetType} onValueChange={setNewAssetType}>
+                <SelectTrigger className="bg-white/5 border-white/10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-vault-navy border-white/10 z-[100]" position="popper" sideOffset={4}>
+                  <SelectItem value="real_property">Real Property</SelectItem>
+                  <SelectItem value="personal_property">Personal Property</SelectItem>
+                  <SelectItem value="financial_account">Financial Account</SelectItem>
+                  <SelectItem value="securities">Securities</SelectItem>
+                  <SelectItem value="vehicle">Vehicle</SelectItem>
+                  <SelectItem value="intellectual_property">Intellectual Property</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             {!editingAsset && (
               <div>
