@@ -1202,6 +1202,34 @@ async def generate_subject_rm_id_v2(
         return await generate_subject_rm_id(portfolio_id, user_id, subject_code, module_type)
 
 
+@api_router.get("/rm/preview")
+async def preview_rm_id(
+    portfolio_id: str,
+    related_to: Optional[str] = None,
+    relation_key: Optional[str] = None,
+    user: User = Depends(get_current_user)
+):
+    """
+    Preview what RM-ID would be allocated (without actually allocating).
+    Useful for UI preview before creating a record.
+    """
+    global rmid_allocator
+    
+    if rmid_allocator is None:
+        raise HTTPException(status_code=503, detail="RM-ID allocator not initialized")
+    
+    try:
+        result = await rmid_allocator.preview(
+            portfolio_id=portfolio_id,
+            user_id=user.user_id,
+            relation_key=relation_key,
+            related_to_record_id=related_to
+        )
+        return {"ok": True, "data": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.get("/portfolios/{portfolio_id}/subject-categories")
 async def get_subject_categories(portfolio_id: str, user: User = Depends(get_current_user)):
     """Get all subject categories for a portfolio"""
