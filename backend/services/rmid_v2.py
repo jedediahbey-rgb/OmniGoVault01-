@@ -21,11 +21,11 @@ from datetime import datetime, timezone
 from typing import Optional, Tuple, Dict, Any
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-# Constants
-GROUP_MIN = 10
-GROUP_MAX = 999
+# Constants - CONSTRAINED RANGES
+GROUP_MIN = 1      # Minimum group number (was 10)
+GROUP_MAX = 99     # Maximum group number (was 999) - ONLY 1-99 allowed
 MAX_SUBNUMBER = 999
-MAX_ALLOCATION_RETRIES = 25
+MAX_ALLOCATION_RETRIES = 50  # More retries since smaller range
 
 
 def normalize_rm_base(rm_base: str) -> str:
