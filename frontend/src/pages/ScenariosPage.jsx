@@ -194,15 +194,11 @@ export default function ScenariosPage() {
   const [variables, setVariables] = useState({});
   const [results, setResults] = useState(null);
   const [calculating, setCalculating] = useState(false);
-  const [savedScenarios, setSavedScenarios] = useState([]);
-
-  // Load saved scenarios from localStorage
-  useEffect(() => {
+  const [savedScenarios, setSavedScenarios] = useState(() => {
+    // Initialize from localStorage
     const saved = localStorage.getItem('omnigovault_scenarios');
-    if (saved) {
-      setSavedScenarios(JSON.parse(saved));
-    }
-  }, []);
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const selectScenario = (scenario) => {
     setSelectedScenario(scenario);
