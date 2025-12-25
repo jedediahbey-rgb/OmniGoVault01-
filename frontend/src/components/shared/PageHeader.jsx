@@ -81,7 +81,7 @@ export default function PageHeader({
         </div>
       )}
       
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4 flex-1 min-w-0">
           {Icon && (
             <div className="w-12 h-12 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center flex-shrink-0">
@@ -89,16 +89,14 @@ export default function PageHeader({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <div className="flex items-start gap-2">
-              <h1 className="text-2xl sm:text-3xl font-heading text-white tracking-tight">
-                {safeTitle || 'Untitled'}
-              </h1>
+            <h1 className="text-2xl sm:text-3xl font-heading text-white tracking-tight">
+              {safeTitle || 'Untitled'}
               {helpKey && (
-                <div className="flex-shrink-0 mt-1">
+                <span className="inline-block align-middle ml-2">
                   <PageHelpTooltip pageKey={helpKey} />
-                </div>
+                </span>
               )}
-            </div>
+            </h1>
             {safeSubtitle && (
               <p className="text-white/60 mt-1">{safeSubtitle}</p>
             )}
