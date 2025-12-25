@@ -645,36 +645,46 @@ class EquityTrustAPITester:
         print("\n📋 Testing Governance V2 API - GovernancePage V2 Refactor...")
         print("   🎯 TESTING V2 API ENDPOINTS USED BY FRONTEND")
         
-        # Test 1: Create new record with draft v1
-        record_data = {
+        # Test 1: Test GET /api/governance/v2/records with module_type filter (empty list initially)
+        print("   📋 Testing V2 API GET with module_type filters...")
+        
+        # Test each module type filter
+        module_types = ["minutes", "distribution", "dispute", "insurance", "compensation"]
+        for module_type in module_types:
+            records_response = self.run_test(
+                f"V2 API - Get {module_type} records", 
+                "GET", 
+                f"governance/v2/records?portfolio_id={portfolio_id}&module_type={module_type}", 
+                200
+            )
+            if records_response and 'ok' in records_response and records_response['ok']:
+                items = records_response.get('data', {}).get('items', [])
+                total = records_response.get('data', {}).get('total', 0)
+                print(f"      ✅ {module_type}: {len(items)} items, total: {total}")
+            else:
+                print(f"      ❌ {module_type}: Invalid response format")
+        
+        # Test 2: Create new records for each module type
+        print("   📋 Testing V2 API POST /api/governance/v2/records...")
+        
+        created_records = {}
+        
+        # Create minutes record
+        minutes_data = {
             "portfolio_id": portfolio_id,
             "module_type": "minutes",
             "title": f"V2 Test Meeting Minutes {datetime.now().strftime('%H%M%S')}",
             "payload_json": {
+                "title": f"V2 Test Meeting Minutes {datetime.now().strftime('%H%M%S')}",
                 "meeting_type": "regular",
-                "meeting_datetime": "2024-12-15T14:00:00Z",
+                "date_time": "2024-12-15T14:00:00Z",
                 "location": "Conference Room A",
                 "called_by": "John Doe",
-                "attendees": [
-                    {
-                        "name": "John Doe",
-                        "role": "trustee",
-                        "present": True,
-                        "notes": "Meeting chair"
-                    }
-                ],
-                "agenda_items": [
-                    {
-                        "title": "Review Q4 Financial Statements",
-                        "order": 1,
-                        "discussion_summary": "Reviewed quarterly performance",
-                        "notes": "All trustees reviewed documents"
-                    }
-                ],
-                "general_notes": "Regular quarterly meeting"
+                "attendees": [],
+                "agenda_items": []
             }
         }
-        created_record = self.run_test("V2 API - Create Record", "POST", "governance/v2/records", 200, record_data)
+        created_minutes = self.run_test("V2 API - Create Minutes Record", "POST", "governance/v2/records", 200, minutes_data)
         
         if not created_record or 'data' not in created_record:
             print("   ❌ Failed to create V2 record, skipping remaining tests")
