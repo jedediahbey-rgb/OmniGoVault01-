@@ -188,6 +188,12 @@ export default function DashboardPage({ user }) {
       if (portfolioToDelete.portfolio_id === defaultPortfolioId) {
         localStorage.removeItem('defaultPortfolioId');
         setDefaultPortfolioId('');
+        // Also clear from backend
+        try {
+          await axios.put(`${API}/user/preferences`, { default_portfolio_id: null });
+        } catch (err) {
+          console.log('Backend sync failed');
+        }
       }
       toast.success('Portfolio deleted');
     } catch (error) {
