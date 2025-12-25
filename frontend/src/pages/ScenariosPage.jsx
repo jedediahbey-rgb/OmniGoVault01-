@@ -451,6 +451,7 @@ export default function ScenariosPage() {
 
   return (
     <motion.div
+      ref={pageTopRef}
       variants={staggerContainer}
       initial="initial"
       animate="animate"
