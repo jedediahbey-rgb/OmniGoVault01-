@@ -3609,6 +3609,11 @@ from routes.health import router as health_router, set_db as set_health_db
 set_health_db(db)
 app.include_router(health_router)
 
+# Initialize and include Global Search routes
+from routes.search import router as search_router, set_db as set_search_db
+set_search_db(db)
+app.include_router(search_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
