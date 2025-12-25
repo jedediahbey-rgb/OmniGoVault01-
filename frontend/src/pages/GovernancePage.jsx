@@ -672,11 +672,22 @@ export default function GovernancePage({ user }) {
         
         navigate(`/vault/governance/distributions/${data.data.record.id}`);
       } else {
-        throw new Error(data.error?.message || 'Failed to create distribution');
+        const errMsg = data.error?.message || 'Failed to create distribution';
+        console.error('[CREATE_DISTRIBUTION] Error:', data.error);
+        throw new Error(errMsg);
       }
     } catch (error) {
-      console.error('Failed to create distribution:', error);
-      toast.error(error.response?.data?.error?.message || error.message || 'Failed to create distribution');
+      console.error('[CREATE_DISTRIBUTION] ERROR:', error);
+      console.error('[CREATE_DISTRIBUTION] Status:', error.response?.status);
+      console.error('[CREATE_DISTRIBUTION] Response:', JSON.stringify(error.response?.data, null, 2));
+      
+      const errMsg = error.response?.data?.error?.message 
+        || error.response?.data?.detail 
+        || error.message 
+        || 'Failed to create distribution';
+      const errCode = error.response?.data?.error?.code || error.response?.status || 'UNKNOWN';
+      
+      toast.error(`[${errCode}] ${errMsg}`);
     } finally {
       setCreatingDistribution(false);
     }
