@@ -7,6 +7,7 @@ import {
   FileText,
   FolderSimple,
   Gavel,
+  Gear,
   GitBranch,
   Heartbeat,
   House,
@@ -36,6 +37,7 @@ const navItems = [
   { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
   { name: 'Trust Health', href: '/health', icon: Heartbeat, section: 'tools' },
   { name: 'Diagnostics', href: '/diagnostics', icon: ShieldCheck, section: 'tools' },
+  { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
 ];
 
 const sections = {
