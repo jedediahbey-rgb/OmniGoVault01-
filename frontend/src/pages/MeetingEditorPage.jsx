@@ -493,6 +493,24 @@ export default function MeetingEditorPage({ user }) {
     }
   };
 
+  // Delete meeting handler
+  const handleDeleteMeeting = async () => {
+    if (!window.confirm('Are you sure you want to delete this meeting? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      await axios.post(`${API}/governance/v2/records/${meetingId}/void`, {
+        void_reason: 'Deleted by user'
+      });
+      toast.success('Meeting deleted');
+      navigate('/vault/governance');
+    } catch (error) {
+      console.error('Failed to delete meeting:', error);
+      toast.error(error.response?.data?.error?.message || 'Failed to delete meeting');
+    }
+  };
+
   // Fetch revision history (for V2 display)
   const fetchRevisions = async () => {
     try {
