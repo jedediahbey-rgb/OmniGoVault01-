@@ -166,9 +166,6 @@ export default function MeetingEditorPage({ user }) {
   const [showAttest, setShowAttest] = useState(false);
   const [attestation, setAttestation] = useState({ party_name: '', party_role: 'trustee', signature_data: '' });
   
-  const [showAmend, setShowAmend] = useState(false);
-  const [amendReason, setAmendReason] = useState('');
-  
   // Amendment Studio V2
   const [showAmendmentStudio, setShowAmendmentStudio] = useState(false);
   const [showRevisionHistory, setShowRevisionHistory] = useState(false);
