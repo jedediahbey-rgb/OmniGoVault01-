@@ -1586,7 +1586,7 @@ export default function GovernancePage({ user }) {
               <GlassCard className="p-12 text-center">
                 <ShieldCheck className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
                 <h3 className="text-xl font-heading text-white mb-2">No Insurance Policies</h3>
-                <p className="text-vault-muted">Tap the "New" button above to add insurance policies</p>
+                <p className="text-vault-muted">Tap the &quot;New&quot; button above to add insurance policies</p>
               </GlassCard>
             ) : (
               <div className="space-y-3">
