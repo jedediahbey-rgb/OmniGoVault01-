@@ -876,12 +876,7 @@ async def update_record(record_id: str, request: Request):
 async def finalize_record(record_id: str, request: Request):
     """
     Finalize the current draft revision.
-    - Computes content hash
-    - Sets finalized_at/by on revision
-    - Updates record status to finalized
-    - Creates audit event
-    
-    STRICT: Only finalizes if current revision is a draft.
+    Accepts either record `id` or `rm_id` for lookup.
     """
     try:
         user = await get_current_user(request)
@@ -889,12 +884,15 @@ async def finalize_record(record_id: str, request: Request):
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
-        record = await db.governance_records.find_one(
-            {"id": record_id, "user_id": user.user_id}
-        )
+        # Resolve by id or rm_id
+        record, resolver_path = await resolve_record_by_id_or_rm(record_id, user.user_id)
         
         if not record:
+            print(f"[FINALIZE_RECORD] NOT_FOUND: record_id={record_id}, user_id={user.user_id}")
             return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # Use resolved record ID
+        actual_id = record["id"]
         
         if not record.get("current_revision_id"):
             return error_response("NO_REVISION", "Record has no revision to finalize")
