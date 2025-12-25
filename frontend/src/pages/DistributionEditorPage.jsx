@@ -332,7 +332,9 @@ export default function DistributionEditorPage({ user }) {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await axios.delete(`${API}/governance/distributions/${distributionId}`);
+      await axios.post(`${API}/governance/v2/records/${distributionId}/void`, {
+        void_reason: 'Deleted by user'
+      });
       toast.success('Distribution deleted successfully');
       navigate('/vault/governance?tab=distributions');
     } catch (error) {
