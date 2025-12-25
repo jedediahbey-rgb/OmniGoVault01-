@@ -7,23 +7,32 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
+  Bank,
   Briefcase,
+  Buildings,
+  Car,
   CaretRight,
+  ChartLine,
   CurrencyDollar,
+  Eye,
   FileText,
   FolderSimple,
   Funnel,
   Gavel,
   HandCoins,
   Hash,
+  House,
   Lock,
+  MagnifyingGlass,
   Newspaper,
+  Package,
   PencilSimple,
   Plus,
   Scales,
   ShieldCheck,
   Trash,
-  Users
+  Users,
+  Wallet
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
