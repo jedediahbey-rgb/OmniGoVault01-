@@ -71,7 +71,7 @@ PDF_SOURCES = {
         "short_name": "Roark"
     },
     "pure_trust": {
-        "name": "Pure Trust Under Equity",
+        "name": "Exclusive Trust Under Equity",
         "url": "https://customer-assets.emergentagent.com/job_trustvault-1/artifacts/mx3a8y1s_pure%20trust%20under%20equity.pdf",
         "short_name": "Pure Trust"
     }
@@ -2408,7 +2408,7 @@ async def get_templates():
             "id": "declaration_of_trust",
             "name": "Declaration of Trust",
             "description": "Establishes an exclusive equity trust with defined roles for grantor/settlor, trustee, and beneficiary. Includes maxims of equity and governing statements.",
-            "source": "Pure Trust Under Equity, Pages 1-5",
+            "source": "Exclusive Trust Under Equity, Pages 1-5",
             "icon": "scroll",
             "subject_code": "01",
             "fields": ["trust_name", "grantor", "trustee", "beneficiary", "property", "purpose", "terms"]
@@ -2417,7 +2417,7 @@ async def get_templates():
             "id": "trust_transfer_grant_deed",
             "name": "Trust Transfer Grant Deed (TTGD)",
             "description": "Conveys property and rights into an established trust structure with proper grant and habendum clauses.",
-            "source": "Pure Trust Under Equity, Pages 6-8",
+            "source": "Exclusive Trust Under Equity, Pages 6-8",
             "icon": "file-signature",
             "subject_code": "02",
             "fields": ["grantor", "grantee", "property", "consideration", "covenants"]
@@ -2426,7 +2426,7 @@ async def get_templates():
             "id": "acknowledgement_receipt_acceptance",
             "name": "Acknowledgement / Receipt / Acceptance",
             "description": "Formal acknowledgement of receipt and acceptance for lawful consideration in trust transactions.",
-            "source": "Pure Trust Under Equity, Page 9",
+            "source": "Exclusive Trust Under Equity, Page 9",
             "icon": "check-circle",
             "subject_code": "03",
             "fields": ["parties", "items", "consideration", "date"]
@@ -2435,7 +2435,7 @@ async def get_templates():
             "id": "notice_of_interest",
             "name": "Notice of Interest",
             "description": "Formal notice declaring equitable interest in property or assets.",
-            "source": "Pure Trust Under Equity, Page 10",
+            "source": "Exclusive Trust Under Equity, Page 10",
             "icon": "bell",
             "subject_code": "04",
             "fields": ["declarant", "property", "interest_type", "effective_date"]
@@ -2444,7 +2444,7 @@ async def get_templates():
             "id": "notice_of_delivery",
             "name": "Notice of Delivery",
             "description": "Documentation of delivery of property or documents to trust.",
-            "source": "Pure Trust Under Equity, Page 11",
+            "source": "Exclusive Trust Under Equity, Page 11",
             "icon": "package",
             "subject_code": "05",
             "fields": ["sender", "recipient", "items", "date", "conditions"]
@@ -2453,7 +2453,7 @@ async def get_templates():
             "id": "special_notice_deed_conveyance",
             "name": "Special Notice of Deed of Conveyance",
             "description": "Special notice regarding conveyance of deed and title transfer.",
-            "source": "Pure Trust Under Equity, Page 12",
+            "source": "Exclusive Trust Under Equity, Page 12",
             "icon": "stamp",
             "subject_code": "06",
             "fields": ["grantor", "grantee", "property", "conveyance_terms"]
@@ -2462,7 +2462,7 @@ async def get_templates():
             "id": "affidavit_of_fact",
             "name": "Affidavit of Fact",
             "description": "Sworn statement establishing facts under oath with jurat.",
-            "source": "Pure Trust Under Equity, Page 13",
+            "source": "Exclusive Trust Under Equity, Page 13",
             "icon": "scale",
             "subject_code": "07",
             "fields": ["affiant", "facts", "attestation"]
@@ -2471,7 +2471,7 @@ async def get_templates():
             "id": "trustee_acceptance",
             "name": "Trustee Acceptance",
             "description": "Notice of acceptance by trustee acknowledging receipt of certificate of legal title and duties.",
-            "source": "Pure Trust Under Equity, Pages 14-15",
+            "source": "Exclusive Trust Under Equity, Pages 14-15",
             "icon": "check-circle",
             "subject_code": "08",
             "fields": ["trustee", "trust_name", "rm_id", "address"]
@@ -2480,7 +2480,7 @@ async def get_templates():
             "id": "certificate_of_trust",
             "name": "Certificate of Foreign Grantor Trust",
             "description": "Formal certificate establishing the trust under full faith and credit with all essential details.",
-            "source": "Pure Trust Under Equity, Pages 16-17",
+            "source": "Exclusive Trust Under Equity, Pages 16-17",
             "icon": "scroll",
             "subject_code": "09",
             "fields": ["trust_name", "grantor", "trustee", "creation_date", "execution_date"]
@@ -2562,7 +2562,7 @@ async def get_knowledge_topics():
             "id": "pure_trust_structure",
             "title": "Pure Trust Structure",
             "description": "The specific structure and requirements of an exclusive equity trust.",
-            "source": "Pure Trust Under Equity",
+            "source": "Exclusive Trust Under Equity",
             "subtopics": ["Declaration", "Parties", "Transfer", "Administration"]
         }
     ]
@@ -2711,7 +2711,7 @@ async def get_relationships():
             "left_duties": ["Transfer property", "Define trust terms", "Provide consideration"],
             "right_rights": ["Receive consideration", "Manage per terms", "Reasonable compensation"],
             "explanation": "The grantor creates the trust and transfers property to the trustee who accepts the duties of management.",
-            "source": "Pure Trust Under Equity, Pages 1-3"
+            "source": "Exclusive Trust Under Equity, Pages 1-3"
         }
     ]
     return relationships
@@ -2732,8 +2732,8 @@ async def get_sources():
         },
         {
             "id": "pure_trust",
-            "name": "Pure Trust Under Equity",
-            "full_name": "Pure Trust Under Equity",
+            "name": "Exclusive Trust Under Equity",
+            "full_name": "Exclusive Trust Under Equity",
             "url": PDF_SOURCES["pure_trust"]["url"],
             "description": "Template documents and forms for establishing exclusive equity trusts."
         }
