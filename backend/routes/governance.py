@@ -505,7 +505,7 @@ async def update_meeting(meeting_id: str, data: dict, request: Request):
 
 @router.delete("/meetings/{meeting_id}")
 async def delete_meeting(meeting_id: str, request: Request, hard: bool = Query(False)):
-    """Soft-delete a meeting (only if draft). Use hard=true for permanent deletion."""
+    """Delete a meeting - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -522,13 +522,32 @@ async def delete_meeting(meeting_id: str, request: Request, hard: bool = Query(F
         if not meeting:
             return error_response("NOT_FOUND", "Meeting not found", status_code=404)
         
-        if meeting.get("status") != "draft":
-            return error_response("LOCKED", "Cannot delete finalized meeting")
+        # Allow deletion of drafts and amendments
+        is_finalized = meeting.get("locked") or meeting.get("status") == "finalized"
+        if is_finalized and not meeting.get("is_amendment"):
+            return error_response("LOCKED", "Cannot delete finalized meeting. Create an amendment instead.")
+        
+        # If this is an amendment, clean up the parent's amended_by_id
+        parent_id = meeting.get("amends_meeting_id") or meeting.get("parent_meeting_id")
+        if parent_id and meeting.get("is_amendment"):
+            other_amendments = await db.meetings.count_documents({
+                "meeting_id": {"$ne": meeting_id},
+                "$or": [
+                    {"amends_meeting_id": parent_id},
+                    {"parent_meeting_id": parent_id}
+                ],
+                "deleted_at": None
+            })
+            
+            if other_amendments == 0:
+                await db.meetings.update_one(
+                    {"meeting_id": parent_id},
+                    {"$set": {"amended_by_id": None}}
+                )
         
         if hard:
             await db.meetings.delete_one({"meeting_id": meeting_id})
         else:
-            # Soft delete
             await db.meetings.update_one(
                 {"meeting_id": meeting_id},
                 {"$set": {
