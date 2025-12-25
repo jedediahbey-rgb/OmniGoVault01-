@@ -359,3 +359,133 @@ async def get_health_summary(request: Request):
         "stats": recent_scan.get("stats", {}),
         "needs_scan": False
     })
+
+
+
+@router.get("/audit")
+async def get_audit_readiness(request: Request):
+    """
+    Run audit readiness check.
+    Returns a comprehensive checklist for audit preparation.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    checker = AuditReadinessChecker(db)
+    result = await checker.run_audit_check(user.user_id)
+    
+    return success_response(result)
+
+
+@router.get("/audit/export")
+async def export_audit_report(request: Request):
+    """
+    Export audit readiness report as JSON.
+    Can be used for record-keeping or sharing with auditors.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    checker = AuditReadinessChecker(db)
+    result = await checker.run_audit_check(user.user_id)
+    
+    # Create exportable report
+    report = {
+        "report_type": "Audit Readiness Report",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "user_id": user.user_id,
+        "audit_score": result["audit_score"],
+        "ready_for_audit": result["ready_for_audit"],
+        "summary": {
+            "total_items": result["total_items"],
+            "passed_items": result["passed_items"],
+            "failed_required": result["failed_required"]
+        },
+        "checklist_by_category": result["checklist"]
+    }
+    
+    # Return as downloadable JSON
+    report_json = json.dumps(report, indent=2)
+    buffer = io.BytesIO(report_json.encode('utf-8'))
+    
+    return StreamingResponse(
+        buffer,
+        media_type="application/json",
+        headers={
+            "Content-Disposition": f"attachment; filename=audit_readiness_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        }
+    )
+
+
+@router.get("/timeline")
+async def get_health_timeline(request: Request, days: int = 30):
+    """
+    Get health score timeline with events.
+    Returns score history and notable governance events.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    # Get score history
+    history = await get_health_history(db, user.user_id, days)
+    
+    # Get governance events (records created/finalized in the period)
+    from datetime import timedelta
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    
+    events = []
+    
+    # Fetch recent governance records
+    records = await db.governance_records.find(
+        {
+            "user_id": user.user_id,
+            "created_at": {"$gte": cutoff.isoformat()}
+        },
+        {"_id": 0, "id": 1, "title": 1, "module_type": 1, "status": 1, 
+         "created_at": 1, "finalized_at": 1}
+    ).sort("created_at", -1).to_list(50)
+    
+    for record in records:
+        # Record creation event
+        events.append({
+            "type": "record_created",
+            "date": record.get("created_at"),
+            "title": f"New {record.get('module_type', 'record')}: {record.get('title', 'Untitled')}",
+            "module": record.get("module_type"),
+            "record_id": record.get("id"),
+            "impact": "neutral"
+        })
+        
+        # Finalization event
+        if record.get("finalized_at"):
+            events.append({
+                "type": "record_finalized",
+                "date": record.get("finalized_at"),
+                "title": f"Finalized: {record.get('title', 'Untitled')}",
+                "module": record.get("module_type"),
+                "record_id": record.get("id"),
+                "impact": "positive"
+            })
+    
+    # Sort events by date
+    events.sort(key=lambda e: e.get("date", ""), reverse=True)
+    
+    return success_response({
+        "history": [
+            {
+                "date": h.get("scanned_at"),
+                "score": h.get("overall_score"),
+                "category_scores": h.get("category_scores", {})
+            }
+            for h in history
+        ],
+        "events": events[:20],  # Last 20 events
+        "days": days,
+        "data_points": len(history)
+    })
