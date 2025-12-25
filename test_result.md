@@ -179,3 +179,39 @@ All 5 governance editor pages now include:
 - Create/finalize a record
 - Click "Amend" and verify AmendmentStudio modal opens
 - Complete amendment workflow
+
+## Phase 3: Data Migration Complete
+
+### Migration Results
+- **Total Records Migrated**: 90
+  - meetings: 20
+  - distributions: 27
+  - disputes: 14
+  - insurance_policies: 16
+  - compensation_entries: 13
+
+### V2 Collection Counts After Migration
+- governance_records: 93
+- governance_revisions: 96  
+- governance_events: 108
+
+### Migration Script
+- Location: `/app/backend/scripts/migrate_governance_v2.py`
+- Features:
+  - Dry run mode (default)
+  - Live migration with `--execute` flag
+  - Preserves legacy IDs for cross-reference
+  - Creates audit events for all migrations
+  - Marks migrated documents with `_migrated_to_v2: true`
+  - Computes content hash for finalized records
+  - Handles amendment chains
+
+### Data Structure
+Legacy documents now have:
+- `_migrated_to_v2: true` - Flag indicating migration
+- `_v2_record_id: rec_xxx` - Reference to new V2 record
+
+V2 records have:
+- `legacy_id` - Reference to original document ID
+- `content_hash` - SHA-256 hash for tamper evidence
+- `parent_hash` - Link to parent revision for hash chain
