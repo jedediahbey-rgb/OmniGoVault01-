@@ -1807,20 +1807,18 @@ export default function GovernancePage({ user }) {
                                 <PencilSimple className="w-4 h-4 mr-2" />
                                 View / Edit
                               </DropdownMenuItem>
-                              {entry.status === 'draft' && !entry.locked && (
-                                <DropdownMenuItem
-                                  className="text-red-400 hover:bg-red-500/10 cursor-pointer"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (window.confirm('Delete this compensation entry?')) {
-                                      handleDeleteCompensation(compId);
-                                    }
-                                  }}
-                                >
-                                  <Trash className="w-4 h-4 mr-2" />
-                                  Delete
-                                </DropdownMenuItem>
-                              )}
+                              <DropdownMenuItem
+                                className="text-red-400 hover:bg-red-500/10 cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (window.confirm('Delete this compensation entry?')) {
+                                    handleDeleteCompensation(compId);
+                                  }
+                                }}
+                              >
+                                <Trash className="w-4 h-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
