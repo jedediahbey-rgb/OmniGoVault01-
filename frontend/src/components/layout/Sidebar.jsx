@@ -125,8 +125,8 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-vault-gold to-vault-gold-dim flex items-center justify-center flex-shrink-0">
             <Shield className="w-5 h-5 text-vault-navy" weight="duotone" />
           </div>
-          <div className="min-w-0">
-            <span className="font-heading text-lg text-white tracking-tight">Exclusive Equity & Trust</span>
+          <div className="min-w-0 flex-1">
+            <span className="font-heading text-base text-white tracking-tight block truncate">Exclusive Equity & Trust</span>
             <p className="text-xs text-vault-gold uppercase tracking-widest">Portfolio</p>
           </div>
         </div>
