@@ -20,6 +20,7 @@ class GovernanceV2Tester:
         self.tests_run = 0
         self.tests_passed = 0
         self.portfolio_id = "test_portfolio_123"
+        self.test_record_id = None
         
     def log_test(self, name, success, details=""):
         self.tests_run += 1
