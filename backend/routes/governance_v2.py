@@ -336,10 +336,13 @@ async def list_records(
         items = []
         for rec in records:
             current_rev = None
+            payload_json = {}
             if rec.get("current_revision_id"):
                 current_rev = await db.governance_revisions.find_one(
                     {"id": rec["current_revision_id"]}, {"_id": 0}
                 )
+                if current_rev:
+                    payload_json = current_rev.get("payload_json", {})
             
             items.append({
                 "id": rec["id"],
@@ -350,7 +353,9 @@ async def list_records(
                 "current_version": current_rev.get("version", 1) if current_rev else 1,
                 "created_at": rec.get("created_at"),
                 "finalized_at": rec.get("finalized_at"),
-                "created_by": rec.get("created_by", "")
+                "created_by": rec.get("created_by", ""),
+                # Include payload_json for frontend badge logic
+                "payload_json": payload_json
             })
         
         return success_response({
