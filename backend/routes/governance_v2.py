@@ -501,25 +501,44 @@ async def get_revision(revision_id: str, request: Request):
 async def create_record(request: Request):
     """
     Create a new governance record with initial draft revision (v1).
-    
-    RM-ID handling:
-    - If rm_subject_id is provided: Link to existing subject, allocate next subnumber
-    - If create_new_subject is True: Create new subject, allocate .001
-    - If neither: Fall back to legacy RM-ID generation (deprecated)
     """
+    import traceback
+    
+    # Step 1: Get raw body first for logging
+    try:
+        raw_body = await request.body()
+        print(f"[CREATE_RECORD] Raw body bytes: {raw_body[:500]}")
+    except Exception as e:
+        print(f"[CREATE_RECORD] ERROR reading raw body: {e}")
+        return error_response("BODY_ERROR", f"Cannot read request body: {str(e)}", status_code=400)
+    
+    # Step 2: Parse JSON
+    try:
+        import json as json_lib
+        body = json_lib.loads(raw_body)
+        print(f"[CREATE_RECORD] Parsed JSON: {json_lib.dumps(body, indent=2)}")
+    except Exception as e:
+        print(f"[CREATE_RECORD] ERROR parsing JSON: {e}")
+        return error_response("JSON_ERROR", f"Invalid JSON: {str(e)}", status_code=400)
+    
+    # Step 3: Auth check
     try:
         user = await get_current_user(request)
-    except Exception:
-        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
-    
-    # Parse and validate request body
-    try:
-        body = await request.json()
-        print(f"[DEBUG] create_record received body: {body}")
-        data = RecordCreateRequest(**body)
+        print(f"[CREATE_RECORD] Authenticated user: {user.user_id}")
     except Exception as e:
-        print(f"[ERROR] Failed to parse request: {e}")
-        return error_response("VALIDATION_ERROR", f"Invalid request: {str(e)}")
+        print(f"[CREATE_RECORD] AUTH ERROR: {e}")
+        print(f"[CREATE_RECORD] Cookies: {request.cookies}")
+        print(f"[CREATE_RECORD] Auth header: {request.headers.get('Authorization', 'NONE')}")
+        return error_response("AUTH_ERROR", f"Authentication required: {str(e)}", status_code=401)
+    
+    # Step 4: Validate against Pydantic model
+    try:
+        data = RecordCreateRequest(**body)
+        print(f"[CREATE_RECORD] Pydantic validation passed - module_type={data.module_type}, portfolio_id={data.portfolio_id}, title={data.title}")
+    except Exception as e:
+        print(f"[CREATE_RECORD] PYDANTIC ERROR: {e}")
+        print(f"[CREATE_RECORD] Traceback: {traceback.format_exc()}")
+        return error_response("VALIDATION_ERROR", f"Invalid request fields: {str(e)}", status_code=422)
     
     try:
         # Validate payload
