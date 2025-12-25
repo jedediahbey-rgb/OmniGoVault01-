@@ -629,29 +629,38 @@ export default function MeetingEditorPage({ user }) {
     }
   };
 
-  // Fetch revision history (for V2 display)
+  // Fetch revision history (using V2 API)
   const fetchRevisions = async () => {
     try {
-      const res = await axios.get(`${API}/governance/meetings/${meetingId}/versions`);
+      const res = await axios.get(`${API}/governance/v2/records/${meetingId}/revisions`);
       const data = res.data;
-      const versions = data.items || [];
+      const versions = data.data?.revisions || [];
       
       // Transform to revision format for RevisionHistory component
       const formattedRevisions = versions.map(v => ({
-        id: v.meeting_id || v.id,
-        version: v.revision || 1,
-        change_type: v.is_amendment ? 'amendment' : 'initial',
-        change_reason: v.amendment_reason || '',
+        id: v.id || meetingId,
+        version: v.version || 1,
+        change_type: v.change_type || 'initial',
+        change_reason: v.change_reason || '',
         created_at: v.created_at,
-        created_by: v.finalized_by || 'Unknown',
+        created_by: v.created_by || 'Unknown',
         finalized_at: v.finalized_at,
         finalized_by: v.finalized_by,
-        content_hash: v.finalized_hash || ''
+        content_hash: v.content_hash || ''
       }));
       
       setRevisions(formattedRevisions);
     } catch (error) {
       console.error('Failed to fetch revisions:', error);
+      // Fallback: show current version only
+      setRevisions([{
+        id: meetingId,
+        version: meeting?.current_version || 1,
+        change_type: 'initial',
+        change_reason: '',
+        created_at: meeting?.created_at,
+        created_by: 'Unknown'
+      }]);
     }
   };
 
