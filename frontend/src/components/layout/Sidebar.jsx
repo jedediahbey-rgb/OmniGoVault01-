@@ -12,6 +12,7 @@ import {
   GitBranch,
   Heartbeat,
   House,
+  Key,
   MapTrifold,
   Robot,
   Scroll,
