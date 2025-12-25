@@ -57,7 +57,7 @@ class TrustHealthReportGenerator:
         ))
         
         self.styles.add(ParagraphStyle(
-            name='BodyText',
+            name='ReportBody',
             parent=self.styles['Normal'],
             fontSize=10,
             textColor=colors.Color(0.8, 0.8, 0.8),
@@ -65,7 +65,7 @@ class TrustHealthReportGenerator:
         ))
         
         self.styles.add(ParagraphStyle(
-            name='SmallText',
+            name='ReportSmall',
             parent=self.styles['Normal'],
             fontSize=8,
             textColor=colors.Color(0.6, 0.6, 0.6)
