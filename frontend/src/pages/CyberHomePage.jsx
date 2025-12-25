@@ -637,10 +637,6 @@ export default function CyberHomePage() {
               variants={staggerContainer}
               className="text-center lg:text-left"
             >
-              <motion.div variants={fadeInUp} className="flex justify-center lg:justify-start">
-                <IconChip icon={Key} label="Exclusive Equity" variant="gold" />
-              </motion.div>
-              
               <motion.h2
                 variants={fadeInUp}
                 className="text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light"
