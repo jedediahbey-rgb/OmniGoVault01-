@@ -363,8 +363,8 @@ export default function DistributionEditorPage({ user }) {
 
   const handleSubmitForApproval = async () => {
     try {
-      await axios.post(`${API}/governance/distributions/${distributionId}/submit`);
-      await refetchDistribution();
+      // Use V2 API - update status to pending_approval
+      await saveDistribution({ workflow_status: 'pending_approval' });
       setShowSubmit(false);
       toast.success('Distribution submitted for approval');
     } catch (error) {
@@ -374,11 +374,16 @@ export default function DistributionEditorPage({ user }) {
 
   const handleApprove = async (approverName) => {
     try {
-      await axios.post(`${API}/governance/distributions/${distributionId}/approve`, {
+      // Use V2 API - add approval to array and save
+      const approvalWithId = {
+        approval_id: `appr-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         approver_name: approverName,
         approver_role: 'trustee',
-      });
-      await refetchDistribution();
+        approved_at: new Date().toISOString()
+      };
+      
+      const updatedApprovals = [...(distribution.approvals || []), approvalWithId];
+      await saveDistribution({ approvals: updatedApprovals, workflow_status: 'approved' });
       setShowApprove(false);
       toast.success('Approval added');
     } catch (error) {
@@ -388,8 +393,11 @@ export default function DistributionEditorPage({ user }) {
 
   const handleExecute = async () => {
     try {
-      await axios.post(`${API}/governance/distributions/${distributionId}/execute`, {});
-      await refetchDistribution();
+      // Use V2 API - update status to executed
+      await saveDistribution({ 
+        workflow_status: 'executed',
+        executed_at: new Date().toISOString()
+      });
       setShowExecute(false);
       toast.success('Distribution executed');
     } catch (error) {
