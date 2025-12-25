@@ -382,11 +382,17 @@ export default function InsuranceEditorPage({ user }) {
 
   const handleAmend = async () => {
     try {
-      const res = await axios.post(`${API}/governance/insurance-policies/${policyId}/amend`, {});
+      const res = await axios.post(`${API}/governance/v2/records/${policyId}/amend`, {
+        change_reason: 'Amendment created',
+        change_type: 'amendment'
+      });
       const data = res.data;
-      const amendmentData = data.item || data;
-      toast.success('Amendment created');
-      navigate(`/vault/governance/insurance/${amendmentData.policy_id}`);
+      if (data.ok && data.data?.record) {
+        toast.success('Amendment created');
+        navigate(`/vault/governance/insurance/${data.data.record.id}`);
+      } else {
+        throw new Error(data.error?.message || 'Failed to create amendment');
+      }
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to create amendment');
     }
@@ -396,16 +402,19 @@ export default function InsuranceEditorPage({ user }) {
   const handleAmendV2 = async (amendData) => {
     setAmendLoading(true);
     try {
-      const res = await axios.post(`${API}/governance/insurance-policies/${policyId}/amend`, {
-        reason: amendData.change_reason,
-        change_type: amendData.change_type,
+      const res = await axios.post(`${API}/governance/v2/records/${policyId}/amend`, {
+        change_reason: amendData.change_reason,
+        change_type: amendData.change_type || 'amendment',
         effective_at: amendData.effective_at
       });
       const data = res.data;
-      const amendmentData = data.item || data;
-      toast.success('Amendment draft created');
-      setShowAmendmentStudio(false);
-      navigate(`/vault/governance/insurance/${amendmentData.policy_id}`);
+      if (data.ok && data.data?.record) {
+        toast.success('Amendment draft created');
+        setShowAmendmentStudio(false);
+        navigate(`/vault/governance/insurance/${data.data.record.id}`);
+      } else {
+        throw new Error(data.error?.message || 'Failed to create amendment');
+      }
     } catch (error) {
       throw new Error(error.response?.data?.error?.message || 'Failed to create amendment');
     } finally {
