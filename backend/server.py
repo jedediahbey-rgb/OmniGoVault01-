@@ -1353,16 +1353,44 @@ async def get_assets(portfolio_id: str, user: User = Depends(get_current_user)):
 
 @api_router.post("/portfolios/{portfolio_id}/assets")
 async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User = Depends(get_current_user)):
-    """Create asset with subject-based RM-ID"""
-    subject_code = data.get("subject_code", "00")
-    subject_name = data.get("subject_name") or data.get("asset_type", "General")
+    """Create asset with V2 RM-ID allocation (random group numbers)"""
+    global rmid_allocator
+    
+    asset_type = data.get("asset_type", "real_property")
+    description = data.get("description", "")
     
     # Parse currency value (handles $, commas, etc.)
     parsed_value = parse_currency_value(data.get("value"))
     
-    rm_id, cat_code, sequence_num, cat_name = await generate_subject_rm_id(
-        portfolio_id, user.user_id, subject_code, subject_name
-    )
+    # Use V2 allocator for random group numbers
+    if rmid_allocator is not None:
+        try:
+            # Use asset type as module type for allocation
+            result = await rmid_allocator.allocate(
+                portfolio_id=portfolio_id,
+                user_id=user.user_id,
+                module_type=f"asset_{asset_type}",
+                relation_key=data.get("relation_key"),  # Optional: link to existing thread
+                related_to_record_id=data.get("related_to_record_id")
+            )
+            
+            rm_id = result["rm_id"]
+            cat_code = str(result["rm_group"])
+            sequence_num = result["rm_sub"]
+            cat_name = asset_type.replace('_', ' ').title()
+            
+        except Exception as e:
+            logger.error(f"V2 allocation failed for asset: {e}, using V1 fallback")
+            subject_code = data.get("subject_code", "10")
+            rm_id, cat_code, sequence_num, cat_name = await generate_subject_rm_id(
+                portfolio_id, user.user_id, subject_code, asset_type
+            )
+    else:
+        # V1 fallback
+        subject_code = data.get("subject_code", "10")
+        rm_id, cat_code, sequence_num, cat_name = await generate_subject_rm_id(
+            portfolio_id, user.user_id, subject_code, asset_type
+        )
     
     asset = AssetItem(
         portfolio_id=portfolio_id,
@@ -1371,8 +1399,8 @@ async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User =
         subject_code=cat_code,
         subject_name=cat_name,
         sequence_number=sequence_num,
-        asset_type=data.get("asset_type", "General"),
-        description=data.get("description", ""),
+        asset_type=asset_type,
+        description=description,
         value=parsed_value,
         transaction_type=data.get("transaction_type", "deposit"),
         notes=data.get("notes", "")
@@ -1391,7 +1419,7 @@ async def create_asset_for_portfolio(portfolio_id: str, data: dict, user: User =
         subject_name=cat_name,
         sequence_number=sequence_num,
         entry_type="deposit",
-        description=f"Asset deposited: {data.get('description', '')}",
+        description=f"Asset deposited: {description}",
         asset_id=asset.asset_id,
         value=parsed_value,
         balance_effect="credit"
