@@ -154,7 +154,7 @@ class TrustHealthReportGenerator:
         ))
         elements.append(Paragraph(
             f"Scan ID: {scan_id}",
-            self.styles['SmallText']
+            self.styles['ReportSmall']
         ))
         
         elements.append(Spacer(1, 0.5*inch))
@@ -316,7 +316,7 @@ class TrustHealthReportGenerator:
                 required = ' (Required)' if item.get('required') else ''
                 elements.append(Paragraph(
                     f"{status_icon} {item.get('name', 'Unknown')}{required}",
-                    self.styles['SmallText']
+                    self.styles['ReportSmall']
                 ))
         
         elements.append(Spacer(1, 0.3*inch))
@@ -415,7 +415,7 @@ class TrustHealthReportGenerator:
         </font>
         """
         
-        elements.append(Paragraph(footer_text, self.styles['SmallText']))
+        elements.append(Paragraph(footer_text, self.styles['ReportSmall']))
         
         return elements
 
