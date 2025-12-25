@@ -259,6 +259,26 @@ export default function TrustHealthDashboard() {
     }
   };
 
+  const downloadPdfReport = async () => {
+    try {
+      toast.info('Generating PDF report...');
+      const res = await axios.get(`${API}/health/report/pdf`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `trust_health_report_${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success('PDF report downloaded');
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      toast.error('Failed to generate PDF report');
+    }
+  };
+
   const score = healthData?.overall_score ?? 0;
   const rawScore = healthData?.raw_score ?? 0;
   const blockingConditions = healthData?.blocking_conditions || [];
