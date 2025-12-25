@@ -1282,6 +1282,16 @@ export default function DisputeEditorPage({ user }) {
         onCreateAmendment={handleAmendV2}
         isLoading={amendLoading}
       />
+
+      {/* Revision History */}
+      <RevisionHistory
+        open={showRevisionHistory}
+        onOpenChange={setShowRevisionHistory}
+        recordTitle={dispute?.title || 'Dispute'}
+        revisions={revisions}
+        currentRevisionId={dispute?.dispute_id}
+        onViewRevision={handleViewRevision}
+      />
     </motion.div>
   );
 }
