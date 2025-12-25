@@ -496,7 +496,29 @@ export default function DisputeEditorPage({ user }) {
 
   const handleSetOutcome = async (outcome) => {
     try {
-      await axios.post(`${API}/governance/disputes/${disputeId}/set-outcome`, { status: outcome });
+      // Use V2 API for setting outcome
+      await axios.put(`${API}/governance/v2/records/${disputeId}`, {
+        title: dispute.title,
+        status: outcome,
+        payload_json: {
+          dispute_type: dispute.dispute_type,
+          description: dispute.description,
+          case_number: dispute.case_number,
+          jurisdiction: dispute.jurisdiction,
+          amount_claimed: dispute.amount_claimed,
+          currency: dispute.currency,
+          estimated_exposure: dispute.estimated_exposure,
+          priority: dispute.priority,
+          primary_counsel: dispute.primary_counsel,
+          counsel_firm: dispute.counsel_firm,
+          next_deadline: dispute.next_deadline,
+          next_hearing_date: dispute.next_hearing_date,
+          parties: dispute.parties || [],
+          events: dispute.events || [],
+          notes: dispute.notes,
+          outcome_set_at: new Date().toISOString()
+        }
+      });
       await refetchDispute();
       setShowChangeStatus(false);
       toast.success(`Dispute outcome set to ${outcome}`);
