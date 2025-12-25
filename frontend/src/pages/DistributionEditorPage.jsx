@@ -423,12 +423,11 @@ export default function DistributionEditorPage({ user }) {
 
   const typeConfig = distributionTypeConfig[distribution.distribution_type] || distributionTypeConfig.regular;
   const TypeIcon = typeConfig.icon;
-  const isLocked = distribution.locked === true || distribution.locked_at !== null;
-  // If locked, show "Finalized" status
-  const effectiveStatus = isLocked ? 'finalized' : distribution.status;
-  const status = statusConfig[effectiveStatus] || statusConfig.draft;
+  // Status checks - based only on status field
+  const isDraft = distribution.status === 'draft';
+  const isFinalized = distribution.status === 'finalized';
+  const status = statusConfig[distribution.status] || statusConfig.draft;
   const StatusIcon = status.icon;
-  const isDraft = distribution.status === 'draft' && !isLocked;
   const isPendingApproval = distribution.status === 'pending_approval';
   const isApproved = distribution.status === 'approved';
   const isCompleted = distribution.status === 'completed';
