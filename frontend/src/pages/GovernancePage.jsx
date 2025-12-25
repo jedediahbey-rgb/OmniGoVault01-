@@ -10,6 +10,7 @@ import {
   CheckCircle,
   Clock,
   CurrencyDollar,
+  DotsThreeVertical,
   FileText,
   Gavel,
   HandCoins,
@@ -29,7 +30,6 @@ import {
   Warning,
   X
 } from '@phosphor-icons/react';
-import { LedgerThreadSelector } from '../components/governance';
 
 // Futuristic Date Icon - cyber styled with dynamic day display
 const CyberDateIcon = ({ className = "w-5 h-5", day = null }) => {
