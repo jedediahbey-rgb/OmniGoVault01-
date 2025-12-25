@@ -2147,7 +2147,7 @@ async def update_dispute(dispute_id: str, data: dict, request: Request):
 
 @router.delete("/disputes/{dispute_id}")
 async def delete_dispute(dispute_id: str, request: Request):
-    """Soft delete a dispute"""
+    """Delete a dispute - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
     except Exception as e:
@@ -2161,10 +2161,32 @@ async def delete_dispute(dispute_id: str, request: Request):
         if not dispute:
             return error_response("NOT_FOUND", "Dispute not found", status_code=404)
         
-        # Can only delete open disputes
-        if dispute.get("status") not in ("open", "in_progress"):
-            return error_response("CANNOT_DELETE", "Only open disputes can be deleted")
+        # Can only delete open/draft disputes or amendments
+        is_finalized = dispute.get("locked") or dispute.get("status") == "finalized"
+        if is_finalized and not dispute.get("is_amendment"):
+            return error_response("CANNOT_DELETE", "Cannot delete finalized records. Create an amendment instead.")
         
+        # If this is an amendment, clean up the parent's amended_by_id
+        parent_id = dispute.get("amends_dispute_id") or dispute.get("parent_dispute_id")
+        if parent_id and dispute.get("is_amendment"):
+            # Check if there are other amendments to this parent
+            other_amendments = await db.disputes.count_documents({
+                "dispute_id": {"$ne": dispute_id},
+                "$or": [
+                    {"amends_dispute_id": parent_id},
+                    {"parent_dispute_id": parent_id}
+                ],
+                "deleted_at": None
+            })
+            
+            if other_amendments == 0:
+                # No other amendments - clear parent's amended_by_id
+                await db.disputes.update_one(
+                    {"dispute_id": parent_id},
+                    {"$set": {"amended_by_id": None}}
+                )
+        
+        # Soft delete the dispute
         await db.disputes.update_one(
             {"dispute_id": dispute_id},
             {"$set": {"deleted_at": datetime.now(timezone.utc).isoformat()}}
