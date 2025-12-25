@@ -654,23 +654,61 @@ export default function DisputeEditorPage({ user }) {
                 </Button>
               </div>
             </div>
-          ) : (
-            <>
-              {/* Title and details */}
-              <h1 className="text-xl sm:text-2xl font-heading text-white mb-2">{dispute.title}</h1>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-vault-muted mb-2">
-                {dispute.rm_id && <span className="font-mono text-vault-gold">{dispute.rm_id}</span>}
-                {dispute.case_number && <span>Case: {dispute.case_number}</span>}
-                {dispute.jurisdiction && <span>{dispute.jurisdiction}</span>}
-              </div>
-              {dispute.amount_claimed > 0 && (
-                <div className="text-xl sm:text-2xl font-heading text-red-400 mb-4">
-                  {formatCurrency(dispute.amount_claimed, dispute.currency)}
-                  <span className="text-sm text-vault-muted ml-2">claimed</span>
+              ) : (
+                <div className="flex-1 min-w-0">
+                  {/* Badges row - status first, then type, then priority */}
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <Badge className={`${status.color} border text-xs`}>
+                      <StatusIcon className="w-3 h-3 mr-1" />
+                      {status.label}
+                    </Badge>
+                    <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
+                      {typeConfig.label}
+                    </Badge>
+                    <Badge className={`${priority.color} border text-xs`}>
+                      {priority.label}
+                    </Badge>
+                  </div>
+                  
+                  {/* Title */}
+                  <h1 className="text-xl sm:text-2xl font-heading text-white break-words">{dispute.title}</h1>
+                  
+                  {/* RM-ID */}
+                  {dispute.rm_id && (
+                    <span className="text-xs font-mono text-vault-muted">
+                      {dispute.rm_id}
+                    </span>
+                  )}
+                  
+                  {/* Amount Claimed */}
+                  {dispute.amount_claimed > 0 && (
+                    <div className="text-2xl font-heading text-red-400 mt-2">
+                      {formatCurrency(dispute.amount_claimed, dispute.currency)}
+                      <span className="text-sm text-vault-muted ml-2">claimed</span>
+                    </div>
+                  )}
+                  
+                  {/* Details row */}
+                  <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-vault-muted">
+                    {dispute.case_number && (
+                      <div className="flex items-center gap-1">
+                        <FileText className="w-4 h-4" />
+                        <span>#{dispute.case_number}</span>
+                      </div>
+                    )}
+                    {dispute.jurisdiction && (
+                      <div className="flex items-center gap-1">
+                        <Scales className="w-4 h-4" />
+                        <span>{dispute.jurisdiction}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
-              
-              {/* Action buttons - properly aligned */}
+            </div>
+            
+            {/* Action buttons - properly aligned */}
+            {!editingHeader && (
               <div className="flex items-center gap-2 justify-end mt-4">
                 {isOpen && (
                   <Button size="sm" onClick={() => setShowResolve(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white">
