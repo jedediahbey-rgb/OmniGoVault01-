@@ -458,3 +458,228 @@ async def check_binder_stale(
         
     except Exception as e:
         return error_response("CHECK_ERROR", str(e), status_code=500)
+
+
+
+# ============ SCHEDULE ENDPOINTS ============
+
+@router.get("/schedules")
+async def get_schedules(
+    request: Request,
+    portfolio_id: str = Query(...)
+):
+    """Get all binder schedules for a portfolio."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        schedules = await db.binder_schedules.find(
+            {"portfolio_id": portfolio_id, "user_id": user.user_id},
+            {"_id": 0}
+        ).to_list(100)
+        
+        return success_response({
+            "schedules": schedules,
+            "total": len(schedules)
+        })
+        
+    except Exception as e:
+        return error_response("FETCH_ERROR", str(e), status_code=500)
+
+
+@router.post("/schedules")
+async def create_schedule(request: Request):
+    """
+    Create a new binder generation schedule.
+    
+    Body:
+    {
+        "portfolio_id": "...",
+        "profile_id": "...",
+        "frequency": "daily|weekly|monthly",
+        "enabled": true,
+        "day_of_week": 0-6 (for weekly, 0=Sunday),
+        "day_of_month": 1-28 (for monthly),
+        "hour": 0-23,
+        "minute": 0-59
+    }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        portfolio_id = body.get("portfolio_id")
+        profile_id = body.get("profile_id")
+        frequency = body.get("frequency", "weekly")
+        
+        if not portfolio_id:
+            return error_response("MISSING_FIELD", "portfolio_id is required")
+        if not profile_id:
+            return error_response("MISSING_FIELD", "profile_id is required")
+        if frequency not in ["daily", "weekly", "monthly"]:
+            return error_response("VALIDATION_ERROR", "frequency must be daily, weekly, or monthly")
+        
+        # Verify profile exists
+        profile = await db.binder_profiles.find_one(
+            {"id": profile_id, "user_id": user.user_id},
+            {"_id": 0}
+        )
+        if not profile:
+            return error_response("NOT_FOUND", "Profile not found", status_code=404)
+        
+        import uuid
+        schedule_id = f"sched_{uuid.uuid4().hex[:12]}"
+        now = datetime.now(timezone.utc).isoformat()
+        
+        schedule = {
+            "id": schedule_id,
+            "portfolio_id": portfolio_id,
+            "profile_id": profile_id,
+            "profile_name": profile.get("name"),
+            "user_id": user.user_id,
+            "frequency": frequency,
+            "enabled": body.get("enabled", True),
+            "day_of_week": body.get("day_of_week", 0),  # Sunday
+            "day_of_month": body.get("day_of_month", 1),
+            "hour": body.get("hour", 6),  # 6 AM
+            "minute": body.get("minute", 0),
+            "last_run_at": None,
+            "next_run_at": None,
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        # Calculate next run time
+        schedule["next_run_at"] = calculate_next_run(schedule)
+        
+        await db.binder_schedules.insert_one(schedule)
+        schedule.pop("_id", None)
+        
+        return success_response({
+            "schedule": schedule,
+            "message": "Schedule created"
+        })
+        
+    except Exception as e:
+        return error_response("CREATE_ERROR", str(e), status_code=500)
+
+
+@router.put("/schedules/{schedule_id}")
+async def update_schedule(schedule_id: str, request: Request):
+    """Update a binder schedule."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        
+        update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        
+        if "enabled" in body:
+            update_data["enabled"] = body["enabled"]
+        if "frequency" in body:
+            if body["frequency"] not in ["daily", "weekly", "monthly"]:
+                return error_response("VALIDATION_ERROR", "Invalid frequency")
+            update_data["frequency"] = body["frequency"]
+        if "day_of_week" in body:
+            update_data["day_of_week"] = body["day_of_week"]
+        if "day_of_month" in body:
+            update_data["day_of_month"] = body["day_of_month"]
+        if "hour" in body:
+            update_data["hour"] = body["hour"]
+        if "minute" in body:
+            update_data["minute"] = body["minute"]
+        
+        result = await db.binder_schedules.update_one(
+            {"id": schedule_id, "user_id": user.user_id},
+            {"$set": update_data}
+        )
+        
+        if result.modified_count == 0:
+            return error_response("NOT_FOUND", "Schedule not found", status_code=404)
+        
+        # Recalculate next run time
+        schedule = await db.binder_schedules.find_one(
+            {"id": schedule_id},
+            {"_id": 0}
+        )
+        if schedule:
+            next_run = calculate_next_run(schedule)
+            await db.binder_schedules.update_one(
+                {"id": schedule_id},
+                {"$set": {"next_run_at": next_run}}
+            )
+            schedule["next_run_at"] = next_run
+        
+        return success_response({
+            "schedule": schedule,
+            "message": "Schedule updated"
+        })
+        
+    except Exception as e:
+        return error_response("UPDATE_ERROR", str(e), status_code=500)
+
+
+@router.delete("/schedules/{schedule_id}")
+async def delete_schedule(schedule_id: str, request: Request):
+    """Delete a binder schedule."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        result = await db.binder_schedules.delete_one(
+            {"id": schedule_id, "user_id": user.user_id}
+        )
+        
+        if result.deleted_count == 0:
+            return error_response("NOT_FOUND", "Schedule not found", status_code=404)
+        
+        return success_response({"message": "Schedule deleted"})
+        
+    except Exception as e:
+        return error_response("DELETE_ERROR", str(e), status_code=500)
+
+
+def calculate_next_run(schedule: dict) -> str:
+    """Calculate the next run time for a schedule."""
+    from datetime import timedelta
+    
+    now = datetime.now(timezone.utc)
+    frequency = schedule.get("frequency", "weekly")
+    hour = schedule.get("hour", 6)
+    minute = schedule.get("minute", 0)
+    
+    # Start with today at the scheduled time
+    next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    
+    if frequency == "daily":
+        if next_run <= now:
+            next_run += timedelta(days=1)
+    
+    elif frequency == "weekly":
+        target_day = schedule.get("day_of_week", 0)  # 0 = Sunday
+        days_ahead = target_day - now.weekday()
+        if days_ahead < 0 or (days_ahead == 0 and next_run <= now):
+            days_ahead += 7
+        next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0) + timedelta(days=days_ahead)
+    
+    elif frequency == "monthly":
+        target_day = min(schedule.get("day_of_month", 1), 28)
+        next_run = now.replace(day=target_day, hour=hour, minute=minute, second=0, microsecond=0)
+        if next_run <= now:
+            # Move to next month
+            if now.month == 12:
+                next_run = next_run.replace(year=now.year + 1, month=1)
+            else:
+                next_run = next_run.replace(month=now.month + 1)
+    
+    return next_run.isoformat()
