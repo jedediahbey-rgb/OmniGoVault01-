@@ -1316,37 +1316,16 @@ export default function MeetingEditorPage({ user }) {
         </DialogContent>
       </Dialog>
 
-      {/* Finalize Dialog */}
-      <Dialog open={showFinalize} onOpenChange={setShowFinalize}>
-        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-vault-gold flex items-center gap-2">
-              <CheckCircle className="w-5 h-5" />
-              Finalize Meeting Minutes
-            </DialogTitle>
-            <DialogDescription className="text-vault-muted">
-              Once finalized, this record will be permanent and can only be amended.
-              A tamper-evident hash will be generated.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <div className="p-4 bg-vault-gold/10 border border-vault-gold/30 rounded-lg">
-              <p className="text-sm text-vault-gold">
-                <strong>{meeting?.title}</strong> will be finalized. Make sure all details are correct before proceeding.
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowFinalize(false)} className="border-vault-gold/30">
-              Cancel
-            </Button>
-            <Button onClick={handleFinalize} className="bg-vault-gold text-vault-dark">
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Finalize
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Finalize Confirmation Modal */}
+      <FinalizeConfirmationModal
+        open={showFinalize}
+        onOpenChange={setShowFinalize}
+        onConfirm={handleFinalize}
+        recordTitle={meeting?.title}
+        moduleType="minutes"
+        rmId={meeting?.rm_id}
+        isLoading={finalizeLoading}
+      />
 
       {/* Attestation Dialog */}
       <Dialog open={showAttest} onOpenChange={setShowAttest}>
