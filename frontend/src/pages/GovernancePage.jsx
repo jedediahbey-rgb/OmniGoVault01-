@@ -481,7 +481,7 @@ export default function GovernancePage({ user }) {
           id: record.id,
           title: record.title,
           rm_id: record.rm_id,
-          status: record.status === 'finalized' ? 'active' : (record.status === 'draft' ? 'active' : record.status),
+          status: record.status === 'finalized' ? 'active' : record.status,
           locked: record.status === 'finalized',
           created_at: record.created_at,
           finalized_at: record.finalized_at,
