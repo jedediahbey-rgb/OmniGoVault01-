@@ -1529,10 +1529,36 @@ export default function GovernancePage({ user }) {
                 <p className="text-sm sm:text-base text-vault-muted">Choose a portfolio to view its disputes</p>
               </GlassCard>
             ) : filteredDisputes.length === 0 ? (
-              <GlassCard className="p-8 sm:p-12 text-center">
-                <Scales className="w-12 sm:w-16 h-12 sm:h-16 mx-auto text-vault-gold/50 mb-4" />
-                <h3 className="text-lg sm:text-xl font-heading text-white mb-2">No Disputes</h3>
-                <p className="text-sm sm:text-base text-vault-muted">Tap the &quot;New&quot; button above to track disputes</p>
+              <GlassCard className="p-6 sm:p-8">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/30">
+                    <Scales className="w-8 h-8 text-red-400" weight="duotone" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-heading text-white mb-2">Track Your First Dispute</h3>
+                    <p className="text-vault-muted text-sm mb-4">
+                      Document and manage trust-related disputes, claims, and legal matters. Keep a complete timeline of events, parties involved, and resolutions.
+                    </p>
+                    <ul className="text-white/50 text-sm space-y-1 mb-4">
+                      <li className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-400" />
+                        <span>Track parties, claims, and counterclaims</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-400" />
+                        <span>Document timeline of events and hearings</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-400" />
+                        <span>Record settlements and resolutions</span>
+                      </li>
+                    </ul>
+                    <Button onClick={() => { setActiveTab('disputes'); setShowNewRecordDialog(true); }} className="btn-primary">
+                      <Plus className="w-4 h-4 mr-2" />
+                      New Dispute Record
+                    </Button>
+                  </div>
+                </div>
               </GlassCard>
             ) : (
               <div className="space-y-4">
