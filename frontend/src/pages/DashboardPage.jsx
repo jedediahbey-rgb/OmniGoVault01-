@@ -128,14 +128,27 @@ export default function DashboardPage({ user }) {
   };
 
   const deletePortfolio = async (portfolio) => {
-    if (!confirm(`Delete "${portfolio.name}"? This will delete all documents and data.`)) return;
+    setPortfolioToDelete(portfolio);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeletePortfolio = async () => {
+    if (!portfolioToDelete) return;
     try {
-      await axios.delete(`${API}/portfolios/${portfolio.portfolio_id}`);
-      setPortfolios(portfolios.filter(p => p.portfolio_id !== portfolio.portfolio_id));
+      await axios.delete(`${API}/portfolios/${portfolioToDelete.portfolio_id}`);
+      setPortfolios(portfolios.filter(p => p.portfolio_id !== portfolioToDelete.portfolio_id));
+      // Clear default if deleted portfolio was the default
+      if (portfolioToDelete.portfolio_id === defaultPortfolioId) {
+        localStorage.removeItem('defaultPortfolioId');
+        setDefaultPortfolioId('');
+      }
       toast.success('Portfolio deleted');
     } catch (error) {
       console.error('Delete portfolio error:', error);
       toast.error(error.response?.data?.detail || 'Failed to delete portfolio');
+    } finally {
+      setShowDeleteConfirm(false);
+      setPortfolioToDelete(null);
     }
   };
 
