@@ -19,7 +19,7 @@ export default function GlassCard({
   return (
     <Component
       className={cn(
-        'glass-card rounded-xl p-6',
+        'glass-card rounded-xl p-4 sm:p-6',
         interactive && 'cursor-pointer',
         glow && 'hover:shadow-[0_0_30px_rgba(198,168,124,0.15)]',
         className
