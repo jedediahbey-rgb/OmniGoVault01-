@@ -88,7 +88,7 @@ export default function BinderPage() {
   const [manifestData, setManifestData] = useState(null);
   const [configProfile, setConfigProfile] = useState(null);
 
-  // Default portfolio state
+  // Default portfolio state (read-only - set from Dashboard)
   const [isDefaultPortfolio, setIsDefaultPortfolio] = useState(false);
   
   // Check for default portfolio in localStorage on mount
@@ -107,16 +107,6 @@ export default function BinderPage() {
     const defaultId = localStorage.getItem('defaultPortfolioId');
     setIsDefaultPortfolio(portfolioId === defaultId);
   }, [portfolioId]);
-  
-  // Set portfolio as default
-  const setAsDefault = (pid) => {
-    localStorage.setItem('defaultPortfolioId', pid);
-    setIsDefaultPortfolio(true);
-    toast({
-      title: 'Default Set',
-      description: 'This portfolio will be auto-selected on future visits'
-    });
-  };
 
   // Fetch portfolios on mount
   useEffect(() => {
