@@ -531,3 +531,54 @@ Date: Thu Dec 25 17:05:00 UTC 2025
 - Frontend page verified via screenshots ✓
 - Full testing pending
 
+
+
+## Enhanced Integrity Seals - IMPLEMENTED
+Date: Thu Dec 25 17:20:00 UTC 2025
+
+### Features Built
+1. **Backend Service** (`/app/backend/services/integrity_seal.py`)
+   - SHA-256 record hashing with normalized payload
+   - Blockchain-style chain hashing linking seals
+   - Single record seal creation and verification
+   - Batch sealing for all finalized records
+   - Batch verification across portfolio
+   - Chain integrity verification
+   - Seal status reporting
+
+2. **API Endpoints** (`/app/backend/routes/integrity.py`)
+   - `POST /api/integrity/seal/{record_id}` - Create seal for finalized record
+   - `GET /api/integrity/seal/{record_id}/verify` - Verify record integrity
+   - `POST /api/integrity/seal/batch` - Seal all finalized records in portfolio
+   - `POST /api/integrity/seal/verify-all` - Verify all seals in portfolio
+   - `GET /api/integrity/seal/chain/{portfolio_id}` - Verify chain integrity
+   - `GET /api/integrity/seal/report/{portfolio_id}` - Get seal status report
+
+3. **Frontend Component** (`/app/frontend/src/components/shared/IntegritySealBadge.jsx`)
+   - IntegritySealBadge component for single records
+   - PortfolioSealStatus card for portfolio-level overview
+   - Visual status indicators (Valid, Tampered, Not Sealed, Missing)
+   - Create seal and verify buttons
+   - Verification timestamps display
+
+4. **Integration**
+   - Added IntegritySealBadge to MeetingEditorPage
+   - Shows seal status for finalized meetings
+   - Allows creating seals and verifying integrity
+
+### Seal Status Types
+- `valid` - Record verified, no tampering
+- `tampered` - INTEGRITY VIOLATION - record modified after sealing
+- `never_sealed` - Finalized but not yet sealed
+- `missing` - Seal record lost (corruption)
+
+### Database Collections
+- `integrity_seals` - Stores seal records with hashes
+- `integrity_logs` - Logs tampering events
+
+### Files Created/Modified
+- /app/backend/services/integrity_seal.py (NEW)
+- /app/backend/routes/integrity.py (Added seal endpoints)
+- /app/frontend/src/components/shared/IntegritySealBadge.jsx (NEW)
+- /app/frontend/src/pages/MeetingEditorPage.jsx (Added seal badge)
+
