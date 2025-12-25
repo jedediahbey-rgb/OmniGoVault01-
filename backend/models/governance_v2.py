@@ -105,7 +105,11 @@ class GovernanceRecord(BaseModel):
     
     module_type: ModuleType
     title: str
-    rm_id: str = ""  # Registered Mail ID for recordkeeping
+    rm_id: str = ""  # Registered Mail ID for recordkeeping (full: RF...-33.006)
+    
+    # RM Subject (Ledger Thread) linking - NEW
+    rm_subject_id: Optional[str] = None  # FK to RMSubject
+    rm_sub: int = 0  # Subnumber within subject (1-999)
     
     status: RecordStatus = RecordStatus.DRAFT
     current_revision_id: Optional[str] = None
