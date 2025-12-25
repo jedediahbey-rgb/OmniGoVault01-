@@ -8,6 +8,7 @@ import {
   CaretDown,
   Check,
   CheckCircle,
+  Clock,
   CurrencyDollar,
   DotsThreeVertical,
   Download,
