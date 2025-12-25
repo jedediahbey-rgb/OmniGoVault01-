@@ -386,10 +386,12 @@ export default function InsuranceEditorPage({ user }) {
 
   const typeConfig = insuranceTypeConfig[policy.policy_type] || insuranceTypeConfig.whole_life;
   const TypeIcon = typeConfig.icon;
-  const isLocked = policy.locked;
-  // If locked, show "Finalized" instead of the stored status
-  const effectiveStatus = isLocked ? 'finalized' : policy.status;
-  const status = statusConfig[effectiveStatus] || statusConfig.active;
+  
+  // Status logic: Draft until finalized, then Active
+  const isDraft = policy.status === 'draft';
+  const isFinalized = policy.status === 'finalized';
+  const effectiveStatus = policy.status || 'draft';
+  const status = statusConfig[effectiveStatus] || statusConfig.draft;
   const StatusIcon = status.icon;
 
   return (
