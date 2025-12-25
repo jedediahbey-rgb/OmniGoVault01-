@@ -23,6 +23,7 @@ import PortfolioOverviewPage from './pages/PortfolioOverviewPage';
 import DiagramsPage from './pages/DiagramsPage';
 import NodeMapPage from './pages/NodeMapPage';
 import ScenariosPage from './pages/ScenariosPage';
+import LedgerTimelinePage from './pages/LedgerTimelinePage';
 import GovernancePage from './pages/GovernancePage';
 import MeetingEditorPage from './pages/MeetingEditorPage';
 import DistributionEditorPage from './pages/DistributionEditorPage';
