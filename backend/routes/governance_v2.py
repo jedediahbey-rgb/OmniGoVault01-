@@ -466,7 +466,7 @@ async def get_record(record_id: str, request: Request):
 async def get_revisions(record_id: str, request: Request):
     """
     Get revision history for a record.
-    Returns list of revisions sorted by version ascending.
+    Accepts either record `id` or `rm_id` for lookup.
     """
     try:
         user = await get_current_user(request)
@@ -474,16 +474,17 @@ async def get_revisions(record_id: str, request: Request):
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
-        # Verify record exists and user has access
-        record = await db.governance_records.find_one(
-            {"id": record_id, "user_id": user.user_id}, {"_id": 0}
-        )
+        # Resolve by id or rm_id
+        record, resolver_path = await resolve_record_by_id_or_rm(record_id, user.user_id)
         
         if not record:
             return error_response("NOT_FOUND", "Record not found", status_code=404)
         
+        # Use resolved record ID
+        actual_id = record["id"]
+        
         revisions = await db.governance_revisions.find(
-            {"record_id": record_id}, {"_id": 0}
+            {"record_id": actual_id}, {"_id": 0}
         ).sort("version", 1).to_list(100)
         
         summaries = []
