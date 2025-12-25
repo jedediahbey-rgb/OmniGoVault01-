@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import PageHelpTooltip from '../components/shared/PageHelpTooltip';
+import {
+  FileText,
+  FilePdf,
   Download,
   Eye,
   Printer,
