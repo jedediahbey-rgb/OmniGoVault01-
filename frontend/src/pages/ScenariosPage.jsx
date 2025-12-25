@@ -200,6 +200,24 @@ export default function ScenariosPage() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Ref for scrolling to top
+  const pageTopRef = useRef(null);
+
+  // Scroll to top when scenario changes
+  useEffect(() => {
+    if (selectedScenario !== null || selectedScenario === null) {
+      // Use multiple scroll methods for maximum compatibility
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      
+      // Also try scrollIntoView on the ref
+      if (pageTopRef.current) {
+        pageTopRef.current.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }
+  }, [selectedScenario]);
+
   const selectScenario = (scenario) => {
     setSelectedScenario(scenario);
     const defaults = {};
@@ -208,10 +226,6 @@ export default function ScenariosPage() {
     });
     setVariables(defaults);
     setResults(null);
-    // Scroll to top after React re-renders the new view
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 50);
   };
 
   const updateVariable = (name, value) => {
