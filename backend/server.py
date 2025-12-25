@@ -3604,6 +3604,11 @@ from routes.integrity import router as integrity_router, init_integrity_routes
 init_integrity_routes(db, get_current_user)
 app.include_router(integrity_router)
 
+# Initialize and include Health routes
+from routes.health import router as health_router, set_db as set_health_db
+set_health_db(db)
+app.include_router(health_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
