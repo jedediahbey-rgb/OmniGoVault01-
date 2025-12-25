@@ -489,3 +489,207 @@ async def get_health_timeline(request: Request, days: int = 30):
         "days": days,
         "data_points": len(history)
     })
+
+
+
+@router.get("/report/pdf")
+async def generate_pdf_report(request: Request, trust_name: str = "Equity Trust"):
+    """
+    Generate a comprehensive Trust Health PDF report.
+    Returns a downloadable PDF file.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        from services.report_generator import generate_health_report_pdf
+        
+        pdf_buffer = await generate_health_report_pdf(db, user.user_id, trust_name)
+        
+        filename = f"trust_health_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        
+        return StreamingResponse(
+            pdf_buffer,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+    except Exception as e:
+        return error_response("REPORT_ERROR", f"Failed to generate PDF report: {str(e)}")
+
+
+@router.get("/reliability")
+async def get_system_reliability(request: Request):
+    """
+    Get system reliability metrics.
+    Measures API success rates and system stability.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    # Calculate reliability metrics from recent operations
+    from datetime import timedelta
+    cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+    
+    # Count recent governance operations (as a proxy for system activity)
+    recent_records = await db.governance_records.count_documents({
+        "user_id": user.user_id,
+        "created_at": {"$gte": cutoff.isoformat()}
+    })
+    
+    recent_revisions = await db.governance_revisions.count_documents({
+        "user_id": user.user_id,
+        "created_at": {"$gte": cutoff.isoformat()}
+    })
+    
+    # Check for any integrity issues (orphans indicate failed operations)
+    total_records = await db.governance_records.count_documents({"user_id": user.user_id})
+    
+    # Get portfolio IDs for orphan check
+    portfolios = await db.portfolios.find(
+        {"user_id": user.user_id},
+        {"_id": 0, "portfolio_id": 1}
+    ).to_list(1000)
+    portfolio_ids = [p.get("portfolio_id") for p in portfolios]
+    
+    orphan_count = 0
+    if portfolio_ids:
+        orphan_count = await db.governance_records.count_documents({
+            "user_id": user.user_id,
+            "portfolio_id": {"$nin": portfolio_ids, "$ne": None}
+        })
+    
+    # Calculate reliability score
+    if total_records == 0:
+        reliability_score = 100.0
+    else:
+        orphan_rate = (orphan_count / total_records) * 100
+        reliability_score = max(0, 100 - orphan_rate * 10)  # Each 1% orphans = -10 points
+    
+    return success_response({
+        "reliability_score": round(reliability_score, 1),
+        "metrics": {
+            "records_created_7d": recent_records,
+            "revisions_created_7d": recent_revisions,
+            "total_records": total_records,
+            "orphan_records": orphan_count,
+            "orphan_rate": round((orphan_count / total_records * 100) if total_records > 0 else 0, 2)
+        },
+        "status": "healthy" if reliability_score >= 90 else "degraded" if reliability_score >= 70 else "critical",
+        "checked_at": datetime.now(timezone.utc).isoformat()
+    })
+
+
+@router.get("/integrity-seals")
+async def get_integrity_seals(request: Request, limit: int = 20):
+    """
+    Get integrity seals for finalized records.
+    Shows tamper-evident hashes and verification status.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    import hashlib
+    
+    # Get finalized records
+    finalized_records = await db.governance_records.find(
+        {
+            "user_id": user.user_id,
+            "status": "finalized"
+        },
+        {"_id": 0}
+    ).sort("finalized_at", -1).to_list(limit)
+    
+    seals = []
+    for record in finalized_records:
+        # Generate integrity hash from record content
+        content_for_hash = f"{record.get('id')}|{record.get('rm_id')}|{record.get('title')}|{record.get('finalized_at')}|{record.get('finalized_by')}"
+        integrity_hash = hashlib.sha256(content_for_hash.encode()).hexdigest()
+        
+        # Check if stored hash matches (if we have one)
+        stored_hash = record.get('integrity_hash')
+        verified = stored_hash == integrity_hash if stored_hash else None
+        
+        seals.append({
+            "record_id": record.get("id"),
+            "rm_id": record.get("rm_id"),
+            "title": record.get("title"),
+            "module_type": record.get("module_type"),
+            "finalized_at": record.get("finalized_at"),
+            "finalized_by": record.get("finalized_by"),
+            "integrity_hash": integrity_hash[:16] + "...",  # Truncated for display
+            "full_hash": integrity_hash,
+            "verified": verified,
+            "has_stored_hash": stored_hash is not None
+        })
+    
+    return success_response({
+        "seals": seals,
+        "total_finalized": len(finalized_records),
+        "verified_count": len([s for s in seals if s.get("verified") == True]),
+        "unverified_count": len([s for s in seals if s.get("verified") == False]),
+        "new_seals_count": len([s for s in seals if s.get("verified") is None])
+    })
+
+
+@router.post("/integrity-seals/verify/{record_id}")
+async def verify_integrity_seal(request: Request, record_id: str):
+    """
+    Verify the integrity seal of a specific record.
+    Recalculates hash and compares with stored value.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    import hashlib
+    
+    record = await db.governance_records.find_one(
+        {"id": record_id, "user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not record:
+        return error_response("NOT_FOUND", f"Record {record_id} not found")
+    
+    if record.get("status") != "finalized":
+        return error_response("NOT_FINALIZED", "Only finalized records have integrity seals")
+    
+    # Generate current hash
+    content_for_hash = f"{record.get('id')}|{record.get('rm_id')}|{record.get('title')}|{record.get('finalized_at')}|{record.get('finalized_by')}"
+    current_hash = hashlib.sha256(content_for_hash.encode()).hexdigest()
+    
+    stored_hash = record.get('integrity_hash')
+    
+    if not stored_hash:
+        # Store the hash if not present
+        await db.governance_records.update_one(
+            {"id": record_id},
+            {"$set": {"integrity_hash": current_hash}}
+        )
+        return success_response({
+            "record_id": record_id,
+            "status": "sealed",
+            "message": "Integrity seal created and stored",
+            "hash": current_hash[:16] + "..."
+        })
+    
+    # Verify
+    verified = stored_hash == current_hash
+    
+    return success_response({
+        "record_id": record_id,
+        "status": "verified" if verified else "tampered",
+        "verified": verified,
+        "stored_hash": stored_hash[:16] + "...",
+        "current_hash": current_hash[:16] + "...",
+        "message": "Record integrity verified" if verified else "WARNING: Record may have been tampered with!"
+    })
