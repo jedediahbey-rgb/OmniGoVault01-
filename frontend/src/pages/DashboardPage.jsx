@@ -243,7 +243,7 @@ export default function DashboardPage({ user }) {
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline text-white/30 text-xs">Ctrl+K for commands</span>
             <Button onClick={() => setShowNewPortfolio(true)} className="btn-primary">
-              <Plus className="w-4 h-4 sm:mr-2" weight="duotone" /> <span className="hidden sm:inline">New Portfolio</span>
+              <FolderSimplePlus className="w-4 h-4 sm:mr-2" weight="duotone" /> <span className="hidden sm:inline">New Portfolio</span>
             </Button>
           </div>
         }
