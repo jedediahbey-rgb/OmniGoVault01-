@@ -32,6 +32,7 @@ import InsuranceEditorPage from './pages/InsuranceEditorPage';
 import CompensationEditorPage from './pages/CompensationEditorPage';
 import GovernanceRecordPage from './pages/GovernanceRecordPage';
 import DiagnosticsPage from './pages/DiagnosticsPage';
+import TrustHealthDashboard from './pages/TrustHealthDashboard';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
