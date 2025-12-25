@@ -1325,39 +1325,6 @@ export default function MeetingEditorPage({ user }) {
         </DialogContent>
       </Dialog>
 
-      {/* Amendment Dialog */}
-      <Dialog open={showAmend} onOpenChange={setShowAmend}>
-        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-purple-400 flex items-center gap-2">
-              <FileText className="w-5 h-5" />
-              Create Amendment
-            </DialogTitle>
-            <DialogDescription className="text-vault-muted">
-              This will create a new version that amends these minutes. 
-              The original will be marked as amended.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <label className="text-sm text-vault-muted mb-1 block">Reason for Amendment (optional)</label>
-            <Textarea
-              value={amendReason}
-              onChange={(e) => setAmendReason(e.target.value)}
-              placeholder="Describe what needs to be corrected..."
-              className="bg-[#05080F] border-vault-gold/20 text-white min-h-[100px]"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAmend(false)} className="border-vault-gold/30">
-              Cancel
-            </Button>
-            <Button onClick={handleAmend} className="bg-purple-600 hover:bg-purple-500 text-white">
-              Create Amendment
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* Amendment Studio V2 */}
       <AmendmentStudio
         open={showAmendmentStudio}
