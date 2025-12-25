@@ -7,7 +7,7 @@ from fastapi import APIRouter, Request
 from datetime import datetime, timezone
 from services.health_scanner import TrustHealthScanner, get_health_history
 
-router = APIRouter(prefix="/health", tags=["Trust Health"])
+router = APIRouter(prefix="/api/health", tags=["Trust Health"])
 
 # Get database reference (injected from server.py)
 db = None
