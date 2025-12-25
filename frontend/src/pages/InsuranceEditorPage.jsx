@@ -808,6 +808,20 @@ export default function InsuranceEditorPage({ user }) {
               </div>
             )}
           </div>
+          
+          {/* Integrity Seal for finalized insurance policies */}
+          {isFinalized && (
+            <div className="mt-4 pt-4 border-t border-vault-gold/20">
+              <IntegritySealBadge
+                recordId={policy.id}
+                sealId={policy.integrity_seal_id}
+                sealedAt={policy.integrity_sealed_at}
+                verifiedAt={policy.integrity_verified_at}
+                status={policy.integrity_seal_id ? 'valid' : 'never_sealed'}
+                isFinalized={true}
+              />
+            </div>
+          )}
         </GlassCard>
       </motion.div>
 
