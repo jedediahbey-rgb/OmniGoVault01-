@@ -529,7 +529,9 @@ export default function LedgerTimelinePage() {
               </motion.div>
             );
           })}
-        </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       )}
 
       {/* Summary Footer */}
