@@ -1615,11 +1615,13 @@ export default function GovernancePage({ user }) {
                       transition={{ delay: index * 0.05 }}
                     >
                       <GlassCard 
-                        className="p-4 cursor-pointer hover:border-vault-gold/50 transition-all group"
-                        onClick={() => navigate(`/vault/governance/disputes/${disputeId}`)}
+                        className="p-4 hover:border-vault-gold/50 transition-all group"
                       >
                         <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                          <div 
+                            className="flex items-start gap-3 flex-1 min-w-0 cursor-pointer"
+                            onClick={() => navigate(`/vault/governance/disputes/${disputeId}`)}
+                          >
                             {/* Icon - consistent p-2 rounded-lg */}
                             <div className={`p-2 rounded-lg ${typeConfig.bg} shrink-0`}>
                               <TypeIcon className={`w-5 h-5 ${typeConfig.color}`} weight="duotone" />
@@ -1679,8 +1681,48 @@ export default function GovernancePage({ user }) {
                             </div>
                           </div>
                           
-                          {/* Arrow */}
-                          <CaretRight className="w-5 h-5 text-vault-muted shrink-0" />
+                          {/* Actions - Change Status & Navigate */}
+                          <div className="flex items-center gap-2 shrink-0">
+                            {/* Change Status Dropdown */}
+                            {!dispute.locked && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 hover:bg-vault-gold/20"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <ArrowsClockwise className="w-4 h-4 text-vault-gold" weight="duotone" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="bg-[#0B1221] border-vault-gold/30 min-w-[160px]">
+                                  <div className="px-2 py-1.5 text-xs font-semibold text-vault-muted">Change Status</div>
+                                  {Object.entries(disputeStatusConfig)
+                                    .filter(([key]) => key !== 'finalized' && key !== effectiveStatus)
+                                    .map(([key, config]) => (
+                                      <DropdownMenuItem
+                                        key={key}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleUpdateDisputeStatus(disputeId, key);
+                                        }}
+                                        className="text-white hover:bg-vault-gold/20 cursor-pointer"
+                                      >
+                                        <span className={`w-2 h-2 rounded-full mr-2 ${config.color.split(' ')[0]}`}></span>
+                                        {config.label}
+                                      </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
+                            
+                            {/* Navigate Arrow */}
+                            <CaretRight 
+                              className="w-5 h-5 text-vault-muted cursor-pointer" 
+                              onClick={() => navigate(`/vault/governance/disputes/${disputeId}`)}
+                            />
+                          </div>
                         </div>
                       </GlassCard>
                     </motion.div>
