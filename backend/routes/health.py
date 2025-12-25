@@ -4,8 +4,11 @@ Endpoints for the Trust Health scoring system.
 """
 
 from fastapi import APIRouter, Request
+from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone
-from services.health_scanner import TrustHealthScanner, get_health_history
+from services.health_scanner import TrustHealthScanner, get_health_history, AuditReadinessChecker
+import json
+import io
 
 router = APIRouter(prefix="/api/health", tags=["Trust Health"])
 
