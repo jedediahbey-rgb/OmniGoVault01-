@@ -657,9 +657,9 @@ export default function CyberHomePage() {
               
               <motion.p 
                 variants={fadeInUp}
-                className="mt-4 text-base sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed italic"
+                className="mt-4 text-base sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed italic text-center lg:text-left"
               >
-                "In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will."&nbsp;&nbsp;<span className="text-sm text-slate-500 not-italic">— Ephesians 1:11</span>
+                "In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will."&nbsp;&nbsp;<span className="text-sm text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
               
               <motion.div variants={fadeInUp} className="mt-6 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
