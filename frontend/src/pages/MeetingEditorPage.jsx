@@ -168,6 +168,12 @@ export default function MeetingEditorPage({ user }) {
   
   const [showAmend, setShowAmend] = useState(false);
   const [amendReason, setAmendReason] = useState('');
+  
+  // Amendment Studio V2
+  const [showAmendmentStudio, setShowAmendmentStudio] = useState(false);
+  const [showRevisionHistory, setShowRevisionHistory] = useState(false);
+  const [revisions, setRevisions] = useState([]);
+  const [amendLoading, setAmendLoading] = useState(false);
 
   // Expanded agenda items
   const [expandedItems, setExpandedItems] = useState({});
