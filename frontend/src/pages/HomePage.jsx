@@ -105,7 +105,7 @@ const HomePage = () => {
               Structure Your <span className="text-[#C6A87C]">Trust</span>
             </h1>
             <p className="font-sans text-base sm:text-lg text-slate-400 leading-relaxed mb-8 sm:mb-10 max-w-2xl">
-              A comprehensive platform for learning pure equity trust law, managing trust portfolios, 
+              A comprehensive platform for learning exclusive equity trust law, managing trust portfolios, 
               and creating professional documents — all grounded in authoritative source materials.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -184,7 +184,7 @@ const HomePage = () => {
                   <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#C6A87C] mt-1 flex-shrink-0" weight="duotone" />
                   <div className="min-w-0">
                     <h4 className="font-sans font-semibold text-[#F8FAFC] mb-1 text-sm sm:text-base">Pure Trust Under Equity</h4>
-                    <p className="font-sans text-xs sm:text-sm text-slate-400">Template documents and forms for establishing pure equity trusts.</p>
+                    <p className="font-sans text-xs sm:text-sm text-slate-400">Template documents and forms for establishing exclusive equity trusts.</p>
                   </div>
                 </div>
               </div>
@@ -218,7 +218,7 @@ const HomePage = () => {
           </h2>
           <p className="font-sans text-sm sm:text-base text-slate-400 mb-8 sm:mb-10 max-w-2xl mx-auto px-4">
             Create your secure vault, explore the knowledge base, or chat with our AI assistant 
-            to start learning about pure equity trusts today.
+            to start learning about exclusive equity trusts today.
           </p>
           <div className="flex flex-wrap justify-center gap-4 px-4">
             <Link to="/vault" data-testid="cta-vault" className="w-full sm:w-auto">

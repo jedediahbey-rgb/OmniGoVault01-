@@ -446,7 +446,7 @@ A trust operating purely under equitable principles, often used for asset protec
           'Express trusts created by explicit declaration',
           'Resulting trusts arise from circumstances',
           'Constructive trusts prevent unjust enrichment',
-          'Pure equity trusts operate on maxim principles'
+          'Exclusive equity trusts operate on maxim principles'
         ],
         checklist: [
           'Classify trusts by origin',

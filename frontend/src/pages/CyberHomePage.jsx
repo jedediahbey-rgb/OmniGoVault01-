@@ -101,7 +101,7 @@ const SCENARIOS = [
 ];
 
 const TEMPLATES = [
-  { id: 1, title: 'Declaration of Trust', desc: 'Establishes pure equity trust structure', icon: Scroll },
+  { id: 1, title: 'Declaration of Trust', desc: 'Establishes exclusive equity trust structure', icon: Scroll },
   { id: 2, title: 'Trust Transfer Grant Deed', desc: 'Conveys property into trust', icon: FileText },
   { id: 3, title: 'Acknowledgement Receipt', desc: 'Formal receipt for transactions', icon: Handshake },
   { id: 4, title: 'Certificate of Trust', desc: 'Foreign grantor trust certificate', icon: Certificate },

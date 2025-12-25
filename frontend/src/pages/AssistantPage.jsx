@@ -289,7 +289,7 @@ export default function AssistantPage({ user }) {
                   <span className="text-white text-sm">Pure Trust Under Equity</span>
                 </div>
                 <p className="text-white/40 text-xs">
-                  Template documents and forms for establishing pure equity trusts.
+                  Template documents and forms for establishing exclusive equity trusts.
                 </p>
               </div>
             </div>
