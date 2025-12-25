@@ -1270,7 +1270,7 @@ export default function GovernancePage({ user }) {
                 <h3 className="text-lg sm:text-xl font-heading text-white mb-2">Select a Portfolio</h3>
                 <p className="text-sm sm:text-base text-vault-muted">Choose a portfolio to view its governance records</p>
               </GlassCard>
-            ) : filteredMeetings.length === 0 ? (
+            ) : meetings.length === 0 ? (
               <GlassCard className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
                   <div className="p-3 rounded-xl bg-blue-500/20 border border-blue-500/30">
@@ -1301,6 +1301,12 @@ export default function GovernancePage({ user }) {
                     </Button>
                   </div>
                 </div>
+              </GlassCard>
+            ) : filteredMeetings.length === 0 ? (
+              <GlassCard className="p-8 text-center">
+                <MagnifyingGlass className="w-12 h-12 mx-auto text-vault-muted/50 mb-4" />
+                <h3 className="text-lg font-heading text-white mb-2">No Results Found</h3>
+                <p className="text-vault-muted">No meetings match your search criteria</p>
               </GlassCard>
             ) : (
               <div className="space-y-4">
@@ -1400,7 +1406,7 @@ export default function GovernancePage({ user }) {
                 <h3 className="text-lg sm:text-xl font-heading text-white mb-2">Select a Portfolio</h3>
                 <p className="text-sm sm:text-base text-vault-muted">Choose a portfolio to view its distributions</p>
               </GlassCard>
-            ) : filteredDistributions.length === 0 ? (
+            ) : distributions.length === 0 ? (
               <GlassCard className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
                   <div className="p-3 rounded-xl bg-green-500/20 border border-green-500/30">
@@ -1431,6 +1437,12 @@ export default function GovernancePage({ user }) {
                     </Button>
                   </div>
                 </div>
+              </GlassCard>
+            ) : filteredDistributions.length === 0 ? (
+              <GlassCard className="p-8 text-center">
+                <MagnifyingGlass className="w-12 h-12 mx-auto text-vault-muted/50 mb-4" />
+                <h3 className="text-lg font-heading text-white mb-2">No Results Found</h3>
+                <p className="text-vault-muted">No distributions match your search criteria</p>
               </GlassCard>
             ) : (
               <div className="space-y-4">
