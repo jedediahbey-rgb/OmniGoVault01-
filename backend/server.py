@@ -642,51 +642,50 @@ async def get_optional_user(request: Request) -> Optional[User]:
 
 # ============ AUTH ENDPOINTS ============
 
-@api_router.post("/auth/session")
-async def create_session(request: Request, response: Response):
-    """Exchange session_id for session_token after Google OAuth"""
+@api_router.post("/auth/register")
+async def register(request: Request, response: Response):
+    """Register a new user with email/password"""
     body = await request.json()
-    session_id = body.get("session_id")
+    email = body.get("email", "").strip().lower()
+    password = body.get("password", "")
+    name = body.get("name", "").strip()
     
-    if not session_id:
-        raise HTTPException(status_code=400, detail="session_id required")
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password required")
     
-    async with httpx.AsyncClient() as client_http:
-        auth_response = await client_http.get(
-            "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
-            headers={"X-Session-ID": session_id}
-        )
-        
-        if auth_response.status_code != 200:
-            raise HTTPException(status_code=401, detail="Invalid session_id")
-        
-        auth_data = auth_response.json()
+    if len(password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
     
-    email = auth_data.get("email")
-    name = auth_data.get("name")
-    picture = auth_data.get("picture")
-    session_token = auth_data.get("session_token")
-    
-    existing_user = await db.users.find_one({"email": email}, {"_id": 0})
-    
+    # Check if user exists
+    existing_user = await db.users.find_one({"email": email})
     if existing_user:
-        user_id = existing_user["user_id"]
-        await db.users.update_one({"email": email}, {"$set": {"name": name, "picture": picture}})
-    else:
-        user_id = f"user_{uuid.uuid4().hex[:12]}"
-        user_doc = {
-            "user_id": user_id, "email": email, "name": name, "picture": picture,
-            "created_at": datetime.now(timezone.utc).isoformat()
-        }
-        await db.users.insert_one(user_doc)
+        raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Hash password (simple hash for demo - use bcrypt in production)
+    import hashlib
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    
+    # Create user
+    user_id = f"user_{uuid.uuid4().hex[:12]}"
+    user_doc = {
+        "user_id": user_id,
+        "email": email,
+        "name": name or email.split("@")[0],
+        "password_hash": password_hash,
+        "picture": "",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.users.insert_one(user_doc)
+    
+    # Create session
+    session_token = f"sess_{uuid.uuid4().hex}"
     expires_at = datetime.now(timezone.utc) + timedelta(days=7)
     session_doc = {
-        "session_token": session_token, "user_id": user_id,
-        "expires_at": expires_at.isoformat(), "created_at": datetime.now(timezone.utc).isoformat()
+        "session_token": session_token,
+        "user_id": user_id,
+        "expires_at": expires_at.isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
-    
-    await db.user_sessions.delete_many({"user_id": user_id})
     await db.user_sessions.insert_one(session_doc)
     
     response.set_cookie(
@@ -694,8 +693,64 @@ async def create_session(request: Request, response: Response):
         samesite="none", path="/", max_age=7 * 24 * 60 * 60
     )
     
-    user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0})
-    return {"user": user_doc, "session_token": session_token}
+    return {"user": {"user_id": user_id, "email": email, "name": user_doc["name"]}, "session_token": session_token}
+
+
+@api_router.post("/auth/login")
+async def login(request: Request, response: Response):
+    """Login with email/password"""
+    body = await request.json()
+    email = body.get("email", "").strip().lower()
+    password = body.get("password", "")
+    
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password required")
+    
+    # Find user
+    user_doc = await db.users.find_one({"email": email}, {"_id": 0})
+    if not user_doc:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Verify password
+    import hashlib
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    if user_doc.get("password_hash") != password_hash:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Create session
+    session_token = f"sess_{uuid.uuid4().hex}"
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    session_doc = {
+        "session_token": session_token,
+        "user_id": user_doc["user_id"],
+        "expires_at": expires_at.isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Remove old sessions for this user
+    await db.user_sessions.delete_many({"user_id": user_doc["user_id"]})
+    await db.user_sessions.insert_one(session_doc)
+    
+    response.set_cookie(
+        key="session_token", value=session_token, httponly=True, secure=True,
+        samesite="none", path="/", max_age=7 * 24 * 60 * 60
+    )
+    
+    return {
+        "user": {
+            "user_id": user_doc["user_id"],
+            "email": user_doc["email"],
+            "name": user_doc.get("name", ""),
+            "picture": user_doc.get("picture", "")
+        },
+        "session_token": session_token
+    }
+
+
+@api_router.post("/auth/session")
+async def create_session(request: Request, response: Response):
+    """Legacy endpoint - kept for compatibility but redirects to login"""
+    raise HTTPException(status_code=400, detail="Use /auth/login instead")
 
 
 @api_router.get("/auth/me")
