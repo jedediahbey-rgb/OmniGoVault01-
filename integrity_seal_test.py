@@ -172,7 +172,7 @@ class IntegritySealAPITester:
         # Create and finalize a record
         record_id = self.create_test_record("Finalized Record for Seal Test", finalize=True)
         if not record_id:
-            return False
+            return None, None
         
         result = self.test_endpoint(
             'POST',
