@@ -752,11 +752,7 @@ async def create_record(request: Request):
 async def update_record(record_id: str, request: Request):
     """
     Update a draft record's title and payload.
-    - Only draft records can be updated
-    - Updates the current revision's payload
-    - Creates audit event
-    
-    Body: { title?: string, payload_json?: dict }
+    Accepts either record `id` or `rm_id` for lookup.
     """
     try:
         user = await get_current_user(request)
@@ -766,12 +762,15 @@ async def update_record(record_id: str, request: Request):
     try:
         body = await request.json()
         
-        record = await db.governance_records.find_one(
-            {"id": record_id, "user_id": user.user_id}
-        )
+        # Resolve by id or rm_id
+        record, resolver_path = await resolve_record_by_id_or_rm(record_id, user.user_id)
         
         if not record:
+            print(f"[UPDATE_RECORD] NOT_FOUND: record_id={record_id}, user_id={user.user_id}")
             return error_response("NOT_FOUND", "Record not found", status_code=404)
+        
+        # Use resolved record ID
+        actual_id = record["id"]
         
         # Check if record is finalized
         if record.get("status") == "finalized":
