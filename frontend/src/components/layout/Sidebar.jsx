@@ -37,6 +37,7 @@ const navItems = [
   { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
   { name: 'Trust Health', href: '/health', icon: Heartbeat, section: 'tools' },
   { name: 'Diagnostics', href: '/diagnostics', icon: ShieldCheck, section: 'tools' },
+  { name: 'Thread Manager', href: '/ledger-threads', icon: GitBranch, section: 'tools' },
   { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
 ];
 
