@@ -316,3 +316,39 @@ In /app/frontend/src/pages/ScenariosPage.jsx:
 - Click Saved tab: Shows empty state ✅
 - Click back to Explore: All 6 cards still visible ✅
 
+
+## Session Fixes - Dec 25, 2025 (Fork Session)
+
+### Fix 1: Workspace Ledger Integration
+**Issue:** Dashboard ledger showed 0 entries while main Ledger page showed governance records.
+
+**Fix:** Added governance records fetch to PortfolioOverviewPage, displaying them in the Ledger tab with stats (Total Records, Drafts, Finalized, This Month).
+
+**Files:** /app/frontend/src/pages/PortfolioOverviewPage.jsx
+
+### Fix 2: "FloppyDisk" → "Save" Text
+**Issue:** Buttons showed "FLOPPYDISK" instead of "Save".
+
+**Fix:** Changed all instances across multiple files.
+
+**Files:** PortfolioOverviewPage.jsx, DashboardPage.jsx, DocumentEditorPage.jsx, TrustProfilePage.jsx
+
+### Fix 3: Trust Profile Padding/Spacing
+**Issue:** Text cut off on mobile due to excessive padding.
+
+**Fix:** Made padding responsive (p-4 sm:p-6 md:p-8), added min-w-0 to prevent overflow.
+
+**Files:** TrustProfilePage.jsx, GlassCard.jsx
+
+### Fix 4: Trust Parties Not Displaying
+**Issue:** Parties saved to DB but not showing in UI.
+
+**Root Cause:** Frontend called wrong API endpoint:
+- ❌ /api/parties?portfolio_id=...
+- ✅ /api/portfolios/{portfolioId}/parties
+
+**Fix:** Updated both fetch calls in PortfolioOverviewPage.jsx
+
+**Verification:** 7 parties now display correctly in Parties tab.
+
+
