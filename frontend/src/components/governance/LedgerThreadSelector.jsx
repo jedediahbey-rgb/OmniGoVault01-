@@ -151,9 +151,10 @@ export default function LedgerThreadSelector({
   // Fetch next RM-ID preview when subject is selected
   const fetchNextRmIdPreview = useCallback(async (subjectId) => {
     try {
-      const res = await axios.get(`${API}/rm/subjects/${subjectId}/preview`);
-      if (res.data.ok) {
-        setNextRmIdPreview(res.data.data.next_rm_id);
+      const res = await axios.get(`${API}/ledger-threads/${subjectId}`);
+      if (res.data.ok && res.data.data.thread) {
+        const thread = res.data.data.thread;
+        setNextRmIdPreview(`${thread.rm_id_preview}${thread.next_sub ? `.${String(thread.next_sub).padStart(3, '0')}` : ''}`);
       }
     } catch (error) {
       console.error('Failed to fetch RM-ID preview:', error);
