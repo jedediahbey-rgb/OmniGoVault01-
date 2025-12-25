@@ -347,10 +347,29 @@ export default function MeetingEditorPage({ user }) {
     }
   };
 
+  // Save meeting using V2 API - updates the current revision's payload
   const saveMeeting = async (updates) => {
     setSaving(true);
     try {
-      await axios.put(`${API}/governance/meetings/${meetingId}`, updates);
+      // Build the full payload from current meeting + updates
+      const payload = {
+        title: updates.title || meeting.title,
+        meeting_type: updates.meeting_type || meeting.meeting_type,
+        date_time: updates.date_time || meeting.date_time,
+        location: updates.location !== undefined ? updates.location : meeting.location,
+        called_by: updates.called_by !== undefined ? updates.called_by : meeting.called_by,
+        agenda_items: updates.agenda_items || meeting.agenda_items || [],
+        attendees: updates.attendees || meeting.attendees || [],
+        notes: updates.notes !== undefined ? updates.notes : meeting.notes,
+        resolutions: updates.resolutions || meeting.resolutions || [],
+      };
+      
+      // Use V2 update endpoint
+      await axios.put(`${API}/governance/v2/records/${meetingId}`, {
+        title: payload.title,
+        payload_json: payload
+      });
+      
       await refetchMeeting();
       toast.success('Changes saved');
     } catch (error) {
@@ -358,7 +377,6 @@ export default function MeetingEditorPage({ user }) {
       // Handle 409 Conflict (meeting locked)
       if (error.response?.status === 409) {
         toast.error('This meeting is finalized and cannot be edited. Use "Amend" to create a new revision.');
-        // Refetch to get the locked status
         await refetchMeeting();
       } else {
         toast.error(error.response?.data?.error?.message || 'Failed to save changes');
