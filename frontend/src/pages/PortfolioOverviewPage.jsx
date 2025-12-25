@@ -1171,7 +1171,7 @@ export default function PortfolioOverviewPage({ user }) {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-            <Button onClick={updatePortfolio} className="btn-primary">FloppyDisk</Button>
+            <Button onClick={updatePortfolio} className="btn-primary">Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1296,7 +1296,7 @@ export default function PortfolioOverviewPage({ user }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setShowAssetDialog(false); resetAssetForm(); }}>Cancel</Button>
             <Button onClick={editingAsset ? updateAsset : addAsset} className="btn-primary">
-              {editingAsset ? 'FloppyDisk Changes' : 'Add Asset'}
+              {editingAsset ? 'Save Changes' : 'Add Asset'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1408,7 +1408,7 @@ export default function PortfolioOverviewPage({ user }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setShowLedgerDialog(false); resetLedgerForm(); }}>Cancel</Button>
             <Button onClick={editingLedger ? updateLedgerEntry : addLedgerEntry} className="btn-primary">
-              {editingLedger ? 'FloppyDisk Changes' : 'Add Entry'}
+              {editingLedger ? 'Save Changes' : 'Add Entry'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1555,7 +1555,7 @@ export default function PortfolioOverviewPage({ user }) {
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setShowPartyDialog(false); resetPartyForm(); }}>Cancel</Button>
             <Button onClick={editingParty ? updateParty : addParty} className="btn-primary">
-              {editingParty ? 'FloppyDisk Changes' : 'Add Party'}
+              {editingParty ? 'Save Changes' : 'Add Party'}
             </Button>
           </DialogFooter>
         </DialogContent>
