@@ -1778,9 +1778,7 @@ export default function GovernancePage({ user }) {
                                 className="text-red-400 hover:bg-red-500/10 cursor-pointer"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  if (window.confirm('Delete this compensation entry?')) {
-                                    handleDeleteCompensation(compId);
-                                  }
+                                  handleDeleteCompensation(compId);
                                 }}
                               >
                                 <Trash className="w-4 h-4 mr-2" />
