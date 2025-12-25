@@ -7,6 +7,7 @@ import {
   BookOpen,
   CaretRight,
   CheckCircle,
+  Coins,
   Command,
   CurrencyDollar,
   FileText,
