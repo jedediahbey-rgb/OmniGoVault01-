@@ -960,6 +960,7 @@ export default function LearnPage({ user }) {
         icon={BookOpen}
         title="Learn"
         subtitle="Master equity jurisprudence through structured lessons"
+        helpKey="learn"
       />
 
       {!selectedModule ? (

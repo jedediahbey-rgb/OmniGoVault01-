@@ -652,6 +652,7 @@ export default function MaximsPage({ user }) {
         icon={Sparkle}
         title="Maxims of Equity"
         subtitle="The foundational principles governing equitable jurisprudence"
+        helpKey="maxims"
         actions={
           <div className="flex gap-2 flex-wrap">
             {dueForReview.length > 0 && (
