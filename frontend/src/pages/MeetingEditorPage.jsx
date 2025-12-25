@@ -417,15 +417,8 @@ export default function MeetingEditorPage({ user }) {
   };
 
   const handleFinalize = async () => {
-    if (!finalizeBy.trim()) {
-      toast.error('Please enter your name');
-      return;
-    }
-    
     try {
-      const res = await axios.post(`${API}/governance/meetings/${meetingId}/finalize`, {
-        finalized_by_name: finalizeBy
-      });
+      await axios.post(`${API}/governance/v2/records/${meetingId}/finalize`);
       await refetchMeeting();
       setShowFinalize(false);
       toast.success('Meeting minutes finalized');
