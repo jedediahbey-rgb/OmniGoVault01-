@@ -555,6 +555,7 @@ export default function MeetingEditorPage({ user }) {
   };
 
   const handleFinalize = async () => {
+    setFinalizeLoading(true);
     try {
       await axios.post(`${API}/governance/v2/records/${meetingId}/finalize`);
       await refetchMeeting();
@@ -562,6 +563,8 @@ export default function MeetingEditorPage({ user }) {
       toast.success('Meeting minutes finalized');
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to finalize');
+    } finally {
+      setFinalizeLoading(false);
     }
   };
 
