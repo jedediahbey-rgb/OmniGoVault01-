@@ -128,7 +128,7 @@ class TrustHealthScanner:
                 # Use defaults
                 self.WEIGHTS = {k: v / 100.0 for k, v in self.DEFAULT_WEIGHTS.items()}
                 self.CAPS = {k: v["cap"] for k, v in self.DEFAULT_CAPS.items()}
-        except Exception as e:
+        except Exception:
             # Fallback to defaults on error
             self.WEIGHTS = {k: v / 100.0 for k, v in self.DEFAULT_WEIGHTS.items()}
             self.CAPS = {k: v["cap"] for k, v in self.DEFAULT_CAPS.items()}
