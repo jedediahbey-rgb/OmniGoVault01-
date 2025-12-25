@@ -352,3 +352,39 @@ In /app/frontend/src/pages/ScenariosPage.jsx:
 **Verification:** 7 parties now display correctly in Parties tab.
 
 
+
+
+## Phase 1: Data Integrity & Repair Tools - IMPLEMENTED
+Date: Thu Dec 25 15:11:30 UTC 2025
+
+### Features Built
+1. **Enhanced DiagnosticsPage UI** (/diagnostics)
+   - Full stats dashboard (Records Scanned, Issues Found, High Severity, Fixable)
+   - Severity filtering dropdown
+   - Selectable issues with checkboxes
+   - Bulk delete functionality
+   - Individual delete buttons
+   - Expandable issue details
+   - Animated transitions
+
+2. **Backend Delete API** (/api/integrity)
+   - DELETE /api/integrity/records/{record_id} - Single record deletion
+   - DELETE /api/integrity/records/bulk - Bulk deletion with record_ids array
+   - Validation to only delete orphaned records
+   - Audit logging of deletions to integrity_logs collection
+
+3. **Sidebar Integration**
+   - Added Diagnostics link under TOOLS section
+   - Uses ShieldCheck icon for visual recognition
+
+### Files Created/Modified
+- /app/frontend/src/pages/DiagnosticsPage.jsx (Enhanced UI)
+- /app/backend/routes/integrity.py (Added delete endpoints)
+- /app/frontend/src/components/layout/Sidebar.jsx (Added nav link)
+
+### Verification
+- Scan found 18 orphaned records (test data)
+- Delete single record: Works (rec_deda85f86578 deleted successfully)
+- Scan after delete: Shows 17 issues (1 less)
+- UI displays all features correctly
+
