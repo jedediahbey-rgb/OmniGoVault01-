@@ -475,23 +475,30 @@ export default function GovernancePage({ user }) {
       });
       
       const data = res.data;
+      console.log('[DEBUG] Insurance API response:', JSON.stringify(data, null, 2));
       if (data.ok && data.data?.items) {
-        const transformedPolicies = data.data.items.map(record => ({
-          policy_id: record.id,
-          id: record.id,
-          title: record.title,
-          rm_id: record.rm_id,
-          status: record.status === 'finalized' ? 'active' : record.status,
-          locked: record.status === 'finalized',
-          created_at: record.created_at,
-          finalized_at: record.finalized_at,
-          // Default values
-          policy_type: 'whole_life',
-          death_benefit: 0,
-          cash_value: 0,
-          currency: 'USD',
-          carrier_name: ''
-        }));
+        const transformedPolicies = data.data.items.map(record => {
+          console.log('[DEBUG] Insurance record:', record.title, 'raw status:', record.status);
+          const transformedStatus = record.status === 'finalized' ? 'active' : record.status;
+          console.log('[DEBUG] Insurance record:', record.title, 'transformed status:', transformedStatus);
+          return {
+            policy_id: record.id,
+            id: record.id,
+            title: record.title,
+            rm_id: record.rm_id,
+            status: transformedStatus,
+            locked: record.status === 'finalized',
+            created_at: record.created_at,
+            finalized_at: record.finalized_at,
+            // Default values
+            policy_type: 'whole_life',
+            death_benefit: 0,
+            cash_value: 0,
+            currency: 'USD',
+            carrier_name: ''
+          };
+        });
+        console.log('[DEBUG] Final transformed policies:', JSON.stringify(transformedPolicies, null, 2));
         setInsurancePolicies(transformedPolicies);
       } else {
         setInsurancePolicies([]);
