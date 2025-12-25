@@ -54,6 +54,7 @@ import {
 import { toast } from 'sonner';
 import { AmendmentStudio, RevisionHistory } from '../components/governance';
 import { FinalizeConfirmationModal } from '../components/governance/FinalizeConfirmationModal';
+import IntegritySealBadge from '../components/shared/IntegritySealBadge';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 

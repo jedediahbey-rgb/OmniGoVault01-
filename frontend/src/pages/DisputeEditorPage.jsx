@@ -59,6 +59,7 @@ import {
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import { toast } from 'sonner';
 import { AmendmentStudio, RevisionHistory } from '../components/governance';
+import IntegritySealBadge from '../components/shared/IntegritySealBadge';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
