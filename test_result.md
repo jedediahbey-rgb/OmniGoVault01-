@@ -102,3 +102,23 @@
 3. Every change logged to governance_events
 4. Hash chain for tamper evidence
 5. Void = soft-delete with audit trail
+
+## Testing Results - Amendment Studio V2 API
+- **Test Date**: 2024-12-25
+- **All 11 V2 API tests passed (100%)**
+
+### Critical Tests Verified:
+1. ✅ CREATE: POST /api/governance/v2/records - Creates draft v1
+2. ✅ GET: GET /api/governance/v2/records/:id - Returns record with current revision
+3. ✅ FINALIZE: POST /api/governance/v2/records/:id/finalize - Locks revision with hash
+4. ✅ **IMMUTABILITY**: PATCH on finalized revision returns 409 Conflict
+5. ✅ AMEND: POST /api/governance/v2/records/:id/amend - Creates new draft linked to parent
+6. ✅ UPDATE DRAFT: PATCH /api/governance/v2/revisions/:id on draft succeeds
+7. ✅ FINALIZE AMENDMENT: POST /api/governance/v2/revisions/:id/finalize works
+8. ✅ HISTORY: GET /api/governance/v2/records/:id/revisions returns all versions
+9. ✅ VOID: POST /api/governance/v2/records/:id/void soft-deletes with audit
+10. ✅ AUDIT: GET /api/governance/v2/records/:id/events shows all actions
+11. ✅ **HASH CHAIN**: content_hash properly includes parent_hash for integrity
+
+### Full Amendment Lifecycle Tested:
+`create → finalize → attempt edit (409 BLOCKED) → amend → edit amendment → finalize amendment`
