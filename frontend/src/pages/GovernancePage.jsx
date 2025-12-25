@@ -28,7 +28,8 @@ import {
   Trash,
   Users,
   Warning,
-  X
+  X,
+  MapPin
 } from '@phosphor-icons/react';
 
 // Futuristic Date Icon - cyber styled with dynamic day display
