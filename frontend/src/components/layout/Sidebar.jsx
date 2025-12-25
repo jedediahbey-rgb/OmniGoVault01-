@@ -33,6 +33,7 @@ const navItems = [
   { name: 'Governance', href: '/vault/governance', icon: Gavel, section: 'workspace' },
   { name: 'Templates', href: '/templates', icon: FileText, section: 'workspace' },
   { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
+  { name: 'Diagnostics', href: '/diagnostics', icon: ShieldCheck, section: 'tools' },
 ];
 
 const sections = {
