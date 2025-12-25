@@ -29,6 +29,7 @@ import {
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
+import FinalizeConfirmationModal from '../components/governance/FinalizeConfirmationModal';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
