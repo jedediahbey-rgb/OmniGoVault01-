@@ -969,99 +969,203 @@ export default function PortfolioOverviewPage({ user }) {
         {/* Assets Tab */}
         <TabsContent value="assets" className="mt-6">
           <GlassCard>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-lg text-white">Assets Ledger</h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+              <div>
+                <h3 className="font-heading text-lg text-white">Trust Assets</h3>
+                <p className="text-white/40 text-sm">Manage res (property) held in the trust</p>
+              </div>
               <Button onClick={() => { resetAssetForm(); setShowAssetDialog(true); }} className="btn-primary">
                 <Plus className="w-4 h-4 mr-2" weight="duotone" /> Add Asset
               </Button>
             </div>
 
-            {/* Assets Table - Desktop */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">RM-ID</th>
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Subject</th>
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Description</th>
-                    <th className="text-left text-white/40 text-xs uppercase tracking-wider py-3 px-2">Type</th>
-                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Value</th>
-                    <th className="text-center text-white/40 text-xs uppercase tracking-wider py-3 px-2">Status</th>
-                    <th className="text-right text-white/40 text-xs uppercase tracking-wider py-3 px-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {assets.map(asset => (
-                    <tr key={asset.asset_id} className="border-b border-white/5 hover:bg-white/5">
-                      <td className="py-3 px-2">
-                        <span className="text-vault-gold font-mono text-xs block">{asset.rm_id || '-'}</span>
-                      </td>
-                      <td className="py-3 px-2">
-                        <span className="text-white/60 text-sm">{asset.subject_name || 'General'}</span>
-                      </td>
-                      <td className="py-3 px-2">
-                        <span className="text-white">{asset.description}</span>
-                      </td>
-                      <td className="py-3 px-2">
-                        <span className="text-white/60 capitalize text-sm">{asset.asset_type?.replace('_', ' ')}</span>
-                      </td>
-                      <td className="py-3 px-2 text-right">
-                        <span className="text-white">{asset.value ? formatCurrency(asset.value) : '-'}</span>
-                      </td>
-                      <td className="py-3 px-2 text-center">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          asset.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                          asset.status === 'transferred_out' ? 'bg-red-500/20 text-red-400' :
-                          'bg-white/10 text-white/50'
-                        }`}>
-                          {asset.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-2 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => openEditAsset(asset)} className="text-white/40 hover:text-white p-1">
-                            <PencilSimple className="w-4 h-4" weight="duotone" />
-                          </button>
-                          <button onClick={() => setDeleteAssetId(asset.asset_id)} className="text-red-400 hover:text-red-300 p-1">
-                            <Trash className="w-4 h-4" weight="duotone" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* Stats Summary */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 p-3 sm:p-4 bg-white/5 rounded-lg">
+              <div className="min-w-0">
+                <p className="text-white/40 text-xs uppercase">Total Assets</p>
+                <p className="text-white text-lg sm:text-xl font-heading tabular-nums">{assetStats.total}</p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-white/40 text-xs uppercase">Active</p>
+                <p className="text-green-400 text-lg sm:text-xl font-heading tabular-nums">{assetStats.active}</p>
+              </div>
+              <div className="min-w-0 col-span-2 sm:col-span-1">
+                <p className="text-white/40 text-xs uppercase">Total Value</p>
+                <p className="text-vault-gold text-lg sm:text-xl font-heading tabular-nums truncate">
+                  {assetStats.totalValue > 0 ? formatCurrency(assetStats.totalValue) : '-'}
+                </p>
+              </div>
+              <div className="min-w-0 col-span-2 sm:col-span-1">
+                <p className="text-white/40 text-xs uppercase">Top Type</p>
+                <p className="text-white text-sm sm:text-base font-heading truncate">
+                  {Object.entries(assetStats.byType).sort((a, b) => b[1] - a[1])[0]?.[1] > 0 
+                    ? assetTypeConfig[Object.entries(assetStats.byType).sort((a, b) => b[1] - a[1])[0][0]]?.label || 'None'
+                    : 'None'}
+                </p>
+              </div>
             </div>
 
-            {/* Assets Cards - Mobile */}
-            <div className="md:hidden space-y-3">
-              {assets.map(asset => (
-                <div key={asset.asset_id} className="p-4 rounded-lg bg-white/5 border border-white/10">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white font-medium">{asset.description}</p>
-                      <p className="text-white/40 text-sm capitalize">{asset.asset_type?.replace('_', ' ')}</p>
-                    </div>
-                    <div className="flex items-center gap-1 ml-2">
-                      <button onClick={() => openEditAsset(asset)} className="text-white/40 hover:text-white p-1">
-                        <PencilSimple className="w-4 h-4" weight="duotone" />
-                      </button>
-                      <button onClick={() => setDeleteAssetId(asset.asset_id)} className="text-red-400 hover:text-red-300 p-1">
-                        <Trash className="w-4 h-4" weight="duotone" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <span className="text-vault-gold font-mono bg-vault-gold/10 px-2 py-1 rounded">{asset.rm_id || '-'}</span>
-                    <span className="text-white/50">{asset.subject_name}</span>
-                    {asset.value && <span className="text-white ml-auto">{formatCurrency(asset.value)}</span>}
-                  </div>
+            {/* Search and Filter */}
+            {assets.length > 0 && (
+              <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                <div className="relative flex-1">
+                  <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Input
+                    placeholder="Search assets..."
+                    value={assetSearch}
+                    onChange={e => setAssetSearch(e.target.value)}
+                    className="pl-9 bg-white/5 border-white/10"
+                  />
                 </div>
-              ))}
-            </div>
-            
-            {assets.length === 0 && (
-              <p className="text-white/30 text-center py-8">No assets recorded</p>
+                <Select value={assetTypeFilter} onValueChange={setAssetTypeFilter}>
+                  <SelectTrigger className="w-full sm:w-48 bg-white/5 border-white/10">
+                    <SelectValue placeholder="Filter by type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-vault-navy border-white/10">
+                    <SelectItem value="all">All Types</SelectItem>
+                    {Object.entries(assetTypeConfig).map(([key, config]) => (
+                      <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Assets List */}
+            {filteredAssets.length > 0 ? (
+              <div className="space-y-3">
+                {filteredAssets.map(asset => {
+                  const typeConfig = assetTypeConfig[asset.asset_type] || assetTypeConfig.other;
+                  const TypeIcon = typeConfig.icon;
+                  
+                  return (
+                    <div 
+                      key={asset.asset_id} 
+                      className={`flex items-start gap-3 p-3 sm:p-4 rounded-lg bg-white/5 border transition-all cursor-pointer group ${
+                        selectedAsset?.asset_id === asset.asset_id 
+                          ? 'border-vault-gold/50 bg-vault-gold/5' 
+                          : 'border-white/5 hover:border-white/20 hover:bg-white/10'
+                      }`}
+                      onClick={() => setSelectedAsset(selectedAsset?.asset_id === asset.asset_id ? null : asset)}
+                    >
+                      {/* Type Icon */}
+                      <div className={`w-10 h-10 rounded-lg ${typeConfig.bgClass} ${typeConfig.borderClass} border flex items-center justify-center flex-shrink-0`}>
+                        <TypeIcon className={`w-5 h-5 ${typeConfig.textClass}`} weight="duotone" />
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-2">
+                          <div className="min-w-0 flex-1">
+                            <h4 className="text-white font-medium truncate group-hover:text-vault-gold transition-colors pr-2">
+                              {asset.description}
+                            </h4>
+                            <div className="flex items-center gap-2 mt-1 text-sm flex-wrap">
+                              <span className={`${typeConfig.textClass} flex-shrink-0`}>{typeConfig.label}</span>
+                              {asset.rm_id && (
+                                <>
+                                  <span className="text-white/20">•</span>
+                                  <span className="text-vault-gold/60 font-mono text-xs truncate max-w-[100px] sm:max-w-none">{asset.rm_id}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0 mt-2 sm:mt-0">
+                            {asset.value && (
+                              <span className="text-white font-medium text-sm whitespace-nowrap">
+                                {formatCurrency(asset.value)}
+                              </span>
+                            )}
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              asset.status === 'active' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                              asset.status === 'transferred_out' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                              'bg-white/10 text-white/50 border border-white/10'
+                            }`}>
+                              {asset.status}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Expanded Details */}
+                        {selectedAsset?.asset_id === asset.asset_id && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mt-3 pt-3 border-t border-white/10"
+                          >
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div>
+                                <p className="text-white/40 text-xs uppercase mb-1">Subject Category</p>
+                                <p className="text-white">{asset.subject_name || 'General'}</p>
+                              </div>
+                              <div>
+                                <p className="text-white/40 text-xs uppercase mb-1">Added</p>
+                                <p className="text-white">{new Date(asset.created_at).toLocaleDateString()}</p>
+                              </div>
+                              {asset.notes && (
+                                <div className="col-span-2">
+                                  <p className="text-white/40 text-xs uppercase mb-1">Notes</p>
+                                  <p className="text-white/80">{asset.notes}</p>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 mt-3">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-white/20 hover:bg-white/10"
+                                onClick={(e) => { e.stopPropagation(); openEditAsset(asset); }}
+                              >
+                                <PencilSimple className="w-4 h-4 mr-1" weight="duotone" /> Edit
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                                onClick={(e) => { e.stopPropagation(); setDeleteAssetId(asset.asset_id); }}
+                              >
+                                <Trash className="w-4 h-4 mr-1" weight="duotone" /> Delete
+                              </Button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </div>
+
+                      {/* Expand Indicator */}
+                      <div className="flex-shrink-0">
+                        <Eye className={`w-5 h-5 transition-colors ${
+                          selectedAsset?.asset_id === asset.asset_id ? 'text-vault-gold' : 'text-white/20 group-hover:text-white/40'
+                        }`} weight="duotone" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : assets.length > 0 ? (
+              <div className="text-center py-8">
+                <MagnifyingGlass className="w-12 h-12 mx-auto text-white/20 mb-3" />
+                <p className="text-white/40 mb-2">No assets match your search</p>
+                <Button variant="ghost" onClick={() => { setAssetSearch(''); setAssetTypeFilter('all'); }}>
+                  Clear Filters
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Wallet className="w-12 h-12 mx-auto text-vault-gold/30 mb-3" />
+                <p className="text-white/40 mb-2">No assets in this trust yet</p>
+                <p className="text-white/30 text-sm mb-4">Add real property, financial accounts, securities, and other trust res</p>
+                <Button onClick={() => { resetAssetForm(); setShowAssetDialog(true); }} className="btn-primary">
+                  <Plus className="w-4 h-4 mr-2" weight="duotone" /> Add First Asset
+                </Button>
+              </div>
+            )}
+
+            {/* Filter Results Count */}
+            {assets.length > 0 && (
+              <p className="text-white/30 text-xs mt-4 text-center">
+                Showing {filteredAssets.length} of {assets.length} assets
+              </p>
             )}
           </GlassCard>
         </TabsContent>
