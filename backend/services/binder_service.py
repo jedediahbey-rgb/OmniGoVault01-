@@ -1211,22 +1211,37 @@ class BinderService:
                     """)
                 
                 html_parts.append("</div></div>")
+            
+            section_counter += 1
         
-        # 5. Documents Section
+        # 6. Documents Section
         if content.get("documents"):
-            html_parts.append("""
-            <div class="section-divider">
+            doc_items = content["documents"]
+            html_parts.append(f"""
+            <div class="section-divider" id="section-documents">
+                <h1 class="bookmark-l1" data-bookmark="Section {section_counter}: Documents" style="visibility: hidden; height: 0; margin: 0;">Documents</h1>
+                <div class="section-icon">
+                    <span class="section-icon-text">📁</span>
+                </div>
+                <div class="section-number">Section {section_counter}</div>
                 <div class="section-title">Documents</div>
-                <div class="section-subtitle">Trust Instruments & Records</div>
+                <div class="section-subtitle">Trust Instruments & Records ({len(doc_items)} items)</div>
+                <div class="section-meta">
+                    Supporting documentation for trust administration
+                </div>
             </div>
             """)
             
-            for item in content["documents"]:
+            for item in doc_items:
                 data = item.get("data", {})
+                item_id = item.get("id", "doc-unknown")
+                item_title = item.get("title", "Document")
+                
                 html_parts.append(f"""
-                <div class="record-page">
+                <div class="record-page" id="item-{item_id}">
+                    <h2 class="bookmark-l2" data-bookmark="{item_title[:40]}" style="visibility: hidden; height: 0; margin: 0;">{item_title}</h2>
                     <div class="record-header">
-                        <div class="record-title">{item.get('title', 'Document')}</div>
+                        <div class="record-title">{item_title}</div>
                         <div class="record-meta">
                             Type: {data.get('document_type', 'General')} &nbsp;&nbsp;
                             Created: {item.get('created_at', '')[:10] if item.get('created_at') else '—'}
@@ -1237,6 +1252,8 @@ class BinderService:
                     </div>
                 </div>
                 """)
+            
+            section_counter += 1
         
         # 6. Ledger Section
         if content.get("ledger"):
