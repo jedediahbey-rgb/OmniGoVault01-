@@ -2007,11 +2007,23 @@ async def create_dispute(data: dict, request: Request):
         return error_response("MISSING_TITLE", "Dispute title is required")
     
     try:
-        # Generate RM-ID
+        # Generate RM-ID using V2 allocator (atomic, unique)
         rm_id = ""
         try:
-            rm_id, _, _, _ = await generate_subject_rm_id(
-                data.get("portfolio_id"), user.user_id, "22", "Dispute"
+            # Extract related_to info from request if provided
+            related_to = data.get("related_to")
+            if not related_to and data.get("case_number"):
+                # Use case number as relation key if provided
+                related_to = {
+                    "court_name": data.get("jurisdiction", ""),
+                    "case_number": data.get("case_number")
+                }
+            
+            rm_id = await allocate_rm_id_for_governance(
+                portfolio_id=data.get("portfolio_id"),
+                user_id=user.user_id,
+                module_type="dispute",
+                related_to=related_to
             )
         except Exception as e:
             print(f"Warning: Could not generate RM-ID: {e}")
