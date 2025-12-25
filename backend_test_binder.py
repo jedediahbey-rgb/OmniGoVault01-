@@ -349,7 +349,8 @@ class BinderAPITester:
             profile_name = data.get('profile_name')
             generated_at = data.get('generated_at')
             
-            self.log(f"✅ Manifest retrieved: {len(manifest)} items, profile: {profile_name}")
+            manifest_len = len(manifest) if manifest else 0
+            self.log(f"✅ Manifest retrieved: {manifest_len} items, profile: {profile_name}")
             return manifest
         return None
 
