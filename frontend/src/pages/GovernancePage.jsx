@@ -353,14 +353,33 @@ export default function GovernancePage({ user }) {
     if (!selectedPortfolio) return;
     setDistributionsLoading(true);
     try {
-      const res = await axios.get(`${API}/governance/distributions`, {
-        params: { portfolio_id: selectedPortfolio }
+      // Use V2 API for distributions
+      const res = await axios.get(`${API_V2}/records`, {
+        params: { 
+          portfolio_id: selectedPortfolio, 
+          module_type: MODULE_TYPES.distributions
+        }
       });
+      
       const data = res.data;
-      if (data.ok && data.items) {
-        setDistributions(data.items);
-      } else if (Array.isArray(data)) {
-        setDistributions(data);
+      if (data.ok && data.data?.items) {
+        const transformedDistributions = data.data.items.map(record => ({
+          distribution_id: record.id,
+          id: record.id,
+          title: record.title,
+          rm_id: record.rm_id,
+          status: record.status,
+          locked: record.status === 'finalized',
+          created_at: record.created_at,
+          finalized_at: record.finalized_at,
+          // Default values
+          distribution_type: 'regular',
+          total_amount: 0,
+          currency: 'USD',
+          asset_type: 'cash',
+          recipients: []
+        }));
+        setDistributions(transformedDistributions);
       } else {
         setDistributions([]);
       }
