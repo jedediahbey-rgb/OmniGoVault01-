@@ -1540,7 +1540,7 @@ export default function GovernancePage({ user }) {
                 <h3 className="text-lg sm:text-xl font-heading text-white mb-2">Select a Portfolio</h3>
                 <p className="text-sm sm:text-base text-vault-muted">Choose a portfolio to view its disputes</p>
               </GlassCard>
-            ) : filteredDisputes.length === 0 ? (
+            ) : disputes.length === 0 ? (
               <GlassCard className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
                   <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/30">
@@ -1571,6 +1571,12 @@ export default function GovernancePage({ user }) {
                     </Button>
                   </div>
                 </div>
+              </GlassCard>
+            ) : filteredDisputes.length === 0 ? (
+              <GlassCard className="p-8 text-center">
+                <MagnifyingGlass className="w-12 h-12 mx-auto text-vault-muted/50 mb-4" />
+                <h3 className="text-lg font-heading text-white mb-2">No Results Found</h3>
+                <p className="text-vault-muted">No disputes match your search criteria</p>
               </GlassCard>
             ) : (
               <div className="space-y-4">
@@ -1672,7 +1678,7 @@ export default function GovernancePage({ user }) {
                 <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin mx-auto"></div>
                 <p className="text-vault-muted mt-4">Loading insurance policies...</p>
               </GlassCard>
-            ) : filteredInsurance.length === 0 ? (
+            ) : insurancePolicies.length === 0 ? (
               <GlassCard className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
                   <div className="p-3 rounded-xl bg-purple-500/20 border border-purple-500/30">
@@ -1703,6 +1709,12 @@ export default function GovernancePage({ user }) {
                     </Button>
                   </div>
                 </div>
+              </GlassCard>
+            ) : filteredInsurance.length === 0 ? (
+              <GlassCard className="p-8 text-center">
+                <MagnifyingGlass className="w-12 h-12 mx-auto text-vault-muted/50 mb-4" />
+                <h3 className="text-lg font-heading text-white mb-2">No Results Found</h3>
+                <p className="text-vault-muted">No insurance policies match your search criteria</p>
               </GlassCard>
             ) : (
               <div className="space-y-3">
@@ -1809,7 +1821,7 @@ export default function GovernancePage({ user }) {
                 <h3 className="text-lg sm:text-xl font-heading text-white mb-2">Select a Portfolio</h3>
                 <p className="text-sm sm:text-base text-vault-muted">Choose a portfolio to view its compensation records</p>
               </GlassCard>
-            ) : filteredCompensation.length === 0 ? (
+            ) : compensationEntries.length === 0 ? (
               <GlassCard className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
                   <div className="p-3 rounded-xl bg-amber-500/20 border border-amber-500/30">
@@ -1840,6 +1852,12 @@ export default function GovernancePage({ user }) {
                     </Button>
                   </div>
                 </div>
+              </GlassCard>
+            ) : filteredCompensation.length === 0 ? (
+              <GlassCard className="p-8 text-center">
+                <MagnifyingGlass className="w-12 h-12 mx-auto text-vault-muted/50 mb-4" />
+                <h3 className="text-lg font-heading text-white mb-2">No Results Found</h3>
+                <p className="text-vault-muted">No compensation entries match your search criteria</p>
               </GlassCard>
             ) : (
               <div className="space-y-4">
