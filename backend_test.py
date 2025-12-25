@@ -20,13 +20,13 @@ class TrustManagementAPITester:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'Ledger-Thread-API-Tester/1.0'
+            'User-Agent': 'Trust-Management-API-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_portfolio_id = f"test_portfolio_{uuid.uuid4().hex[:8]}"
-        self.created_threads = []  # Track created threads for cleanup
+        self.test_results = []
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
