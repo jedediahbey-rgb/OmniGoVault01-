@@ -20,7 +20,8 @@ import {
   Books,
   ArrowLeft,
   Plus,
-  Lightning
+  Lightning,
+  FolderSimple
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
