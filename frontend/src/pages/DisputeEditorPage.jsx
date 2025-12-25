@@ -343,6 +343,8 @@ export default function DisputeEditorPage({ user }) {
         parties: updates.parties || dispute.parties || [],
         events: updates.events || dispute.events || [],
         notes: updates.notes !== undefined ? updates.notes : dispute.notes,
+        // Include dispute_status for operational status tracking
+        dispute_status: updates.status || dispute.dispute_status || 'open',
       };
       
       await axios.put(`${API}/governance/v2/records/${disputeId}`, {
