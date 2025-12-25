@@ -73,6 +73,29 @@ export default function LedgerThreadsPage() {
   // Portfolio state
   const [portfolios, setPortfolios] = useState([]);
   const [portfolioId, setPortfolioId] = useState(portfolioIdFromUrl);
+  
+  // Check for default portfolio in localStorage
+  useEffect(() => {
+    if (!portfolioIdFromUrl) {
+      const defaultPortfolio = localStorage.getItem('defaultPortfolioId');
+      if (defaultPortfolio) {
+        setPortfolioId(defaultPortfolio);
+        setSearchParams({ portfolio: defaultPortfolio });
+      }
+    }
+  }, [portfolioIdFromUrl, setSearchParams]);
+  
+  // Set portfolio as default
+  const setAsDefault = (pid) => {
+    localStorage.setItem('defaultPortfolioId', pid);
+    toast({
+      title: 'Default Set',
+      description: 'This portfolio will be auto-selected on future visits'
+    });
+  };
+  
+  // Check if current portfolio is default
+  const isDefaultPortfolio = portfolioId === localStorage.getItem('defaultPortfolioId');
 
   // Data state
   const [threads, setThreads] = useState([]);
