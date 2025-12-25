@@ -277,13 +277,18 @@ class MinutesAgendaItem(BaseModel):
 
 class MinutesPayload(BaseModel):
     """Payload schema for Meeting Minutes"""
+    title: str = ""
     meeting_type: str = "regular"  # regular, special, emergency
     meeting_datetime: str = ""
+    date_time: str = ""  # Alternative field name from frontend
     location: str = ""
     called_by: str = ""
     attendees: List[MinutesAttendee] = []
     agenda_items: List[MinutesAgendaItem] = []
     general_notes: str = ""
+    
+    class Config:
+        extra = "allow"  # Allow extra fields from frontend
 
 
 class DistributionAllocation(BaseModel):
