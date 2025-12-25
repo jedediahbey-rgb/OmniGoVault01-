@@ -539,8 +539,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
                 {template.source && (
                   <p className="text-vault-gold/60 text-xs mb-4">{template.source}</p>
                 )}
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-white/30">{template.fields?.length || 0} fields</span>
+                <div className="flex items-center justify-end">
                   <span className="text-vault-gold text-sm flex items-center gap-1">
                     Use Template <ArrowRight className="w-4 h-4" weight="duotone" />
                   </span>
