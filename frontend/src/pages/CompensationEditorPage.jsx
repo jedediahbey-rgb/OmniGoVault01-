@@ -697,6 +697,17 @@ export default function CompensationEditorPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Amendment Studio V2 */}
+      <AmendmentStudio
+        open={showAmendmentStudio}
+        onOpenChange={setShowAmendmentStudio}
+        recordTitle={compensation?.title || 'Trustee Compensation'}
+        currentVersion={compensation?.revision || 1}
+        moduleType="compensation"
+        onCreateAmendment={handleAmendV2}
+        isLoading={amendLoading}
+      />
     </div>
   );
 }
