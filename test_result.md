@@ -296,3 +296,23 @@ All 13 test records were voided:
 - Total records remaining: 0
 - Database is clean and ready for real data
 
+
+## Bug Fix: Scenario Cards Disappearing - FIXED
+Date: Thu Dec 25 09:18:57 UTC 2025
+
+### Issue
+When clicking on 'Saved' tab and then back to 'Explore Scenarios' tab, all scenario cards would disappear.
+
+### Root Cause
+The motion.div elements with `variants={fadeInUp}` were not properly initialized with their own `initial` and `animate` props. When the tab switched, the animation state was lost because the parent container wasn't re-triggering animations.
+
+### Fix Applied
+In /app/frontend/src/pages/ScenariosPage.jsx:
+1. Changed the grid container from `<div>` to `<motion.div>` with `initial='initial'`, `animate='animate'`, and `variants={staggerContainer}`
+2. Added `initial='initial'`, `animate='animate'`, and `transition={{ delay: index * 0.05 }}` to each card's motion.div
+
+### Verification
+- Initial load: All 6 cards visible ✅
+- Click Saved tab: Shows empty state ✅
+- Click back to Explore: All 6 cards still visible ✅
+
