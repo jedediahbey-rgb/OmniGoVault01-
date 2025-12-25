@@ -223,6 +223,27 @@ export default function PortfolioOverviewPage({ user }) {
     return code >= 10 && code <= 19;
   });
   
+  // Filtered assets based on search and type filter
+  const filteredAssets = assets.filter(asset => {
+    const matchesSearch = !assetSearch || 
+      asset.description?.toLowerCase().includes(assetSearch.toLowerCase()) ||
+      asset.rm_id?.toLowerCase().includes(assetSearch.toLowerCase()) ||
+      asset.notes?.toLowerCase().includes(assetSearch.toLowerCase());
+    const matchesType = assetTypeFilter === 'all' || asset.asset_type === assetTypeFilter;
+    return matchesSearch && matchesType;
+  });
+  
+  // Asset statistics
+  const assetStats = {
+    total: assets.length,
+    totalValue: assets.reduce((sum, a) => sum + (a.value || 0), 0),
+    active: assets.filter(a => a.status === 'active').length,
+    byType: Object.keys(assetTypeConfig).reduce((acc, type) => {
+      acc[type] = assets.filter(a => a.asset_type === type).length;
+      return acc;
+    }, {}),
+  };
+  
   // Party management state
   const [showPartyDialog, setShowPartyDialog] = useState(false);
   const [editingParty, setEditingParty] = useState(null);
