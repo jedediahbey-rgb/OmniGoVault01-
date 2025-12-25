@@ -1431,17 +1431,6 @@ export default function GovernancePage({ user }) {
               </GlassCard>
             ) : (
               <div className="space-y-4">
-                {/* New Dispute Button */}
-                <div className="flex justify-end mb-4">
-                  <Button
-                    onClick={() => setShowNewDispute(true)}
-                    className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Dispute
-                  </Button>
-                </div>
-                
                 {filteredDisputes.map((dispute, index) => {
                   const typeConfig = disputeTypeConfig[dispute.dispute_type] || disputeTypeConfig.beneficiary;
                   const TypeIcon = typeConfig.icon;
