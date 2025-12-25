@@ -300,6 +300,173 @@ export default function BinderPage() {
     }
   };
 
+  // Fetch schedules
+  const fetchSchedules = useCallback(async () => {
+    if (!portfolioId) return;
+    try {
+      const res = await fetch(`${API_URL}/api/binder/schedules?portfolio_id=${portfolioId}`);
+      const data = await res.json();
+      if (data.ok) {
+        setSchedules(data.data.schedules || []);
+      }
+    } catch (error) {
+      console.error('Error fetching schedules:', error);
+    }
+  }, [portfolioId]);
+
+  // Fetch schedules when portfolioId changes
+  useEffect(() => {
+    fetchSchedules();
+  }, [fetchSchedules]);
+
+  // Create schedule
+  const handleCreateSchedule = async () => {
+    if (!scheduleForm.profile_id) {
+      toast({ title: 'Error', description: 'Please select a profile', variant: 'destructive' });
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/binder/schedules`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          portfolio_id: portfolioId,
+          ...scheduleForm
+        })
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        toast({ title: 'Schedule Created', description: 'Automatic binder generation scheduled' });
+        setShowScheduleModal(false);
+        fetchSchedules();
+        resetScheduleForm();
+      } else {
+        toast({ title: 'Error', description: data.error?.message || 'Failed to create schedule', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to create schedule', variant: 'destructive' });
+    }
+  };
+
+  // Update schedule
+  const handleUpdateSchedule = async () => {
+    if (!editingSchedule) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/binder/schedules/${editingSchedule.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(scheduleForm)
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        toast({ title: 'Schedule Updated', description: 'Schedule settings saved' });
+        setShowScheduleModal(false);
+        fetchSchedules();
+        setEditingSchedule(null);
+        resetScheduleForm();
+      } else {
+        toast({ title: 'Error', description: data.error?.message || 'Failed to update schedule', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to update schedule', variant: 'destructive' });
+    }
+  };
+
+  // Toggle schedule enabled
+  const handleToggleSchedule = async (schedule) => {
+    try {
+      const res = await fetch(`${API_URL}/api/binder/schedules/${schedule.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: !schedule.enabled })
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        toast({ 
+          title: schedule.enabled ? 'Schedule Paused' : 'Schedule Activated',
+          description: schedule.enabled ? 'Automatic generation paused' : 'Automatic generation resumed'
+        });
+        fetchSchedules();
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to update schedule', variant: 'destructive' });
+    }
+  };
+
+  // Delete schedule
+  const handleDeleteSchedule = async (scheduleId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/binder/schedules/${scheduleId}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        toast({ title: 'Schedule Deleted', description: 'Automatic generation removed' });
+        fetchSchedules();
+      } else {
+        toast({ title: 'Error', description: data.error?.message || 'Failed to delete', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete schedule', variant: 'destructive' });
+    }
+  };
+
+  // Reset schedule form
+  const resetScheduleForm = () => {
+    setScheduleForm({
+      profile_id: profiles[0]?.id || '',
+      frequency: 'weekly',
+      day_of_week: 0,
+      day_of_month: 1,
+      hour: 6,
+      minute: 0,
+      enabled: true
+    });
+  };
+
+  // Open edit schedule modal
+  const openEditSchedule = (schedule) => {
+    setEditingSchedule(schedule);
+    setScheduleForm({
+      profile_id: schedule.profile_id,
+      frequency: schedule.frequency,
+      day_of_week: schedule.day_of_week,
+      day_of_month: schedule.day_of_month,
+      hour: schedule.hour,
+      minute: schedule.minute,
+      enabled: schedule.enabled
+    });
+    setShowScheduleModal(true);
+  };
+
+  // Open new schedule modal
+  const openNewSchedule = () => {
+    setEditingSchedule(null);
+    resetScheduleForm();
+    setShowScheduleModal(true);
+  };
+
+  // Format schedule description
+  const formatScheduleDescription = (schedule) => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const time = `${String(schedule.hour).padStart(2, '0')}:${String(schedule.minute).padStart(2, '0')}`;
+    
+    if (schedule.frequency === 'daily') {
+      return `Daily at ${time}`;
+    } else if (schedule.frequency === 'weekly') {
+      return `Every ${days[schedule.day_of_week]} at ${time}`;
+    } else if (schedule.frequency === 'monthly') {
+      return `Day ${schedule.day_of_month} of each month at ${time}`;
+    }
+    return schedule.frequency;
+  };
+
   // Get profile by ID
   const getProfile = (id) => profiles.find(p => p.id === id);
   const currentProfile = getProfile(selectedProfile);
