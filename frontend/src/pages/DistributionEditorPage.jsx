@@ -577,26 +577,61 @@ export default function DistributionEditorPage({ user }) {
                   </Button>
                 </div>
               </div>
-            ) : (
-              <>
-                {/* Title and details */}
-                <h1 className="text-xl sm:text-2xl font-heading text-white mb-2">{distribution.title}</h1>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-vault-muted mb-2">
-                  {distribution.rm_id && <span className="font-mono text-vault-gold">{distribution.rm_id}</span>}
-                  <span>{distribution.recipients?.length || 0} recipients</span>
-                </div>
-                <div className="text-xl sm:text-2xl font-heading text-emerald-400 mb-4">
-                  {formatCurrency(distribution.total_amount, distribution.currency)}
-                </div>
-                
-                {/* Action buttons - properly aligned */}
-                <div className="flex items-center gap-2 justify-end">
-                  {!isFinalized && (
-                    <Button variant="outline" size="sm" onClick={() => setShowFinalizeConfirm(true)} className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10">
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Finalize
-                    </Button>
+              ) : (
+                <div className="flex-1 min-w-0">
+                  {/* Badges row - status first, then type */}
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <Badge className={`${status.color} border text-xs`}>
+                      <StatusIcon className="w-3 h-3 mr-1" />
+                      {status.label}
+                    </Badge>
+                    <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
+                      {typeConfig.label}
+                    </Badge>
+                  </div>
+                  
+                  {/* Title */}
+                  <h1 className="text-xl sm:text-2xl font-heading text-white break-words">{distribution.title}</h1>
+                  
+                  {/* RM-ID */}
+                  {distribution.rm_id && (
+                    <span className="text-xs font-mono text-vault-muted">
+                      {distribution.rm_id}
+                    </span>
                   )}
+                  
+                  {/* Amount */}
+                  <div className="text-2xl font-heading text-emerald-400 mt-2">
+                    {formatCurrency(distribution.total_amount, distribution.currency)}
+                    <span className="text-sm text-vault-muted ml-2">total</span>
+                  </div>
+                  
+                  {/* Details row */}
+                  <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-vault-muted">
+                    <div className="flex items-center gap-1">
+                      <Users className="w-4 h-4" />
+                      <span>{distribution.recipients?.length || 0} recipients</span>
+                    </div>
+                    {distribution.scheduled_date && (
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>{new Date(distribution.scheduled_date).toLocaleDateString()}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Action buttons - properly aligned */}
+            {!editingHeader && (
+              <div className="flex items-center gap-2 justify-end mt-4">
+                {!isFinalized && (
+                  <Button variant="outline" size="sm" onClick={() => setShowFinalizeConfirm(true)} className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Finalize
+                  </Button>
+                )}
                   
                   {isFinalized && !distribution.amended_by_id && (
                     <Button variant="outline" size="sm" onClick={() => setShowAmendmentStudio(true)} className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
