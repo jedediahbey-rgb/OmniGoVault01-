@@ -389,14 +389,18 @@ export default function InsuranceEditorPage({ user }) {
       return;
     }
     
-    setSaving(true);
     try {
-      const res = await axios.post(`${API}/governance/insurance-policies/${policyId}/beneficiaries`, {
+      // Use V2 API - add beneficiary to array and save
+      const beneficiaryWithId = {
         ...newBeneficiary,
+        beneficiary_id: `ben-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         percentage: parseFloat(newBeneficiary.percentage) || 0,
-      });
+        added_at: new Date().toISOString()
+      };
       
-      setPolicy(res.data.item);
+      const updatedBeneficiaries = [...(policy.beneficiaries || []), beneficiaryWithId];
+      await savePolicy({ beneficiaries: updatedBeneficiaries });
+      
       setShowAddBeneficiary(false);
       setNewBeneficiary({
         name: '',
@@ -409,8 +413,17 @@ export default function InsuranceEditorPage({ user }) {
     } catch (error) {
       console.error('Failed to add beneficiary:', error);
       toast.error(error.response?.data?.error?.message || 'Failed to add beneficiary');
-    } finally {
-      setSaving(false);
+    }
+  };
+
+  const handleRemoveBeneficiary = async (beneficiaryId) => {
+    try {
+      // Use V2 API - remove beneficiary from array and save
+      const updatedBeneficiaries = (policy.beneficiaries || []).filter(b => b.beneficiary_id !== beneficiaryId);
+      await savePolicy({ beneficiaries: updatedBeneficiaries });
+      toast.success('Beneficiary removed');
+    } catch (error) {
+      toast.error(error.response?.data?.error?.message || 'Failed to remove beneficiary');
     }
   };
 
@@ -420,15 +433,19 @@ export default function InsuranceEditorPage({ user }) {
       return;
     }
     
-    setSaving(true);
     try {
-      const res = await axios.post(`${API}/governance/insurance-policies/${policyId}/premium-payments`, {
+      // Use V2 API - add payment to array and save
+      const paymentWithId = {
         ...newPayment,
+        payment_id: `pay-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         amount: parseFloat(newPayment.amount) || 0,
         currency: policy.currency || 'USD',
-      });
+        recorded_at: new Date().toISOString()
+      };
       
-      setPolicy(res.data.item);
+      const updatedPayments = [...(policy.premium_payments || []), paymentWithId];
+      await savePolicy({ premium_payments: updatedPayments });
+      
       setShowAddPayment(false);
       setNewPayment({
         payment_date: new Date().toISOString().slice(0, 10),
@@ -441,8 +458,6 @@ export default function InsuranceEditorPage({ user }) {
     } catch (error) {
       console.error('Failed to add payment:', error);
       toast.error(error.response?.data?.error?.message || 'Failed to record payment');
-    } finally {
-      setSaving(false);
     }
   };
 
