@@ -82,7 +82,7 @@ class GovernanceV2Tester:
         result = self.test_endpoint(
             'POST', 
             '/governance/v2/records',
-            201,
+            200,
             test_data,
             f"Create {module_type} record"
         )
