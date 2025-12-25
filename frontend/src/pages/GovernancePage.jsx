@@ -1661,10 +1661,36 @@ export default function GovernancePage({ user }) {
                 <p className="text-vault-muted mt-4">Loading insurance policies...</p>
               </GlassCard>
             ) : filteredInsurance.length === 0 ? (
-              <GlassCard className="p-12 text-center">
-                <ShieldCheck className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
-                <h3 className="text-xl font-heading text-white mb-2">No Insurance Policies</h3>
-                <p className="text-vault-muted">Tap the &quot;New&quot; button above to add insurance policies</p>
+              <GlassCard className="p-6 sm:p-8">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <div className="p-3 rounded-xl bg-purple-500/20 border border-purple-500/30">
+                    <ShieldCheck className="w-8 h-8 text-purple-400" weight="duotone" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-heading text-white mb-2">Add Your First Insurance Policy</h3>
+                    <p className="text-vault-muted text-sm mb-4">
+                      Track insurance policies owned by or benefiting the trust. Maintain policy details, coverage information, and premium schedules.
+                    </p>
+                    <ul className="text-white/50 text-sm space-y-1 mb-4">
+                      <li className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-400" />
+                        <span>Document policy numbers and coverage details</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-400" />
+                        <span>Track beneficiaries and death benefits</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-400" />
+                        <span>Monitor premium payments and cash values</span>
+                      </li>
+                    </ul>
+                    <Button onClick={() => { setActiveTab('insurance'); setShowNewRecordDialog(true); }} className="btn-primary">
+                      <Plus className="w-4 h-4 mr-2" />
+                      New Insurance Policy
+                    </Button>
+                  </div>
+                </div>
               </GlassCard>
             ) : (
               <div className="space-y-3">
