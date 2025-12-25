@@ -390,7 +390,7 @@ const TrustHealthCard = () => {
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={() => navigate('/vault')}
+          onClick={() => navigate('/health')}
           className="flex-1 border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 text-xs sm:text-sm"
         >
           Dashboard
