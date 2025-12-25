@@ -3567,7 +3567,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
-        "https://omnifix-1.preview.emergentagent.com",
+        "https://vault-mobile.preview.emergentagent.com",
         "http://localhost:3000",
         "http://127.0.0.1:3000"
     ],
