@@ -23,14 +23,63 @@ router = APIRouter(prefix="/api/governance", tags=["governance"])
 db = None
 get_current_user = None
 generate_subject_rm_id = None
+generate_rm_id_v2 = None  # V2 atomic allocator
 
 
-def init_governance_routes(database, auth_func, rmid_func):
+def init_governance_routes(database, auth_func, rmid_func, rmid_v2_func=None):
     """Initialize the governance routes with dependencies"""
-    global db, get_current_user, generate_subject_rm_id
+    global db, get_current_user, generate_subject_rm_id, generate_rm_id_v2
     db = database
     get_current_user = auth_func
     generate_subject_rm_id = rmid_func
+    generate_rm_id_v2 = rmid_v2_func  # Optional V2 allocator
+
+
+async def allocate_rm_id_for_governance(
+    portfolio_id: str,
+    user_id: str,
+    module_type: str,
+    related_to: dict = None
+) -> str:
+    """
+    Allocate RM-ID for governance records using V2 allocator if available.
+    Falls back to V1 if V2 is not initialized.
+    
+    Args:
+        portfolio_id: Portfolio ID
+        user_id: User ID
+        module_type: One of 'minutes', 'distribution', 'dispute', 'insurance', 'compensation'
+        related_to: Optional dict with {record_id, court_name, case_number, institution, reference_id}
+    
+    Returns:
+        Allocated RM-ID string
+    """
+    # Try V2 allocator first
+    if generate_rm_id_v2:
+        try:
+            rm_id, _, _, _ = await generate_rm_id_v2(
+                portfolio_id=portfolio_id,
+                user_id=user_id,
+                module_type=module_type,
+                related_to_record_id=related_to.get("record_id") if related_to else None,
+                court_name=related_to.get("court_name") if related_to else None,
+                case_number=related_to.get("case_number") if related_to else None
+            )
+            return rm_id
+        except Exception as e:
+            print(f"V2 RM-ID allocation failed, falling back to V1: {e}")
+    
+    # Fallback to V1
+    module_to_code = {
+        "minutes": "20",
+        "distribution": "21",
+        "dispute": "22",
+        "insurance": "23",
+        "compensation": "24"
+    }
+    subject_code = module_to_code.get(module_type, "00")
+    rm_id, _, _, _ = await generate_subject_rm_id(portfolio_id, user_id, subject_code, module_type)
+    return rm_id
 
 
 # ============ RESPONSE HELPERS ============
