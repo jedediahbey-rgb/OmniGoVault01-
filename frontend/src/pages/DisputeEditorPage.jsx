@@ -204,6 +204,7 @@ export default function DisputeEditorPage({ user }) {
           finalized_at: record.finalized_at,
           // Extract from payload
           dispute_type: payload.dispute_type || 'beneficiary',
+          dispute_status: payload.dispute_status || 'open',  // Operational status (open, in_progress, litigation, etc.)
           description: payload.description || '',
           case_number: payload.case_number || '',
           jurisdiction: payload.jurisdiction || '',
