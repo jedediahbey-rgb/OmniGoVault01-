@@ -451,6 +451,7 @@ export default function MeetingEditorPage({ user }) {
     }
   };
 
+  // Legacy amendment handler (V1 API)
   const handleAmend = async () => {
     try {
       const res = await axios.post(`${API}/governance/meetings/${meetingId}/amend`, {
@@ -465,6 +466,62 @@ export default function MeetingEditorPage({ user }) {
     } catch (error) {
       toast.error(error.response?.data?.error?.message || 'Failed to create amendment');
     }
+  };
+
+  // V2 Amendment Studio handler
+  const handleAmendV2 = async (amendData) => {
+    setAmendLoading(true);
+    try {
+      // First try V2 API if record exists there
+      const res = await axios.post(`${API}/governance/meetings/${meetingId}/amend`, {
+        reason: amendData.change_reason,
+        change_type: amendData.change_type,
+        effective_at: amendData.effective_at
+      });
+      
+      const data = res.data;
+      const amendmentData = data.item || data.amendment || data;
+      
+      toast.success('Amendment draft created');
+      setShowAmendmentStudio(false);
+      navigate(`/vault/governance/meetings/${amendmentData.meeting_id}`);
+    } catch (error) {
+      console.error('Amendment error:', error);
+      throw new Error(error.response?.data?.error?.message || 'Failed to create amendment');
+    } finally {
+      setAmendLoading(false);
+    }
+  };
+
+  // Fetch revision history (for V2 display)
+  const fetchRevisions = async () => {
+    try {
+      const res = await axios.get(`${API}/governance/meetings/${meetingId}/versions`);
+      const data = res.data;
+      const versions = data.items || [];
+      
+      // Transform to revision format for RevisionHistory component
+      const formattedRevisions = versions.map(v => ({
+        id: v.meeting_id || v.id,
+        version: v.revision || 1,
+        change_type: v.is_amendment ? 'amendment' : 'initial',
+        change_reason: v.amendment_reason || '',
+        created_at: v.created_at,
+        created_by: v.finalized_by || 'Unknown',
+        finalized_at: v.finalized_at,
+        finalized_by: v.finalized_by,
+        content_hash: v.finalized_hash || ''
+      }));
+      
+      setRevisions(formattedRevisions);
+    } catch (error) {
+      console.error('Failed to fetch revisions:', error);
+    }
+  };
+
+  const handleViewRevision = (revision) => {
+    setShowRevisionHistory(false);
+    navigate(`/vault/governance/meetings/${revision.id}`);
   };
 
   const toggleAgendaItem = (itemId) => {
