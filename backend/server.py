@@ -3549,11 +3549,14 @@ app.include_router(api_router)
 # Initialize and include Governance routes
 import sys
 sys.path.insert(0, str(ROOT_DIR))
-from routes.governance import router as governance_router, init_governance_routes
-init_governance_routes(db, get_current_user, generate_subject_rm_id, generate_subject_rm_id_v2)
-app.include_router(governance_router)
 
-# Initialize and include Governance V2 routes (Amendment Studio)
+# V1 Governance routes - DEPRECATED (kept for backward compatibility but not actively used)
+# All functionality has been migrated to V2 API
+# from routes.governance import router as governance_router, init_governance_routes
+# init_governance_routes(db, get_current_user, generate_subject_rm_id, generate_subject_rm_id_v2)
+# app.include_router(governance_router)
+
+# Initialize and include Governance V2 routes (Primary governance API)
 from routes.governance_v2 import router as governance_v2_router, init_governance_v2_routes
 init_governance_v2_routes(db, get_current_user, generate_subject_rm_id)
 app.include_router(governance_v2_router)
