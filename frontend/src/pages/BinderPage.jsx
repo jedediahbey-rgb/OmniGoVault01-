@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import MonoChip from '../components/shared/MonoChip';
 import {
   FileText,
   FilePdf,
@@ -1054,7 +1055,11 @@ export default function BinderPage() {
                     <tr key={index} className="border-b border-vault-gold/10">
                       <td className="py-2 text-vault-muted text-xs">{item.section?.replace(/_/g, ' ')}</td>
                       <td className="py-2 text-white">{item.title}</td>
-                      <td className="py-2 text-vault-gold font-mono text-xs">{item.rm_id_display || '—'}</td>
+                      <td className="py-2">
+                        {item.rm_id_display ? (
+                          <MonoChip variant="gold" size="xs">{item.rm_id_display}</MonoChip>
+                        ) : '—'}
+                      </td>
                       <td className="py-2">
                         <Badge className="text-xs bg-vault-gold/10 text-vault-gold border-vault-gold/30">
                           {item.status}
