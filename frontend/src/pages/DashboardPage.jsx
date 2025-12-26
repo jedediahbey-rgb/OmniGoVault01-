@@ -354,12 +354,12 @@ export default function DashboardPage({ user }) {
                   {/* New Document - Primary action */}
                   <DropdownMenuItem
                     onClick={() => toggleQuickAction('newdocument')}
-                    className="text-white hover:bg-vault-blue/20 cursor-pointer text-sm"
+                    className="text-white hover:bg-vault-gold/20 cursor-pointer text-sm"
                   >
-                    <FileText className="w-4 h-4 mr-2 text-vault-blue" />
+                    <FileText className="w-4 h-4 mr-2 text-vault-gold" />
                     <span className="flex-1">New Document</span>
                     {selectedActions.includes('newdocument') && (
-                      <span className="text-vault-blue text-xs">✓</span>
+                      <span className="text-vault-gold text-xs">✓</span>
                     )}
                   </DropdownMenuItem>
                   <div className="px-2 py-1 text-[10px] text-vault-gold/60 uppercase tracking-wider mt-1">Knowledge</div>
@@ -557,7 +557,7 @@ export default function DashboardPage({ user }) {
                 className="p-4 rounded-lg bg-vault-gold/5 border border-vault-gold/20 hover:border-vault-gold/40 cursor-pointer transition-all"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <BookOpen className="w-5 h-5 text-vault-gold" weight="duotone" />
+                  <Book className="w-5 h-5 text-vault-gold" weight="duotone" />
                   <span className="text-white">Will You Master Equity</span>
                 </div>
                 <p className="text-white/40 text-sm">5 modules • Interactive lessons</p>
