@@ -785,13 +785,15 @@ export default function PortfolioOverviewPage({ user }) {
                 <Link 
                   key={doc.document_id} 
                   to={`/vault/document/${doc.document_id}`}
-                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors"
+                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors group"
                 >
-                  <div className={`w-8 h-8 rounded flex items-center justify-center shrink-0 mt-0.5 ${
-                    doc.is_locked ? 'bg-green-500/20' : 'bg-vault-gold/10'
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-all duration-300 ${
+                    doc.is_locked 
+                      ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/30' 
+                      : 'bg-gradient-to-br from-vault-gold/20 to-vault-gold/5 border border-vault-gold/30'
                   }`}>
                     {doc.is_locked ? (
-                      <Lock className="w-4 h-4 text-green-400" weight="duotone" />
+                      <Lock className="w-4 h-4 text-emerald-400" weight="duotone" />
                     ) : (
                       <FileText className="w-4 h-4 text-vault-gold" weight="duotone" />
                     )}
