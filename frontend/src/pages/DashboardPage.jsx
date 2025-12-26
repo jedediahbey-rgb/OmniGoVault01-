@@ -52,6 +52,40 @@ export default function DashboardPage({ user }) {
   const [defaultPortfolioId, setDefaultPortfolioId] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState(null);
+  const [showQuickActionSettings, setShowQuickActionSettings] = useState(false);
+
+  // All available quick actions
+  const allQuickActions = [
+    { id: 'document', icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'blue' },
+    { id: 'glossary', icon: Book, label: 'Glossary', action: () => navigate('/glossary'), color: 'default' },
+    { id: 'assistant', icon: Robot, label: 'Ask Assistant', action: () => navigate('/assistant'), color: 'gold', hint: 'Ctrl+J' },
+    { id: 'diagnostics', icon: Stethoscope, label: 'Diagnostics', action: () => navigate('/diagnostics'), color: 'default' },
+    { id: 'learn', icon: BookOpen, label: 'Start Learning', action: () => navigate('/learn'), color: 'default' },
+    { id: 'health', icon: Stethoscope, label: 'Trust Health', action: () => navigate('/health'), color: 'gold' },
+  ];
+
+  // Default selected quick actions (stored in localStorage)
+  const [selectedActions, setSelectedActions] = useState(() => {
+    const saved = localStorage.getItem('quickActions');
+    return saved ? JSON.parse(saved) : ['document', 'glossary', 'assistant', 'diagnostics'];
+  });
+
+  const quickActions = allQuickActions.filter(a => selectedActions.includes(a.id));
+
+  const toggleQuickAction = (actionId) => {
+    setSelectedActions(prev => {
+      let newSelected;
+      if (prev.includes(actionId)) {
+        newSelected = prev.filter(id => id !== actionId);
+      } else if (prev.length < 4) {
+        newSelected = [...prev, actionId];
+      } else {
+        return prev; // Max 4 actions
+      }
+      localStorage.setItem('quickActions', JSON.stringify(newSelected));
+      return newSelected;
+    });
+  };
 
   // Load default portfolio from backend first, then fallback to localStorage
   const loadDefaultPortfolio = useCallback(async () => {
