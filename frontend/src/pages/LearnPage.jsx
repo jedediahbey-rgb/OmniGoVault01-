@@ -29,6 +29,18 @@ import { ExpandableText } from '../components/ui/expandable-text';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import { toast } from 'sonner';
 
+// Helper function to parse **bold** markdown to JSX
+const parseBoldText = (text) => {
+  if (typeof text !== 'string') return text;
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index} className="text-white font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // Quiz questions for each lesson
