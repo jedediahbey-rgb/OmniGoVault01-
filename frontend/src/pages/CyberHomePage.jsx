@@ -643,11 +643,6 @@ export default function CyberHomePage() {
                     Enter the Vault
                   </Button>
                 </Link>
-                <Link to="/login">
-                  <Button size="lg" variant="outline" className="w-full border-white/20 text-white hover:bg-white/5">
-                    Open Governance Console
-                  </Button>
-                </Link>
               </motion.div>
               
               {/* Microcopy */}
@@ -917,11 +912,6 @@ export default function CyberHomePage() {
               <Link to="/login">
                 <Button size="lg" className="w-full sm:w-auto bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
                   Enter the Vault
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/5">
-                  Open Governance Console
                 </Button>
               </Link>
             </motion.div>
