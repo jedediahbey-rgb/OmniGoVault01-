@@ -296,29 +296,36 @@ export default function MaximsPage({ user }) {
         setSelectedCategory('all');
         setSearchTerm('');
         
-        // Scroll to the maxim after a short delay to allow render
-        setTimeout(() => {
+        // Scroll to the maxim after a longer delay to ensure render is complete
+        const scrollToMaxim = () => {
           const maximElement = maximRefs.current[maximId];
           if (maximElement) {
             // Get element position and scroll with offset for header
             const elementRect = maximElement.getBoundingClientRect();
             const absoluteElementTop = elementRect.top + window.pageYOffset;
-            // Offset for header (approximately 80px) plus some padding (20px)
-            const offsetPosition = absoluteElementTop - 100;
+            // Offset for header (approximately 100px for mobile) plus some padding (20px)
+            const headerOffset = 120;
+            const offsetPosition = absoluteElementTop - headerOffset;
             
             window.scrollTo({
-              top: offsetPosition,
+              top: Math.max(0, offsetPosition),
               behavior: 'smooth'
             });
+          } else {
+            // Retry if element not found yet
+            setTimeout(scrollToMaxim, 100);
           }
-        }, 300);
+        };
         
-        // Clear the highlight after 3 seconds
+        // Initial delay to allow render
+        setTimeout(scrollToMaxim, 500);
+        
+        // Clear the highlight after 4 seconds
         setTimeout(() => {
           setHighlightedMaximId(null);
           // Clear the URL parameter
           setSearchParams({});
-        }, 3000);
+        }, 4000);
       }
     }
   }, [searchParams, setSearchParams]);
