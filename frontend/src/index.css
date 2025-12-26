@@ -146,6 +146,15 @@
   .id-chip-muted {
     @apply font-mono text-xs text-white/50 bg-white/5 px-1.5 py-0.5 rounded border border-white/10;
   }
+  
+  /* Hide scrollbar for touch scroll areas */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Glassmorphism */
