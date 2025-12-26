@@ -824,9 +824,18 @@ export default function BinderPage() {
                 {latestRun.status === 'complete' && (
                   <div className="grid grid-cols-4 gap-2 mb-4">
                     <button
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         const url = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
-                        window.location.href = url;
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
                       }}
                       className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
                     >
@@ -834,9 +843,18 @@ export default function BinderPage() {
                       View
                     </button>
                     <button
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         const url = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
-                        window.location.href = url;
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
                       }}
                       className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
@@ -844,15 +862,25 @@ export default function BinderPage() {
                       DL
                     </button>
                     <button
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         const url = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
-                        window.location.href = url;
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
                       }}
                       className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
                       <Printer className="w-4 h-4" />
                     </button>
                     <button
+                      type="button"
                       onClick={() => handleViewManifest(latestRun.id)}
                       className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
                     >
