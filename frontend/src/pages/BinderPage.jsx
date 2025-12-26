@@ -148,129 +148,67 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete, onView, 
   );
 }
 
-// Sandbox-safe PDF action buttons component
+// Ultra-simple native link buttons - NO JavaScript interception
+// Samsung Internet and iframe sandboxes block programmatic navigation/downloads
+// Solution: Use REAL <a> tags with NO onClick handlers - let browser handle natively
 function LatestBinderActions({ latestRun, handleViewManifest }) {
-  const [pdfOpen, setPdfOpen] = useState(false);
-  const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
-  const pdfFrameRef = useRef(null);
-
-  // Cleanup object URL on unmount or when URL changes
-  useEffect(() => {
-    return () => {
-      if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
-    };
-  }, [pdfBlobUrl]);
-
-  const fetchToBlobUrl = async (url) => {
-    setPdfLoading(true);
-    try {
-      // credentials: include helps if your preview relies on cookies/session
-      const res = await fetch(url, { credentials: "include" });
-      if (!res.ok) throw new Error(`Fetch failed: HTTP ${res.status}`);
-      const blob = await res.blob();
-
-      const nextUrl = URL.createObjectURL(blob);
-      setPdfBlobUrl((prev) => {
-        if (prev) URL.revokeObjectURL(prev);
-        return nextUrl;
-      });
-      return nextUrl;
-    } finally {
-      setPdfLoading(false);
-    }
-  };
-
-  const onView = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const viewUrl = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
-    await fetchToBlobUrl(viewUrl);
-    setPdfOpen(true);
-  };
-
-  const onDownload = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const dlUrl = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
-
-    const blobUrl = await fetchToBlobUrl(dlUrl);
-
-    // User-initiated download from Blob URL (works more often in embedded previews)
-    const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = "OmniBinder.pdf";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
-
-  const onPrint = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Load PDF in modal first (print from iframe if browser allows)
-    const viewUrl = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
-    const blobUrl = pdfBlobUrl || (await fetchToBlobUrl(viewUrl));
-    setPdfOpen(true);
-
-    // Give iframe a moment to render then attempt print
-    setTimeout(() => {
-      try {
-        const win = pdfFrameRef.current?.contentWindow;
-        win?.focus();
-        win?.print(); // may still be blocked on some mobile browsers; modal still allows "Share/Print" from viewer UI
-      } catch (err) {
-        // Swallow—mobile browsers often block programmatic print
-      }
-    }, 400);
-  };
+  const viewUrl = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
+  const downloadUrl = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
 
   return (
     <>
-      <div
-        className="relative z-20 pointer-events-auto grid grid-cols-4 gap-2 mb-4"
-        onClick={(e) => e.stopPropagation()} // prevent any parent card click handler from hijacking taps
-      >
-        <button
-          type="button"
-          onClick={onView}
-          disabled={pdfLoading}
-          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark disabled:opacity-60"
+      <div className="relative z-[100] grid grid-cols-4 gap-2 mb-4">
+        {/* VIEW - Native <a> tag, opens in same tab since _blank is blocked */}
+        <a
+          href={viewUrl}
+          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark no-underline touch-manipulation"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <Eye className="w-4 h-4" />
-          {pdfLoading ? "..." : "View"}
-        </button>
+          View
+        </a>
 
-        <button
-          type="button"
-          onClick={onDownload}
-          disabled={pdfLoading}
-          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 disabled:opacity-60"
+        {/* DOWNLOAD - Native <a> with download attribute */}
+        <a
+          href={downloadUrl}
+          download="OmniBinder.pdf"
+          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline touch-manipulation"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <Download className="w-4 h-4" />
-          {pdfLoading ? "..." : "DL"}
-        </button>
+          DL
+        </a>
 
-        <button
-          type="button"
-          onClick={onPrint}
-          disabled={pdfLoading}
-          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 disabled:opacity-60"
+        {/* PRINT - Opens view URL (user can print from browser) */}
+        <a
+          href={viewUrl}
+          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline touch-manipulation"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <Printer className="w-4 h-4" />
-        </button>
+        </a>
 
+        {/* MANIFEST - This one needs onClick, use button */}
         <button
           type="button"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleViewManifest(latestRun.id); }}
-          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
+          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10 touch-manipulation"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <FileText className="w-4 h-4" />
         </button>
       </div>
 
-      {/* In-app PDF modal (no navigation/popups/downloads required) */}
+      {/* Fallback message for users if links don't work in their sandbox */}
+      <p className="text-vault-muted text-xs text-center mb-4">
+        If buttons don't work, long-press and select "Open" or "Save link"
+      </p>
+    </>
+  );
+}
+
+// Keep the old blob-based modal code commented out for reference but don't use it
+/*
       {pdfOpen && (
         <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-3xl rounded-xl border border-vault-gold/20 bg-[#0B1221] overflow-hidden">
