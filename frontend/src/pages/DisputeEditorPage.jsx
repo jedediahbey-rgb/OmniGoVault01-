@@ -782,8 +782,8 @@ export default function DisputeEditorPage({ user }) {
             </div>
               ) : (
                 <div className="flex-1 min-w-0">
-                  {/* Badges row - lifecycle status, operational status, type, priority */}
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                  {/* Badges row - lifecycle status, operational status, priority */}
+                  <div className="flex items-center gap-1.5 flex-wrap mb-1">
                     {/* Lifecycle Status Badge (Draft/Finalized) */}
                     <Badge className={`${lifecycle.color} border text-xs`}>
                       <LifecycleIcon className="w-3 h-3 mr-1" />
@@ -794,13 +794,15 @@ export default function DisputeEditorPage({ user }) {
                       <StatusIcon className="w-3 h-3 mr-1" />
                       {status.label}
                     </Badge>
-                    <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
-                      {typeConfig.label}
-                    </Badge>
+                    {/* Priority Badge (Low/Medium/High) */}
                     <Badge className={`${priority.color} border text-xs`}>
                       {priority.label}
                     </Badge>
                   </div>
+                  {/* Type badge on separate row */}
+                  <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs mb-1">
+                    {typeConfig.label}
+                  </Badge>
                   
                   {/* Title */}
                   <h1 className="text-xl sm:text-2xl font-heading text-white break-words">{dispute.title}</h1>
