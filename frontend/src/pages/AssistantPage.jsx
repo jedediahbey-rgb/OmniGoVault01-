@@ -137,9 +137,7 @@ export default function AssistantPage({ user }) {
                   {...fadeInUp}
                   className="h-full flex flex-col items-center justify-center text-center"
                 >
-                  <div className="w-20 h-20 rounded-2xl bg-vault-gold/10 flex items-center justify-center mb-6">
-                    <Sparkle className="w-10 h-10 text-vault-gold" weight="duotone" />
-                  </div>
+                  <IconBadge icon={Sparkle} size="xl" variant="gold" className="mb-6" />
                   <h3 className="text-2xl font-heading text-white mb-3">
                     Equity Trust Assistant
                   </h3>
