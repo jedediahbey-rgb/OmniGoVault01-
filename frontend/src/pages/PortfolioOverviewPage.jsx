@@ -38,6 +38,7 @@ import {
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import StatCard from '../components/shared/StatCard';
+import IconBadge from '../components/shared/IconBadge';
 import LedgerThreadSelector from '../components/governance/LedgerThreadSelector';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
