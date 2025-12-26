@@ -287,8 +287,12 @@ export default function MaximsPage({ user }) {
   
   useEffect(() => {
     const highlightParam = searchParams.get('highlight');
+    console.log('[MaximsPage] Highlight param:', highlightParam, 'hasScrolled:', hasScrolled.current);
+    
     if (highlightParam && !hasScrolled.current) {
       const maximId = parseInt(highlightParam);
+      console.log('[MaximsPage] Parsed maxim ID:', maximId);
+      
       if (!isNaN(maximId)) {
         // Clear filters so maxim is visible
         setSelectedCategory('all');
@@ -306,6 +310,8 @@ export default function MaximsPage({ user }) {
         
         const scrollToMaxim = () => {
           const maximElement = maximRefs.current[maximId];
+          console.log('[MaximsPage] Scroll attempt', retries + 1, 'Element found:', !!maximElement);
+          
           if (maximElement) {
             // Get element position and scroll with offset for header
             const elementRect = maximElement.getBoundingClientRect();
@@ -313,6 +319,8 @@ export default function MaximsPage({ user }) {
             // Larger offset for mobile headers (150px) to ensure title is fully visible
             const headerOffset = 150;
             const offsetPosition = absoluteElementTop - headerOffset;
+            
+            console.log('[MaximsPage] Scrolling to position:', offsetPosition);
             
             window.scrollTo({
               top: Math.max(0, offsetPosition),
@@ -329,6 +337,9 @@ export default function MaximsPage({ user }) {
             // Retry if element not found yet
             retries++;
             setTimeout(scrollToMaxim, 150);
+          } else {
+            console.log('[MaximsPage] Max retries reached, element not found');
+            hasScrolled.current = false;
           }
         };
         
