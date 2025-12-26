@@ -1139,7 +1139,7 @@ export default function GovernancePage({ user }) {
           title="Governance"
           subtitle="Trust meeting minutes, distributions, and compliance"
           icon={Gavel}
-          helpKey="governance"
+          titleAction={<PageHelpTooltip pageKey="governance" />}
         />
       </motion.div>
 
