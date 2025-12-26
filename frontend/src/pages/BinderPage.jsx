@@ -71,8 +71,10 @@ const STATUS_CONFIG = {
   failed: { color: 'text-red-400 bg-red-500/10', label: 'Failed', icon: X }
 };
 
-// Swipeable history card component - uses native <a> tags for View/Download
+// Swipeable history card component - with Copy Link for sandboxed environments
 function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
+  const [copiedView, setCopiedView] = useState(false);
+  const [copiedDl, setCopiedDl] = useState(false);
   const x = useMotionValue(0);
   const background = useTransform(x, [-100, 0], ['rgba(239, 68, 68, 0.3)', 'rgba(0, 0, 0, 0)']);
   const deleteOpacity = useTransform(x, [-100, -50, 0], [1, 0.5, 0]);
@@ -85,6 +87,21 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
 
   const viewUrl = `${API_URL}/api/binder/runs/${run.id}/view`;
   const downloadUrl = `${API_URL}/api/binder/runs/${run.id}/download`;
+
+  const copyLink = async (url, type) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      if (type === 'view') {
+        setCopiedView(true);
+        setTimeout(() => setCopiedView(false), 1500);
+      } else {
+        setCopiedDl(true);
+        setTimeout(() => setCopiedDl(false), 1500);
+      }
+    } catch (err) {
+      window.prompt('Copy this link:', url);
+    }
+  };
 
   return (
     <div className="relative overflow-hidden rounded-lg">
@@ -121,27 +138,26 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
         </p>
         {run.status === 'complete' && (
           <div className="flex gap-2 mt-2 relative z-10">
-            {/* Native <a> tag for View */}
-            <a
-              href={viewUrl}
-              className="inline-flex items-center text-xs text-vault-muted hover:text-white h-7 px-2 rounded-md hover:bg-vault-gold/10 no-underline touch-manipulation"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
-              onClick={(e) => e.stopPropagation()}
+            {/* Copy View Link button */}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); copyLink(viewUrl, 'view'); }}
+              className="inline-flex items-center text-xs h-8 px-3 rounded-md bg-vault-gold/20 text-vault-gold hover:bg-vault-gold/30 touch-manipulation active:scale-95 transition-transform"
+              style={{ WebkitTapHighlightColor: 'rgba(212,175,55,0.3)' }}
             >
-              <Eye className="w-3 h-3 mr-1" />
-              View
-            </a>
-            {/* Native <a> tag for Download */}
-            <a
-              href={downloadUrl}
-              download="OmniBinder.pdf"
-              className="inline-flex items-center text-xs text-vault-muted hover:text-white h-7 px-2 rounded-md hover:bg-vault-gold/10 no-underline touch-manipulation"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
-              onClick={(e) => e.stopPropagation()}
+              {copiedView ? <Check className="w-3 h-3 mr-1" /> : <Eye className="w-3 h-3 mr-1" />}
+              {copiedView ? 'Copied!' : 'Copy View'}
+            </button>
+            {/* Copy Download Link button */}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); copyLink(downloadUrl, 'dl'); }}
+              className="inline-flex items-center text-xs h-8 px-3 rounded-md border border-vault-gold/30 text-white hover:bg-vault-gold/10 touch-manipulation active:scale-95 transition-transform"
+              style={{ WebkitTapHighlightColor: 'rgba(212,175,55,0.3)' }}
             >
-              <Download className="w-3 h-3 mr-1" />
-              Download
-            </a>
+              {copiedDl ? <Check className="w-3 h-3 mr-1" /> : <Download className="w-3 h-3 mr-1" />}
+              {copiedDl ? 'Copied!' : 'Copy DL'}
+            </button>
           </div>
         )}
         {run.status === 'failed' && run.error_json && (
