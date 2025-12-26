@@ -347,18 +347,9 @@ export default function DashboardPage({ user }) {
                 <button
                   key={action.id}
                   onClick={action.action}
-                  className={`p-4 rounded-lg border transition-all duration-200 flex flex-col items-center gap-2 group ${
-                    action.color === 'gold' 
-                      ? 'border-vault-gold/20 hover:bg-vault-gold/10 hover:border-vault-gold/40' 
-                      : action.color === 'blue'
-                      ? 'border-vault-blue/20 hover:bg-vault-blue/10 hover:border-vault-blue/40'
-                      : 'border-white/10 hover:bg-white/5 hover:border-white/20'
-                  }`}
+                  className="p-4 rounded-lg border border-vault-gold/20 hover:bg-vault-gold/10 hover:border-vault-gold/40 transition-all duration-200 flex flex-col items-center gap-2 group"
                 >
-                  <action.icon className={`w-5 h-5 ${
-                    action.color === 'gold' ? 'text-vault-gold' :
-                    action.color === 'blue' ? 'text-vault-blue' : 'text-white/60'
-                  }`} weight="duotone" />
+                  <action.icon className="w-5 h-5 text-vault-gold" weight="duotone" />
                   <span className="text-xs text-white/70 group-hover:text-white">{action.label}</span>
                   {action.hint && <span className="hidden sm:inline text-[10px] text-white/30">{action.hint}</span>}
                 </button>
