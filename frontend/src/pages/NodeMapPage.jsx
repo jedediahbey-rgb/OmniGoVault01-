@@ -390,6 +390,7 @@ export default function NodeMapPage() {
     });
 
     // Other parties at bottom left area
+    const otherPartySpacing = isMobile ? 130 : 180;
     otherParties.forEach((party, idx) => {
       const nodeId = `party-${party.party_id}`;
       newNodes.push({
@@ -400,7 +401,7 @@ export default function NodeMapPage() {
           party,
           type: 'party',
         },
-        position: { x: 80 + idx * 160, y: centerY + verticalSpacing + 100 },
+        position: { x: (isMobile ? 50 : 100) + idx * otherPartySpacing, y: centerY + verticalSpacing + (isMobile ? 80 : 120) },
         style: nodeStyles.party,
       });
       newEdges.push({
