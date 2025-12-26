@@ -845,31 +845,48 @@ export default function BinderPage() {
                 {latestRun.status === 'complete' ? (
                   <div className="grid grid-cols-4 gap-2">
                     <Button
-                      onClick={() => window.open(`${API_URL}/api/binder/runs/${latestRun.id}/view`, '_blank')}
+                      asChild
                       className="col-span-1 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
                     >
-                      <Eye className="w-4 h-4 mr-1" />
-                      View
+                      <a 
+                        href={`${API_URL}/api/binder/runs/${latestRun.id}/view`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1"
+                      >
+                        <Eye className="w-4 h-4" />
+                        View
+                      </a>
                     </Button>
                     <Button
-                      onClick={() => window.open(`${API_URL}/api/binder/runs/${latestRun.id}/download`, '_blank')}
+                      asChild
                       variant="outline"
                       className="col-span-1 border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
-                      <Download className="w-4 h-4 mr-1" />
-                      <span className="hidden sm:inline">Download</span>
-                      <span className="sm:hidden">DL</span>
+                      <a 
+                        href={`${API_URL}/api/binder/runs/${latestRun.id}/download`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span className="hidden sm:inline">Download</span>
+                        <span className="sm:hidden">DL</span>
+                      </a>
                     </Button>
                     <Button
-                      onClick={() => {
-                        const url = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
-                        const printWindow = window.open(url, '_blank');
-                        printWindow?.addEventListener('load', () => printWindow.print());
-                      }}
+                      asChild
                       variant="outline"
                       className="col-span-1 border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
-                      <Printer className="w-4 h-4" />
+                      <a 
+                        href={`${API_URL}/api/binder/runs/${latestRun.id}/view`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center"
+                      >
+                        <Printer className="w-4 h-4" />
+                      </a>
                     </Button>
                     <Button
                       onClick={() => handleViewManifest(latestRun.id)}
