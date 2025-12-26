@@ -631,7 +631,10 @@ export default function NodeMapPage() {
             <MiniMap 
               style={{ 
                 backgroundColor: 'rgba(11, 18, 33, 0.8)',
-                border: '1px solid rgba(255,255,255,0.1)'
+                border: '1px solid rgba(255,255,255,0.1)',
+                top: 10,
+                right: 10,
+                bottom: 'auto',
               }}
               nodeColor={(node) => {
                 const colors = {
@@ -645,6 +648,7 @@ export default function NodeMapPage() {
                 };
                 return colors[node.data?.type] || '#666';
               }}
+              position="top-right"
             />
             <Background color="rgba(255,255,255,0.03)" gap={20} />
             
