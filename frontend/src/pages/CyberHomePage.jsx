@@ -602,7 +602,7 @@ export default function CyberHomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 lg:py-16">
-          <div className="max-w-3xl mx-auto lg:mx-0">
+          <div className="max-w-3xl mx-auto lg:mx-0 ov-hero">
             <motion.div
               initial="hidden"
               animate="visible"
@@ -618,6 +618,7 @@ export default function CyberHomePage() {
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
+                    className="ov-logo sm:max-h-[160px] lg:max-h-[180px]"
                     style={{
                       width: '100%',
                       height: 'auto',
@@ -626,26 +627,25 @@ export default function CyberHomePage() {
                       display: 'block',
                       margin: '0 auto'
                     }}
-                    className="sm:max-h-[160px] lg:max-h-[180px]"
                   />
                 </div>
               </motion.div>
               
               <motion.h2
                 variants={fadeInUp}
-                className="text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light text-center lg:text-left max-w-md mx-auto lg:mx-0"
+                className="ov-tagline text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light text-center lg:text-left max-w-md mx-auto lg:mx-0"
               >
                 A matrix system for trust governance.
               </motion.h2>
               
               <motion.p 
                 variants={fadeInUp}
-                className="mt-2 text-base sm:text-lg text-slate-400 max-w-md mx-auto lg:mx-0 leading-relaxed italic text-center lg:text-left"
+                className="ov-quote mt-2 text-base sm:text-lg text-slate-400 max-w-md mx-auto lg:mx-0 leading-relaxed italic text-center lg:text-left"
               >
                 "In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will."&nbsp;&nbsp;<span className="text-sm text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
               
-              <motion.div variants={fadeInUp} className="mt-4 flex flex-col gap-3 max-w-md mx-auto lg:mx-0">
+              <motion.div variants={fadeInUp} className="ov-actions mt-4 flex flex-col gap-3 max-w-md mx-auto lg:mx-0">
                 <Link to="/login">
                   <Button size="lg" className="w-full bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
                     Enter the Vault
@@ -665,7 +665,7 @@ export default function CyberHomePage() {
               </motion.p>
               
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap gap-6 sm:gap-8 justify-center lg:justify-start max-w-md mx-auto lg:mx-0">
+              <motion.div variants={fadeInUp} className="ov-stats mt-8 flex flex-wrap gap-6 sm:gap-8 justify-center lg:justify-start max-w-md mx-auto lg:mx-0">
                 {[
                   { value: '500+', label: 'Trusts Managed' },
                   { value: '10k+', label: 'Documents Filed' },
