@@ -245,7 +245,7 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
 
       {/* Help text */}
       <p className="text-vault-muted text-xs text-center">
-        Tap "Copy PDF Link" then paste in a new browser tab
+        Tap &quot;Copy PDF Link&quot; then paste in a new browser tab
       </p>
     </div>
   );
