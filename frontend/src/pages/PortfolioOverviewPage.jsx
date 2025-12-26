@@ -1253,9 +1253,7 @@ export default function PortfolioOverviewPage({ user }) {
                     <Link key={record.id} to={recordLink}>
                       <div className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-vault-gold/30 transition-all group">
                         {/* Icon */}
-                        <div className={`w-10 h-10 rounded-lg ${config.bgClass} ${config.borderClass} border flex items-center justify-center flex-shrink-0`}>
-                          <Icon className={`w-5 h-5 ${config.textClass}`} weight="duotone" />
-                        </div>
+                        <IconBadge icon={Icon} size="md" variant={config.variant || 'default'} />
 
                         {/* Content */}
                         <div className="flex-1 min-w-0 overflow-hidden">
