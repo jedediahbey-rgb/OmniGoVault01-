@@ -530,11 +530,9 @@ export default function DiagramsPage() {
               interactive
               glow
               onClick={() => loadDiagram(diagram)}
-              className="h-full"
+              className="h-full group"
             >
-              <div className="w-12 h-12 rounded-xl bg-vault-gold/10 flex items-center justify-center mb-4">
-                <diagram.icon className="w-6 h-6 text-vault-gold" />
-              </div>
+              <IconBadge icon={diagram.icon} size="lg" variant="gold" className="mb-4" />
               <h3 className="text-xl font-heading text-white mb-2">{diagram.title}</h3>
               <p className="text-white/50 text-sm mb-4">{diagram.description}</p>
               <div className="flex items-center text-vault-gold text-sm">
