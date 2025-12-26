@@ -825,27 +825,35 @@ export default function BinderPage() {
                 {/* Action buttons - moved to top for better mobile accessibility */}
                 {latestRun.status === 'complete' && (
                   <div className="grid grid-cols-4 gap-2 mb-4">
-                    <a
-                      href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
+                    <button
+                      onClick={() => {
+                        const url = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
+                        window.location.href = url;
+                      }}
                       className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
                     >
                       <Eye className="w-4 h-4" />
                       View
-                    </a>
-                    <a
-                      href={`${API_URL}/api/binder/runs/${latestRun.id}/download`}
-                      download
+                    </button>
+                    <button
+                      onClick={() => {
+                        const url = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
+                        window.location.href = url;
+                      }}
                       className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
                       <Download className="w-4 h-4" />
                       DL
-                    </a>
-                    <a
-                      href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
+                    </button>
+                    <button
+                      onClick={() => {
+                        const url = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
+                        window.location.href = url;
+                      }}
                       className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
                       <Printer className="w-4 h-4" />
-                    </a>
+                    </button>
                     <button
                       onClick={() => handleViewManifest(latestRun.id)}
                       className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
