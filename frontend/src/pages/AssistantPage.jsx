@@ -228,9 +228,7 @@ export default function AssistantPage({ user }) {
                   animate={{ opacity: 1 }}
                   className="flex gap-4"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center">
-                    <Robot className="w-5 h-5 text-vault-gold" weight="duotone" />
-                  </div>
+                  <IconBadge icon={Robot} size="md" variant="gold" />
                   <div className="flex items-center gap-2 text-white/40">
                     <div className="w-2 h-2 bg-vault-gold rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                     <div className="w-2 h-2 bg-vault-gold rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
