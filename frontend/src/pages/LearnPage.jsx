@@ -1071,14 +1071,17 @@ export default function LearnPage({ user }) {
                   onClick={() => setSelectedLesson(lesson)}
                   className="flex items-center gap-4 group"
                 >
-                  <IconBadge 
-                    icon={isComplete ? CheckCircle : null} 
-                    size="md" 
-                    variant={isComplete ? 'emerald' : 'gold'}
-                    className={!isComplete ? 'flex items-center justify-center' : ''}
-                  >
-                    {!isComplete && <span className="text-vault-gold font-mono">{idx + 1}</span>}
-                  </IconBadge>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                    isComplete 
+                      ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/30' 
+                      : 'bg-gradient-to-br from-vault-gold/20 to-vault-gold/5 border border-vault-gold/30'
+                  }`}>
+                    {isComplete ? (
+                      <CheckCircle className="w-5 h-5 text-emerald-400" weight="duotone" />
+                    ) : (
+                      <span className="text-vault-gold font-mono">{idx + 1}</span>
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-white font-medium">{lesson.title}</h4>
                     <p className="text-white/40 text-sm">{lesson.keyPoints.length} key concepts</p>
