@@ -223,6 +223,12 @@ export default function NodeMapPage() {
     const portfolio = portfolios.find(p => p.portfolio_id === selectedPortfolio);
     const trustName = trustProfile?.trust_name || portfolio?.name || 'Trust';
 
+    // Layout constants for better spacing
+    const centerX = 450;
+    const centerY = 280;
+    const horizontalSpacing = 220;
+    const verticalSpacing = 140;
+
     // Central Trust Node
     newNodes.push({
       id: 'trust-center',
@@ -231,7 +237,7 @@ export default function NodeMapPage() {
         label: `📜 ${trustName}`,
         type: 'trust',
       },
-      position: { x: 400, y: 250 },
+      position: { x: centerX, y: centerY },
       style: nodeStyles.trust,
     });
 
@@ -241,8 +247,8 @@ export default function NodeMapPage() {
     const beneficiaries = parties.filter(p => p.role === 'beneficiary');
     const otherParties = parties.filter(p => !['grantor', 'trustee', 'beneficiary'].includes(p.role));
 
-    // Position parties around the trust
-    // Grantors on the left
+    // Position parties around the trust - Grantors on the left
+    const grantorStartY = centerY - ((grantors.length - 1) * verticalSpacing) / 2;
     grantors.forEach((party, idx) => {
       const nodeId = `party-${party.party_id}`;
       newNodes.push({
@@ -253,7 +259,7 @@ export default function NodeMapPage() {
           party,
           type: 'grantor',
         },
-        position: { x: 50, y: 150 + idx * 120 },
+        position: { x: centerX - horizontalSpacing - 80, y: grantorStartY + idx * verticalSpacing },
         style: nodeStyles.grantor,
       });
       newEdges.push({
@@ -271,10 +277,10 @@ export default function NodeMapPage() {
       });
     });
 
-    // Trustees on top
+    // Trustees on top - centered above trust
+    const trusteeStartX = centerX - ((trustees.length - 1) * horizontalSpacing) / 2;
     trustees.forEach((party, idx) => {
       const nodeId = `party-${party.party_id}`;
-      const xPos = 300 + idx * 200;
       newNodes.push({
         id: nodeId,
         type: 'default',
@@ -283,7 +289,7 @@ export default function NodeMapPage() {
           party,
           type: 'trustee',
         },
-        position: { x: xPos, y: 50 },
+        position: { x: trusteeStartX + idx * horizontalSpacing, y: centerY - verticalSpacing - 40 },
         style: nodeStyles.trustee,
       });
       newEdges.push({
@@ -301,6 +307,7 @@ export default function NodeMapPage() {
     });
 
     // Beneficiaries on the right
+    const beneficiaryStartY = centerY - ((beneficiaries.length - 1) * verticalSpacing) / 2;
     beneficiaries.forEach((party, idx) => {
       const nodeId = `party-${party.party_id}`;
       newNodes.push({
@@ -311,7 +318,7 @@ export default function NodeMapPage() {
           party,
           type: 'beneficiary',
         },
-        position: { x: 750, y: 150 + idx * 120 },
+        position: { x: centerX + horizontalSpacing + 100, y: beneficiaryStartY + idx * verticalSpacing },
         style: nodeStyles.beneficiary,
       });
       newEdges.push({
@@ -328,7 +335,7 @@ export default function NodeMapPage() {
       });
     });
 
-    // Other parties at bottom left
+    // Other parties at bottom left area
     otherParties.forEach((party, idx) => {
       const nodeId = `party-${party.party_id}`;
       newNodes.push({
@@ -339,7 +346,7 @@ export default function NodeMapPage() {
           party,
           type: 'party',
         },
-        position: { x: 100 + idx * 150, y: 450 },
+        position: { x: 80 + idx * 160, y: centerY + verticalSpacing + 100 },
         style: nodeStyles.party,
       });
       newEdges.push({
@@ -351,18 +358,21 @@ export default function NodeMapPage() {
       });
     });
 
-    // Assets below trust
+    // Assets below trust - evenly distributed
+    const assetCount = Math.min(assets.length, 5);
+    const assetSpacing = 150;
+    const assetStartX = centerX - ((assetCount - 1) * assetSpacing) / 2;
     assets.slice(0, 5).forEach((asset, idx) => {
       const nodeId = `asset-${asset.asset_id}`;
       newNodes.push({
         id: nodeId,
         type: 'default',
         data: { 
-          label: `🏠 ${asset.description?.slice(0, 20) || 'Asset'}${asset.description?.length > 20 ? '...' : ''}`,
+          label: `🏠 ${asset.description?.slice(0, 18) || 'Asset'}${asset.description?.length > 18 ? '...' : ''}`,
           asset,
           type: 'asset',
         },
-        position: { x: 200 + idx * 140, y: 420 },
+        position: { x: assetStartX + idx * assetSpacing, y: centerY + verticalSpacing + 60 },
         style: nodeStyles.asset,
       });
       newEdges.push({
@@ -379,7 +389,7 @@ export default function NodeMapPage() {
       });
     });
 
-    // Governance records as small nodes
+    // Governance records as small nodes - positioned to the right of assets
     const govByType = {};
     governanceRecords.forEach(rec => {
       const type = rec.module_type || 'other';
@@ -387,8 +397,9 @@ export default function NodeMapPage() {
       govByType[type].push(rec);
     });
 
-    let govX = 600;
-    Object.entries(govByType).slice(0, 4).forEach(([type, records]) => {
+    const govTypes = Object.entries(govByType).slice(0, 4);
+    const govStartX = centerX + horizontalSpacing - 60;
+    govTypes.forEach(([type, records], idx) => {
       const nodeId = `gov-${type}`;
       const icons = {
         minutes: '📋',
@@ -405,7 +416,7 @@ export default function NodeMapPage() {
           records,
           type: 'governance',
         },
-        position: { x: govX, y: 450 },
+        position: { x: govStartX + idx * 130, y: centerY + verticalSpacing + 60 },
         style: nodeStyles.governance,
       });
       newEdges.push({
@@ -415,7 +426,6 @@ export default function NodeMapPage() {
         style: edgeStyles.governance,
         markerEnd: { type: MarkerType.ArrowClosed, color: '#0EA5E9' },
       });
-      govX += 120;
     });
 
     // If no parties exist, show placeholder nodes
