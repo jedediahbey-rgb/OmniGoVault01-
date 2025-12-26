@@ -194,47 +194,85 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
   };
 
   return (
-    <div className="grid grid-cols-4 gap-2 mb-4">
-      <a
-        href={viewUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-10 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark no-underline"
-      >
-        <Eye className="w-4 h-4" />
-        View
-      </a>
+    <>
+      <div className="grid grid-cols-4 gap-2 mb-4">
+        <a
+          href={viewUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-10 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark no-underline"
+        >
+          <Eye className="w-4 h-4" />
+          View
+        </a>
 
-      <a
-        href={downloadUrl}
-        download="OmniBinder.pdf"
-        className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-10 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline"
-      >
-        <Download className="w-4 h-4" />
-        DL
-      </a>
+        <a
+          href={downloadUrl}
+          download="OmniBinder.pdf"
+          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-10 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline"
+        >
+          <Download className="w-4 h-4" />
+          DL
+        </a>
 
-      <button
-        type="button"
-        onClick={handlePrint}
-        disabled={isPrinting}
-        className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 disabled:opacity-50 disabled:cursor-wait"
-      >
-        {isPrinting ? (
-          <ArrowClockwise className="w-4 h-4 animate-spin" />
-        ) : (
+        <button
+          type="button"
+          onClick={handlePrint}
+          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
+        >
           <Printer className="w-4 h-4" />
-        )}
-      </button>
+        </button>
 
-      <button
-        type="button"
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleViewManifest(latestRun.id); }}
-        className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
-      >
-        <FileText className="w-4 h-4" />
-      </button>
-    </div>
+        <button
+          type="button"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleViewManifest(latestRun.id); }}
+          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
+        >
+          <FileText className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Mobile Print Help Dialog */}
+      <Dialog open={showPrintHelp} onOpenChange={setShowPrintHelp}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-heading text-vault-gold flex items-center gap-2">
+              <Printer className="w-5 h-5" />
+              Print PDF
+            </DialogTitle>
+            <DialogDescription className="text-vault-muted">
+              Mobile browsers require manual printing
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-3">
+            <p className="text-white text-sm">To print your binder:</p>
+            <ol className="text-vault-muted text-sm space-y-2 list-decimal list-inside">
+              <li>Tap <span className="text-vault-gold font-medium">"Open PDF"</span> below</li>
+              <li>Tap your browser menu <span className="text-white font-mono">⋮</span></li>
+              <li>Select <span className="text-vault-gold font-medium">"Print"</span> or <span className="text-vault-gold font-medium">"Share"</span></li>
+            </ol>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowPrintHelp(false)} 
+              className="border-vault-gold/30 text-white"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={openPdfForPrint}
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Open PDF
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
