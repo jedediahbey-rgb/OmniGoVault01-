@@ -312,19 +312,8 @@ export default function MaximsPage({ user }) {
           const maximElement = maximRefs.current[maximId];
           
           if (maximElement) {
-            // Use scrollIntoView with behavior smooth and block start
-            // Then adjust for header with a second scroll
-            maximElement.scrollIntoView({ behavior: 'auto', block: 'start' });
-            
-            // Adjust for header after scrollIntoView
-            setTimeout(() => {
-              const currentScroll = window.scrollY || window.pageYOffset;
-              // Subtract header offset to show more of the maxim
-              window.scrollTo({
-                top: Math.max(0, currentScroll - 150),
-                behavior: 'smooth'
-              });
-            }, 50);
+            // First scroll element to view
+            maximElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
             // Clear URL parameter and highlight after delay
             setTimeout(() => {
