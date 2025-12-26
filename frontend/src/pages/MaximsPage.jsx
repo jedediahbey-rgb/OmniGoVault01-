@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import {
