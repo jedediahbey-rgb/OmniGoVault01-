@@ -109,6 +109,46 @@ export default function DiagnosticsPage() {
     setSelectedIssues(new Set());
   };
 
+  // Fix all orphaned records at once
+  const fixAllOrphans = async () => {
+    if (!currentScan?.issues) return;
+    
+    const orphanIds = currentScan.issues
+      .filter(i => i.issue_type === 'missing_fk')
+      .map(i => i.record_id);
+    
+    if (orphanIds.length === 0) {
+      toast.info('No fixable issues found');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete all ${orphanIds.length} orphaned record(s)? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setDeleting(true);
+    try {
+      const res = await axios.delete(`${API}/api/integrity/records/bulk`, {
+        data: { record_ids: orphanIds }
+      });
+
+      if (res.data.ok) {
+        toast.success(`Fixed ${res.data.data.deleted_count} orphaned records`);
+        // Re-run scan to refresh the list
+        await runScan();
+      } else {
+        toast.error('Failed to fix records');
+      }
+    } catch (err) {
+      console.error('Fix failed:', err);
+      toast.error('Failed to fix orphaned records');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const deleteSelectedRecords = async () => {
     if (selectedIssues.size === 0) {
       toast.error('No records selected');
