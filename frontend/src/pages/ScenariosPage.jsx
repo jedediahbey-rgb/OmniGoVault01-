@@ -501,11 +501,9 @@ export default function ScenariosPage() {
                       interactive
                       glow
                       onClick={() => selectScenario(scenario)}
-                      className="h-full"
+                      className="h-full group"
                     >
-                      <div className={`w-12 h-12 rounded-xl ${colorClasses[scenario.color]} flex items-center justify-center mb-4`}>
-                        <Icon className="w-6 h-6" weight="duotone" />
-                      </div>
+                      <IconBadge icon={Icon} size="lg" variant={scenario.color} className="mb-4" />
                       <h3 className="text-lg font-heading text-white mb-2">{scenario.title}</h3>
                       <p className="text-white/50 text-sm mb-4">{scenario.description}</p>
                       <div className="flex items-center justify-between">
@@ -538,9 +536,7 @@ export default function ScenariosPage() {
                     >
                       ← Back
                     </button>
-                    <div className={`w-10 h-10 rounded-lg ${colorClasses[selectedScenario.color]} flex items-center justify-center`}>
-                      <selectedScenario.icon className="w-5 h-5" weight="duotone" />
-                    </div>
+                    <IconBadge icon={selectedScenario.icon} size="md" variant={selectedScenario.color} />
                     <div>
                       <h2 className="text-xl font-heading text-white">{selectedScenario.title}</h2>
                       <p className="text-white/50 text-sm">{selectedScenario.description}</p>
@@ -707,9 +703,7 @@ export default function ScenariosPage() {
                   <GlassCard key={saved.id}>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-lg ${colorClasses[template?.color || 'blue']} flex items-center justify-center`}>
-                          <Icon className="w-6 h-6" weight="duotone" />
-                        </div>
+                        <IconBadge icon={Icon} size="lg" variant={template?.color || 'blue'} />
                         <div>
                           <h3 className="text-white font-medium">{saved.name}</h3>
                           <p className="text-white/50 text-sm">
