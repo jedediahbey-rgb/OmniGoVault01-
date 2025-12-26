@@ -17,7 +17,7 @@ import re
 from datetime import datetime
 
 class GovernanceFixesTester:
-    def __init__(self, base_url="https://portfolio-sync-10.preview.emergentagent.com"):
+    def __init__(self, base_url="https://designsystem-4.preview.emergentagent.com"):
         self.base_url = base_url
         self.session_token = None
         self.user_id = None
