@@ -316,12 +316,20 @@ export default function BinderPage() {
           description: `Successfully created binder with ${data.data.total_items} items`
         });
         
-        // Immediately update the latest run from the response
-        if (data.data.run) {
-          setLatestRun(data.data.run);
+        // Fetch the newly created run to update Latest Binder section
+        if (data.data.run_id) {
+          try {
+            const runRes = await fetch(`${API_URL}/api/binder/runs/${data.data.run_id}`);
+            const runData = await runRes.json();
+            if (runData.ok && runData.data.run) {
+              setLatestRun(runData.data.run);
+            }
+          } catch (e) {
+            console.error('Failed to fetch new run:', e);
+          }
         }
         
-        // Also refresh the full data for history
+        // Also refresh the history
         fetchData();
       } else {
         toast({
