@@ -119,6 +119,7 @@ const assetTypeConfig = {
   real_property: { 
     icon: House, 
     label: 'Real Property', 
+    variant: 'emerald',
     bgClass: 'bg-emerald-500/20', 
     textClass: 'text-emerald-400',
     borderClass: 'border-emerald-500/30'
@@ -126,6 +127,7 @@ const assetTypeConfig = {
   personal_property: { 
     icon: Package, 
     label: 'Personal Property', 
+    variant: 'blue',
     bgClass: 'bg-blue-500/20', 
     textClass: 'text-blue-400',
     borderClass: 'border-blue-500/30'
@@ -133,6 +135,7 @@ const assetTypeConfig = {
   financial_account: { 
     icon: Bank, 
     label: 'Financial Account', 
+    variant: 'purple',
     bgClass: 'bg-purple-500/20', 
     textClass: 'text-purple-400',
     borderClass: 'border-purple-500/30'
@@ -140,6 +143,7 @@ const assetTypeConfig = {
   securities: { 
     icon: ChartLine, 
     label: 'Securities', 
+    variant: 'cyan',
     bgClass: 'bg-cyan-500/20', 
     textClass: 'text-cyan-400',
     borderClass: 'border-cyan-500/30'
@@ -147,6 +151,7 @@ const assetTypeConfig = {
   intellectual_property: { 
     icon: FileText, 
     label: 'Intellectual Property', 
+    variant: 'amber',
     bgClass: 'bg-amber-500/20', 
     textClass: 'text-amber-400',
     borderClass: 'border-amber-500/30'
@@ -154,6 +159,7 @@ const assetTypeConfig = {
   vehicle: { 
     icon: Car, 
     label: 'Vehicle', 
+    variant: 'orange',
     bgClass: 'bg-orange-500/20', 
     textClass: 'text-orange-400',
     borderClass: 'border-orange-500/30'
@@ -161,6 +167,7 @@ const assetTypeConfig = {
   other: { 
     icon: Wallet, 
     label: 'Other', 
+    variant: 'gray',
     bgClass: 'bg-gray-500/20', 
     textClass: 'text-gray-400',
     borderClass: 'border-gray-500/30'
