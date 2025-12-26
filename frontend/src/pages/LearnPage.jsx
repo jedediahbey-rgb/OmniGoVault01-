@@ -22,6 +22,7 @@ import {
   X
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Progress } from '../components/ui/progress';
@@ -972,7 +973,7 @@ export default function LearnPage({ user }) {
         icon={BookOpen}
         title="Learn"
         subtitle="Master equity jurisprudence through structured lessons"
-        helpKey="learn"
+        titleAction={<PageHelpTooltip pageKey="learn" />}
       />
 
       {!selectedModule ? (
