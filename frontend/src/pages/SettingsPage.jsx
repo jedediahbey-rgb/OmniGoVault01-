@@ -28,6 +28,7 @@ import {
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -198,7 +199,7 @@ export default function SettingsPage() {
         <PageHeader
           title="Settings"
           subtitle="Configure trust health rules and governance checklists"
-          helpKey="settings"
+          titleAction={<PageHelpTooltip pageKey="settings" />}
           breadcrumbs={[
             { label: 'Dashboard', href: '/vault' },
             { label: 'Settings' }
