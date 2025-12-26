@@ -56,11 +56,11 @@ export default function DashboardPage({ user }) {
 
   // All available quick actions
   const allQuickActions = [
-    { id: 'document', icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'blue' },
-    { id: 'glossary', icon: Book, label: 'Glossary', action: () => navigate('/glossary'), color: 'default' },
+    { id: 'document', icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'gold' },
+    { id: 'glossary', icon: Book, label: 'Glossary', action: () => navigate('/glossary'), color: 'gold' },
     { id: 'assistant', icon: Robot, label: 'Ask Assistant', action: () => navigate('/assistant'), color: 'gold', hint: 'Ctrl+J' },
-    { id: 'diagnostics', icon: Stethoscope, label: 'Diagnostics', action: () => navigate('/diagnostics'), color: 'default' },
-    { id: 'learn', icon: BookOpen, label: 'Start Learning', action: () => navigate('/learn'), color: 'default' },
+    { id: 'diagnostics', icon: Stethoscope, label: 'Diagnostics', action: () => navigate('/diagnostics'), color: 'gold' },
+    { id: 'learn', icon: BookOpen, label: 'Start Learning', action: () => navigate('/learn'), color: 'gold' },
     { id: 'health', icon: Stethoscope, label: 'Trust Health', action: () => navigate('/health'), color: 'gold' },
   ];
 
