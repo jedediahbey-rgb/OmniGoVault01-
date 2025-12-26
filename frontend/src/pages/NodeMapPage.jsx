@@ -676,68 +676,72 @@ export default function NodeMapPage() {
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
             fitView
-            fitViewOptions={{ padding: 0.2, minZoom: 0.5, maxZoom: 1.5 }}
-            minZoom={0.3}
-            maxZoom={2}
+            fitViewOptions={{ padding: isMobile ? 0.15 : 0.2, minZoom: 0.3, maxZoom: 1.5 }}
+            minZoom={0.2}
+            maxZoom={2.5}
             proOptions={{ hideAttribution: true }}
             style={{ background: 'rgba(11, 18, 33, 0.95)' }}
+            defaultViewport={{ x: 0, y: 0, zoom: isMobile ? 0.6 : 0.8 }}
           >
             <Controls 
               position="bottom-right"
               showInteractive={false}
-              className="!bg-vault-dark/90 !border-vault-gold/30 !rounded-lg !shadow-lg [&>button]:!bg-vault-dark/90 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-8 [&>button]:!h-8"
+              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-7 [&>button]:!h-7 sm:[&>button]:!w-8 sm:[&>button]:!h-8"
             />
-            <MiniMap 
-              style={{ 
-                backgroundColor: 'rgba(11, 18, 33, 0.9)',
-                border: '1px solid rgba(198, 168, 124, 0.3)',
-                borderRadius: '8px',
-              }}
-              nodeColor={(node) => {
-                const colors = {
-                  trust: '#C6A87C',
-                  grantor: '#A855F7',
-                  trustee: '#22C55E',
-                  beneficiary: '#FBBF24',
-                  party: '#3B82F6',
-                  asset: '#EF4444',
-                  governance: '#0EA5E9',
-                };
-                return colors[node.data?.type] || '#666';
-              }}
-              position="top-right"
-              pannable
-              zoomable
-            />
-            <Background color="rgba(255,255,255,0.05)" gap={25} />
+            {/* MiniMap - hidden on mobile for cleaner view */}
+            {!isMobile && (
+              <MiniMap 
+                style={{ 
+                  backgroundColor: 'rgba(11, 18, 33, 0.9)',
+                  border: '1px solid rgba(198, 168, 124, 0.3)',
+                  borderRadius: '8px',
+                }}
+                nodeColor={(node) => {
+                  const colors = {
+                    trust: '#C6A87C',
+                    grantor: '#A855F7',
+                    trustee: '#22C55E',
+                    beneficiary: '#FBBF24',
+                    party: '#3B82F6',
+                    asset: '#EF4444',
+                    governance: '#0EA5E9',
+                  };
+                  return colors[node.data?.type] || '#666';
+                }}
+                position="top-right"
+                pannable
+                zoomable
+              />
+            )}
+            <Background color="rgba(255,255,255,0.05)" gap={isMobile ? 20 : 25} />
             
-            {/* Legend Panel */}
-            <Panel position="bottom-left" className="!m-3 !mb-4">
-              <GlassCard className="!p-3 !bg-vault-dark/95 !border-vault-gold/20">
-                <div className="text-xs text-white/70 mb-2 font-semibold">Legend</div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-[#C6A87C]" />
+            {/* Legend Panel - Compact on mobile */}
+            <Panel position="bottom-left" className="!m-2 sm:!m-3 !mb-3 sm:!mb-4">
+              <GlassCard className="!p-2 sm:!p-3 !bg-vault-dark/95 !border-vault-gold/20">
+                <div className="text-[10px] sm:text-xs text-white/70 mb-1.5 sm:mb-2 font-semibold">Legend</div>
+                <div className="grid grid-cols-2 gap-x-2 sm:gap-x-4 gap-y-1 sm:gap-y-1.5 text-[10px] sm:text-xs">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-[#C6A87C]" />
                     <span className="text-white/80">Trust</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-[#A855F7]" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-[#A855F7]" />
                     <span className="text-white/80">Grantor</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-[#22C55E]" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-[#22C55E]" />
                     <span className="text-white/80">Trustee</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-[#FBBF24]" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-[#FBBF24]" />
                     <span className="text-white/80">Beneficiary</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-[#EF4444]" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-[#EF4444]" />
                     <span className="text-white/80">Asset</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-[#0EA5E9]" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-[#0EA5E9]" />
                     <span className="text-white/80">Governance</span>
                   </div>
                 </div>
