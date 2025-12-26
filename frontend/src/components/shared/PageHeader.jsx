@@ -90,9 +90,12 @@ export default function PageHeader({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-heading text-white tracking-tight">
-              {safeTitle || 'Untitled'}
-            </h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-2xl sm:text-3xl font-heading text-white tracking-tight">
+                {safeTitle || 'Untitled'}
+              </h1>
+              {titleAction && <div className="shrink-0">{titleAction}</div>}
+            </div>
             {(safeSubtitle || helpKey) && (
               <div className="flex items-center gap-2 mt-1">
                 {safeSubtitle && <p className="text-white/60">{safeSubtitle}</p>}
