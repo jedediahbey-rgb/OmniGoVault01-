@@ -300,7 +300,16 @@ export default function MaximsPage({ user }) {
         setTimeout(() => {
           const maximElement = maximRefs.current[maximId];
           if (maximElement) {
-            maximElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Get element position and scroll with offset for header
+            const elementRect = maximElement.getBoundingClientRect();
+            const absoluteElementTop = elementRect.top + window.pageYOffset;
+            // Offset for header (approximately 80px) plus some padding (20px)
+            const offsetPosition = absoluteElementTop - 100;
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
           }
         }, 300);
         
