@@ -315,7 +315,14 @@ export default function BinderPage() {
           title: 'Binder Generated',
           description: `Successfully created binder with ${data.data.total_items} items`
         });
-        fetchData(); // Refresh data
+        
+        // Immediately update the latest run from the response
+        if (data.data.run) {
+          setLatestRun(data.data.run);
+        }
+        
+        // Also refresh the full data for history
+        fetchData();
       } else {
         toast({
           title: 'Generation Failed',
