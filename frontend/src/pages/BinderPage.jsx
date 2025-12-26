@@ -822,28 +822,9 @@ export default function BinderPage() {
                   </Badge>
                 </div>
 
-                <div className="bg-vault-dark/50 rounded-lg p-4 mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-lg bg-vault-gold/10">
-                      <FilePdf className="w-8 h-8 text-vault-gold" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-white">{latestRun.profile_name}</h3>
-                      {latestRun.finished_at && (
-                        <p className="text-vault-muted text-sm">
-                          Generated {new Date(latestRun.finished_at).toLocaleString()}
-                        </p>
-                      )}
-                      <p className="text-vault-muted text-xs">
-                        {latestRun.total_items} items • {latestRun.total_pages || 'N/A'} pages
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Only show action buttons for completed binders */}
-                {latestRun.status === 'complete' ? (
-                  <div className="grid grid-cols-4 gap-2 relative z-50">
+                {/* Action buttons - moved to top for better mobile accessibility */}
+                {latestRun.status === 'complete' && (
+                  <div className="grid grid-cols-4 gap-2 mb-4">
                     <a
                       href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
                       target="_blank"
@@ -877,7 +858,28 @@ export default function BinderPage() {
                       <FileText className="w-4 h-4" />
                     </button>
                   </div>
-                ) : latestRun.status === 'failed' ? (
+                )}
+
+                <div className="bg-vault-dark/50 rounded-lg p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-lg bg-vault-gold/10">
+                      <FilePdf className="w-8 h-8 text-vault-gold" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-white">{latestRun.profile_name}</h3>
+                      {latestRun.finished_at && (
+                        <p className="text-vault-muted text-sm">
+                          Generated {new Date(latestRun.finished_at).toLocaleString()}
+                        </p>
+                      )}
+                      <p className="text-vault-muted text-xs">
+                        {latestRun.total_items} items • {latestRun.total_pages || 'N/A'} pages
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {latestRun.status === 'failed' && (
                   <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                     <p className="text-red-400 text-sm">
                       {latestRun.error_json?.user_message || latestRun.error_json?.message || 'Generation failed'}
