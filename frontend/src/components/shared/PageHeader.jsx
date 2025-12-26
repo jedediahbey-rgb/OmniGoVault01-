@@ -33,13 +33,13 @@ const safeString = (value) => {
  * - icon: Phosphor icon component to display
  * - actions: React elements for top-right action buttons
  * - breadcrumbs: Array of breadcrumb items
- * - titleAction: Element placed NEXT TO the title (e.g., create button)
- * - subtitleAction: Element placed NEXT TO the subtitle (e.g., help tooltip)
+ * - titleAction: Element placed NEXT TO the title (e.g., create folder button)
+ * - subtitleAction: Element placed NEXT TO the subtitle (e.g., help "?" tooltip)
  * - helpKey: DEPRECATED - use subtitleAction with PageHelpTooltip instead
  * 
- * LOCKED POSITIONING:
- * - titleAction appears inline with the title text
- * - subtitleAction appears inline with the subtitle text
+ * LOCKED POSITIONING STANDARD:
+ * - All "?" help icons go in subtitleAction (next to subtitle)
+ * - Action buttons like "create new" go in titleAction (next to title)
  * - DO NOT change this layout without explicit user request
  */
 export default function PageHeader({ 
