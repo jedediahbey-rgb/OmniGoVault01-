@@ -29,6 +29,7 @@ import {
   X,
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -461,7 +462,7 @@ export default function ScenariosPage() {
         icon={ChartLine}
         title="Scenario Planning"
         subtitle="Model trust decisions and compare outcomes with what-if analysis"
-        helpKey="scenarios"
+        titleAction={<PageHelpTooltip pageKey="scenarios" />}
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
