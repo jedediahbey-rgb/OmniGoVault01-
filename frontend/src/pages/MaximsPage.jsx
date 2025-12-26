@@ -301,10 +301,22 @@ export default function MaximsPage({ user }) {
         setHighlightedMaximId(maximId);
         setExpandedId(maximId);
         
-        // Let browser handle the scroll, then clear highlight after delay
+        // Manually scroll to the element after a delay for rendering
+        const scrollToElement = () => {
+          const element = document.getElementById(`maxim-${maximId}`);
+          if (element) {
+            element.scrollIntoView({ block: 'start' });
+          }
+        };
+        
+        // Try scrolling multiple times to ensure element exists
+        setTimeout(scrollToElement, 100);
+        setTimeout(scrollToElement, 300);
+        setTimeout(scrollToElement, 600);
+        
+        // Clear highlight after delay
         setTimeout(() => {
           setHighlightedMaximId(null);
-          // Clear the hash from URL
           window.history.replaceState(null, '', window.location.pathname);
           hasScrolled.current = false;
         }, 4000);
