@@ -622,19 +622,22 @@ export default function NodeMapPage() {
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
             fitView
-            attributionPosition="bottom-left"
+            fitViewOptions={{ padding: 0.2, minZoom: 0.5, maxZoom: 1.5 }}
+            minZoom={0.3}
+            maxZoom={2}
+            proOptions={{ hideAttribution: true }}
             style={{ background: 'rgba(11, 18, 33, 0.95)' }}
           >
             <Controls 
-              className="!bg-vault-dark/80 !border-vault-gold/20 [&>button]:!bg-vault-dark/80 [&>button]:!border-vault-gold/20 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20"
+              position="bottom-right"
+              showInteractive={false}
+              className="!bg-vault-dark/90 !border-vault-gold/30 !rounded-lg !shadow-lg [&>button]:!bg-vault-dark/90 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-8 [&>button]:!h-8"
             />
             <MiniMap 
               style={{ 
-                backgroundColor: 'rgba(11, 18, 33, 0.8)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                top: 10,
-                right: 10,
-                bottom: 'auto',
+                backgroundColor: 'rgba(11, 18, 33, 0.9)',
+                border: '1px solid rgba(198, 168, 124, 0.3)',
+                borderRadius: '8px',
               }}
               nodeColor={(node) => {
                 const colors = {
@@ -649,37 +652,39 @@ export default function NodeMapPage() {
                 return colors[node.data?.type] || '#666';
               }}
               position="top-right"
+              pannable
+              zoomable
             />
-            <Background color="rgba(255,255,255,0.03)" gap={20} />
+            <Background color="rgba(255,255,255,0.05)" gap={25} />
             
             {/* Legend Panel */}
-            <Panel position="bottom-left" className="!m-4">
-              <GlassCard className="!p-3 !bg-vault-dark/90">
-                <div className="text-xs text-white/60 mb-2 font-medium">Legend</div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+            <Panel position="bottom-left" className="!m-3 !mb-4">
+              <GlassCard className="!p-3 !bg-vault-dark/95 !border-vault-gold/20">
+                <div className="text-xs text-white/70 mb-2 font-semibold">Legend</div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-[#C6A87C]" />
-                    <span className="text-white/70">Trust</span>
+                    <span className="text-white/80">Trust</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-[#A855F7]" />
-                    <span className="text-white/70">Grantor</span>
+                    <span className="text-white/80">Grantor</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-[#22C55E]" />
-                    <span className="text-white/70">Trustee</span>
+                    <span className="text-white/80">Trustee</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-[#FBBF24]" />
-                    <span className="text-white/70">Beneficiary</span>
+                    <span className="text-white/80">Beneficiary</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-[#EF4444]" />
-                    <span className="text-white/70">Asset</span>
+                    <span className="text-white/80">Asset</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-[#0EA5E9]" />
-                    <span className="text-white/70">Governance</span>
+                    <span className="text-white/80">Governance</span>
                   </div>
                 </div>
               </GlassCard>
