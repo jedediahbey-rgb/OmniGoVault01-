@@ -1131,7 +1131,7 @@ export default function LearnPage({ user }) {
               <div className="prose prose-invert max-w-none">
                 {selectedLesson.content.split('\n\n').map((para, idx) => (
                   <p key={idx} className="text-white/70 leading-relaxed mb-4 whitespace-pre-line">
-                    {para}
+                    {parseBoldText(para)}
                   </p>
                 ))}
               </div>
