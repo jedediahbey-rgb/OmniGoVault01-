@@ -14,6 +14,7 @@ import {
   X
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
@@ -732,7 +733,7 @@ export default function GlossaryPage({ user }) {
         icon={BookOpen}
         title="Glossary"
         subtitle="Comprehensive definitions with cross-links to lessons, maxims, and templates"
-        helpKey="glossary"
+        titleAction={<PageHelpTooltip pageKey="glossary" />}
       />
 
       {/* MagnifyingGlass and Filters */}
