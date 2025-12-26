@@ -63,20 +63,33 @@ export default function DashboardPage({ user }) {
   const [portfolioToDelete, setPortfolioToDelete] = useState(null);
   const [showQuickActionSettings, setShowQuickActionSettings] = useState(false);
 
-  // All available quick actions
+  // All available quick actions (matches sidebar tabs)
   const allQuickActions = [
-    { id: 'document', icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'gold' },
+    // Knowledge
+    { id: 'learn', icon: BookOpen, label: 'Learn', action: () => navigate('/learn'), color: 'gold' },
+    { id: 'maxims', icon: Sparkle, label: 'Maxims', action: () => navigate('/maxims'), color: 'gold' },
     { id: 'glossary', icon: Book, label: 'Glossary', action: () => navigate('/glossary'), color: 'gold' },
-    { id: 'assistant', icon: Robot, label: 'Ask Assistant', action: () => navigate('/assistant'), color: 'gold', hint: 'Ctrl+J' },
-    { id: 'diagnostics', icon: Stethoscope, label: 'Diagnostics', action: () => navigate('/diagnostics'), color: 'gold' },
-    { id: 'learn', icon: BookOpen, label: 'Start Learning', action: () => navigate('/learn'), color: 'gold' },
-    { id: 'health', icon: Stethoscope, label: 'Trust Health', action: () => navigate('/health'), color: 'gold' },
+    { id: 'diagrams', icon: GitBranch, label: 'Diagrams', action: () => navigate('/diagrams'), color: 'gold' },
+    // Workspace
+    { id: 'nodemap', icon: MapTrifold, label: 'Node Map', action: () => navigate('/node-map'), color: 'gold' },
+    { id: 'scenarios', icon: ChartLine, label: 'Scenarios', action: () => navigate('/scenarios'), color: 'gold' },
+    { id: 'ledger', icon: Scroll, label: 'Ledger', action: () => navigate('/ledger'), color: 'gold' },
+    { id: 'vault', icon: FolderSimple, label: 'Vault', action: () => navigate('/vault/documents'), color: 'gold' },
+    { id: 'governance', icon: Gavel, label: 'Governance', action: () => navigate('/vault/governance'), color: 'gold' },
+    { id: 'templates', icon: FileText, label: 'Templates', action: () => navigate('/templates'), color: 'gold' },
+    // Tools
+    { id: 'assistant', icon: Robot, label: 'Assistant', action: () => navigate('/assistant'), color: 'gold', hint: 'Ctrl+J' },
+    { id: 'health', icon: Heartbeat, label: 'Trust Health', action: () => navigate('/health'), color: 'gold' },
+    { id: 'diagnostics', icon: ShieldCheck, label: 'Diagnostics', action: () => navigate('/diagnostics'), color: 'gold' },
+    { id: 'threads', icon: GitBranch, label: 'Threads', action: () => navigate('/ledger-threads'), color: 'gold' },
+    { id: 'binder', icon: FilePdf, label: 'Binder', action: () => navigate('/binder'), color: 'gold' },
+    { id: 'settings', icon: Gear, label: 'Settings', action: () => navigate('/settings'), color: 'gold' },
   ];
 
   // Default selected quick actions (stored in localStorage)
   const [selectedActions, setSelectedActions] = useState(() => {
     const saved = localStorage.getItem('quickActions');
-    return saved ? JSON.parse(saved) : ['document', 'glossary', 'assistant', 'diagnostics'];
+    return saved ? JSON.parse(saved) : ['templates', 'glossary', 'assistant', 'diagnostics'];
   });
 
   const quickActions = allQuickActions.filter(a => selectedActions.includes(a.id));
