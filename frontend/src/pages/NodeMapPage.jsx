@@ -169,6 +169,30 @@ export default function NodeMapPage() {
   const navigate = useNavigate();
   const { portfolioId } = useParams();
   
+  // Inject custom styles to hide React Flow attribution
+  useEffect(() => {
+    const styleId = 'react-flow-custom-styles';
+    if (!document.getElementById(styleId)) {
+      const styleElement = document.createElement('style');
+      styleElement.id = styleId;
+      styleElement.textContent = reactFlowStyles;
+      document.head.appendChild(styleElement);
+    }
+    return () => {
+      const existingStyle = document.getElementById(styleId);
+      if (existingStyle) existingStyle.remove();
+    };
+  }, []);
+
+  // Detect mobile for responsive layout
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
   // Get default portfolio from localStorage
   const defaultPortfolioId = localStorage.getItem('defaultPortfolioId') || '';
   
