@@ -283,33 +283,29 @@ export default function MaximsPage({ user }) {
   }, [user]);
 
   // Handle highlight parameter from URL (e.g., from Glossary page)
-  const [pendingHighlight, setPendingHighlight] = useState(null);
+  const hasScrolled = useRef(false);
   
-  // First effect: read URL param and set pending highlight
   useEffect(() => {
     const highlightParam = searchParams.get('highlight');
-    if (highlightParam) {
+    if (highlightParam && !hasScrolled.current) {
       const maximId = parseInt(highlightParam);
       if (!isNaN(maximId)) {
-        setPendingHighlight(maximId);
         // Clear filters so maxim is visible
         setSelectedCategory('all');
         setSearchTerm('');
-      }
-    }
-  }, [searchParams]);
-  
-  // Second effect: scroll to maxim once refs are ready
-  useEffect(() => {
-    if (pendingHighlight !== null) {
-      // Set highlight state
-      setHighlightedMaximId(pendingHighlight);
-      setExpandedId(pendingHighlight);
-      
-      // Use requestAnimationFrame to ensure DOM is ready
-      const scrollToMaxim = () => {
-        requestAnimationFrame(() => {
-          const maximElement = maximRefs.current[pendingHighlight];
+        // Set highlight state
+        setHighlightedMaximId(maximId);
+        setExpandedId(maximId);
+        
+        // Mark that we've started the scroll process
+        hasScrolled.current = true;
+        
+        // Retry logic to wait for element to be rendered
+        let retries = 0;
+        const maxRetries = 20;
+        
+        const scrollToMaxim = () => {
+          const maximElement = maximRefs.current[maximId];
           if (maximElement) {
             // Get element position and scroll with offset for header
             const elementRect = maximElement.getBoundingClientRect();
@@ -323,25 +319,24 @@ export default function MaximsPage({ user }) {
               behavior: 'smooth'
             });
             
-            // Clear pending highlight
-            setPendingHighlight(null);
-            
             // Clear URL parameter and highlight after delay
             setTimeout(() => {
               setHighlightedMaximId(null);
               setSearchParams({}, { replace: true });
+              hasScrolled.current = false;
             }, 4000);
-          } else {
-            // Retry if element not found yet (max 10 retries)
-            setTimeout(scrollToMaxim, 200);
+          } else if (retries < maxRetries) {
+            // Retry if element not found yet
+            retries++;
+            setTimeout(scrollToMaxim, 150);
           }
-        });
-      };
-      
-      // Start scroll after initial render
-      setTimeout(scrollToMaxim, 100);
+        };
+        
+        // Start scroll after initial render delay
+        setTimeout(scrollToMaxim, 300);
+      }
     }
-  }, [pendingHighlight, setSearchParams]);
+  }, [searchParams, setSearchParams]);
 
   const recordReview = async (maximId, quality) => {
     if (!user) {
