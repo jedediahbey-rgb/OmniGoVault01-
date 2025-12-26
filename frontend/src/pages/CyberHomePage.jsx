@@ -957,17 +957,8 @@ export default function CyberHomePage() {
         )}
       </AnimatePresence>
       
-      {/* ===== LOGO ABOVE FOOTER ===== */}
-      <div className="py-8 bg-[#05080F] flex justify-center">
-        <img 
-          src="/omnigovault-logo-footer.png" 
-          alt="OMNIGOVAULT" 
-          className="h-12 sm:h-14 w-auto"
-        />
-      </div>
-      
       {/* ===== FOOTER ===== */}
-      <footer className="py-6 bg-[#05080F] border-t border-white/5">
+      <footer className="py-8 bg-[#05080F] border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center gap-4 text-center">
             <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
@@ -978,7 +969,7 @@ export default function CyberHomePage() {
             </div>
           </div>
           
-          <div className="mt-4 pt-4 border-t border-white/5">
+          <div className="mt-6 pt-6 border-t border-white/5">
             <p className="text-xs text-slate-600 text-center">
               For informational purposes only and does not constitute legal advice. 
               Consult a qualified attorney for legal matters.
