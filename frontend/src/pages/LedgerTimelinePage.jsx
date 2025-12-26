@@ -29,6 +29,7 @@ import {
 import PageHeader from '../components/shared/PageHeader';
 import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
+import IconBadge from '../components/shared/IconBadge';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';

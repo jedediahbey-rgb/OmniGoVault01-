@@ -24,6 +24,7 @@ import {
 import PageHeader from '../components/shared/PageHeader';
 import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
+import IconBadge from '../components/shared/IconBadge';
 import { Button } from '../components/ui/button';
 import { Progress } from '../components/ui/progress';
 import { ExpandableText } from '../components/ui/expandable-text';
