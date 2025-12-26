@@ -1068,9 +1068,7 @@ export default function PortfolioOverviewPage({ user }) {
                       onClick={() => setSelectedAsset(selectedAsset?.asset_id === asset.asset_id ? null : asset)}
                     >
                       {/* Type Icon */}
-                      <div className={`w-10 h-10 rounded-lg ${typeConfig.bgClass} ${typeConfig.borderClass} border flex items-center justify-center flex-shrink-0`}>
-                        <TypeIcon className={`w-5 h-5 ${typeConfig.textClass}`} weight="duotone" />
-                      </div>
+                      <IconBadge icon={TypeIcon} size="md" variant={typeConfig.variant || 'default'} />
 
                       {/* Content */}
                       <div className="flex-1 min-w-0 overflow-hidden">
