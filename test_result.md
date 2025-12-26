@@ -849,7 +849,7 @@ All 4 reported UI fixes have been successfully implemented and verified on mobil
 Date: Thu Dec 26 17:45:00 UTC 2025
 
 ### Test Environment
-- **URL**: https://pdf-viewer-fix-2.preview.emergentagent.com/binder (deployed preview URL)
+- **URL**: https://diagnostics-fix.preview.emergentagent.com/binder (deployed preview URL)
 - **Viewport**: Mobile (412x915 pixels)
 - **Test Focus**: View and Download buttons in "Latest Binder" section
 
@@ -885,7 +885,7 @@ Date: Thu Dec 26 17:45:00 UTC 2025
 - API URL construction follows expected pattern
 
 ### Technical Details
-- **API Base URL**: https://pdf-viewer-fix-2.preview.emergentagent.com
+- **API Base URL**: https://diagnostics-fix.preview.emergentagent.com
 - **Button Container**: `.grid.grid-cols-4.gap-2` (4-column grid layout)
 - **View Button Classes**: `bg-vault-gold hover:bg-vault-gold/90 text-vault-dark`
 - **DL Button Classes**: `border border-vault-gold/30 text-white hover:bg-vault-gold/10`
