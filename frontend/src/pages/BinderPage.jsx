@@ -154,47 +154,43 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
 function LatestBinderActions({ latestRun, handleViewManifest }) {
   const viewUrl = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
   const downloadUrl = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
-  const [isPrinting, setIsPrinting] = useState(false);
+  const [showPrintHelp, setShowPrintHelp] = useState(false);
+  const { toast } = useToast();
 
-  // Handle print - opens PDF in new window and triggers print dialog
-  const handlePrint = async (e) => {
+  // Detect mobile device
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  // Handle print
+  const handlePrint = (e) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (isPrinting) return;
-    setIsPrinting(true);
-    
-    try {
-      // Open a new window with the PDF
+    if (isMobile) {
+      // On mobile, show instructions since direct printing doesn't work
+      setShowPrintHelp(true);
+    } else {
+      // On desktop, open PDF and trigger print
       const printWindow = window.open(viewUrl, '_blank', 'width=800,height=600');
-      
       if (printWindow) {
-        // Wait for the PDF to load, then trigger print
-        printWindow.onload = () => {
-          setTimeout(() => {
-            printWindow.print();
-            setIsPrinting(false);
-          }, 1000);
-        };
-        
-        // Also set a timeout fallback in case onload doesn't fire for PDFs
         setTimeout(() => {
           try {
             printWindow.print();
           } catch (err) {
-            console.log('Print may have already been triggered or blocked:', err);
+            console.log('Print error:', err);
           }
-          setIsPrinting(false);
-        }, 2500);
-      } else {
-        // Popup blocked - show message
-        alert('Please allow popups to print the PDF, or use the View button and print from there.');
-        setIsPrinting(false);
+        }, 2000);
       }
-    } catch (error) {
-      console.error('Print error:', error);
-      setIsPrinting(false);
     }
+  };
+
+  // Open PDF and close help modal
+  const openPdfForPrint = () => {
+    window.open(viewUrl, '_blank');
+    setShowPrintHelp(false);
+    toast({
+      title: 'PDF Opened',
+      description: 'Use your browser menu (⋮) → Print to print the PDF'
+    });
   };
 
   return (
