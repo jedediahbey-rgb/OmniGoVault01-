@@ -11,6 +11,26 @@ import ReactFlow, {
   Panel,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+
+// Custom styles to hide React Flow attribution and optimize mobile
+const reactFlowStyles = `
+  .react-flow__attribution {
+    display: none !important;
+  }
+  .react-flow__minimap {
+    width: 120px !important;
+    height: 80px !important;
+  }
+  @media (max-width: 768px) {
+    .react-flow__minimap {
+      width: 100px !important;
+      height: 65px !important;
+    }
+    .react-flow__controls {
+      transform: scale(0.85);
+    }
+  }
+`;
 import axios from 'axios';
 import {
   ArrowLeft,
