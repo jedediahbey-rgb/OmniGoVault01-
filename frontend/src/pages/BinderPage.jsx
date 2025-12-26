@@ -808,7 +808,7 @@ export default function BinderPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-[#0B1221]/80 rounded-xl border border-vault-gold/20 p-6 mb-16"
+                className="relative bg-[#0B1221]/80 rounded-xl border border-vault-gold/20 p-6 mb-16"
               >
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-heading text-white flex items-center gap-2">
@@ -820,68 +820,41 @@ export default function BinderPage() {
                   </Badge>
                 </div>
 
-                {/* Action buttons - moved to top for better mobile accessibility */}
+                {/* Action buttons - using real anchor tags for maximum compatibility */}
                 {latestRun.status === 'complete' && (
-                  <div className="grid grid-cols-4 gap-2 mb-4">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const url = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                      className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+                  <div className="relative z-20 pointer-events-auto grid grid-cols-4 gap-2 mb-4">
+                    <a
+                      href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark no-underline"
                     >
                       <Eye className="w-4 h-4" />
                       View
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const url = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                      className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
+                    </a>
+                    <a
+                      href={`${API_URL}/api/binder/runs/${latestRun.id}/download`}
+                      download="OmniBinder.pdf"
+                      className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline"
                     >
                       <Download className="w-4 h-4" />
                       DL
-                    </button>
+                    </a>
+                    <a
+                      href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline"
+                    >
+                      <Printer className="w-4 h-4" />
+                    </a>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        const url = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
+                        handleViewManifest(latestRun.id);
                       }}
-                      className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
-                    >
-                      <Printer className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleViewManifest(latestRun.id)}
                       className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
                     >
                       <FileText className="w-4 h-4" />
