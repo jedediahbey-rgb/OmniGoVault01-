@@ -71,6 +71,83 @@ const STATUS_CONFIG = {
   failed: { color: 'text-red-400 bg-red-500/10', label: 'Failed', icon: X }
 };
 
+// Swipeable history card component
+function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete, onView, onDownload }) {
+  const x = useMotionValue(0);
+  const background = useTransform(x, [-100, 0], ['rgba(239, 68, 68, 0.3)', 'rgba(0, 0, 0, 0)']);
+  const deleteOpacity = useTransform(x, [-100, -50, 0], [1, 0.5, 0]);
+
+  const handleDragEnd = (event, info) => {
+    if (info.offset.x < -80) {
+      onDelete();
+    }
+  };
+
+  return (
+    <div className="relative overflow-hidden rounded-lg">
+      {/* Delete background */}
+      <motion.div 
+        className="absolute inset-0 flex items-center justify-end pr-4 rounded-lg"
+        style={{ background }}
+      >
+        <motion.div style={{ opacity: deleteOpacity }}>
+          <Trash className="w-5 h-5 text-red-400" />
+        </motion.div>
+      </motion.div>
+      
+      {/* Card content */}
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: -100, right: 0 }}
+        dragElastic={0.1}
+        onDragEnd={handleDragEnd}
+        style={{ x }}
+        className="p-3 rounded-lg bg-vault-dark/50 border border-vault-gold/10 hover:border-vault-gold/30 transition-colors cursor-grab active:cursor-grabbing relative"
+      >
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-white text-sm font-medium truncate">
+            {run.profile_name}
+          </span>
+          <Badge className={`text-xs ${statusColor} border`}>
+            <StatusIcon className={`w-3 h-3 mr-1 ${run.status === 'generating' ? 'animate-spin' : ''}`} />
+            {STATUS_CONFIG[run.status]?.label}
+          </Badge>
+        </div>
+        <p className="text-vault-muted text-xs">
+          {new Date(run.started_at).toLocaleString()}
+        </p>
+        {run.status === 'complete' && (
+          <div className="flex gap-2 mt-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={(e) => { e.stopPropagation(); onView(); }}
+              className="text-xs text-vault-muted hover:text-white h-7 px-2"
+            >
+              <Eye className="w-3 h-3 mr-1" />
+              View
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={(e) => { e.stopPropagation(); onDownload(); }}
+              className="text-xs text-vault-muted hover:text-white h-7 px-2"
+            >
+              <Download className="w-3 h-3 mr-1" />
+              Download
+            </Button>
+          </div>
+        )}
+        {run.status === 'failed' && run.error_json && (
+          <p className="text-red-400 text-xs mt-1 truncate">
+            {run.error_json.user_message || run.error_json.message || 'Generation failed'}
+          </p>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
 export default function BinderPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
