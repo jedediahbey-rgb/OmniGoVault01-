@@ -69,6 +69,7 @@ import {
 
 // Shared components
 import GlassCard from '../components/shared/GlassCard';
+import IconBadge from '../components/shared/IconBadge';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api/governance/v2`;
 
