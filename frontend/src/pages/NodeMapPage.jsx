@@ -576,11 +576,11 @@ export default function NodeMapPage() {
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-heading text-white">Trust Node Map</h1>
+            <h1 className="text-2xl font-heading text-white">Trust Node Map</h1>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-white/50 text-sm">Visual representation of trust relationships</p>
               <PageHelpTooltip pageKey="nodeMap" />
             </div>
-            <p className="text-white/50 text-sm">Visual representation of trust relationships</p>
           </div>
         </div>
         
