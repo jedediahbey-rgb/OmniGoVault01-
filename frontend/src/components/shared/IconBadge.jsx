@@ -57,6 +57,41 @@ const variantClasses = {
     border border-status-error/30 
     shadow-[inset_0_1px_0_0_rgba(255,51,51,0.1)]
   `,
+  blue: `
+    bg-gradient-to-br from-blue-500/20 to-blue-500/5 
+    border border-blue-500/30 
+    shadow-[inset_0_1px_0_0_rgba(59,130,246,0.1)]
+    group-hover:border-blue-500/50 
+    group-hover:shadow-[0_0_15px_rgba(59,130,246,0.15)]
+  `,
+  emerald: `
+    bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 
+    border border-emerald-500/30 
+    shadow-[inset_0_1px_0_0_rgba(16,185,129,0.1)]
+    group-hover:border-emerald-500/50 
+    group-hover:shadow-[0_0_15px_rgba(16,185,129,0.15)]
+  `,
+  amber: `
+    bg-gradient-to-br from-amber-500/20 to-amber-500/5 
+    border border-amber-500/30 
+    shadow-[inset_0_1px_0_0_rgba(245,158,11,0.1)]
+    group-hover:border-amber-500/50 
+    group-hover:shadow-[0_0_15px_rgba(245,158,11,0.15)]
+  `,
+  red: `
+    bg-gradient-to-br from-red-500/20 to-red-500/5 
+    border border-red-500/30 
+    shadow-[inset_0_1px_0_0_rgba(239,68,68,0.1)]
+    group-hover:border-red-500/50 
+    group-hover:shadow-[0_0_15px_rgba(239,68,68,0.15)]
+  `,
+  purple: `
+    bg-gradient-to-br from-purple-500/20 to-purple-500/5 
+    border border-purple-500/30 
+    shadow-[inset_0_1px_0_0_rgba(168,85,247,0.1)]
+    group-hover:border-purple-500/50 
+    group-hover:shadow-[0_0_15px_rgba(168,85,247,0.15)]
+  `,
 };
 
 const iconColorClasses = {
