@@ -13,6 +13,7 @@ import {
   User
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
@@ -113,7 +114,7 @@ export default function AssistantPage({ user }) {
         icon={Robot}
         title="AI Assistant"
         subtitle="Your guide to equity and trust law—grounded in source materials"
-        helpKey="assistant"
+        titleAction={<PageHelpTooltip pageKey="assistant" />}
         actions={
           messages.length > 0 && (
             <Button onClick={resetChat} variant="outline" className="btn-secondary">
