@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import MonoChip from '../components/shared/MonoChip';
 import {
   ArrowLeft,
   ArrowsClockwise,
@@ -806,9 +807,9 @@ export default function DisputeEditorPage({ user }) {
                   
                   {/* RM-ID */}
                   {dispute.rm_id && (
-                    <span className="text-xs font-mono text-vault-muted">
+                    <MonoChip variant="muted" size="sm">
                       {dispute.rm_id}
-                    </span>
+                    </MonoChip>
                   )}
                   
                   {/* Amount Claimed */}

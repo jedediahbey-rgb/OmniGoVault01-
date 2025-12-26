@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import MonoChip from '../components/shared/MonoChip';
 import {
   ArrowLeft,
   Calendar,
@@ -534,9 +535,9 @@ export default function CompensationEditorPage({ user }) {
                     
                     {/* RM-ID */}
                     {compensation.rm_id && (
-                      <span className="text-xs font-mono text-vault-muted">
+                      <MonoChip variant="muted" size="sm">
                         {compensation.rm_id}
-                      </span>
+                      </MonoChip>
                     )}
                     
                     {/* Amount */}

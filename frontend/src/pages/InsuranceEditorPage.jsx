@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import MonoChip from '../components/shared/MonoChip';
 import {
   ArrowLeft,
   Calendar,
@@ -717,9 +718,9 @@ export default function InsuranceEditorPage({ user }) {
                   </div>
                   <h1 className="text-xl sm:text-2xl font-heading text-white mt-2 break-words">{policy.title}</h1>
                   {policy.rm_id && (
-                    <span className="text-xs sm:text-sm font-mono text-vault-muted break-all">
+                    <MonoChip variant="muted" size="sm" className="break-all">
                       {policy.rm_id}
-                    </span>
+                    </MonoChip>
                   )}
                   <div className="text-2xl sm:text-3xl font-heading text-emerald-400 mt-2">
                     {formatCurrency(policy.death_benefit, policy.currency)}
