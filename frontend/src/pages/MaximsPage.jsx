@@ -784,11 +784,20 @@ export default function MaximsPage({ user }) {
         {filteredMaxims.map((maxim) => {
           const progress = studyProgress[maxim.id];
           const isDue = dueForReview.includes(maxim.id);
+          const isHighlighted = highlightedMaximId === maxim.id;
           
           return (
-            <motion.div key={maxim.id} variants={fadeInUp}>
+            <motion.div 
+              key={maxim.id} 
+              variants={fadeInUp}
+              ref={(el) => { maximRefs.current[maxim.id] = el; }}
+            >
               <GlassCard
-                className="cursor-pointer"
+                className={`cursor-pointer transition-all duration-500 ${
+                  isHighlighted 
+                    ? 'ring-2 ring-vault-gold ring-offset-2 ring-offset-vault-dark shadow-[0_0_30px_rgba(212,175,55,0.3)]' 
+                    : ''
+                }`}
                 onClick={() => setExpandedId(expandedId === maxim.id ? null : maxim.id)}
               >
                 <div className="flex items-start gap-4">
