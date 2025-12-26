@@ -525,9 +525,7 @@ export default function VaultPage({ user, initialView }) {
                           </div>
                         )}
                         <div className="flex items-start justify-between mb-3">
-                          <div className="w-10 h-10 rounded-lg bg-vault-gold/10 flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-vault-gold" weight="duotone" />
-                          </div>
+                          <IconBadge icon={FileText} size="md" variant="gold" />
                           {!showTrash ? (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
