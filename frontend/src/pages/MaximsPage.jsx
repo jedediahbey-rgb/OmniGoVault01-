@@ -821,6 +821,8 @@ export default function MaximsPage({ user }) {
               key={maxim.id} 
               variants={fadeInUp}
               ref={(el) => { maximRefs.current[maxim.id] = el; }}
+              style={{ scrollMarginTop: '150px' }}
+              id={`maxim-${maxim.id}`}
             >
               <GlassCard
                 className={`cursor-pointer transition-all duration-500 ${
