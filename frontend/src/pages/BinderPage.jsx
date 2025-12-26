@@ -947,15 +947,38 @@ export default function BinderPage() {
                       />
                     );
                   })}
-                      </div>
-                    );
-                  })}
                 </div>
               )}
             </motion.div>
           </div>
         </div>
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={!!deleteConfirmRun} onOpenChange={(open) => !open && setDeleteConfirmRun(null)}>
+          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-heading text-red-400 flex items-center gap-2">
+                <Trash className="w-5 h-5" />
+                Delete Binder?
+              </DialogTitle>
+              <DialogDescription className="text-vault-muted">
+                Are you sure you want to delete this binder from history? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setDeleteConfirmRun(null)} className="border-vault-gold/30 text-white">
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => deleteConfirmRun && handleDeleteRun(deleteConfirmRun.id)} 
+                className="bg-red-500 hover:bg-red-600 text-white"
+              >
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Config Modal */}
         <Dialog open={showConfigModal} onOpenChange={setShowConfigModal}>
