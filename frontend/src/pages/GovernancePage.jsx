@@ -1249,45 +1249,54 @@ export default function GovernancePage({ user }) {
       {/* Tabs for different governance modules */}
       <motion.div variants={fadeInUp}>
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          {/* Scrollable tabs on mobile - full width scroll container */}
-          <div className="w-full overflow-x-auto overscroll-x-contain scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 mb-6">
-            <TabsList className="bg-vault-dark/50 border border-vault-gold/20 inline-flex w-max min-w-full md:min-w-0 md:w-auto gap-1 p-1">
-              <TabsTrigger 
-                value="meetings" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
-              >
-                <Newspaper className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
-                Minutes
-              </TabsTrigger>
-              <TabsTrigger 
-                value="distributions" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
-              >
-                <HandCoins className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
-                Distributions
-              </TabsTrigger>
-              <TabsTrigger 
-                value="disputes" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
-              >
-                <Scales className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
-                Disputes
-              </TabsTrigger>
-              <TabsTrigger 
-                value="insurance" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
-              >
-                <ShieldCheck className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
-                Insurance
-              </TabsTrigger>
-              <TabsTrigger 
-                value="compensation" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
-              >
-                <CurrencyDollar className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
-                Compensation
-              </TabsTrigger>
-            </TabsList>
+          {/* Scrollable tabs on mobile with scroll indicator */}
+          <div className="relative mb-6">
+            {/* Scroll container */}
+            <div className="w-full overflow-x-auto overscroll-x-contain scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+              <TabsList className="bg-vault-dark/50 border border-vault-gold/20 inline-flex w-max min-w-full md:min-w-0 md:w-auto gap-1 p-1">
+                <TabsTrigger 
+                  value="meetings" 
+                  className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
+                >
+                  <Newspaper className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                  Minutes
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="distributions" 
+                  className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
+                >
+                  <HandCoins className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                  Distributions
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="disputes" 
+                  className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
+                >
+                  <Scales className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                  Disputes
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="insurance" 
+                  className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
+                >
+                  <ShieldCheck className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                  Insurance
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="compensation" 
+                  className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
+                >
+                  <CurrencyDollar className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                  Compensation
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            {/* Scroll indicator - fade gradient on right (mobile only) */}
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#0B1221] to-transparent pointer-events-none md:hidden" />
+            {/* Chevron indicator */}
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 text-vault-gold/60 pointer-events-none md:hidden">
+              <CaretRight className="w-4 h-4" weight="bold" />
+            </div>
           </div>
 
           {/* Meeting Minutes Tab */}
