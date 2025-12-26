@@ -414,7 +414,7 @@ export default function NodeMapPage() {
 
     // Assets below trust - evenly distributed
     const assetCount = Math.min(assets.length, 5);
-    const assetSpacing = 150;
+    const assetSpacing = isMobile ? 120 : 170;
     const assetStartX = centerX - ((assetCount - 1) * assetSpacing) / 2;
     assets.slice(0, 5).forEach((asset, idx) => {
       const nodeId = `asset-${asset.asset_id}`;
@@ -422,11 +422,11 @@ export default function NodeMapPage() {
         id: nodeId,
         type: 'default',
         data: { 
-          label: `🏠 ${asset.description?.slice(0, 18) || 'Asset'}${asset.description?.length > 18 ? '...' : ''}`,
+          label: `🏠 ${asset.description?.slice(0, isMobile ? 12 : 18) || 'Asset'}${asset.description?.length > (isMobile ? 12 : 18) ? '...' : ''}`,
           asset,
           type: 'asset',
         },
-        position: { x: assetStartX + idx * assetSpacing, y: centerY + verticalSpacing + 60 },
+        position: { x: assetStartX + idx * assetSpacing, y: centerY + verticalSpacing + (isMobile ? 40 : 80) },
         style: nodeStyles.asset,
       });
       newEdges.push({
