@@ -13,7 +13,7 @@ import uuid
 import base64
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://designsystem-4.preview.emergentagent.com/api"
+BASE_URL = "https://ux-overhaul-23.preview.emergentagent.com/api"
 
 class BinderAPITester:
     def __init__(self):
