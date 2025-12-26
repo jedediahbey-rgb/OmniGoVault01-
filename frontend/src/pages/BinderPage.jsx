@@ -306,6 +306,78 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
   );
 }
 
+// Helper function to fetch PDF as Blob and trigger action (for history cards)
+const fetchPdfAsBlob = async (url) => {
+  const res = await fetch(url, { credentials: "include" });
+  if (!res.ok) throw new Error(`Fetch failed: HTTP ${res.status}`);
+  return await res.blob();
+};
+
+// Global PDF viewer state manager (for history cards to open the global viewer)
+let globalPdfViewerCallback = null;
+
+// Global PDF Viewer Modal Component
+function GlobalPdfViewer() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [blobUrl, setBlobUrl] = useState(null);
+  const frameRef = useRef(null);
+
+  useEffect(() => {
+    // Register global callback
+    globalPdfViewerCallback = (blob) => {
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+      const newUrl = URL.createObjectURL(blob);
+      setBlobUrl(newUrl);
+      setIsOpen(true);
+    };
+
+    return () => {
+      globalPdfViewerCallback = null;
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+    };
+  }, [blobUrl]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="w-full max-w-3xl rounded-xl border border-vault-gold/20 bg-[#0B1221] overflow-hidden">
+        <div className="flex items-center justify-between p-3 border-b border-vault-gold/20">
+          <div className="text-sm text-white/80">Omni Binder (PDF)</div>
+          <button
+            type="button"
+            onClick={() => {
+              setIsOpen(false);
+              if (blobUrl) {
+                URL.revokeObjectURL(blobUrl);
+                setBlobUrl(null);
+              }
+            }}
+            className="text-white/80 hover:text-white px-2 py-1 rounded-md border border-white/10"
+          >
+            Close
+          </button>
+        </div>
+
+        <div className="w-full h-[75vh] bg-black">
+          {blobUrl ? (
+            <iframe
+              ref={frameRef}
+              title="Binder PDF"
+              src={blobUrl}
+              className="w-full h-full"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-white/70">
+              Loading…
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function BinderPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
