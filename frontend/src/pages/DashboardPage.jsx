@@ -65,6 +65,8 @@ export default function DashboardPage({ user }) {
 
   // All available quick actions (matches sidebar tabs)
   const allQuickActions = [
+    // Primary actions
+    { id: 'newdocument', icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'gold' },
     // Knowledge
     { id: 'learn', icon: BookOpen, label: 'Learn', action: () => navigate('/learn'), color: 'gold' },
     { id: 'maxims', icon: Sparkle, label: 'Maxims', action: () => navigate('/maxims'), color: 'gold' },
@@ -89,7 +91,7 @@ export default function DashboardPage({ user }) {
   // Default selected quick actions (stored in localStorage)
   const [selectedActions, setSelectedActions] = useState(() => {
     const saved = localStorage.getItem('quickActions');
-    return saved ? JSON.parse(saved) : ['templates', 'glossary', 'assistant', 'diagnostics'];
+    return saved ? JSON.parse(saved) : ['newdocument', 'glossary', 'assistant', 'diagnostics'];
   });
 
   const quickActions = allQuickActions.filter(a => selectedActions.includes(a.id));
