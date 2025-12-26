@@ -170,83 +170,48 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
   );
 }
 
-// Ultra-simple action buttons with Copy Link fallback for sandboxed environments
+// Native link buttons for PDF actions
 function LatestBinderActions({ latestRun, handleViewManifest }) {
-  const [copied, setCopied] = useState(false);
   const viewUrl = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
   const downloadUrl = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
 
-  const copyToClipboard = async (url, label) => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      // Fallback: show URL in prompt
-      window.prompt(`Copy this ${label} link:`, url);
-    }
-  };
-
   return (
-    <div className="space-y-3 mb-4">
-      {/* Primary action: Copy PDF link */}
+    <div className="grid grid-cols-4 gap-2 mb-4">
+      <a
+        href={viewUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-10 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark no-underline"
+      >
+        <Eye className="w-4 h-4" />
+        View
+      </a>
+
+      <a
+        href={downloadUrl}
+        download="OmniBinder.pdf"
+        className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-10 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline"
+      >
+        <Download className="w-4 h-4" />
+        DL
+      </a>
+
+      <a
+        href={viewUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline"
+      >
+        <Printer className="w-4 h-4" />
+      </a>
+
       <button
         type="button"
-        onClick={() => copyToClipboard(viewUrl, 'View PDF')}
-        className="w-full flex items-center justify-center gap-2 rounded-lg text-base font-semibold h-14 px-4 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark touch-manipulation active:scale-95 transition-transform"
-        style={{ WebkitTapHighlightColor: 'rgba(212,175,55,0.3)' }}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleViewManifest(latestRun.id); }}
+        className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
       >
-        {copied ? (
-          <>
-            <Check className="w-5 h-5" />
-            Link Copied! Open in new tab
-          </>
-        ) : (
-          <>
-            <Eye className="w-5 h-5" />
-            Copy PDF Link
-          </>
-        )}
+        <FileText className="w-4 h-4" />
       </button>
-
-      {/* Secondary actions row */}
-      <div className="grid grid-cols-3 gap-2">
-        <button
-          type="button"
-          onClick={() => copyToClipboard(downloadUrl, 'Download')}
-          className="flex items-center justify-center gap-1 rounded-md text-sm font-medium h-11 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 touch-manipulation active:scale-95 transition-transform"
-          style={{ WebkitTapHighlightColor: 'rgba(212,175,55,0.3)' }}
-        >
-          <Download className="w-4 h-4" />
-          Copy DL
-        </button>
-
-        <a
-          href={viewUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-1 rounded-md text-sm font-medium h-11 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline touch-manipulation active:scale-95 transition-transform"
-          style={{ WebkitTapHighlightColor: 'rgba(212,175,55,0.3)' }}
-        >
-          <Printer className="w-4 h-4" />
-          Try Open
-        </a>
-
-        <button
-          type="button"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleViewManifest(latestRun.id); }}
-          className="flex items-center justify-center gap-1 rounded-md text-sm font-medium h-11 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10 touch-manipulation active:scale-95 transition-transform"
-          style={{ WebkitTapHighlightColor: 'rgba(212,175,55,0.3)' }}
-        >
-          <FileText className="w-4 h-4" />
-          Manifest
-        </button>
-      </div>
-
-      {/* Help text */}
-      <p className="text-vault-muted text-xs text-center">
-        Tap &quot;Copy PDF Link&quot; then paste in a new browser tab
-      </p>
     </div>
   );
 }
