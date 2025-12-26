@@ -975,6 +975,15 @@ export default function CyberHomePage() {
               Consult a qualified attorney for legal matters.
             </p>
           </div>
+          
+          {/* Footer Logo */}
+          <div className="mt-6 flex justify-center">
+            <img 
+              src="/omnigovault-logo-footer.png" 
+              alt="OMNIGOVAULT" 
+              className="h-10 sm:h-12 w-auto opacity-60 hover:opacity-80 transition-opacity"
+            />
+          </div>
         </div>
       </footer>
       
