@@ -66,7 +66,7 @@ export default function DashboardPage({ user }) {
   // All available quick actions (matches sidebar tabs)
   const allQuickActions = [
     // Primary actions
-    { id: 'newdocument', icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'gold' },
+    { id: 'newdocument', icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'blue' },
     // Knowledge
     { id: 'learn', icon: BookOpen, label: 'Learn', action: () => navigate('/learn'), color: 'gold' },
     { id: 'maxims', icon: Sparkle, label: 'Maxims', action: () => navigate('/maxims'), color: 'gold' },
