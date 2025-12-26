@@ -692,8 +692,8 @@ export default function NodeMapPage() {
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
             fitView
-            fitViewOptions={{ padding: 0.3, minZoom: 0.5, maxZoom: 1 }}
-            minZoom={0.3}
+            fitViewOptions={{ padding: 0.15, minZoom: 0.3, maxZoom: 1 }}
+            minZoom={0.2}
             maxZoom={2}
             proOptions={{ hideAttribution: true }}
             style={{ background: 'rgba(11, 18, 33, 0.95)' }}
