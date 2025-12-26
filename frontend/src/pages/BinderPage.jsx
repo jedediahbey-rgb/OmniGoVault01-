@@ -107,6 +107,8 @@ export default function BinderPage() {
     enabled: true
   });
   const [editingSchedule, setEditingSchedule] = useState(null);
+  const [refreshingHistory, setRefreshingHistory] = useState(false);
+  const [deleteConfirmRun, setDeleteConfirmRun] = useState(null);
 
   // Default portfolio state (read-only - set from Dashboard)
   const [isDefaultPortfolio, setIsDefaultPortfolio] = useState(false);
