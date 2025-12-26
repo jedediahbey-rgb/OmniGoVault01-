@@ -199,7 +199,7 @@ export default function SettingsPage() {
         <PageHeader
           title="Settings"
           subtitle="Configure trust health rules and governance checklists"
-          titleAction={<PageHelpTooltip pageKey="settings" />}
+          subtitleAction={<PageHelpTooltip pageKey="settings" />}
           breadcrumbs={[
             { label: 'Dashboard', href: '/vault' },
             { label: 'Settings' }

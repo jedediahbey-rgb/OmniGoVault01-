@@ -733,7 +733,7 @@ export default function GlossaryPage({ user }) {
         icon={BookOpen}
         title="Glossary"
         subtitle="Comprehensive definitions with cross-links to lessons, maxims, and templates"
-        titleAction={<PageHelpTooltip pageKey="glossary" />}
+        subtitleAction={<PageHelpTooltip pageKey="glossary" />}
       />
 
       {/* MagnifyingGlass and Filters */}
