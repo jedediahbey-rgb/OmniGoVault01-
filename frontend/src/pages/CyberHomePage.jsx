@@ -623,39 +623,39 @@ export default function CyberHomePage() {
               
               <motion.h2
                 variants={fadeInUp}
-                className="text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light"
+                className="text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light text-center lg:text-left max-w-md mx-auto lg:mx-0"
               >
                 A matrix system for trust governance.
               </motion.h2>
               
               <motion.p 
                 variants={fadeInUp}
-                className="text-base sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed italic text-center lg:text-left"
+                className="mt-2 text-base sm:text-lg text-slate-400 max-w-md mx-auto lg:mx-0 leading-relaxed italic text-center lg:text-left"
               >
                 "In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will."&nbsp;&nbsp;<span className="text-sm text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
               
-              <motion.div variants={fadeInUp} className="mt-4 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <motion.div variants={fadeInUp} className="mt-4 flex flex-col gap-3 max-w-md mx-auto lg:mx-0">
                 <Link to="/login">
-                  <Button size="lg" className="w-full sm:w-auto bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
+                  <Button size="lg" className="w-full bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
                     Enter the Vault
                   </Button>
                 </Link>
                 <Link to="/login">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/5">
+                  <Button size="lg" variant="outline" className="w-full border-white/20 text-white hover:bg-white/5">
                     Open Governance Console
                   </Button>
                 </Link>
               </motion.div>
               
               {/* Microcopy */}
-              <motion.p variants={fadeInUp} className="mt-3 text-xs text-slate-500 flex items-center gap-2 justify-center lg:justify-start">
+              <motion.p variants={fadeInUp} className="mt-3 text-xs text-slate-500 flex items-center gap-2 justify-center lg:justify-start max-w-md mx-auto lg:mx-0">
                 <ClockCounterClockwise className="w-3.5 h-3.5" />
                 Draft → Finalize → Amend (with traceable history).
               </motion.p>
               
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap gap-6 sm:gap-8 justify-center lg:justify-start">
+              <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap gap-6 sm:gap-8 justify-center lg:justify-start max-w-md mx-auto lg:mx-0">
                 {[
                   { value: '500+', label: 'Trusts Managed' },
                   { value: '10k+', label: 'Documents Filed' },
