@@ -994,12 +994,10 @@ export default function LearnPage({ user }) {
                   interactive
                   glow
                   onClick={() => setSelectedModule(module)}
-                  className="h-full"
+                  className="h-full group"
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-vault-gold/10 flex items-center justify-center">
-                      <module.icon className="w-6 h-6 text-vault-gold" />
-                    </div>
+                    <IconBadge icon={module.icon} size="lg" variant="gold" />
                     {moduleProgress > 0 && (
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-vault-gold">{moduleProgress}%</span>
@@ -1045,9 +1043,7 @@ export default function LearnPage({ user }) {
           </button>
           
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 rounded-xl bg-vault-gold/10 flex items-center justify-center">
-              <selectedModule.icon className="w-7 h-7 text-vault-gold" />
-            </div>
+            <IconBadge icon={selectedModule.icon} size="xl" variant="gold" />
             <div className="flex-1 min-w-0">
               <h2 className="text-2xl font-heading text-white">{selectedModule.title}</h2>
               <p className="text-white/50">{selectedModule.description}</p>
@@ -1073,17 +1069,16 @@ export default function LearnPage({ user }) {
                   key={lesson.id}
                   interactive
                   onClick={() => setSelectedLesson(lesson)}
-                  className="flex items-center gap-4"
+                  className="flex items-center gap-4 group"
                 >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    isComplete ? 'bg-green-500/20' : 'bg-vault-gold/10'
-                  }`}>
-                    {isComplete ? (
-                      <CheckCircle className="w-5 h-5 text-green-400" weight="duotone" />
-                    ) : (
-                      <span className="text-vault-gold font-mono">{idx + 1}</span>
-                    )}
-                  </div>
+                  <IconBadge 
+                    icon={isComplete ? CheckCircle : null} 
+                    size="md" 
+                    variant={isComplete ? 'emerald' : 'gold'}
+                    className={!isComplete ? 'flex items-center justify-center' : ''}
+                  >
+                    {!isComplete && <span className="text-vault-gold font-mono">{idx + 1}</span>}
+                  </IconBadge>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-white font-medium">{lesson.title}</h4>
                     <p className="text-white/40 text-sm">{lesson.keyPoints.length} key concepts</p>
