@@ -420,6 +420,57 @@ export default function BinderPage() {
     }
   };
 
+  // Refresh binder history
+  const handleRefreshHistory = async () => {
+    setRefreshingHistory(true);
+    try {
+      // Fetch runs
+      const runsRes = await fetch(`${API_URL}/api/binder/runs?portfolio_id=${portfolioId}&limit=10`);
+      const runsData = await runsRes.json();
+      if (runsData.ok) {
+        setRuns(runsData.data.runs || []);
+      }
+
+      // Fetch latest
+      const latestRes = await fetch(`${API_URL}/api/binder/latest?portfolio_id=${portfolioId}`);
+      const latestData = await latestRes.json();
+      if (latestData.ok) {
+        setLatestRun(latestData.data.run);
+      }
+
+      toast({ title: 'Refreshed', description: 'Binder history updated' });
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to refresh history', variant: 'destructive' });
+    } finally {
+      setRefreshingHistory(false);
+    }
+  };
+
+  // Delete binder run
+  const handleDeleteRun = async (runId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/binder/runs/${runId}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        toast({ title: 'Binder Deleted', description: 'Binder removed from history' });
+        setRuns(runs.filter(r => r.id !== runId));
+        // Update latest if we deleted the latest run
+        if (latestRun?.id === runId) {
+          const remainingRuns = runs.filter(r => r.id !== runId);
+          setLatestRun(remainingRuns[0] || null);
+        }
+        setDeleteConfirmRun(null);
+      } else {
+        toast({ title: 'Error', description: data.error?.message || 'Failed to delete binder', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete binder', variant: 'destructive' });
+    }
+  };
+
   // Reset schedule form
   const resetScheduleForm = () => {
     setScheduleForm({
