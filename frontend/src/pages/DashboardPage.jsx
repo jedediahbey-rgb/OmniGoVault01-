@@ -320,13 +320,13 @@ export default function DashboardPage({ user }) {
           <StatCard label="Portfolios" value={portfolios.length} icon={FolderSimple} variant="gold" />
         </motion.div>
         <motion.div variants={fadeInUp}>
-          <StatCard label="Documents" value={stats?.documents || 0} icon={FileText} variant="default" />
+          <StatCard label="Documents" value={stats?.documents || 0} icon={FileText} variant="gold" />
         </motion.div>
         <motion.div variants={fadeInUp}>
-          <StatCard label="Assets" value={stats?.assets || 0} icon={Briefcase} variant="blue" />
+          <StatCard label="Assets" value={stats?.assets || 0} icon="gold" variant="gold" />
         </motion.div>
         <motion.div variants={fadeInUp}>
-          <StatCard label="Notices" value={stats?.pending_notices || 0} icon={Bell} variant="default" />
+          <StatCard label="Notices" value={stats?.pending_notices || 0} icon={Bell} variant="gold" />
         </motion.div>
       </motion.div>
 
