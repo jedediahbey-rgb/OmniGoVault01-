@@ -5,6 +5,7 @@ import axios from 'axios';
 import {
   ArrowRight,
   Bell,
+  Book,
   BookOpen,
   Briefcase,
   Clock,
@@ -12,11 +13,13 @@ import {
   FileText,
   FolderSimple,
   FolderSimplePlus,
+  Gear,
   MagnifyingGlass,
   PencilSimple,
   Plus,
   Robot,
   Sparkle,
+  Stethoscope,
   Trash,
   Star
 } from '@phosphor-icons/react';
