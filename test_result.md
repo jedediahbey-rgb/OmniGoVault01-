@@ -714,3 +714,57 @@ Date: Wed Dec 25 18:50:00 UTC 2025
 - Required system dependencies: libpango-1.0-0, libpangoft2-1.0-0, libpangocairo-1.0-0
 - Install command: apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 libpangocairo-1.0-0
 
+
+
+## Icon System Rollout - MonoChip Component
+Date: Thu Dec 26 03:17:00 UTC 2025
+
+### Task
+Complete the Global Design System Upgrade by rolling out the `MonoChip` component across the application to replace all ad-hoc RM-ID displays.
+
+### Changes Made
+Added `MonoChip` import and replaced all ad-hoc `font-mono text-xs` RM-ID displays with the standardized `MonoChip` component in the following files:
+
+1. **GovernancePage.jsx** - 5 instances (meetings, distributions, disputes, insurance, compensation tabs)
+2. **LedgerTimelinePage.jsx** - 2 instances (timeline view and list view)
+3. **LedgerThreadsPage.jsx** - 6 instances (thread cards, merge modal, split modal, reassign modal)
+4. **PortfolioOverviewPage.jsx** - 3 instances (documents list, assets list, ledger records)
+5. **DisputeEditorPage.jsx** - 1 instance (RM-ID in header)
+6. **InsuranceEditorPage.jsx** - 1 instance (RM-ID in header)
+7. **CompensationEditorPage.jsx** - 1 instance (RM-ID in header)
+8. **DocumentEditorPage.jsx** - 3 instances (header, locked view, editable view)
+9. **DiagnosticsPage.jsx** - 1 instance (issue record ID)
+10. **VaultPage.jsx** - 3 instances (card view, list view mobile/desktop)
+11. **TrustProfilePage.jsx** - 1 instance (mail events)
+12. **GovernanceRecordPage.jsx** - 1 instance (record header)
+13. **BinderPage.jsx** - 1 instance (manifest table)
+
+### MonoChip Variants Used
+- `variant="muted"` - For subtle displays in governance lists and ledger timeline
+- `variant="gold"` - For prominent displays in thread manager and document IDs
+- `size="xs"` - For compact displays in lists
+- `size="sm"` - For more readable displays in editor headers
+
+### Verification
+- Screenshots captured of Governance page, Ledger Timeline, and Thread Manager
+- All pages loading correctly without console errors
+- MonoChip styling matches design system guidelines
+- Backend and frontend running without errors
+
+### Files Modified
+- /app/frontend/src/pages/GovernancePage.jsx
+- /app/frontend/src/pages/LedgerTimelinePage.jsx
+- /app/frontend/src/pages/LedgerThreadsPage.jsx
+- /app/frontend/src/pages/PortfolioOverviewPage.jsx
+- /app/frontend/src/pages/DisputeEditorPage.jsx
+- /app/frontend/src/pages/InsuranceEditorPage.jsx
+- /app/frontend/src/pages/CompensationEditorPage.jsx
+- /app/frontend/src/pages/DocumentEditorPage.jsx
+- /app/frontend/src/pages/DiagnosticsPage.jsx
+- /app/frontend/src/pages/VaultPage.jsx
+- /app/frontend/src/pages/TrustProfilePage.jsx
+- /app/frontend/src/pages/GovernanceRecordPage.jsx
+- /app/frontend/src/pages/BinderPage.jsx
+
+### Status
+✅ COMPLETED - MonoChip component rolled out across all pages displaying RM-IDs
