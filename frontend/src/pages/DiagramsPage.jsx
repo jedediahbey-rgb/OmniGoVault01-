@@ -22,6 +22,17 @@ import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 
+// Helper function to parse **bold** markdown to JSX
+const parseBoldText = (text) => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index} className="text-white font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 // Custom node styles
 const nodeStyle = {
   padding: '16px 24px',
