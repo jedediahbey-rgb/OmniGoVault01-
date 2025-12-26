@@ -50,6 +50,7 @@ const moduleConfig = {
   minutes: {
     icon: Newspaper,
     color: 'blue',
+    variant: 'blue',
     label: 'Meeting Minutes',
     bgClass: 'bg-blue-500/20',
     borderClass: 'border-blue-500/30',
@@ -59,6 +60,7 @@ const moduleConfig = {
   distribution: {
     icon: HandCoins,
     color: 'green',
+    variant: 'emerald',
     label: 'Distribution',
     bgClass: 'bg-green-500/20',
     borderClass: 'border-green-500/30',
@@ -68,6 +70,7 @@ const moduleConfig = {
   dispute: {
     icon: Scales,
     color: 'red',
+    variant: 'red',
     label: 'Dispute',
     bgClass: 'bg-red-500/20',
     borderClass: 'border-red-500/30',
@@ -77,6 +80,7 @@ const moduleConfig = {
   insurance: {
     icon: ShieldCheck,
     color: 'purple',
+    variant: 'purple',
     label: 'Insurance',
     bgClass: 'bg-purple-500/20',
     borderClass: 'border-purple-500/30',
@@ -86,6 +90,7 @@ const moduleConfig = {
   compensation: {
     icon: CurrencyDollar,
     color: 'amber',
+    variant: 'amber',
     label: 'Compensation',
     bgClass: 'bg-amber-500/20',
     borderClass: 'border-amber-500/30',
