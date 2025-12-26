@@ -457,8 +457,8 @@ export default function NodeMapPage() {
     });
 
     const govTypes = Object.entries(govByType).slice(0, 4);
-    const govSpacing = isMobile ? 100 : 150;
-    const govStartX = centerX + (isMobile ? 50 : horizontalSpacing - 100);
+    const govSpacing = isMobile ? 100 : (hasLotsOfData ? 130 : 150);
+    const govStartX = centerX - ((govTypes.length - 1) * govSpacing) / 2;
     govTypes.forEach(([type, records], idx) => {
       const nodeId = `gov-${type}`;
       const icons = {
@@ -476,7 +476,7 @@ export default function NodeMapPage() {
           records,
           type: 'governance',
         },
-        position: { x: govStartX + idx * govSpacing, y: centerY + verticalSpacing + (isMobile ? 120 : 180) },
+        position: { x: govStartX + idx * govSpacing, y: centerY + verticalSpacing + (isMobile ? 120 : 160) },
         style: nodeStyles.governance,
       });
       newEdges.push({
