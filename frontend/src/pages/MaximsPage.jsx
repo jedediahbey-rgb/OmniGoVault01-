@@ -285,6 +285,31 @@ export default function MaximsPage({ user }) {
   // Handle highlight parameter from URL (e.g., from Glossary page)
   const hasScrolled = useRef(false);
   
+  // Custom scroll function that works on Samsung Internet
+  const smoothScrollTo = useCallback((targetPosition) => {
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const duration = 500; // ms
+    let startTime = null;
+    
+    const animation = (currentTime) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+      
+      // Easing function for smooth animation
+      const easeInOutQuad = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      
+      window.scrollTo(0, startPosition + distance * easeInOutQuad(progress));
+      
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      }
+    };
+    
+    requestAnimationFrame(animation);
+  }, []);
+  
   useEffect(() => {
     const highlightParam = searchParams.get('highlight');
     
@@ -302,18 +327,15 @@ export default function MaximsPage({ user }) {
         setHighlightedMaximId(maximId);
         setExpandedId(maximId);
         
-        // Scroll to maxim using getElementById as backup
+        // Scroll to maxim using custom animation
         const attemptScroll = (attempts = 0) => {
           if (attempts > 30) {
             hasScrolled.current = false;
             return;
           }
           
-          // Try refs first, then getElementById
-          let maximElement = maximRefs.current[maximId];
-          if (!maximElement) {
-            maximElement = document.getElementById(`maxim-${maximId}`);
-          }
+          // Try getElementById since it's more reliable
+          const maximElement = document.getElementById(`maxim-${maximId}`);
           
           if (maximElement) {
             // Calculate the exact scroll position
@@ -323,13 +345,10 @@ export default function MaximsPage({ user }) {
             
             // Header height plus small padding
             const headerHeight = 80;
-            const targetScrollPosition = elementTop - headerHeight;
+            const targetScrollPosition = Math.max(0, elementTop - headerHeight);
             
-            // Scroll to the calculated position
-            window.scrollTo({
-              top: Math.max(0, targetScrollPosition),
-              behavior: 'smooth'
-            });
+            // Use custom scroll animation (works on Samsung Internet)
+            smoothScrollTo(targetScrollPosition);
             
             // Clear URL parameter and highlight after delay
             setTimeout(() => {
@@ -343,11 +362,11 @@ export default function MaximsPage({ user }) {
           }
         };
         
-        // Start scroll attempt after a longer delay for render
+        // Start scroll attempt after delay for render
         setTimeout(() => attemptScroll(0), 500);
       }
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, smoothScrollTo]);
 
   const recordReview = async (maximId, quality) => {
     if (!user) {
