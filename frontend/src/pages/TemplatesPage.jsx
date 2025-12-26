@@ -16,6 +16,7 @@ import {
   Stamp
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -515,7 +516,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
         icon={FileText}
         title="Templates Studio"
         subtitle="Professional trust document templates ready for customization"
-        helpKey="templates"
+        titleAction={<PageHelpTooltip pageKey="templates" />}
       />
 
       <motion.div
