@@ -979,9 +979,9 @@ export default function CyberHomePage() {
           {/* Footer Logo */}
           <div className="mt-6 flex justify-center">
             <img 
-              src="/omnigovault-logo-trimmed.png" 
+              src="/omnigovault-logo-footer.png" 
               alt="OMNIGOVAULT" 
-              className="h-8 sm:h-10 w-auto opacity-40 hover:opacity-60 transition-opacity"
+              className="h-12 sm:h-14 w-auto"
             />
           </div>
         </div>
