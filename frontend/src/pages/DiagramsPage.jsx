@@ -19,6 +19,7 @@ import {
   X
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 
@@ -514,7 +515,7 @@ export default function DiagramsPage() {
         icon={GitBranch}
         title="Interactive Diagrams"
         subtitle="Visualize trust relationships, equity concepts, and legal structures"
-        helpKey="diagrams"
+        titleAction={<PageHelpTooltip pageKey="diagrams" />}
       />
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
