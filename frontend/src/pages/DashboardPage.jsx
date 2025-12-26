@@ -346,13 +346,42 @@ export default function DashboardPage({ user }) {
                     <DotsThreeVertical className="w-5 h-5" weight="bold" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-[#0B1221] border-vault-gold/20 w-48">
+                <DropdownMenuContent align="end" className="bg-[#0B1221] border-vault-gold/20 w-52 max-h-80 overflow-y-auto">
                   <div className="px-2 py-1.5 text-xs text-white/50 font-medium">Customize (max 4)</div>
-                  {allQuickActions.map((action) => (
+                  <div className="px-2 py-1 text-[10px] text-vault-gold/60 uppercase tracking-wider">Knowledge</div>
+                  {allQuickActions.slice(0, 4).map((action) => (
                     <DropdownMenuItem
                       key={action.id}
                       onClick={() => toggleQuickAction(action.id)}
-                      className="text-white hover:bg-vault-gold/20 cursor-pointer"
+                      className="text-white hover:bg-vault-gold/20 cursor-pointer text-sm"
+                    >
+                      <action.icon className="w-4 h-4 mr-2 text-vault-gold" />
+                      <span className="flex-1">{action.label}</span>
+                      {selectedActions.includes(action.id) && (
+                        <span className="text-vault-gold text-xs">✓</span>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                  <div className="px-2 py-1 text-[10px] text-vault-gold/60 uppercase tracking-wider mt-1">Workspace</div>
+                  {allQuickActions.slice(4, 10).map((action) => (
+                    <DropdownMenuItem
+                      key={action.id}
+                      onClick={() => toggleQuickAction(action.id)}
+                      className="text-white hover:bg-vault-gold/20 cursor-pointer text-sm"
+                    >
+                      <action.icon className="w-4 h-4 mr-2 text-vault-gold" />
+                      <span className="flex-1">{action.label}</span>
+                      {selectedActions.includes(action.id) && (
+                        <span className="text-vault-gold text-xs">✓</span>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                  <div className="px-2 py-1 text-[10px] text-vault-gold/60 uppercase tracking-wider mt-1">Tools</div>
+                  {allQuickActions.slice(10).map((action) => (
+                    <DropdownMenuItem
+                      key={action.id}
+                      onClick={() => toggleQuickAction(action.id)}
+                      className="text-white hover:bg-vault-gold/20 cursor-pointer text-sm"
                     >
                       <action.icon className="w-4 h-4 mr-2 text-vault-gold" />
                       <span className="flex-1">{action.label}</span>
