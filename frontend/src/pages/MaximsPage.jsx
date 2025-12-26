@@ -292,6 +292,9 @@ export default function MaximsPage({ user }) {
       const maximId = parseInt(highlightParam);
       
       if (!isNaN(maximId)) {
+        // Mark that we've started the scroll process immediately
+        hasScrolled.current = true;
+        
         // Clear filters so maxim is visible
         setSelectedCategory('all');
         setSearchTerm('');
@@ -299,28 +302,29 @@ export default function MaximsPage({ user }) {
         setHighlightedMaximId(maximId);
         setExpandedId(maximId);
         
-        // Mark that we've started the scroll process
-        hasScrolled.current = true;
-        
-        // Retry logic to wait for element to be rendered
-        let retries = 0;
-        const maxRetries = 20;
-        
-        const scrollToMaxim = () => {
+        // Use a simple approach with scrollIntoView
+        const attemptScroll = (attempts = 0) => {
+          if (attempts > 30) {
+            hasScrolled.current = false;
+            return;
+          }
+          
           const maximElement = maximRefs.current[maximId];
           
           if (maximElement) {
-            // Get element position and scroll with offset for header
-            const elementRect = maximElement.getBoundingClientRect();
-            const absoluteElementTop = elementRect.top + window.pageYOffset;
-            // Larger offset for mobile headers (150px) to ensure title is fully visible
-            const headerOffset = 150;
-            const offsetPosition = absoluteElementTop - headerOffset;
+            // Use scrollIntoView with behavior smooth and block start
+            // Then adjust for header with a second scroll
+            maximElement.scrollIntoView({ behavior: 'auto', block: 'start' });
             
-            window.scrollTo({
-              top: Math.max(0, offsetPosition),
-              behavior: 'smooth'
-            });
+            // Adjust for header after scrollIntoView
+            setTimeout(() => {
+              const currentScroll = window.scrollY || window.pageYOffset;
+              // Subtract header offset to show more of the maxim
+              window.scrollTo({
+                top: Math.max(0, currentScroll - 150),
+                behavior: 'smooth'
+              });
+            }, 50);
             
             // Clear URL parameter and highlight after delay
             setTimeout(() => {
@@ -328,17 +332,14 @@ export default function MaximsPage({ user }) {
               setSearchParams({}, { replace: true });
               hasScrolled.current = false;
             }, 4000);
-          } else if (retries < maxRetries) {
-            // Retry if element not found yet
-            retries++;
-            setTimeout(scrollToMaxim, 150);
           } else {
-            hasScrolled.current = false;
+            // Retry if element not found yet
+            setTimeout(() => attemptScroll(attempts + 1), 100);
           }
         };
         
-        // Start scroll after initial render delay
-        setTimeout(scrollToMaxim, 300);
+        // Start scroll attempt after a short delay for render
+        setTimeout(() => attemptScroll(0), 200);
       }
     }
   }, [searchParams, setSearchParams]);
