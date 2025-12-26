@@ -499,7 +499,7 @@ export default function NodeMapPage() {
 
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [loading, selectedPortfolio, portfolios, trustProfile, parties, assets, governanceRecords, setNodes, setEdges]);
+  }, [loading, selectedPortfolio, portfolios, trustProfile, parties, assets, governanceRecords, setNodes, setEdges, isMobile]);
 
   const onNodeClick = useCallback((event, node) => {
     if (node.data.type === 'placeholder') {
