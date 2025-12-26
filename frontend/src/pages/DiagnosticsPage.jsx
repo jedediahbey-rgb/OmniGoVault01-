@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
+import MonoChip from '../components/shared/MonoChip';
 import {
   ShieldCheck,
   Warning,
@@ -400,7 +401,7 @@ export default function DiagnosticsPage() {
                               <p className="text-sm text-white mb-1">{issue.description}</p>
                               
                               {/* Record ID */}
-                              <p className="text-xs text-vault-muted font-mono">{issue.record_id}</p>
+                              <MonoChip variant="muted" size="xs">{issue.record_id}</MonoChip>
 
                               {/* Expanded Details */}
                               <AnimatePresence>
