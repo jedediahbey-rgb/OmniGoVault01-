@@ -122,14 +122,14 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
   return (
     <>
       {/* Logo - Links to Landing Page */}
-      <div className="block p-6 border-b border-white/10">
+      <Link to="/" className="block p-6 border-b border-white/10 hover:bg-white/5 transition-colors">
         <div className="flex items-center gap-2">
           <Key className="w-5 h-5 text-vault-gold" weight="fill" />
           <div className="min-w-0 flex-1">
             <span className="font-heading text-base text-white tracking-tight block truncate">Private Equity & Trusts</span>
           </div>
         </div>
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 overflow-y-auto custom-scrollbar">
