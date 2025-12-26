@@ -316,11 +316,36 @@ export default function DashboardPage({ user }) {
           className="lg:col-span-4"
         >
           <GlassCard className="h-full">
-            <h3 className="font-heading text-lg text-white mb-4">Quick Actions</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-heading text-lg text-white">Quick Actions</h3>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-white/40 hover:text-white">
+                    <DotsThreeVertical className="w-5 h-5" weight="bold" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-[#0B1221] border-vault-gold/20 w-48">
+                  <div className="px-2 py-1.5 text-xs text-white/50 font-medium">Customize (max 4)</div>
+                  {allQuickActions.map((action) => (
+                    <DropdownMenuItem
+                      key={action.id}
+                      onClick={() => toggleQuickAction(action.id)}
+                      className="text-white hover:bg-vault-gold/20 cursor-pointer"
+                    >
+                      <action.icon className="w-4 h-4 mr-2 text-vault-gold" />
+                      <span className="flex-1">{action.label}</span>
+                      {selectedActions.includes(action.id) && (
+                        <span className="text-vault-gold text-xs">✓</span>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               {quickActions.map((action, idx) => (
                 <button
-                  key={idx}
+                  key={action.id}
                   onClick={action.action}
                   className={`p-4 rounded-lg border transition-all duration-200 flex flex-col items-center gap-2 group ${
                     action.color === 'gold' 
@@ -333,7 +358,7 @@ export default function DashboardPage({ user }) {
                   <action.icon className={`w-5 h-5 ${
                     action.color === 'gold' ? 'text-vault-gold' :
                     action.color === 'blue' ? 'text-vault-blue' : 'text-white/60'
-                  }`} />
+                  }`} weight="duotone" />
                   <span className="text-xs text-white/70 group-hover:text-white">{action.label}</span>
                   {action.hint && <span className="hidden sm:inline text-[10px] text-white/30">{action.hint}</span>}
                 </button>
