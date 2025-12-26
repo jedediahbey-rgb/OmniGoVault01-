@@ -17,6 +17,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { toast } from 'sonner';
+import MonoChip from '../components/shared/MonoChip';
 import {
   ArrowLeft,
   CalendarBlank,
@@ -351,7 +352,7 @@ export default function GovernanceRecordPage({ user }) {
               </div>
               <div>
                 <p className="text-sm text-slate-400">{config.label}</p>
-                <p className="font-mono text-sm text-vault-gold">{record.rm_id || 'No RM-ID'}</p>
+                <MonoChip variant="gold" size="sm">{record.rm_id || 'No RM-ID'}</MonoChip>
               </div>
             </div>
             <div className="text-right text-sm text-slate-500">
