@@ -844,57 +844,38 @@ export default function BinderPage() {
                 {/* Only show action buttons for completed binders */}
                 {latestRun.status === 'complete' ? (
                   <div className="grid grid-cols-4 gap-2">
-                    <Button
-                      asChild
-                      className="col-span-1 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+                    <a
+                      href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
                     >
-                      <a 
-                        href={`${API_URL}/api/binder/runs/${latestRun.id}/view`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1"
-                      >
-                        <Eye className="w-4 h-4" />
-                        View
-                      </a>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="col-span-1 border-vault-gold/30 text-white hover:bg-vault-gold/10"
+                      <Eye className="w-4 h-4" />
+                      View
+                    </a>
+                    <a
+                      href={`${API_URL}/api/binder/runs/${latestRun.id}/download`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
-                      <a 
-                        href={`${API_URL}/api/binder/runs/${latestRun.id}/download`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1"
-                      >
-                        <Download className="w-4 h-4" />
-                        <span className="hidden sm:inline">Download</span>
-                        <span className="sm:hidden">DL</span>
-                      </a>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="col-span-1 border-vault-gold/30 text-white hover:bg-vault-gold/10"
+                      <Download className="w-4 h-4" />
+                      DL
+                    </a>
+                    <a
+                      href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
-                      <a 
-                        href={`${API_URL}/api/binder/runs/${latestRun.id}/view`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center"
-                      >
-                        <Printer className="w-4 h-4" />
-                      </a>
-                    </Button>
-                    <Button
+                      <Printer className="w-4 h-4" />
+                    </a>
+                    <button
                       onClick={() => handleViewManifest(latestRun.id)}
-                      variant="ghost"
-                      className="col-span-1 text-vault-muted hover:text-white"
+                      className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
                     >
                       <FileText className="w-4 h-4" />
-                    </Button>
+                    </button>
                   </div>
                 ) : latestRun.status === 'failed' ? (
                   <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
