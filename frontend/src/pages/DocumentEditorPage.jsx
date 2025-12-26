@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import MonoChip from '../components/shared/MonoChip';
 import {
   ArrowClockwise,
   ArrowCounterClockwise,
@@ -166,7 +167,7 @@ const DocumentView = ({ document, content }) => {
           {document.sub_record_id && (
             <div className="text-left sm:text-right shrink-0">
               <p className="text-slate-400 text-xs uppercase tracking-wider">RM-ID</p>
-              <p className="text-amber-400 font-mono text-xs sm:text-sm break-all">{document.sub_record_id}</p>
+              <MonoChip variant="gold" size="sm" className="break-all">{document.sub_record_id}</MonoChip>
             </div>
           )}
         </div>
@@ -525,7 +526,7 @@ export default function DocumentEditorPage({ user }) {
               <h2 className="text-white font-heading text-sm sm:text-base truncate">{title}</h2>
               <div className="flex items-center gap-2 text-xs sm:text-sm">
                 {document.sub_record_id && (
-                  <span className="text-vault-gold/60 font-mono text-xs truncate max-w-[120px] sm:max-w-none">{document.sub_record_id}</span>
+                  <MonoChip variant="gold" size="xs" className="truncate max-w-[120px] sm:max-w-none">{document.sub_record_id}</MonoChip>
                 )}
               </div>
             </div>
@@ -538,7 +539,7 @@ export default function DocumentEditorPage({ user }) {
                 placeholder="Document Title"
               />
               {document?.sub_record_id && (
-                <span className="text-vault-gold/60 text-xs font-mono truncate block max-w-[150px] sm:max-w-none">{document.sub_record_id}</span>
+                <MonoChip variant="gold" size="xs" className="truncate block max-w-[150px] sm:max-w-none">{document.sub_record_id}</MonoChip>
               )}
             </div>
           )}
