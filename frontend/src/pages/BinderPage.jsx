@@ -843,7 +843,7 @@ export default function BinderPage() {
 
                 {/* Only show action buttons for completed binders */}
                 {latestRun.status === 'complete' ? (
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 gap-2 relative z-50">
                     <a
                       href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
                       target="_blank"
