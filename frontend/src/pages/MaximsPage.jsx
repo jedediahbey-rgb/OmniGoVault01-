@@ -227,6 +227,7 @@ const categories = [
 ];
 
 export default function MaximsPage({ user }) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [maxims, setMaxims] = useState(maximsData);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -237,6 +238,10 @@ export default function MaximsPage({ user }) {
   const [studyProgress, setStudyProgress] = useState({});
   const [studyStats, setStudyStats] = useState(null);
   const [dueForReview, setDueForReview] = useState([]);
+  const [highlightedMaximId, setHighlightedMaximId] = useState(null);
+  
+  // Refs for scrolling to maxims
+  const maximRefs = useRef({});
 
   const fetchStudyProgress = async () => {
     try {
