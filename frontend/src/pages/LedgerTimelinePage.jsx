@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import MonoChip from '../components/shared/MonoChip';
 import {
   ArrowRight,
   Calendar,
@@ -424,7 +425,7 @@ export default function LedgerTimelinePage() {
                                     {record.rm_id && (
                                       <>
                                         <span className="text-white/20">•</span>
-                                        <span className="text-white/40 font-mono text-xs truncate max-w-[120px] sm:max-w-none">{record.rm_id}</span>
+                                        <MonoChip variant="muted" size="xs" className="truncate max-w-[120px] sm:max-w-none">{record.rm_id}</MonoChip>
                                       </>
                                     )}
                                   </div>
@@ -499,7 +500,7 @@ export default function LedgerTimelinePage() {
                               {record.rm_id && (
                                 <>
                                   <span className="text-white/20">•</span>
-                                  <span className="font-mono text-xs truncate max-w-[120px] sm:max-w-none">{record.rm_id}</span>
+                                  <MonoChip variant="muted" size="xs" className="truncate max-w-[120px] sm:max-w-none">{record.rm_id}</MonoChip>
                                 </>
                               )}
                             </div>
