@@ -1607,6 +1607,9 @@ export default function BinderPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Global PDF Viewer for history cards */}
+        <GlobalPdfViewer />
       </div>
     </div>
   );
