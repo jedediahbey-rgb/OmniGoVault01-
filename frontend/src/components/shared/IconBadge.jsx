@@ -105,6 +105,9 @@ const iconColorClasses = {
   amber: 'text-amber-400',
   red: 'text-red-400',
   purple: 'text-purple-400',
+  cyan: 'text-cyan-400',
+  orange: 'text-orange-400',
+  gray: 'text-gray-400',
 };
 
 const IconBadge = forwardRef(({
