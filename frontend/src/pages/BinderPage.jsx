@@ -880,13 +880,15 @@ export default function BinderPage() {
                 </div>
 
                 {latestRun.status === 'failed' && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg mt-4">
                     <p className="text-red-400 text-sm">
                       {latestRun.error_json?.user_message || latestRun.error_json?.message || 'Generation failed'}
                     </p>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-center p-3 text-vault-muted text-sm">
+                )}
+
+                {latestRun.status === 'generating' && (
+                  <div className="flex items-center justify-center p-3 text-vault-muted text-sm mt-4">
                     <ArrowClockwise className="w-4 h-4 mr-2 animate-spin" />
                     Generating...
                   </div>
