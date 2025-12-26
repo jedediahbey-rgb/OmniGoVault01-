@@ -1652,8 +1652,8 @@ export default function GovernancePage({ user }) {
                             </div>
                             
                             <div className="flex-1 min-w-0">
-                              {/* Badges row - lifecycle, operational status, type, priority */}
-                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                              {/* Badges row - lifecycle, operational status, priority */}
+                              <div className="flex items-center gap-1.5 flex-wrap mb-1">
                                 {/* Lifecycle Badge (Draft/Finalized) */}
                                 <Badge className={`${lifecycleConfig.color} border text-xs`}>
                                   {lifecycleConfig.label}
@@ -1662,13 +1662,15 @@ export default function GovernancePage({ user }) {
                                 <Badge className={`${operationalConfig.color} border text-xs`}>
                                   {operationalConfig.label}
                                 </Badge>
-                                <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs">
-                                  {typeConfig.label}
-                                </Badge>
+                                {/* Priority Badge (Low/Medium/High) */}
                                 <Badge className={`${priority.color} border text-xs`}>
                                   {priority.label}
                                 </Badge>
                               </div>
+                              {/* Type badge on its own row */}
+                              <Badge className="bg-vault-dark/50 text-vault-muted border border-vault-gold/20 text-xs mb-1">
+                                {typeConfig.label}
+                              </Badge>
                               
                               {/* Title */}
                               <h3 className="text-white font-medium truncate">{dispute.title}</h3>
