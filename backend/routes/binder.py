@@ -235,6 +235,36 @@ async def get_run(run_id: str, request: Request):
         return error_response("FETCH_ERROR", str(e), status_code=500)
 
 
+@router.delete("/runs/{run_id}")
+async def delete_run(run_id: str, request: Request):
+    """Delete a binder run from history."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        # Find the run first to verify ownership
+        run = await db.binder_runs.find_one(
+            {"id": run_id, "user_id": user.user_id},
+            {"_id": 0, "id": 1}
+        )
+        
+        if not run:
+            return error_response("NOT_FOUND", "Binder run not found", status_code=404)
+        
+        # Delete the run
+        result = await db.binder_runs.delete_one({"id": run_id, "user_id": user.user_id})
+        
+        if result.deleted_count == 0:
+            return error_response("DELETE_FAILED", "Failed to delete binder run", status_code=500)
+        
+        return success_response({"deleted": True, "run_id": run_id})
+        
+    except Exception as e:
+        return error_response("DELETE_ERROR", str(e), status_code=500)
+
+
 @router.get("/runs/{run_id}/download")
 async def download_binder(run_id: str, request: Request):
     """Download the generated binder PDF."""
