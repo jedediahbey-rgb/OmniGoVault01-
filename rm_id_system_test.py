@@ -7,7 +7,7 @@ from datetime import datetime
 import uuid
 
 class EquityTrustPortfolioTester:
-    def __init__(self, base_url="https://ux-overhaul-23.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://pdf-viewer-fix-2.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.session_token = None
         self.user_id = None

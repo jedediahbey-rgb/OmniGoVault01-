@@ -3677,7 +3677,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
-        "https://ux-overhaul-23.preview.emergentagent.com",
+        "https://pdf-viewer-fix-2.preview.emergentagent.com",
         "http://localhost:3000",
         "http://127.0.0.1:3000"
     ],
