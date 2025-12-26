@@ -603,11 +603,9 @@ export default function DashboardPage({ user }) {
                   <div 
                     key={doc.document_id}
                     onClick={() => navigate(`/vault/document/${doc.document_id}`)}
-                    className="flex items-center gap-4 p-3 rounded-lg border border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5 cursor-pointer transition-all"
+                    className="flex items-center gap-4 p-3 rounded-lg border border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5 cursor-pointer transition-all group"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-white/40" weight="duotone" />
-                    </div>
+                    <IconBadge icon={FileText} size="md" variant="muted" />
                     <div className="flex-1 min-w-0">
                       <p className="text-white truncate">{doc.title}</p>
                       <p className="text-xs text-white/40 flex items-center gap-1">
