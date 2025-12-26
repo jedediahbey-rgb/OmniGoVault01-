@@ -79,31 +79,36 @@ const moduleConfig = {
     label: 'Meeting Minutes',
     icon: CalendarBlank,
     color: 'text-blue-400',
-    bgColor: 'bg-blue-500/20'
+    bgColor: 'bg-blue-500/20',
+    variant: 'blue'
   },
   distribution: {
     label: 'Distribution',
     icon: Wallet,
     color: 'text-emerald-400',
-    bgColor: 'bg-emerald-500/20'
+    bgColor: 'bg-emerald-500/20',
+    variant: 'emerald'
   },
   dispute: {
     label: 'Dispute',
     icon: Scales,
     color: 'text-amber-400',
-    bgColor: 'bg-amber-500/20'
+    bgColor: 'bg-amber-500/20',
+    variant: 'amber'
   },
   insurance: {
     label: 'Insurance Policy',
     icon: Heart,
     color: 'text-red-400',
-    bgColor: 'bg-red-500/20'
+    bgColor: 'bg-red-500/20',
+    variant: 'red'
   },
   compensation: {
     label: 'Trustee Compensation',
     icon: Users,
     color: 'text-purple-400',
-    bgColor: 'bg-purple-500/20'
+    bgColor: 'bg-purple-500/20',
+    variant: 'purple'
   }
 };
 
