@@ -24,6 +24,24 @@ const safeString = (value) => {
   return String(value);
 };
 
+/**
+ * PageHeader Component
+ * 
+ * Props:
+ * - title: Main page title (string)
+ * - subtitle: Secondary text below title (string)
+ * - icon: Phosphor icon component to display
+ * - actions: React elements for top-right action buttons
+ * - breadcrumbs: Array of breadcrumb items
+ * - titleAction: Element placed NEXT TO the title (e.g., create button)
+ * - subtitleAction: Element placed NEXT TO the subtitle (e.g., help tooltip)
+ * - helpKey: DEPRECATED - use subtitleAction with PageHelpTooltip instead
+ * 
+ * LOCKED POSITIONING:
+ * - titleAction appears inline with the title text
+ * - subtitleAction appears inline with the subtitle text
+ * - DO NOT change this layout without explicit user request
+ */
 export default function PageHeader({ 
   title, 
   subtitle, 
