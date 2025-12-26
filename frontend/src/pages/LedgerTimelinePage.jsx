@@ -27,6 +27,7 @@ import {
   X,
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';

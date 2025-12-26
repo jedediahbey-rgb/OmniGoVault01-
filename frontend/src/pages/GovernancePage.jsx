@@ -56,6 +56,7 @@ const CyberDateIcon = ({ className = "w-5 h-5", day = null }) => {
   );
 };
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import LedgerThreadSelector from '../components/governance/LedgerThreadSelector';
 import { Button } from '../components/ui/button';
