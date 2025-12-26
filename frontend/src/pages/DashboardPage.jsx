@@ -215,7 +215,6 @@ export default function DashboardPage({ user }) {
   };
 
   const quickActions = [
-    { icon: Plus, label: 'New Portfolio', action: () => setShowNewPortfolio(true), color: 'gold' },
     { icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'blue' },
     { icon: BookOpen, label: 'Start Learning', action: () => navigate('/learn'), color: 'default' },
     { icon: Robot, label: 'Ask Assistant', action: () => navigate('/assistant'), color: 'gold', hint: 'Ctrl+J' },
