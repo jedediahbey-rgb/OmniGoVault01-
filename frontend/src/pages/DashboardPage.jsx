@@ -463,9 +463,7 @@ export default function DashboardPage({ user }) {
                           : 'border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5'
                       }`}
                     >
-                      <div className="w-12 h-12 rounded-lg bg-vault-gold/10 flex items-center justify-center shrink-0">
-                        <FolderSimple className="w-6 h-6 text-vault-gold" weight="duotone" />
-                      </div>
+                      <IconBadge icon={FolderSimple} size="lg" variant="gold" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="text-white font-medium truncate">{portfolio.name}</p>
