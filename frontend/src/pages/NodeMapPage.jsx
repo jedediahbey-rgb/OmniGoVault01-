@@ -434,21 +434,21 @@ export default function NodeMapPage() {
         id: 'placeholder-grantor',
         type: 'default',
         data: { label: '+ Add Grantor', type: 'placeholder' },
-        position: { x: 50, y: 200 },
+        position: { x: centerX - horizontalSpacing - 80, y: centerY },
         style: { ...nodeStyles.grantor, opacity: 0.5, border: '2px dashed rgba(168, 85, 247, 0.3)' },
       });
       newNodes.push({
         id: 'placeholder-trustee',
         type: 'default',
         data: { label: '+ Add Trustee', type: 'placeholder' },
-        position: { x: 400, y: 50 },
+        position: { x: centerX, y: centerY - verticalSpacing - 40 },
         style: { ...nodeStyles.trustee, opacity: 0.5, border: '2px dashed rgba(34, 197, 94, 0.3)' },
       });
       newNodes.push({
         id: 'placeholder-beneficiary',
         type: 'default',
         data: { label: '+ Add Beneficiary', type: 'placeholder' },
-        position: { x: 750, y: 200 },
+        position: { x: centerX + horizontalSpacing + 100, y: centerY },
         style: { ...nodeStyles.beneficiary, opacity: 0.5, border: '2px dashed rgba(251, 191, 36, 0.3)' },
       });
     }
