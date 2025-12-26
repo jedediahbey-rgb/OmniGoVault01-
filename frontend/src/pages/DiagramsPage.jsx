@@ -515,7 +515,7 @@ export default function DiagramsPage() {
         icon={GitBranch}
         title="Interactive Diagrams"
         subtitle="Visualize trust relationships, equity concepts, and legal structures"
-        titleAction={<PageHelpTooltip pageKey="diagrams" />}
+        subtitleAction={<PageHelpTooltip pageKey="diagrams" />}
       />
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

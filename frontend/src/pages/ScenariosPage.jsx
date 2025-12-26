@@ -462,7 +462,7 @@ export default function ScenariosPage() {
         icon={ChartLine}
         title="Scenario Planning"
         subtitle="Model trust decisions and compare outcomes with what-if analysis"
-        titleAction={<PageHelpTooltip pageKey="scenarios" />}
+        subtitleAction={<PageHelpTooltip pageKey="scenarios" />}
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

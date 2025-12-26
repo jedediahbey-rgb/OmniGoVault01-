@@ -114,7 +114,7 @@ export default function AssistantPage({ user }) {
         icon={Robot}
         title="AI Assistant"
         subtitle="Your guide to equity and trust law—grounded in source materials"
-        titleAction={<PageHelpTooltip pageKey="assistant" />}
+        subtitleAction={<PageHelpTooltip pageKey="assistant" />}
         actions={
           messages.length > 0 && (
             <Button onClick={resetChat} variant="outline" className="btn-secondary">

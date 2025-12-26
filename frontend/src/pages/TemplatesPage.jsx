@@ -516,7 +516,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
         icon={FileText}
         title="Templates Studio"
         subtitle="Professional trust document templates ready for customization"
-        titleAction={<PageHelpTooltip pageKey="templates" />}
+        subtitleAction={<PageHelpTooltip pageKey="templates" />}
       />
 
       <motion.div
