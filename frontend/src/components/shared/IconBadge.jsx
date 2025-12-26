@@ -92,6 +92,27 @@ const variantClasses = {
     group-hover:border-purple-500/50 
     group-hover:shadow-[0_0_15px_rgba(168,85,247,0.15)]
   `,
+  cyan: `
+    bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 
+    border border-cyan-500/30 
+    shadow-[inset_0_1px_0_0_rgba(6,182,212,0.1)]
+    group-hover:border-cyan-500/50 
+    group-hover:shadow-[0_0_15px_rgba(6,182,212,0.15)]
+  `,
+  orange: `
+    bg-gradient-to-br from-orange-500/20 to-orange-500/5 
+    border border-orange-500/30 
+    shadow-[inset_0_1px_0_0_rgba(249,115,22,0.1)]
+    group-hover:border-orange-500/50 
+    group-hover:shadow-[0_0_15px_rgba(249,115,22,0.15)]
+  `,
+  gray: `
+    bg-gradient-to-br from-gray-500/20 to-gray-500/5 
+    border border-gray-500/30 
+    shadow-[inset_0_1px_0_0_rgba(107,114,128,0.1)]
+    group-hover:border-gray-500/50 
+    group-hover:shadow-[0_0_15px_rgba(107,114,128,0.15)]
+  `,
 };
 
 const iconColorClasses = {
