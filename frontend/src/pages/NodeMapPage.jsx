@@ -457,7 +457,7 @@ export default function NodeMapPage() {
     });
 
     const govTypes = Object.entries(govByType).slice(0, 4);
-    const govSpacing = isMobile ? 100 : (hasLotsOfData ? 130 : 150);
+    const govSpacing = isMobile ? 100 : 160;
     const govStartX = centerX - ((govTypes.length - 1) * govSpacing) / 2;
     govTypes.forEach(([type, records], idx) => {
       const nodeId = `gov-${type}`;
@@ -476,7 +476,7 @@ export default function NodeMapPage() {
           records,
           type: 'governance',
         },
-        position: { x: govStartX + idx * govSpacing, y: centerY + verticalSpacing + (isMobile ? 120 : 160) },
+        position: { x: govStartX + idx * govSpacing, y: centerY + verticalSpacing + (isMobile ? 140 : 180) },
         style: nodeStyles.governance,
       });
       newEdges.push({
