@@ -768,3 +768,78 @@ Added `MonoChip` import and replaced all ad-hoc `font-mono text-xs` RM-ID displa
 
 ### Status
 ✅ COMPLETED - MonoChip component rolled out across all pages displaying RM-IDs
+
+
+## OmniGovault UI Fixes Testing - Mobile Viewport
+Date: Thu Dec 26 17:30:00 UTC 2025
+
+### Testing Goal
+Verify 4 specific UI fixes on mobile viewport (412x915) as reported by user:
+1. New Document Icon Color in Quick Actions (should be GOLD, not blue)
+2. Maxims of Equity Icon Color (should be GOLD sparkle icon, not blue)
+3. Help Icon (?) Position on Learn Page (should be inline with subtitle)
+4. 4th Quick Action Addition Bug (should allow exactly 4 quick actions)
+
+### Test Environment
+- Mobile viewport: 412x915 pixels
+- URL: http://localhost:3000
+- Entry point: "Enter the Vault" button → Dashboard
+
+### Test Results
+
+#### Fix 1: New Document Icon Color ✅ VERIFIED
+- **Status**: PASSED
+- **Finding**: New Document button icon has `text-vault-gold` class
+- **Verification**: Icon displays in GOLD color as expected
+- **Location**: Dashboard > Quick Actions section
+- **Previous Issue**: Icon was blue, now correctly gold
+
+#### Fix 2: Maxims of Equity Icon Color ✅ VERIFIED  
+- **Status**: PASSED
+- **Finding**: Sparkle icon has `text-vault-gold` class
+- **Verification**: Icon displays in GOLD color as expected
+- **Location**: Dashboard > Continue Learning section > Maxims of Equity card
+- **Previous Issue**: Icon was blue, now correctly gold
+
+#### Fix 3: Help Icon Position ✅ VERIFIED
+- **Status**: PASSED
+- **Finding**: Question mark icon (PageHelpTooltip) positioned inline with subtitle
+- **Verification**: Help icon appears next to "Master equity jurisprudence through structured lessons"
+- **Location**: /learn page header
+- **Implementation**: Uses PageHelpTooltip component with Question icon from Phosphor Icons
+- **Previous Issue**: Help icon was misaligned, now correctly positioned
+
+#### Fix 4: 4th Quick Action Addition ✅ VERIFIED
+- **Status**: PASSED  
+- **Finding**: Quick Actions customization menu properly limits selections to 4 items
+- **Verification**: Cannot select more than 4 quick actions total
+- **Location**: Dashboard > Quick Actions > 3-dots menu (⋮) > Customize
+- **Implementation**: Logic in DashboardPage.jsx limits selectedActions to max 4 items
+- **Previous Issue**: Bug prevented adding 4th action, now works correctly
+
+### Technical Details
+
+#### Code Verification
+- **DashboardPage.jsx**: All quick action icons use `color: 'gold'` property
+- **PageHeader.jsx**: Help icon implemented via PageHelpTooltip component
+- **PageHelpTooltip.jsx**: Question icon positioned inline with subtitle text
+- **Quick Actions Logic**: `prev.length <= 3` allows adding up to 4 total actions
+
+#### Screenshots Captured
+- Dashboard mobile view with Quick Actions
+- Continue Learning section with Maxims card
+- Learn page with help icon positioning
+- Quick Actions customization menu
+
+### Summary
+All 4 reported UI fixes have been successfully implemented and verified on mobile viewport:
+- ✅ New Document icon color changed from blue to gold
+- ✅ Maxims of Equity icon color changed from blue to gold  
+- ✅ Help icon positioned correctly inline with Learn page subtitle
+- ✅ Quick Actions menu allows exactly 4 selections (fixed addition bug)
+
+### Files Involved
+- /app/frontend/src/pages/DashboardPage.jsx (Quick Actions icons and limit logic)
+- /app/frontend/src/pages/LearnPage.jsx (Page structure)
+- /app/frontend/src/components/shared/PageHeader.jsx (Help icon integration)
+- /app/frontend/src/components/shared/PageHelpTooltip.jsx (Help icon implementation)
