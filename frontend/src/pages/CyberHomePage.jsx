@@ -602,7 +602,7 @@ export default function CyberHomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 lg:py-16">
-          <div className="max-w-3xl mx-auto lg:mx-0 ov-hero">
+          <div className="max-w-3xl mx-auto lg:mx-0">
             <motion.div
               initial="hidden"
               animate="visible"
