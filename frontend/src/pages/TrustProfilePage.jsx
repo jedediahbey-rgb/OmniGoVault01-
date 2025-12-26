@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import MonoChip from '../components/shared/MonoChip';
 import {
   ArrowLeft,
   Clock,
@@ -553,7 +554,7 @@ export default function TrustProfilePage({ user }) {
                         <p className="text-white/40 text-sm">
                           {event.event_type} • {event.date}
                         </p>
-                        <p className="text-white/30 text-xs font-mono mt-1">{event.rm_id}</p>
+                        <MonoChip variant="muted" size="xs" className="mt-1">{event.rm_id}</MonoChip>
                       </div>
                       <span className={`px-2 py-1 rounded text-xs ${
                         event.event_type === 'received' ? 'bg-green-500/20 text-green-400' :
