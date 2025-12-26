@@ -827,8 +827,6 @@ export default function BinderPage() {
                   <div className="grid grid-cols-4 gap-2 mb-4">
                     <a
                       href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
                     >
                       <Eye className="w-4 h-4" />
@@ -836,8 +834,7 @@ export default function BinderPage() {
                     </a>
                     <a
                       href={`${API_URL}/api/binder/runs/${latestRun.id}/download`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      download
                       className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
                       <Download className="w-4 h-4" />
@@ -845,8 +842,6 @@ export default function BinderPage() {
                     </a>
                     <a
                       href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
                       <Printer className="w-4 h-4" />
