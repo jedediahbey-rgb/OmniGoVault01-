@@ -148,6 +148,164 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete, onView, 
   );
 }
 
+// Sandbox-safe PDF action buttons component
+function LatestBinderActions({ latestRun, handleViewManifest }) {
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const pdfFrameRef = useRef(null);
+
+  // Cleanup object URL on unmount or when URL changes
+  useEffect(() => {
+    return () => {
+      if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
+    };
+  }, [pdfBlobUrl]);
+
+  const fetchToBlobUrl = async (url) => {
+    setPdfLoading(true);
+    try {
+      // credentials: include helps if your preview relies on cookies/session
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) throw new Error(`Fetch failed: HTTP ${res.status}`);
+      const blob = await res.blob();
+
+      const nextUrl = URL.createObjectURL(blob);
+      setPdfBlobUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return nextUrl;
+      });
+      return nextUrl;
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  const onView = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const viewUrl = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
+    await fetchToBlobUrl(viewUrl);
+    setPdfOpen(true);
+  };
+
+  const onDownload = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const dlUrl = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
+
+    const blobUrl = await fetchToBlobUrl(dlUrl);
+
+    // User-initiated download from Blob URL (works more often in embedded previews)
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = "OmniBinder.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  const onPrint = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Load PDF in modal first (print from iframe if browser allows)
+    const viewUrl = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
+    const blobUrl = pdfBlobUrl || (await fetchToBlobUrl(viewUrl));
+    setPdfOpen(true);
+
+    // Give iframe a moment to render then attempt print
+    setTimeout(() => {
+      try {
+        const win = pdfFrameRef.current?.contentWindow;
+        win?.focus();
+        win?.print(); // may still be blocked on some mobile browsers; modal still allows "Share/Print" from viewer UI
+      } catch (err) {
+        // Swallow—mobile browsers often block programmatic print
+      }
+    }, 400);
+  };
+
+  return (
+    <>
+      <div
+        className="relative z-20 pointer-events-auto grid grid-cols-4 gap-2 mb-4"
+        onClick={(e) => e.stopPropagation()} // prevent any parent card click handler from hijacking taps
+      >
+        <button
+          type="button"
+          onClick={onView}
+          disabled={pdfLoading}
+          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark disabled:opacity-60"
+        >
+          <Eye className="w-4 h-4" />
+          {pdfLoading ? "..." : "View"}
+        </button>
+
+        <button
+          type="button"
+          onClick={onDownload}
+          disabled={pdfLoading}
+          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 disabled:opacity-60"
+        >
+          <Download className="w-4 h-4" />
+          {pdfLoading ? "..." : "DL"}
+        </button>
+
+        <button
+          type="button"
+          onClick={onPrint}
+          disabled={pdfLoading}
+          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 disabled:opacity-60"
+        >
+          <Printer className="w-4 h-4" />
+        </button>
+
+        <button
+          type="button"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleViewManifest(latestRun.id); }}
+          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
+        >
+          <FileText className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* In-app PDF modal (no navigation/popups/downloads required) */}
+      {pdfOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-3xl rounded-xl border border-vault-gold/20 bg-[#0B1221] overflow-hidden">
+            <div className="flex items-center justify-between p-3 border-b border-vault-gold/20">
+              <div className="text-sm text-white/80">Omni Binder (PDF)</div>
+              <button
+                type="button"
+                onClick={() => setPdfOpen(false)}
+                className="text-white/80 hover:text-white px-2 py-1 rounded-md border border-white/10"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="w-full h-[75vh] bg-black">
+              {pdfBlobUrl ? (
+                <iframe
+                  ref={pdfFrameRef}
+                  title="Binder PDF"
+                  src={pdfBlobUrl}
+                  className="w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white/70">
+                  Loading…
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function BinderPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
