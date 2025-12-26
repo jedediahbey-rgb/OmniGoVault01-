@@ -810,7 +810,7 @@ export default function BinderPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-[#0B1221]/80 rounded-xl border border-vault-gold/20 p-6"
+                className="bg-[#0B1221]/80 rounded-xl border border-vault-gold/20 p-6 mb-16"
               >
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-heading text-white flex items-center gap-2">
