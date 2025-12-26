@@ -282,6 +282,38 @@ export default function MaximsPage({ user }) {
     }
   }, [user]);
 
+  // Handle highlight parameter from URL (e.g., from Glossary page)
+  useEffect(() => {
+    const highlightParam = searchParams.get('highlight');
+    if (highlightParam) {
+      const maximId = parseInt(highlightParam);
+      if (!isNaN(maximId)) {
+        // Set the highlighted maxim
+        setHighlightedMaximId(maximId);
+        // Expand the maxim
+        setExpandedId(maximId);
+        // Clear category filter to ensure maxim is visible
+        setSelectedCategory('all');
+        setSearchTerm('');
+        
+        // Scroll to the maxim after a short delay to allow render
+        setTimeout(() => {
+          const maximElement = maximRefs.current[maximId];
+          if (maximElement) {
+            maximElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 300);
+        
+        // Clear the highlight after 3 seconds
+        setTimeout(() => {
+          setHighlightedMaximId(null);
+          // Clear the URL parameter
+          setSearchParams({});
+        }, 3000);
+      }
+    }
+  }, [searchParams, setSearchParams]);
+
   const recordReview = async (maximId, quality) => {
     if (!user) {
       toast.info('Sign in to track your progress');
