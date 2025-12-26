@@ -1317,10 +1317,8 @@ export default function PortfolioOverviewPage({ user }) {
             {parties.length > 0 ? (
               <div className="space-y-3">
                 {parties.map(party => (
-                  <div key={party.party_id} className="flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-vault-gold/20 flex items-center justify-center flex-shrink-0">
-                      <Users className="w-5 h-5 text-vault-gold" weight="duotone" />
-                    </div>
+                  <div key={party.party_id} className="flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group">
+                    <IconBadge icon={Users} size="md" variant="gold" />
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-medium">{party.name}</p>
                       <p className="text-vault-gold text-sm capitalize">{party.role?.replace('_', ' ')}</p>
