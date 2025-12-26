@@ -1,3 +1,39 @@
+# Test Result - Binder Page Print Button Fix
+
+## Testing Goal
+Verify that the Print button on the Binder page works correctly after fixing the issue where it was not functional.
+
+## Test Date
+2025-12-26
+
+## Bug Description
+User reported that the Print button on the BinderPage was not working. View and Download buttons work fine, but Print button did nothing when clicked.
+
+## Fix Applied
+- Changed the Print button from an `<a>` tag to a proper `<button>` element
+- Implemented `handlePrint` function that:
+  1. Fetches the PDF as a Blob
+  2. Creates a hidden iframe to load the PDF
+  3. Triggers the browser's print dialog
+  4. Falls back to opening in a new tab if direct print fails
+- Added loading state (`isPrinting`) with spinner indicator
+
+## Key Files
+- /app/frontend/src/pages/BinderPage.jsx - Fixed LatestBinderActions component
+
+## Key Endpoints
+- GET /api/binder/runs/{run_id}/view - Used to fetch PDF for printing
+
+## Test Cases
+1. Click Print button - should show loading spinner
+2. PDF should be fetched as blob
+3. Print dialog should open (or new tab as fallback)
+4. Button should return to printer icon after print completes
+
+---
+
+# Previous Test Results
+
 # Test Result - Governance Record Creation Bug Fix
 
 ## Testing Goal
