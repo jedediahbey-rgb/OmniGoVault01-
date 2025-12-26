@@ -154,6 +154,70 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
 function LatestBinderActions({ latestRun, handleViewManifest }) {
   const viewUrl = `${API_URL}/api/binder/runs/${latestRun.id}/view`;
   const downloadUrl = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  // Handle print by fetching PDF as blob and opening print dialog
+  const handlePrint = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isPrinting) return;
+    setIsPrinting(true);
+    
+    try {
+      // Fetch the PDF as a blob
+      const response = await fetch(viewUrl);
+      if (!response.ok) throw new Error('Failed to fetch PDF');
+      
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      
+      // Create a hidden iframe to load and print the PDF
+      const printFrame = document.createElement('iframe');
+      printFrame.style.position = 'fixed';
+      printFrame.style.right = '0';
+      printFrame.style.bottom = '0';
+      printFrame.style.width = '0';
+      printFrame.style.height = '0';
+      printFrame.style.border = 'none';
+      printFrame.src = blobUrl;
+      
+      document.body.appendChild(printFrame);
+      
+      // Wait for the PDF to load, then print
+      printFrame.onload = () => {
+        setTimeout(() => {
+          try {
+            printFrame.contentWindow.focus();
+            printFrame.contentWindow.print();
+          } catch (err) {
+            // If print fails due to cross-origin, open in new tab for manual print
+            console.warn('Direct print failed, opening in new tab:', err);
+            window.open(blobUrl, '_blank');
+          }
+          // Cleanup after a delay
+          setTimeout(() => {
+            document.body.removeChild(printFrame);
+            URL.revokeObjectURL(blobUrl);
+            setIsPrinting(false);
+          }, 1000);
+        }, 500);
+      };
+      
+      printFrame.onerror = () => {
+        // Fallback: open in new tab
+        window.open(blobUrl, '_blank');
+        document.body.removeChild(printFrame);
+        URL.revokeObjectURL(blobUrl);
+        setIsPrinting(false);
+      };
+    } catch (error) {
+      console.error('Print error:', error);
+      // Fallback: open view URL in new tab
+      window.open(viewUrl, '_blank');
+      setIsPrinting(false);
+    }
+  };
 
   return (
     <div className="grid grid-cols-4 gap-2 mb-4">
@@ -176,14 +240,18 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
         DL
       </a>
 
-      <a
-        href={viewUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline"
+      <button
+        type="button"
+        onClick={handlePrint}
+        disabled={isPrinting}
+        className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 disabled:opacity-50 disabled:cursor-wait"
       >
-        <Printer className="w-4 h-4" />
-      </a>
+        {isPrinting ? (
+          <ArrowClockwise className="w-4 h-4 animate-spin" />
+        ) : (
+          <Printer className="w-4 h-4" />
+        )}
+      </button>
 
       <button
         type="button"
