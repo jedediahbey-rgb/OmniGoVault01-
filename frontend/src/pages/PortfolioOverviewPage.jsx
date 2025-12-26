@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import MonoChip from '../components/shared/MonoChip';
 import {
   ArrowDownRight,
   ArrowLeft,
@@ -810,9 +811,9 @@ export default function PortfolioOverviewPage({ user }) {
                       {doc.is_locked ? 'Finalized' : doc.status}
                     </span>
                     {doc.rm_id && (
-                      <span className="text-vault-gold/60 text-[9px] sm:text-xs font-mono truncate max-w-[100px] sm:max-w-[150px]">
+                      <MonoChip variant="gold" size="xs" className="truncate max-w-[100px] sm:max-w-[150px]">
                         {doc.sub_record_id || doc.rm_id}
-                      </span>
+                      </MonoChip>
                     )}
                   </div>
                 </Link>
@@ -1075,7 +1076,7 @@ export default function PortfolioOverviewPage({ user }) {
                               {asset.rm_id && (
                                 <>
                                   <span className="text-white/20">•</span>
-                                  <span className="text-vault-gold/60 font-mono text-xs truncate max-w-[100px] sm:max-w-none">{asset.rm_id}</span>
+                                  <MonoChip variant="gold" size="xs" className="truncate max-w-[100px] sm:max-w-none">{asset.rm_id}</MonoChip>
                                 </>
                               )}
                             </div>
@@ -1262,7 +1263,7 @@ export default function PortfolioOverviewPage({ user }) {
                                 {record.rm_id && (
                                   <>
                                     <span className="text-white/20">•</span>
-                                    <span className="text-white/40 font-mono text-xs truncate max-w-[120px] sm:max-w-none">{record.rm_id}</span>
+                                    <MonoChip variant="muted" size="xs" className="truncate max-w-[120px] sm:max-w-none">{record.rm_id}</MonoChip>
                                   </>
                                 )}
                               </div>
