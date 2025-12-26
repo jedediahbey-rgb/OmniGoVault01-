@@ -282,91 +282,37 @@ export default function MaximsPage({ user }) {
     }
   }, [user]);
 
-  // Handle highlight parameter from URL (e.g., from Glossary page)
+  // Handle hash-based navigation (e.g., /maxims#maxim-19 from Glossary page)
   const hasScrolled = useRef(false);
   
-  // Custom scroll function that works on Samsung Internet
-  const smoothScrollTo = useCallback((targetPosition) => {
-    const startPosition = window.pageYOffset;
-    const distance = targetPosition - startPosition;
-    const duration = 500; // ms
-    let startTime = null;
-    
-    const animation = (currentTime) => {
-      if (startTime === null) startTime = currentTime;
-      const timeElapsed = currentTime - startTime;
-      const progress = Math.min(timeElapsed / duration, 1);
-      
-      // Easing function for smooth animation
-      const easeInOutQuad = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-      
-      window.scrollTo(0, startPosition + distance * easeInOutQuad(progress));
-      
-      if (timeElapsed < duration) {
-        requestAnimationFrame(animation);
-      }
-    };
-    
-    requestAnimationFrame(animation);
-  }, []);
-  
   useEffect(() => {
-    const highlightParam = searchParams.get('highlight');
+    const hash = window.location.hash;
     
-    if (highlightParam && !hasScrolled.current) {
-      const maximId = parseInt(highlightParam);
+    if (hash && !hasScrolled.current) {
+      // Extract maxim ID from hash like #maxim-19
+      const match = hash.match(/^#maxim-(\d+)$/);
       
-      if (!isNaN(maximId)) {
-        // Mark that we've started the scroll process immediately
+      if (match) {
+        const maximId = parseInt(match[1]);
         hasScrolled.current = true;
         
         // Clear filters so maxim is visible
         setSelectedCategory('all');
         setSearchTerm('');
-        // Set highlight state
+        // Set highlight and expand state
         setHighlightedMaximId(maximId);
         setExpandedId(maximId);
         
-        // Scroll to maxim using custom animation
-        const attemptScroll = (attempts = 0) => {
-          if (attempts > 30) {
-            hasScrolled.current = false;
-            return;
-          }
-          
-          // Try getElementById since it's more reliable
-          const maximElement = document.getElementById(`maxim-${maximId}`);
-          
-          if (maximElement) {
-            // Calculate the exact scroll position
-            const rect = maximElement.getBoundingClientRect();
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const elementTop = rect.top + scrollTop;
-            
-            // Header height plus small padding
-            const headerHeight = 80;
-            const targetScrollPosition = Math.max(0, elementTop - headerHeight);
-            
-            // Use custom scroll animation (works on Samsung Internet)
-            smoothScrollTo(targetScrollPosition);
-            
-            // Clear URL parameter and highlight after delay
-            setTimeout(() => {
-              setHighlightedMaximId(null);
-              setSearchParams({}, { replace: true });
-              hasScrolled.current = false;
-            }, 4000);
-          } else {
-            // Retry if element not found yet
-            setTimeout(() => attemptScroll(attempts + 1), 100);
-          }
-        };
-        
-        // Start scroll attempt after delay for render
-        setTimeout(() => attemptScroll(0), 500);
+        // Let browser handle the scroll, then clear highlight after delay
+        setTimeout(() => {
+          setHighlightedMaximId(null);
+          // Clear the hash from URL
+          window.history.replaceState(null, '', window.location.pathname);
+          hasScrolled.current = false;
+        }, 4000);
       }
     }
-  }, [searchParams, setSearchParams, smoothScrollTo]);
+  }, []);
 
   const recordReview = async (maximId, quality) => {
     if (!user) {
