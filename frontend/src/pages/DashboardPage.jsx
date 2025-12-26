@@ -489,7 +489,7 @@ export default function DashboardPage({ user }) {
               >
                 <div className="flex items-center gap-3 mb-2">
                   <BookOpen className="w-5 h-5 text-vault-gold" weight="duotone" />
-                  <span className="text-white">Foundations of Equity</span>
+                  <span className="text-white">Master Equity</span>
                 </div>
                 <p className="text-white/40 text-sm">5 modules • Interactive lessons</p>
               </div>
