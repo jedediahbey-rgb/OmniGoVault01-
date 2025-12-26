@@ -302,24 +302,26 @@ export default function MaximsPage({ user }) {
         setHighlightedMaximId(maximId);
         setExpandedId(maximId);
         
-        // Scroll to maxim with manual position calculation
+        // Scroll to maxim using getElementById as backup
         const attemptScroll = (attempts = 0) => {
           if (attempts > 30) {
             hasScrolled.current = false;
             return;
           }
           
-          const maximElement = maximRefs.current[maximId];
+          // Try refs first, then getElementById
+          let maximElement = maximRefs.current[maximId];
+          if (!maximElement) {
+            maximElement = document.getElementById(`maxim-${maximId}`);
+          }
           
           if (maximElement) {
             // Calculate the exact scroll position
-            // Get the element's position relative to the document
             const rect = maximElement.getBoundingClientRect();
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const elementTop = rect.top + scrollTop;
             
-            // Header is approximately 60-80px on mobile, add 20px padding
-            // We want the element to appear just below the header
+            // Header height plus small padding
             const headerHeight = 80;
             const targetScrollPosition = elementTop - headerHeight;
             
@@ -341,8 +343,8 @@ export default function MaximsPage({ user }) {
           }
         };
         
-        // Start scroll attempt after a short delay for render
-        setTimeout(() => attemptScroll(0), 200);
+        // Start scroll attempt after a longer delay for render
+        setTimeout(() => attemptScroll(0), 500);
       }
     }
   }, [searchParams, setSearchParams]);
