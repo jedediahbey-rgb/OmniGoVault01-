@@ -416,9 +416,7 @@ export default function LedgerTimelinePage() {
                           
                           <div className="flex items-start gap-4">
                             {/* Icon */}
-                            <div className={`w-10 h-10 rounded-lg ${config.bgClass} ${config.borderClass} border flex items-center justify-center flex-shrink-0`}>
-                              <Icon className={`w-5 h-5 ${config.textClass}`} weight="duotone" />
-                            </div>
+                            <IconBadge icon={Icon} size="md" variant={config.variant} />
 
                             {/* Content */}
                             <div className="flex-1 min-w-0 overflow-hidden">
