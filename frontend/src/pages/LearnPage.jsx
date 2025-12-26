@@ -973,7 +973,7 @@ export default function LearnPage({ user }) {
         icon={BookOpen}
         title="Learn"
         subtitle="Master equity jurisprudence through structured lessons"
-        titleAction={<PageHelpTooltip pageKey="learn" />}
+        subtitleAction={<PageHelpTooltip pageKey="learn" />}
       />
 
       {!selectedModule ? (
