@@ -240,7 +240,7 @@ const lessonQuizzes = {
 const learningModules = [
   {
     id: 'foundations',
-    title: 'Foundations of Equity',
+    title: 'Master Equity',
     description: 'Understand the origins and principles of equity jurisprudence',
     icon: Scales,
     duration: '45 min',
