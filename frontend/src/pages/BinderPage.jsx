@@ -201,35 +201,6 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
 }
 
 export default function BinderPage() {
-                setBlobUrl(null);
-              }
-            }}
-            className="text-white/80 hover:text-white px-2 py-1 rounded-md border border-white/10"
-          >
-            Close
-          </button>
-        </div>
-
-        <div className="w-full h-[75vh] bg-black">
-          {blobUrl ? (
-            <iframe
-              ref={frameRef}
-              title="Binder PDF"
-              src={blobUrl}
-              className="w-full h-full"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-white/70">
-              Loading…
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function BinderPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const portfolioIdFromUrl = searchParams.get('portfolio') || '';
