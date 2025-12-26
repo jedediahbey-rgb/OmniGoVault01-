@@ -843,21 +843,22 @@ export default function BinderPage() {
 
                 {/* Only show action buttons for completed binders */}
                 {latestRun.status === 'complete' ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     <Button
                       onClick={() => window.open(`${API_URL}/api/binder/runs/${latestRun.id}/view`, '_blank')}
-                      className="flex-1 min-w-[80px] bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+                      className="col-span-1 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
                     >
-                      <Eye className="w-4 h-4 mr-1.5" />
+                      <Eye className="w-4 h-4 mr-1" />
                       View
                     </Button>
                     <Button
                       onClick={() => window.open(`${API_URL}/api/binder/runs/${latestRun.id}/download`, '_blank')}
                       variant="outline"
-                      className="flex-1 min-w-[80px] border-vault-gold/30 text-white hover:bg-vault-gold/10"
+                      className="col-span-1 border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
-                      <Download className="w-4 h-4 mr-1.5" />
-                      Download
+                      <Download className="w-4 h-4 mr-1" />
+                      <span className="hidden sm:inline">Download</span>
+                      <span className="sm:hidden">DL</span>
                     </Button>
                     <Button
                       onClick={() => {
@@ -866,14 +867,14 @@ export default function BinderPage() {
                         printWindow?.addEventListener('load', () => printWindow.print());
                       }}
                       variant="outline"
-                      className="border-vault-gold/30 text-white hover:bg-vault-gold/10 px-3"
+                      className="col-span-1 border-vault-gold/30 text-white hover:bg-vault-gold/10"
                     >
                       <Printer className="w-4 h-4" />
                     </Button>
                     <Button
                       onClick={() => handleViewManifest(latestRun.id)}
                       variant="ghost"
-                      className="text-vault-muted hover:text-white px-3"
+                      className="col-span-1 text-vault-muted hover:text-white"
                     >
                       <FileText className="w-4 h-4" />
                     </Button>
