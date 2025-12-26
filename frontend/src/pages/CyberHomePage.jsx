@@ -609,16 +609,19 @@ export default function CyberHomePage() {
               variants={staggerContainer}
               className="text-center lg:text-left"
             >
-              {/* OMNIGOVAULT Logo */}
+              {/* OMNIGOVAULT Logo - Fixed height container with tight crop */}
               <motion.div 
                 variants={fadeInUp}
-                className="mb-2 flex justify-center lg:justify-start"
+                className="mb-4 flex justify-center lg:justify-start"
               >
-                <img 
-                  src="/omnigovault-logo.png" 
-                  alt="OMNIGOVAULT" 
-                  className="h-56 sm:h-72 lg:h-80 w-auto object-contain"
-                />
+                <div className="h-24 sm:h-28 lg:h-36 w-full max-w-md flex items-center justify-center lg:justify-start">
+                  <img 
+                    src="/omnigovault-logo.png" 
+                    alt="OMNIGOVAULT" 
+                    className="w-full h-full object-contain block"
+                    style={{ objectPosition: 'center' }}
+                  />
+                </div>
               </motion.div>
               
               <motion.h2
