@@ -251,12 +251,6 @@ export default function DashboardPage({ user }) {
     setShowEditPortfolio(true);
   };
 
-  const quickActions = [
-    { icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'blue' },
-    { icon: BookOpen, label: 'Start Learning', action: () => navigate('/learn'), color: 'default' },
-    { icon: Robot, label: 'Ask Assistant', action: () => navigate('/assistant'), color: 'gold', hint: 'Ctrl+J' },
-  ];
-
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
