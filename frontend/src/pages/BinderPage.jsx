@@ -903,10 +903,21 @@ export default function BinderPage() {
               transition={{ delay: 0.2 }}
               className="bg-[#0B1221]/80 rounded-xl border border-vault-gold/20 p-4"
             >
-              <h2 className="text-lg font-heading text-white mb-4 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-vault-gold" />
-                Binder History
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-heading text-white flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-vault-gold" />
+                  Binder History
+                </h2>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleRefreshHistory}
+                  disabled={refreshingHistory}
+                  className="text-vault-gold hover:text-white h-7 px-2"
+                >
+                  <ArrowClockwise className={`w-4 h-4 ${refreshingHistory ? 'animate-spin' : ''}`} />
+                </Button>
+              </div>
 
               {loading ? (
                 <div className="flex items-center justify-center py-8">
@@ -919,54 +930,23 @@ export default function BinderPage() {
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                  <p className="text-vault-muted text-xs mb-2 text-center">Swipe left to delete</p>
                   {runs.map((run) => {
                     const StatusIcon = STATUS_CONFIG[run.status]?.icon || Clock;
                     const statusColor = STATUS_CONFIG[run.status]?.color || '';
 
                     return (
-                      <div
+                      <SwipeableHistoryCard
                         key={run.id}
-                        className="p-3 rounded-lg bg-vault-dark/50 border border-vault-gold/10 hover:border-vault-gold/30 transition-colors"
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-white text-sm font-medium truncate">
-                            {run.profile_name}
-                          </span>
-                          <Badge className={`text-xs ${statusColor} border`}>
-                            <StatusIcon className={`w-3 h-3 mr-1 ${run.status === 'generating' ? 'animate-spin' : ''}`} />
-                            {STATUS_CONFIG[run.status]?.label}
-                          </Badge>
-                        </div>
-                        <p className="text-vault-muted text-xs">
-                          {new Date(run.started_at).toLocaleString()}
-                        </p>
-                        {run.status === 'complete' && (
-                          <div className="flex gap-2 mt-2">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => window.open(`${API_URL}/api/binder/runs/${run.id}/view`, '_blank')}
-                              className="text-xs text-vault-muted hover:text-white h-7 px-2"
-                            >
-                              <Eye className="w-3 h-3 mr-1" />
-                              View
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => window.open(`${API_URL}/api/binder/runs/${run.id}/download`, '_blank')}
-                              className="text-xs text-vault-muted hover:text-white h-7 px-2"
-                            >
-                              <Download className="w-3 h-3 mr-1" />
-                              Download
-                            </Button>
-                          </div>
-                        )}
-                        {run.status === 'failed' && run.error_json && (
-                          <p className="text-red-400 text-xs mt-1 truncate">
-                            {run.error_json.user_message || run.error_json.message || 'Generation failed'}
-                          </p>
-                        )}
+                        run={run}
+                        StatusIcon={StatusIcon}
+                        statusColor={statusColor}
+                        onDelete={() => setDeleteConfirmRun(run)}
+                        onView={() => window.open(`${API_URL}/api/binder/runs/${run.id}/view`, '_blank')}
+                        onDownload={() => window.open(`${API_URL}/api/binder/runs/${run.id}/download`, '_blank')}
+                      />
+                    );
+                  })}
                       </div>
                     );
                   })}
