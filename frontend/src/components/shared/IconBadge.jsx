@@ -100,6 +100,11 @@ const iconColorClasses = {
   muted: 'text-white/40',
   live: 'text-status-live',
   error: 'text-status-error',
+  blue: 'text-blue-400',
+  emerald: 'text-emerald-400',
+  amber: 'text-amber-400',
+  red: 'text-red-400',
+  purple: 'text-purple-400',
 };
 
 const IconBadge = forwardRef(({
