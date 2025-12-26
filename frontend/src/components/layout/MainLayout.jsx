@@ -96,7 +96,7 @@ export default function MainLayout({ children, user, onLogout }) {
             {/* Logo - Centered */}
             <div className="flex items-center gap-2">
               <Key className="w-5 h-5 text-vault-gold" weight="fill" />
-              <span className="text-base font-medium text-white">Exclusive Equity & Trust</span>
+              <span className="text-base font-medium text-white">Private Equity & Trusts</span>
             </div>
           </div>
         </div>

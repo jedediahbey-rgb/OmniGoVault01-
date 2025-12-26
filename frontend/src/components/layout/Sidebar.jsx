@@ -128,7 +128,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
             <Key className="w-5 h-5 text-vault-navy" weight="fill" />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="font-heading text-base text-white tracking-tight block truncate">Exclusive Equity & Trust</span>
+            <span className="font-heading text-base text-white tracking-tight block truncate">Private Equity & Trusts</span>
             <p className="text-xs text-vault-gold uppercase tracking-widest">Portfolio</p>
           </div>
         </div>
