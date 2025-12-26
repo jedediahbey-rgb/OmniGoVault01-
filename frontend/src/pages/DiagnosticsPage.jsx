@@ -23,6 +23,7 @@ import {
 import { toast } from 'sonner';
 import GlassCard from '../components/shared/GlassCard';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -184,7 +185,7 @@ export default function DiagnosticsPage() {
         <PageHeader
           title="System Diagnostics"
           subtitle="Data integrity tools and repair utilities"
-          helpKey="diagnostics"
+          titleAction={<PageHelpTooltip pageKey="diagnostics" />}
           breadcrumbs={[
             { label: 'Dashboard', href: '/vault' },
             { label: 'Diagnostics' }
