@@ -583,7 +583,8 @@ export default function GlossaryPage({ user }) {
   };
 
   const handleMaximClick = (maximId) => {
-    navigate(`/maxims?highlight=${maximId}`);
+    // Use hash-based navigation for reliable scrolling
+    navigate(`/maxims#maxim-${maximId}`);
   };
 
   const handleLessonClick = (lessonId) => {
