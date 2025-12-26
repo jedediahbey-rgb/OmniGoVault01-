@@ -493,7 +493,7 @@ export default function DiagramsPage() {
                 <h3 className="font-heading text-lg text-white mb-4">{selectedDiagram.title}</h3>
                 <div className="prose prose-sm prose-invert">
                   {selectedDiagram.info.split('\n\n').map((para, idx) => (
-                    <p key={idx} className="text-white/70 text-sm whitespace-pre-line">{para}</p>
+                    <p key={idx} className="text-white/70 text-sm whitespace-pre-line">{parseBoldText(para)}</p>
                   ))}
                 </div>
               </GlassCard>
