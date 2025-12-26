@@ -1390,7 +1390,7 @@ export default function GovernancePage({ user }) {
                               
                               {/* RM-ID */}
                               {meeting.rm_id && (
-                                <span className="text-xs font-mono text-vault-muted">{meeting.rm_id}</span>
+                                <MonoChip variant="muted" size="xs">{meeting.rm_id}</MonoChip>
                               )}
                               
                               {/* Details row */}
@@ -1520,7 +1520,7 @@ export default function GovernancePage({ user }) {
                               
                               {/* RM-ID */}
                               {distribution.rm_id && (
-                                <span className="text-xs font-mono text-vault-muted">{distribution.rm_id}</span>
+                                <MonoChip variant="muted" size="xs">{distribution.rm_id}</MonoChip>
                               )}
                               
                               {/* Amount */}
@@ -1666,7 +1666,7 @@ export default function GovernancePage({ user }) {
                               
                               {/* RM-ID */}
                               {dispute.rm_id && (
-                                <span className="text-xs font-mono text-vault-muted">{dispute.rm_id}</span>
+                                <MonoChip variant="muted" size="xs">{dispute.rm_id}</MonoChip>
                               )}
                               
                               {/* Amount Claimed */}
@@ -1795,7 +1795,7 @@ export default function GovernancePage({ user }) {
                               <h3 className="text-white font-medium truncate">{policy.title}</h3>
                               
                               {policy.rm_id && (
-                                <span className="text-xs font-mono text-vault-muted">{policy.rm_id}</span>
+                                <MonoChip variant="muted" size="xs">{policy.rm_id}</MonoChip>
                               )}
                               
                               {/* Death Benefit */}
@@ -1972,7 +1972,7 @@ export default function GovernancePage({ user }) {
                               
                               {/* RM-ID */}
                               {entry.rm_id && (
-                                <span className="text-xs font-mono text-vault-muted">{entry.rm_id}</span>
+                                <MonoChip variant="muted" size="xs">{entry.rm_id}</MonoChip>
                               )}
                               
                               {/* Amount */}
