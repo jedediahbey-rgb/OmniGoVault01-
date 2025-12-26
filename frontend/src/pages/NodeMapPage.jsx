@@ -274,6 +274,9 @@ export default function NodeMapPage() {
     const portfolio = portfolios.find(p => p.portfolio_id === selectedPortfolio);
     const trustName = trustProfile?.trust_name || portfolio?.name || 'Trust';
 
+    // Get responsive node styles
+    const nodeStyles = getNodeStyles(isMobile);
+
     // Responsive layout constants - more compact for mobile
     const centerX = isMobile ? 300 : 450;
     const centerY = isMobile ? 200 : 280;
