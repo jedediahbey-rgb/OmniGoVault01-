@@ -121,8 +121,8 @@ export default function Sidebar({ user, onLogout, isOpen, onClose }) {
 function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
   return (
     <>
-      {/* Logo */}
-      <div className="p-6 border-b border-white/10">
+      {/* Logo - Links to Landing Page */}
+      <Link to="/" className="block p-6 border-b border-white/10 hover:bg-white/5 transition-colors" onClick={onNavClick}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-vault-gold to-vault-gold-dim flex items-center justify-center flex-shrink-0">
             <Key className="w-5 h-5 text-vault-navy" weight="fill" />
@@ -132,7 +132,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
             <p className="text-xs text-vault-gold uppercase tracking-widest">Portfolio</p>
           </div>
         </div>
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 overflow-y-auto custom-scrollbar">
