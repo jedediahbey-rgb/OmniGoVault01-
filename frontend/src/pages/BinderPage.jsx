@@ -156,7 +156,7 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
   const downloadUrl = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
   const [isPrinting, setIsPrinting] = useState(false);
 
-  // Handle print by fetching PDF as blob and opening print dialog
+  // Handle print - opens PDF in new window and triggers print dialog
   const handlePrint = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -165,56 +165,34 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
     setIsPrinting(true);
     
     try {
-      // Fetch the PDF as a blob
-      const response = await fetch(viewUrl);
-      if (!response.ok) throw new Error('Failed to fetch PDF');
+      // Open a new window with the PDF
+      const printWindow = window.open(viewUrl, '_blank', 'width=800,height=600');
       
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      
-      // Create a hidden iframe to load and print the PDF
-      const printFrame = document.createElement('iframe');
-      printFrame.style.position = 'fixed';
-      printFrame.style.right = '0';
-      printFrame.style.bottom = '0';
-      printFrame.style.width = '0';
-      printFrame.style.height = '0';
-      printFrame.style.border = 'none';
-      printFrame.src = blobUrl;
-      
-      document.body.appendChild(printFrame);
-      
-      // Wait for the PDF to load, then print
-      printFrame.onload = () => {
-        setTimeout(() => {
-          try {
-            printFrame.contentWindow.focus();
-            printFrame.contentWindow.print();
-          } catch (err) {
-            // If print fails due to cross-origin, open in new tab for manual print
-            console.warn('Direct print failed, opening in new tab:', err);
-            window.open(blobUrl, '_blank');
-          }
-          // Cleanup after a delay
+      if (printWindow) {
+        // Wait for the PDF to load, then trigger print
+        printWindow.onload = () => {
           setTimeout(() => {
-            document.body.removeChild(printFrame);
-            URL.revokeObjectURL(blobUrl);
+            printWindow.print();
             setIsPrinting(false);
           }, 1000);
-        }, 500);
-      };
-      
-      printFrame.onerror = () => {
-        // Fallback: open in new tab
-        window.open(blobUrl, '_blank');
-        document.body.removeChild(printFrame);
-        URL.revokeObjectURL(blobUrl);
+        };
+        
+        // Also set a timeout fallback in case onload doesn't fire for PDFs
+        setTimeout(() => {
+          try {
+            printWindow.print();
+          } catch (err) {
+            console.log('Print may have already been triggered or blocked:', err);
+          }
+          setIsPrinting(false);
+        }, 2500);
+      } else {
+        // Popup blocked - show message
+        alert('Please allow popups to print the PDF, or use the View button and print from there.');
         setIsPrinting(false);
-      };
+      }
     } catch (error) {
       console.error('Print error:', error);
-      // Fallback: open view URL in new tab
-      window.open(viewUrl, '_blank');
       setIsPrinting(false);
     }
   };
