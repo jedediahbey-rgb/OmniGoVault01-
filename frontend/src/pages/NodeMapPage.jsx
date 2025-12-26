@@ -689,12 +689,11 @@ export default function NodeMapPage() {
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
             fitView
-            fitViewOptions={{ padding: isMobile ? 0.15 : 0.2, minZoom: 0.3, maxZoom: 1.5 }}
-            minZoom={0.2}
-            maxZoom={2.5}
+            fitViewOptions={{ padding: isMobile ? 0.1 : 0.25, minZoom: 0.4, maxZoom: 1.2 }}
+            minZoom={0.3}
+            maxZoom={2}
             proOptions={{ hideAttribution: true }}
             style={{ background: 'rgba(11, 18, 33, 0.95)' }}
-            defaultViewport={{ x: 0, y: 0, zoom: isMobile ? 0.6 : 0.8 }}
           >
             <Controls 
               position="bottom-right"
