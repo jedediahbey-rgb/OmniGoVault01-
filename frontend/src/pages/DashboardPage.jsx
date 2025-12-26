@@ -350,8 +350,19 @@ export default function DashboardPage({ user }) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-[#0B1221] border-vault-gold/20 w-52 max-h-80 overflow-y-auto">
                   <div className="px-2 py-1.5 text-xs text-white/50 font-medium">Customize (max 4)</div>
-                  <div className="px-2 py-1 text-[10px] text-vault-gold/60 uppercase tracking-wider">Knowledge</div>
-                  {allQuickActions.slice(0, 4).map((action) => (
+                  {/* New Document - Primary action */}
+                  <DropdownMenuItem
+                    onClick={() => toggleQuickAction('newdocument')}
+                    className="text-white hover:bg-vault-blue/20 cursor-pointer text-sm"
+                  >
+                    <FileText className="w-4 h-4 mr-2 text-vault-blue" />
+                    <span className="flex-1">New Document</span>
+                    {selectedActions.includes('newdocument') && (
+                      <span className="text-vault-blue text-xs">✓</span>
+                    )}
+                  </DropdownMenuItem>
+                  <div className="px-2 py-1 text-[10px] text-vault-gold/60 uppercase tracking-wider mt-1">Knowledge</div>
+                  {allQuickActions.slice(1, 5).map((action) => (
                     <DropdownMenuItem
                       key={action.id}
                       onClick={() => toggleQuickAction(action.id)}
@@ -365,7 +376,7 @@ export default function DashboardPage({ user }) {
                     </DropdownMenuItem>
                   ))}
                   <div className="px-2 py-1 text-[10px] text-vault-gold/60 uppercase tracking-wider mt-1">Workspace</div>
-                  {allQuickActions.slice(4, 10).map((action) => (
+                  {allQuickActions.slice(5, 11).map((action) => (
                     <DropdownMenuItem
                       key={action.id}
                       onClick={() => toggleQuickAction(action.id)}
@@ -379,7 +390,7 @@ export default function DashboardPage({ user }) {
                     </DropdownMenuItem>
                   ))}
                   <div className="px-2 py-1 text-[10px] text-vault-gold/60 uppercase tracking-wider mt-1">Tools</div>
-                  {allQuickActions.slice(10).map((action) => (
+                  {allQuickActions.slice(11).map((action) => (
                     <DropdownMenuItem
                       key={action.id}
                       onClick={() => toggleQuickAction(action.id)}
@@ -396,13 +407,17 @@ export default function DashboardPage({ user }) {
               </DropdownMenu>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {quickActions.map((action, idx) => (
+              {quickActions.map((action) => (
                 <button
                   key={action.id}
                   onClick={action.action}
-                  className="p-4 rounded-lg border border-vault-gold/20 hover:bg-vault-gold/10 hover:border-vault-gold/40 transition-all duration-200 flex flex-col items-center gap-2 group"
+                  className={`p-4 rounded-lg border transition-all duration-200 flex flex-col items-center gap-2 group ${
+                    action.color === 'blue' 
+                      ? 'border-vault-blue/20 hover:bg-vault-blue/10 hover:border-vault-blue/40'
+                      : 'border-vault-gold/20 hover:bg-vault-gold/10 hover:border-vault-gold/40'
+                  }`}
                 >
-                  <action.icon className="w-5 h-5 text-vault-gold" weight="duotone" />
+                  <action.icon className={`w-5 h-5 ${action.color === 'blue' ? 'text-vault-blue' : 'text-vault-gold'}`} weight="duotone" />
                   <span className="text-xs text-white/70 group-hover:text-white">{action.label}</span>
                   {action.hint && <span className="hidden sm:inline text-[10px] text-white/30">{action.hint}</span>}
                 </button>
