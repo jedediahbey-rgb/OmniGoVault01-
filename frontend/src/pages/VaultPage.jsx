@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import MonoChip from '../components/shared/MonoChip';
 import {
   Archive,
   ArrowCounterClockwise,
@@ -593,9 +594,9 @@ export default function VaultPage({ user, initialView }) {
                         <h3 className="text-white font-medium mb-1 line-clamp-2 min-w-0">{doc.title}</h3>
                         <p className="text-white/40 text-xs mb-3">{humanizeSlug(doc.document_type)}</p>
                         {doc.rm_id && (
-                          <p className="text-vault-gold/60 text-[10px] sm:text-xs font-mono truncate mb-2 sm:hidden max-w-[150px]">
+                          <MonoChip variant="gold" size="xs" className="truncate mb-2 sm:hidden max-w-[150px]">
                             {doc.sub_record_id || doc.rm_id}
-                          </p>
+                          </MonoChip>
                         )}
                         <div className="flex items-center justify-between text-xs text-white/30 gap-2">
                           <span className="flex items-center gap-1 shrink-0">
@@ -627,9 +628,9 @@ export default function VaultPage({ user, initialView }) {
                           <p className="text-white line-clamp-2 text-sm">{doc.title}</p>
                           <p className="text-white/40 text-xs mt-0.5">{humanizeSlug(doc.document_type)}</p>
                           {doc.rm_id && (
-                            <p className="text-vault-gold/60 text-[10px] font-mono truncate mt-0.5 sm:hidden max-w-[120px]">
+                            <MonoChip variant="gold" size="xs" className="truncate mt-0.5 sm:hidden max-w-[120px]">
                               {doc.sub_record_id || doc.rm_id}
-                            </p>
+                            </MonoChip>
                           )}
                         </div>
                         <div className="flex flex-col items-end gap-1 shrink-0 min-w-[70px]">
@@ -642,9 +643,9 @@ export default function VaultPage({ user, initialView }) {
                             </span>
                           )}
                           {doc.rm_id && (
-                            <span className="hidden sm:block text-vault-gold/60 text-xs font-mono truncate max-w-[150px]">
+                            <MonoChip variant="gold" size="xs" className="hidden sm:block truncate max-w-[150px]">
                               {doc.sub_record_id || doc.rm_id}
-                            </span>
+                            </MonoChip>
                           )}
                         </div>
                         <CaretRight className="w-4 h-4 text-white/20 shrink-0 mt-0.5" weight="duotone" />
