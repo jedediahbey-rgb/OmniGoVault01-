@@ -302,7 +302,7 @@ export default function MaximsPage({ user }) {
         setHighlightedMaximId(maximId);
         setExpandedId(maximId);
         
-        // Use a simple approach with scrollIntoView
+        // Scroll to maxim with manual position calculation
         const attemptScroll = (attempts = 0) => {
           if (attempts > 30) {
             hasScrolled.current = false;
@@ -312,8 +312,22 @@ export default function MaximsPage({ user }) {
           const maximElement = maximRefs.current[maximId];
           
           if (maximElement) {
-            // First scroll element to view
-            maximElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Calculate the exact scroll position
+            // Get the element's position relative to the document
+            const rect = maximElement.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const elementTop = rect.top + scrollTop;
+            
+            // Header is approximately 60-80px on mobile, add 20px padding
+            // We want the element to appear just below the header
+            const headerHeight = 80;
+            const targetScrollPosition = elementTop - headerHeight;
+            
+            // Scroll to the calculated position
+            window.scrollTo({
+              top: Math.max(0, targetScrollPosition),
+              behavior: 'smooth'
+            });
             
             // Clear URL parameter and highlight after delay
             setTimeout(() => {
