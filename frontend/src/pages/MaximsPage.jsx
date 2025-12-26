@@ -226,7 +226,6 @@ const categories = [
 ];
 
 export default function MaximsPage({ user }) {
-  const [searchParams, setSearchParams] = useSearchParams();
   const [maxims, setMaxims] = useState(maximsData);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
