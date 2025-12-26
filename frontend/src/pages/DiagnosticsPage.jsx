@@ -324,9 +324,31 @@ export default function DiagnosticsPage() {
                     </div>
 
                     {/* Bulk Actions */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {/* Fix All Button - Always visible when there are fixable issues */}
+                      {fixableCount > 0 && (
+                        <button
+                          onClick={() => {
+                            selectAllIssues();
+                            // Auto-trigger delete after a short delay to allow selection
+                            setTimeout(() => {
+                              if (window.confirm(`Are you sure you want to delete all ${fixableCount} orphaned records? This action cannot be undone.`)) {
+                                deleteSelectedRecords();
+                              } else {
+                                deselectAll();
+                              }
+                            }, 100);
+                          }}
+                          disabled={deleting}
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-vault-gold hover:bg-vault-gold/90 text-vault-dark rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          <Lightning className="w-4 h-4" weight="bold" />
+                          {deleting ? 'Fixing...' : `Fix All (${fixableCount})`}
+                        </button>
+                      )}
+                      
                       {selectedIssues.size > 0 && (
-                        <span className="text-sm text-vault-gold mr-2">
+                        <span className="text-sm text-vault-gold">
                           {selectedIssues.size} selected
                         </span>
                       )}
@@ -334,7 +356,7 @@ export default function DiagnosticsPage() {
                         onClick={selectAllIssues}
                         className="px-3 py-1.5 text-sm bg-vault-dark/50 text-white/70 hover:text-white rounded-lg border border-white/10 hover:border-white/20 transition-colors"
                       >
-                        Select All Fixable
+                        Select All
                       </button>
                       {selectedIssues.size > 0 && (
                         <>
