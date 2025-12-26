@@ -1058,29 +1058,6 @@ export default function BinderPage() {
                         StatusIcon={StatusIcon}
                         statusColor={statusColor}
                         onDelete={() => setDeleteConfirmRun(run)}
-                        onView={async () => {
-                          try {
-                            const blob = await fetchPdfAsBlob(`${API_URL}/api/binder/runs/${run.id}/view`);
-                            if (globalPdfViewerCallback) globalPdfViewerCallback(blob);
-                          } catch (err) {
-                            toast({ title: 'Error', description: 'Failed to load PDF', variant: 'destructive' });
-                          }
-                        }}
-                        onDownload={async () => {
-                          try {
-                            const blob = await fetchPdfAsBlob(`${API_URL}/api/binder/runs/${run.id}/download`);
-                            const blobUrl = URL.createObjectURL(blob);
-                            const a = document.createElement("a");
-                            a.href = blobUrl;
-                            a.download = "OmniBinder.pdf";
-                            document.body.appendChild(a);
-                            a.click();
-                            a.remove();
-                            URL.revokeObjectURL(blobUrl);
-                          } catch (err) {
-                            toast({ title: 'Error', description: 'Failed to download PDF', variant: 'destructive' });
-                          }
-                        }}
                       />
                     );
                   })}
