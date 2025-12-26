@@ -353,9 +353,7 @@ export default function GovernanceRecordPage({ user }) {
         <GlassCard className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-lg ${config.bgColor} flex items-center justify-center`}>
-                <ModuleIcon weight="duotone" className={`w-5 h-5 ${config.color}`} />
-              </div>
+              <IconBadge icon={ModuleIcon} size="md" variant={config.variant} />
               <div>
                 <p className="text-sm text-slate-400">{config.label}</p>
                 <MonoChip variant="gold" size="sm">{record.rm_id || 'No RM-ID'}</MonoChip>
