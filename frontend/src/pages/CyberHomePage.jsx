@@ -618,7 +618,7 @@ export default function CyberHomePage() {
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
-                    className="ov-logo sm:max-h-[160px] lg:max-h-[180px]"
+                    className="sm:max-h-[160px] lg:max-h-[180px] lg:ml-0"
                     style={{
                       width: '100%',
                       height: 'auto',
@@ -633,7 +633,7 @@ export default function CyberHomePage() {
               
               <motion.h2
                 variants={fadeInUp}
-                className="ov-tagline text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light text-center lg:text-left max-w-md mx-auto lg:mx-0"
+                className="text-xl sm:text-2xl lg:text-3xl text-slate-300 font-light text-center lg:text-left max-w-md mx-auto lg:mx-0"
               >
                 A matrix system for trust governance.
               </motion.h2>
