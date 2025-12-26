@@ -97,9 +97,9 @@ export default function PageHeader({
               {titleAction && <div className="shrink-0">{titleAction}</div>}
             </div>
             {(safeSubtitle || helpKey) && (
-              <div className="flex items-center gap-2 mt-1">
-                {safeSubtitle && <p className="text-white/60">{safeSubtitle}</p>}
-                {helpKey && <PageHelpTooltip pageKey={helpKey} className="shrink-0" />}
+              <div className="flex items-start gap-2 mt-1 flex-wrap">
+                {safeSubtitle && <p className="text-white/60 text-sm sm:text-base">{safeSubtitle}</p>}
+                {helpKey && <PageHelpTooltip pageKey={helpKey} className="shrink-0 mt-0.5" />}
               </div>
             )}
           </div>
