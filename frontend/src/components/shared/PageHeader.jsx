@@ -31,7 +31,8 @@ export default function PageHeader({
   actions,
   breadcrumbs,
   helpKey,
-  titleAction
+  titleAction,
+  subtitleAction
 }) {
   // Helper to render breadcrumb - handles both string and object formats
   const renderBreadcrumb = (crumb, isLast) => {
