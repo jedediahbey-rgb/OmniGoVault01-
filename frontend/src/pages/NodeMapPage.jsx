@@ -277,11 +277,11 @@ export default function NodeMapPage() {
     // Get responsive node styles
     const nodeStyles = getNodeStyles(isMobile);
 
-    // Responsive layout constants - more compact for mobile
-    const centerX = isMobile ? 300 : 450;
-    const centerY = isMobile ? 200 : 280;
-    const horizontalSpacing = isMobile ? 150 : 220;
-    const verticalSpacing = isMobile ? 100 : 140;
+    // Responsive layout constants - compact for mobile, spacious for desktop
+    const centerX = isMobile ? 300 : 500;
+    const centerY = isMobile ? 200 : 320;
+    const horizontalSpacing = isMobile ? 150 : 280;
+    const verticalSpacing = isMobile ? 100 : 160;
 
     // Central Trust Node
     newNodes.push({
