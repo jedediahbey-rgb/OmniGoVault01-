@@ -820,47 +820,8 @@ export default function BinderPage() {
                   </Badge>
                 </div>
 
-                {/* Action buttons - using real anchor tags for maximum compatibility */}
-                {latestRun.status === 'complete' && (
-                  <div className="relative z-20 pointer-events-auto grid grid-cols-4 gap-2 mb-4">
-                    <a
-                      href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark no-underline"
-                    >
-                      <Eye className="w-4 h-4" />
-                      View
-                    </a>
-                    <a
-                      href={`${API_URL}/api/binder/runs/${latestRun.id}/download`}
-                      download="OmniBinder.pdf"
-                      className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline"
-                    >
-                      <Download className="w-4 h-4" />
-                      DL
-                    </a>
-                    <a
-                      href={`${API_URL}/api/binder/runs/${latestRun.id}/view`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline"
-                    >
-                      <Printer className="w-4 h-4" />
-                    </a>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleViewManifest(latestRun.id);
-                      }}
-                      className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10"
-                    >
-                      <FileText className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
+                {/* ===== SANDBOX-SAFE PDF VIEWER: Fetch PDF as Blob + In-App Modal ===== */}
+                {latestRun.status === 'complete' && <LatestBinderActions latestRun={latestRun} handleViewManifest={handleViewManifest} />}
 
                 <div className="bg-vault-dark/50 rounded-lg p-4">
                   <div className="flex items-center gap-4">
