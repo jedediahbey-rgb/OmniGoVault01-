@@ -368,17 +368,7 @@ export default function DiagnosticsPage() {
                       {/* Fix All Button - Always visible when there are fixable issues */}
                       {fixableCount > 0 && (
                         <button
-                          onClick={() => {
-                            selectAllIssues();
-                            // Auto-trigger delete after a short delay to allow selection
-                            setTimeout(() => {
-                              if (window.confirm(`Are you sure you want to delete all ${fixableCount} orphaned records? This action cannot be undone.`)) {
-                                deleteSelectedRecords();
-                              } else {
-                                deselectAll();
-                              }
-                            }, 100);
-                          }}
+                          onClick={fixAllOrphans}
                           disabled={deleting}
                           className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-vault-gold hover:bg-vault-gold/90 text-vault-dark rounded-lg transition-colors disabled:opacity-50"
                         >
