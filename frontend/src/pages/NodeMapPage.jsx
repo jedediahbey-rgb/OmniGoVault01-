@@ -417,9 +417,9 @@ export default function NodeMapPage() {
       });
     });
 
-    // Assets below trust - evenly distributed
+    // Assets below trust - evenly distributed with more spacing
     const assetCount = Math.min(assets.length, 5);
-    const assetSpacing = isMobile ? 120 : 170;
+    const assetSpacing = isMobile ? 120 : (hasLotsOfData ? 140 : 170);
     const assetStartX = centerX - ((assetCount - 1) * assetSpacing) / 2;
     assets.slice(0, 5).forEach((asset, idx) => {
       const nodeId = `asset-${asset.asset_id}`;
@@ -427,11 +427,11 @@ export default function NodeMapPage() {
         id: nodeId,
         type: 'default',
         data: { 
-          label: `🏠 ${asset.description?.slice(0, isMobile ? 12 : 18) || 'Asset'}${asset.description?.length > (isMobile ? 12 : 18) ? '...' : ''}`,
+          label: `🏠 ${asset.description?.slice(0, isMobile ? 10 : 14) || 'Asset'}${asset.description?.length > (isMobile ? 10 : 14) ? '...' : ''}`,
           asset,
           type: 'asset',
         },
-        position: { x: assetStartX + idx * assetSpacing, y: centerY + verticalSpacing + (isMobile ? 40 : 80) },
+        position: { x: assetStartX + idx * assetSpacing, y: centerY + verticalSpacing + (isMobile ? 40 : 70) },
         style: nodeStyles.asset,
       });
       newEdges.push({
