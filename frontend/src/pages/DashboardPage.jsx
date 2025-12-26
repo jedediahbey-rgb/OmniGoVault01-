@@ -33,6 +33,7 @@ import {
   Star
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import StatCard from '../components/shared/StatCard';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
@@ -293,8 +294,19 @@ export default function DashboardPage({ user }) {
       <PageHeader
         title={`Welcome back, ${welcomeName}`}
         subtitle="Your trust portfolio dashboard"
-        helpKey="dashboard"
         titleAction={
+          <div className="flex items-center gap-2">
+            <PageHelpTooltip pageKey="dashboard" />
+            <Button 
+              onClick={() => setShowNewPortfolio(true)} 
+              size="sm"
+              className="bg-vault-gold/10 hover:bg-vault-gold/20 text-vault-gold border border-vault-gold/30"
+            >
+              <FolderSimplePlus className="w-4 h-4" weight="duotone" />
+            </Button>
+          </div>
+        }
+        actions={
           <Button 
             onClick={() => setShowNewPortfolio(true)} 
             size="sm"
