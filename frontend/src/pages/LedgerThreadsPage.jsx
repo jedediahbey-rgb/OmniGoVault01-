@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import MonoChip from '../components/shared/MonoChip';
 import {
   GitBranch,
   GitMerge,
@@ -613,9 +614,9 @@ export default function LedgerThreadsPage() {
                 {/* Card Header with RM-ID and Actions */}
                 <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-vault-gold/5">
                   <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <span className="font-mono text-vault-gold text-xs bg-vault-gold/10 px-2 py-1 rounded shrink-0">
+                    <MonoChip variant="gold" size="xs">
                       {thread.rm_id_preview}
-                    </span>
+                    </MonoChip>
                     <Badge className={`text-xs shrink-0 ${CATEGORY_COLORS[thread.category] || CATEGORY_COLORS.misc}`}>
                       {CATEGORY_LABELS[thread.category] || thread.category}
                     </Badge>
@@ -733,7 +734,7 @@ export default function LedgerThreadsPage() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs text-vault-gold">{thread.rm_id_preview}</span>
+                        <MonoChip variant="gold" size="xs">{thread.rm_id_preview}</MonoChip>
                         <span className="text-white text-sm">{thread.title}</span>
                       </div>
                       <span className="text-vault-muted text-xs">{thread.record_count} records</span>
@@ -805,7 +806,7 @@ export default function LedgerThreadsPage() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs text-vault-gold">{record.rm_id}</span>
+                        <MonoChip variant="gold" size="xs">{record.rm_id}</MonoChip>
                         <span className="text-white text-sm">{record.title}</span>
                       </div>
                     </div>
@@ -868,7 +869,7 @@ export default function LedgerThreadsPage() {
                       onCheckedChange={() => toggleRecordSelection(record.id)}
                     />
                     <div className="flex-1">
-                      <span className="font-mono text-xs text-vault-gold mr-2">{record.rm_id}</span>
+                      <MonoChip variant="gold" size="xs" className="mr-2">{record.rm_id}</MonoChip>
                       <span className="text-white text-sm">{record.title}</span>
                     </div>
                   </label>
@@ -884,7 +885,7 @@ export default function LedgerThreadsPage() {
                   <SelectContent className="bg-[#0B1221] border-vault-gold/30 max-h-48 z-[100]" position="popper" sideOffset={5}>
                     {threads.filter(t => t.id !== activeThread?.id).map((thread) => (
                       <SelectItem key={thread.id} value={thread.id} className="text-white hover:bg-vault-gold/20">
-                        <span className="font-mono text-xs text-vault-gold mr-2">{thread.rm_id_preview}</span>
+                        <MonoChip variant="gold" size="xs" className="mr-2">{thread.rm_id_preview}</MonoChip>
                         {thread.title}
                       </SelectItem>
                     ))}
