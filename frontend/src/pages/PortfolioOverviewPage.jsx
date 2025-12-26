@@ -700,9 +700,7 @@ export default function PortfolioOverviewPage({ user }) {
         <GlassCard className="mb-6 p-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-vault-gold/20 flex items-center justify-center flex-shrink-0">
-                <Hash className="w-5 h-5 text-vault-gold" weight="duotone" />
-              </div>
+              <IconBadge icon={Hash} size="md" variant="gold" />
               <div className="sm:hidden">
                 <p className="text-white/40 text-xs uppercase tracking-wider">
                   Main RM-ID {trustProfile?.rm_id_is_placeholder && <span className="text-yellow-400">(Temp)</span>}
