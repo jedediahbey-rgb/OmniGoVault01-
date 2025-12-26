@@ -283,27 +283,38 @@ export default function MaximsPage({ user }) {
   }, [user]);
 
   // Handle highlight parameter from URL (e.g., from Glossary page)
+  const [pendingHighlight, setPendingHighlight] = useState(null);
+  
+  // First effect: read URL param and set pending highlight
   useEffect(() => {
     const highlightParam = searchParams.get('highlight');
     if (highlightParam) {
       const maximId = parseInt(highlightParam);
       if (!isNaN(maximId)) {
-        // Set the highlighted maxim
-        setHighlightedMaximId(maximId);
-        // Expand the maxim
-        setExpandedId(maximId);
-        // Clear category filter to ensure maxim is visible
+        setPendingHighlight(maximId);
+        // Clear filters so maxim is visible
         setSelectedCategory('all');
         setSearchTerm('');
-        
-        // Scroll to the maxim after a longer delay to ensure render is complete
-        const scrollToMaxim = () => {
-          const maximElement = maximRefs.current[maximId];
+      }
+    }
+  }, [searchParams]);
+  
+  // Second effect: scroll to maxim once refs are ready
+  useEffect(() => {
+    if (pendingHighlight !== null) {
+      // Set highlight state
+      setHighlightedMaximId(pendingHighlight);
+      setExpandedId(pendingHighlight);
+      
+      // Use requestAnimationFrame to ensure DOM is ready
+      const scrollToMaxim = () => {
+        requestAnimationFrame(() => {
+          const maximElement = maximRefs.current[pendingHighlight];
           if (maximElement) {
             // Get element position and scroll with offset for header
             const elementRect = maximElement.getBoundingClientRect();
             const absoluteElementTop = elementRect.top + window.pageYOffset;
-            // Offset for header (approximately 100px for mobile) plus some padding (20px)
+            // Offset for header plus padding
             const headerOffset = 120;
             const offsetPosition = absoluteElementTop - headerOffset;
             
@@ -311,24 +322,26 @@ export default function MaximsPage({ user }) {
               top: Math.max(0, offsetPosition),
               behavior: 'smooth'
             });
+            
+            // Clear pending highlight
+            setPendingHighlight(null);
+            
+            // Clear URL parameter and highlight after delay
+            setTimeout(() => {
+              setHighlightedMaximId(null);
+              setSearchParams({}, { replace: true });
+            }, 4000);
           } else {
-            // Retry if element not found yet
-            setTimeout(scrollToMaxim, 100);
+            // Retry if element not found yet (max 10 retries)
+            setTimeout(scrollToMaxim, 200);
           }
-        };
-        
-        // Initial delay to allow render
-        setTimeout(scrollToMaxim, 500);
-        
-        // Clear the highlight after 4 seconds
-        setTimeout(() => {
-          setHighlightedMaximId(null);
-          // Clear the URL parameter
-          setSearchParams({});
-        }, 4000);
-      }
+        });
+      };
+      
+      // Start scroll after initial render
+      setTimeout(scrollToMaxim, 100);
     }
-  }, [searchParams, setSearchParams]);
+  }, [pendingHighlight, setSearchParams]);
 
   const recordReview = async (maximId, quality) => {
     if (!user) {
