@@ -156,138 +156,51 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
   const downloadUrl = `${API_URL}/api/binder/runs/${latestRun.id}/download`;
 
   return (
-    <>
-      <div className="relative z-[100] grid grid-cols-4 gap-2 mb-4">
-        {/* VIEW - Native <a> tag, opens in same tab since _blank is blocked */}
-        <a
-          href={viewUrl}
-          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark no-underline touch-manipulation"
-          style={{ WebkitTapHighlightColor: 'transparent' }}
-        >
-          <Eye className="w-4 h-4" />
-          View
-        </a>
+    <div className="relative z-[100] grid grid-cols-4 gap-2 mb-4">
+      {/* VIEW - Native <a> tag, opens in same tab since _blank is blocked */}
+      <a
+        href={viewUrl}
+        className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 bg-vault-gold hover:bg-vault-gold/90 text-vault-dark no-underline touch-manipulation"
+        style={{ WebkitTapHighlightColor: 'transparent' }}
+      >
+        <Eye className="w-4 h-4" />
+        View
+      </a>
 
-        {/* DOWNLOAD - Native <a> with download attribute */}
-        <a
-          href={downloadUrl}
-          download="OmniBinder.pdf"
-          className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline touch-manipulation"
-          style={{ WebkitTapHighlightColor: 'transparent' }}
-        >
-          <Download className="w-4 h-4" />
-          DL
-        </a>
+      {/* DOWNLOAD - Native <a> with download attribute */}
+      <a
+        href={downloadUrl}
+        download="OmniBinder.pdf"
+        className="col-span-1 inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline touch-manipulation"
+        style={{ WebkitTapHighlightColor: 'transparent' }}
+      >
+        <Download className="w-4 h-4" />
+        DL
+      </a>
 
-        {/* PRINT - Opens view URL (user can print from browser) */}
-        <a
-          href={viewUrl}
-          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline touch-manipulation"
-          style={{ WebkitTapHighlightColor: 'transparent' }}
-        >
-          <Printer className="w-4 h-4" />
-        </a>
+      {/* PRINT - Opens view URL (user can print from browser) */}
+      <a
+        href={viewUrl}
+        className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-vault-gold/30 text-white hover:bg-vault-gold/10 no-underline touch-manipulation"
+        style={{ WebkitTapHighlightColor: 'transparent' }}
+      >
+        <Printer className="w-4 h-4" />
+      </a>
 
-        {/* MANIFEST - This one needs onClick, use button */}
-        <button
-          type="button"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleViewManifest(latestRun.id); }}
-          className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10 touch-manipulation"
-          style={{ WebkitTapHighlightColor: 'transparent' }}
-        >
-          <FileText className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Fallback message for users if links don't work in their sandbox */}
-      <p className="text-vault-muted text-xs text-center mb-4">
-        If buttons don't work, long-press and select "Open" or "Save link"
-      </p>
-    </>
+      {/* MANIFEST - This one needs onClick, use button */}
+      <button
+        type="button"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleViewManifest(latestRun.id); }}
+        className="col-span-1 inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 text-vault-muted hover:text-white hover:bg-vault-gold/10 touch-manipulation"
+        style={{ WebkitTapHighlightColor: 'transparent' }}
+      >
+        <FileText className="w-4 h-4" />
+      </button>
+    </div>
   );
 }
 
-// Keep the old blob-based modal code commented out for reference but don't use it
-/*
-      {pdfOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-3xl rounded-xl border border-vault-gold/20 bg-[#0B1221] overflow-hidden">
-            <div className="flex items-center justify-between p-3 border-b border-vault-gold/20">
-              <div className="text-sm text-white/80">Omni Binder (PDF)</div>
-              <button
-                type="button"
-                onClick={() => setPdfOpen(false)}
-                className="text-white/80 hover:text-white px-2 py-1 rounded-md border border-white/10"
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="w-full h-[75vh] bg-black">
-              {pdfBlobUrl ? (
-                <iframe
-                  ref={pdfFrameRef}
-                  title="Binder PDF"
-                  src={pdfBlobUrl}
-                  className="w-full h-full"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-white/70">
-                  Loading…
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-// Helper function to fetch PDF as Blob and trigger action (for history cards)
-const fetchPdfAsBlob = async (url) => {
-  const res = await fetch(url, { credentials: "include" });
-  if (!res.ok) throw new Error(`Fetch failed: HTTP ${res.status}`);
-  return await res.blob();
-};
-
-// Global PDF viewer state manager (for history cards to open the global viewer)
-let globalPdfViewerCallback = null;
-
-// Global PDF Viewer Modal Component
-function GlobalPdfViewer() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [blobUrl, setBlobUrl] = useState(null);
-  const frameRef = useRef(null);
-
-  useEffect(() => {
-    // Register global callback
-    globalPdfViewerCallback = (blob) => {
-      if (blobUrl) URL.revokeObjectURL(blobUrl);
-      const newUrl = URL.createObjectURL(blob);
-      setBlobUrl(newUrl);
-      setIsOpen(true);
-    };
-
-    return () => {
-      globalPdfViewerCallback = null;
-      if (blobUrl) URL.revokeObjectURL(blobUrl);
-    };
-  }, [blobUrl]);
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-3xl rounded-xl border border-vault-gold/20 bg-[#0B1221] overflow-hidden">
-        <div className="flex items-center justify-between p-3 border-b border-vault-gold/20">
-          <div className="text-sm text-white/80">Omni Binder (PDF)</div>
-          <button
-            type="button"
-            onClick={() => {
-              setIsOpen(false);
-              if (blobUrl) {
-                URL.revokeObjectURL(blobUrl);
+export default function BinderPage() {
                 setBlobUrl(null);
               }
             }}
