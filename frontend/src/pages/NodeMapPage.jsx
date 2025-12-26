@@ -267,11 +267,11 @@ export default function NodeMapPage() {
     const portfolio = portfolios.find(p => p.portfolio_id === selectedPortfolio);
     const trustName = trustProfile?.trust_name || portfolio?.name || 'Trust';
 
-    // Layout constants for better spacing
-    const centerX = 450;
-    const centerY = 280;
-    const horizontalSpacing = 220;
-    const verticalSpacing = 140;
+    // Responsive layout constants - more compact for mobile
+    const centerX = isMobile ? 300 : 450;
+    const centerY = isMobile ? 200 : 280;
+    const horizontalSpacing = isMobile ? 150 : 220;
+    const verticalSpacing = isMobile ? 100 : 140;
 
     // Central Trust Node
     newNodes.push({
