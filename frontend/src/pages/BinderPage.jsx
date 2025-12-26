@@ -71,8 +71,8 @@ const STATUS_CONFIG = {
   failed: { color: 'text-red-400 bg-red-500/10', label: 'Failed', icon: X }
 };
 
-// Swipeable history card component
-function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete, onView, onDownload }) {
+// Swipeable history card component - uses native <a> tags for View/Download
+function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
   const x = useMotionValue(0);
   const background = useTransform(x, [-100, 0], ['rgba(239, 68, 68, 0.3)', 'rgba(0, 0, 0, 0)']);
   const deleteOpacity = useTransform(x, [-100, -50, 0], [1, 0.5, 0]);
@@ -82,6 +82,9 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete, onView, 
       onDelete();
     }
   };
+
+  const viewUrl = `${API_URL}/api/binder/runs/${run.id}/view`;
+  const downloadUrl = `${API_URL}/api/binder/runs/${run.id}/download`;
 
   return (
     <div className="relative overflow-hidden rounded-lg">
@@ -117,25 +120,28 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete, onView, 
           {new Date(run.started_at).toLocaleString()}
         </p>
         {run.status === 'complete' && (
-          <div className="flex gap-2 mt-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={(e) => { e.stopPropagation(); onView(); }}
-              className="text-xs text-vault-muted hover:text-white h-7 px-2"
+          <div className="flex gap-2 mt-2 relative z-10">
+            {/* Native <a> tag for View */}
+            <a
+              href={viewUrl}
+              className="inline-flex items-center text-xs text-vault-muted hover:text-white h-7 px-2 rounded-md hover:bg-vault-gold/10 no-underline touch-manipulation"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
+              onClick={(e) => e.stopPropagation()}
             >
               <Eye className="w-3 h-3 mr-1" />
               View
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={(e) => { e.stopPropagation(); onDownload(); }}
-              className="text-xs text-vault-muted hover:text-white h-7 px-2"
+            </a>
+            {/* Native <a> tag for Download */}
+            <a
+              href={downloadUrl}
+              download="OmniBinder.pdf"
+              className="inline-flex items-center text-xs text-vault-muted hover:text-white h-7 px-2 rounded-md hover:bg-vault-gold/10 no-underline touch-manipulation"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
+              onClick={(e) => e.stopPropagation()}
             >
               <Download className="w-3 h-3 mr-1" />
               Download
-            </Button>
+            </a>
           </div>
         )}
         {run.status === 'failed' && run.error_json && (
