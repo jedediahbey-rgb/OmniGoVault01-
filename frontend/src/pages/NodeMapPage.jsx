@@ -277,12 +277,15 @@ export default function NodeMapPage() {
     // Get responsive node styles
     const nodeStyles = getNodeStyles(isMobile);
 
-    // Responsive layout constants - compact for mobile, spacious for desktop
-    // Desktop uses tighter spacing to fit well at 100% browser zoom
-    const centerX = isMobile ? 300 : 350;
-    const centerY = isMobile ? 200 : 220;
-    const horizontalSpacing = isMobile ? 150 : 200;
-    const verticalSpacing = isMobile ? 100 : 120;
+    // Calculate dynamic spacing based on data volume
+    const totalNodes = parties.length + assets.length + Object.keys(governanceRecords.reduce((acc, r) => { acc[r.module_type || 'other'] = true; return acc; }, {})).length;
+    const hasLotsOfData = totalNodes > 6;
+    
+    // Responsive layout constants - wider spacing for data-heavy portfolios
+    const centerX = isMobile ? 300 : (hasLotsOfData ? 450 : 350);
+    const centerY = isMobile ? 200 : (hasLotsOfData ? 180 : 220);
+    const horizontalSpacing = isMobile ? 150 : (hasLotsOfData ? 280 : 200);
+    const verticalSpacing = isMobile ? 100 : (hasLotsOfData ? 150 : 120);
 
     // Central Trust Node
     newNodes.push({
