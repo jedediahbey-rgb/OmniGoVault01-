@@ -745,10 +745,10 @@ export default function BinderPage() {
                   const isSelected = selectedProfile === profile.id;
 
                   return (
-                    <button
+                    <div
                       key={profile.id}
                       onClick={() => setSelectedProfile(profile.id)}
-                      className={`p-4 rounded-lg border-2 transition-all ${
+                      className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
                         isSelected
                           ? 'border-vault-gold bg-vault-gold/10'
                           : 'border-vault-gold/20 hover:border-vault-gold/40'
@@ -761,9 +761,7 @@ export default function BinderPage() {
                         <div className="flex-1 text-left min-w-0">
                           <h3 className="font-medium text-white text-sm truncate">{profile.name}</h3>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleConfigProfile(profile);
@@ -771,9 +769,9 @@ export default function BinderPage() {
                           className="text-vault-muted hover:text-white text-xs shrink-0 p-1"
                         >
                           <Gear className="w-4 h-4" />
-                        </Button>
+                        </button>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
