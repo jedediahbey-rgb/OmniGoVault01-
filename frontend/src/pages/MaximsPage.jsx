@@ -314,8 +314,8 @@ export default function MaximsPage({ user }) {
             // Get element position and scroll with offset for header
             const elementRect = maximElement.getBoundingClientRect();
             const absoluteElementTop = elementRect.top + window.pageYOffset;
-            // Offset for header plus padding
-            const headerOffset = 120;
+            // Larger offset for mobile headers (150px) to ensure title is fully visible
+            const headerOffset = 150;
             const offsetPosition = absoluteElementTop - headerOffset;
             
             window.scrollTo({
