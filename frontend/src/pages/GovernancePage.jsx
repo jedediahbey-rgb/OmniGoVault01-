@@ -1249,43 +1249,43 @@ export default function GovernancePage({ user }) {
       {/* Tabs for different governance modules */}
       <motion.div variants={fadeInUp}>
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          {/* Scrollable tabs on mobile */}
-          <div className="w-full overflow-x-auto overscroll-x-contain -mx-4 px-4 md:mx-0 md:px-0 mb-6">
-            <TabsList className="bg-vault-dark/50 border border-vault-gold/20 w-max md:w-auto">
+          {/* Scrollable tabs on mobile - full width scroll container */}
+          <div className="w-full overflow-x-auto overscroll-x-contain scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 mb-6">
+            <TabsList className="bg-vault-dark/50 border border-vault-gold/20 inline-flex w-max min-w-full md:min-w-0 md:w-auto gap-1 p-1">
               <TabsTrigger 
                 value="meetings" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
               >
-                <Newspaper className="w-4 h-4 mr-2 shrink-0" />
-                <span className="hidden sm:inline">Meeting</span> Minutes
+                <Newspaper className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                Minutes
               </TabsTrigger>
               <TabsTrigger 
                 value="distributions" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
               >
-                <HandCoins className="w-4 h-4 mr-2 shrink-0" />
-                <span className="hidden sm:inline">Distributions</span><span className="sm:hidden">Dist.</span>
+                <HandCoins className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                Distributions
               </TabsTrigger>
               <TabsTrigger 
                 value="disputes" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
               >
-                <Scales className="w-4 h-4 mr-2 shrink-0" />
+                <Scales className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
                 Disputes
               </TabsTrigger>
               <TabsTrigger 
                 value="insurance" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
               >
-                <ShieldCheck className="w-4 h-4 mr-2 shrink-0" />
-                <span className="hidden sm:inline">Insurance</span><span className="sm:hidden">Ins.</span>
+                <ShieldCheck className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                Insurance
               </TabsTrigger>
               <TabsTrigger 
                 value="compensation" 
-                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap"
+                className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
               >
-                <CurrencyDollar className="w-4 h-4 mr-2 shrink-0" />
-                <span className="hidden sm:inline">Compensation</span><span className="sm:hidden">Comp.</span>
+                <CurrencyDollar className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                Compensation
               </TabsTrigger>
             </TabsList>
           </div>
