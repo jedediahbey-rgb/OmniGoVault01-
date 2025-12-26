@@ -123,13 +123,10 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
     <>
       {/* Logo - Links to Landing Page */}
       <div className="block p-6 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-vault-gold to-vault-gold-dim flex items-center justify-center flex-shrink-0">
-            <Key className="w-5 h-5 text-vault-navy" weight="fill" />
-          </div>
+        <div className="flex items-center gap-2">
+          <Key className="w-5 h-5 text-vault-gold" weight="fill" />
           <div className="min-w-0 flex-1">
             <span className="font-heading text-base text-white tracking-tight block truncate">Private Equity & Trusts</span>
-            <p className="text-xs text-vault-gold uppercase tracking-widest">Portfolio</p>
           </div>
         </div>
       </div>
