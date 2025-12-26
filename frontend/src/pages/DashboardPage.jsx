@@ -295,17 +295,15 @@ export default function DashboardPage({ user }) {
         title={`Welcome back, ${welcomeName}`}
         subtitle="Your trust portfolio dashboard"
         titleAction={
-          <div className="flex items-center gap-2">
-            <PageHelpTooltip pageKey="dashboard" />
-            <Button 
-              onClick={() => setShowNewPortfolio(true)} 
-              size="sm"
-              className="bg-vault-gold/10 hover:bg-vault-gold/20 text-vault-gold border border-vault-gold/30"
-            >
-              <FolderSimplePlus className="w-4 h-4" weight="duotone" />
-            </Button>
-          </div>
+          <Button 
+            onClick={() => setShowNewPortfolio(true)} 
+            size="sm"
+            className="bg-vault-gold/10 hover:bg-vault-gold/20 text-vault-gold border border-vault-gold/30"
+          >
+            <FolderSimplePlus className="w-4 h-4" weight="duotone" />
+          </Button>
         }
+        subtitleAction={<PageHelpTooltip pageKey="dashboard" />}
         actions={
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline text-white/30 text-xs">Ctrl+K for commands</span>
