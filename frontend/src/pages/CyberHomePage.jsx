@@ -598,10 +598,10 @@ export default function CyberHomePage() {
       </nav>
       
       {/* ===== HERO SECTION ===== */}
-      <section className="relative flex items-start pt-20 pb-8 sm:min-h-[100dvh] sm:items-center sm:pt-16 sm:pb-0">
+      <section className="relative flex items-start pt-20 pb-8 lg:min-h-[100dvh] lg:items-center lg:pt-16 lg:pb-0">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 lg:py-16">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 lg:py-16 w-full">
           <div className="max-w-3xl mx-auto lg:mx-0">
             <motion.div
               initial="hidden"
@@ -614,19 +614,11 @@ export default function CyberHomePage() {
                 variants={fadeInUp}
                 className="mb-3 lg:mb-4"
               >
-                <div className="w-full max-w-md mx-auto lg:mx-0">
+                <div className="w-full max-w-md mx-auto lg:mx-0 lg:max-w-lg">
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
-                    className="sm:max-h-[160px] lg:max-h-[180px] lg:ml-0"
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      maxHeight: '140px',
-                      objectFit: 'contain',
-                      display: 'block',
-                      margin: '0 auto'
-                    }}
+                    className="w-full h-auto max-h-[140px] sm:max-h-[160px] lg:max-h-[200px] object-contain mx-auto lg:mx-0"
                   />
                 </div>
               </motion.div>
