@@ -971,7 +971,11 @@ export default function LearnPage({ user }) {
       <PageHeader
         icon={BookOpen}
         title="Learn"
-        subtitle="Master equity jurisprudence through structured lessons"
+        subtitle={
+          <span className="flex items-center gap-2">
+            Master equity jurisprudence through structured lessons
+          </span>
+        }
         helpKey="learn"
       />
 

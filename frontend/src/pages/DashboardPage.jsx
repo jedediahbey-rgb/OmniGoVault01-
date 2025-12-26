@@ -66,7 +66,7 @@ export default function DashboardPage({ user }) {
   // All available quick actions (matches sidebar tabs)
   const allQuickActions = [
     // Primary actions
-    { id: 'newdocument', icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'blue' },
+    { id: 'newdocument', icon: FileText, label: 'New Document', action: () => navigate('/templates'), color: 'gold' },
     // Knowledge
     { id: 'learn', icon: BookOpen, label: 'Learn', action: () => navigate('/learn'), color: 'gold' },
     { id: 'maxims', icon: Sparkle, label: 'Maxims', action: () => navigate('/maxims'), color: 'gold' },
@@ -101,7 +101,8 @@ export default function DashboardPage({ user }) {
       let newSelected;
       if (prev.includes(actionId)) {
         newSelected = prev.filter(id => id !== actionId);
-      } else if (prev.length < 4) {
+      } else if (prev.length <= 3) {
+        // Allow adding up to 4 actions total (0,1,2,3 -> can add to make 4)
         newSelected = [...prev, actionId];
       } else {
         return prev; // Max 4 actions
@@ -564,10 +565,10 @@ export default function DashboardPage({ user }) {
               
               <div 
                 onClick={() => navigate('/maxims')}
-                className="p-4 rounded-lg bg-vault-blue/5 border border-vault-blue/20 hover:border-vault-blue/40 cursor-pointer transition-all"
+                className="p-4 rounded-lg bg-vault-gold/5 border border-vault-gold/20 hover:border-vault-gold/40 cursor-pointer transition-all"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <Sparkle className="w-5 h-5 text-vault-blue" weight="duotone" />
+                  <Sparkle className="w-5 h-5 text-vault-gold" weight="duotone" />
                   <span className="text-white">Maxims of Equity</span>
                 </div>
                 <p className="text-white/40 text-sm">20+ principles • Study mode</p>
