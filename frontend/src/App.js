@@ -125,11 +125,44 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
   return children;
 };
 
-// Layout wrapper for authenticated routes
+// Layout wrapper for authenticated routes with vault transition
 const AuthLayout = ({ children, auth }) => {
+  const location = useLocation();
+  
   return (
     <MainLayout user={auth.user} onLogout={auth.logout}>
-      {children}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ 
+            duration: 0.3,
+            ease: [0.4, 0, 0.2, 1]
+          }}
+          className="min-h-full"
+        >
+          {/* Gold shimmer effect on page enter */}
+          <motion.div
+            className="fixed inset-0 pointer-events-none z-50"
+            initial={{ 
+              background: 'linear-gradient(90deg, transparent 0%, rgba(198, 168, 124, 0.15) 50%, transparent 100%)',
+              x: '-100%',
+              opacity: 1
+            }}
+            animate={{ 
+              x: '200%',
+              opacity: 0
+            }}
+            transition={{ 
+              duration: 0.6,
+              ease: 'easeOut'
+            }}
+          />
+          {children}
+        </motion.div>
+      </AnimatePresence>
     </MainLayout>
   );
 };
