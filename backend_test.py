@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for Trust Management Application
-Testing P2 Features: Ledger Thread Management and Binder Schedule Management
+Testing Phase 5 Features: Gaps Analysis & Integrity Stamping
 """
 
 import requests
@@ -10,6 +10,7 @@ import sys
 from datetime import datetime
 import time
 import uuid
+import hashlib
 
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://uipolish-2.preview.emergentagent.com/api"
