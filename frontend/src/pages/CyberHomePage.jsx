@@ -862,13 +862,7 @@ export default function CyberHomePage() {
                 variant="outline" 
                 size="sm" 
                 className={`border-white/10 text-xs whitespace-nowrap flex items-center gap-2 ${demoMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}
-                onClick={() => {
-                  if (demoMode && liveSignals.length > 0) {
-                    setDemoMode(false);
-                  } else {
-                    setDemoMode(true);
-                  }
-                }}
+                onClick={() => setDemoMode(!demoMode)}
               >
                 <Pulse className="w-4 h-4" weight="fill" />
                 {demoMode ? 'Demo Mode' : 'Live Feed'}
