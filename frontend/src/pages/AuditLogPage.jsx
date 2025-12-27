@@ -430,14 +430,14 @@ export default function AuditLogPage() {
                           )}
                         </div>
                         
-                        {/* Details */}
+                        {/* Details - key: value stacked on mobile */}
                         {entry.details && Object.keys(entry.details).length > 0 && (
-                          <div className="mt-2 text-[10px] sm:text-xs text-vault-muted/70 space-y-0.5 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-x-3">
+                          <div className="mt-2 text-[10px] sm:text-xs text-vault-muted/70 space-y-1">
                             {Object.entries(entry.details).slice(0, 3).map(([k, v]) => (
-                              <span key={k} className="block sm:inline">
-                                <span className="text-vault-muted">{k.replace(/_/g, ' ')}:</span>{' '}
-                                <span className="text-white/70">{String(v).substring(0, 30)}</span>
-                              </span>
+                              <div key={k} className="flex flex-col sm:flex-row sm:gap-1">
+                                <span className="text-vault-muted">{k.replace(/_/g, ' ')}:</span>
+                                <span className="text-white/70 pl-2 sm:pl-0">{String(v).substring(0, 30)}</span>
+                              </div>
                             ))}
                           </div>
                         )}
