@@ -670,7 +670,7 @@ export default function CyberHomePage() {
   const { scrollYProgress } = useScroll();
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
   
-  // Handle vault entry animation - for main "Enter the Vault" button
+  // Handle vault entry animation - for main "Enter the Vault" button ONLY
   const handleEnterVault = (e) => {
     e.preventDefault();
     setVaultOpening(true);
@@ -680,13 +680,10 @@ export default function CyberHomePage() {
     }, 2500);
   };
   
-  // Handle navigation with gold shimmer transition - for other buttons
-  const handleNavigateWithTransition = (path) => (e) => {
+  // Simple navigation for other buttons - no vault animation, just navigate
+  const handleSimpleNavigation = (path) => (e) => {
     e.preventDefault();
-    setVaultOpening(true);
-    setTimeout(() => {
-      navigate(path);
-    }, 2500);
+    navigate(path);
   };
   
   // Handle scroll to show/hide scroll-to-top button
