@@ -71,6 +71,13 @@ const variantClasses = {
     group-hover:border-emerald-500/50 
     group-hover:shadow-[0_0_15px_rgba(16,185,129,0.15)]
   `,
+  green: `
+    bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 
+    border border-emerald-500/30 
+    shadow-[inset_0_1px_0_0_rgba(16,185,129,0.1)]
+    group-hover:border-emerald-500/50 
+    group-hover:shadow-[0_0_15px_rgba(16,185,129,0.15)]
+  `,
   amber: `
     bg-gradient-to-br from-amber-500/20 to-amber-500/5 
     border border-amber-500/30 
