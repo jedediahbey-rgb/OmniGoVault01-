@@ -668,10 +668,10 @@ export default function CyberHomePage() {
   // Map activity types to icons
   const typeIcons = {
     meeting: Notebook,
-    distribution: CurrencyDollar,
+    distribution: HandCoins,
     dispute: Gavel,
-    insurance: ShieldCheck,
-    compensation: Users,
+    insurance: ShieldPlus,
+    compensation: UserCircleGear,
   };
   
   // Fetch live activity feed from V2 governance records
@@ -687,10 +687,10 @@ export default function CyberHomePage() {
         // Transform records to signal format with icons
         const moduleTypeIcons = {
           minutes: Notebook,
-          distribution: Coins,
+          distribution: HandCoins,
           dispute: Scales,
-          insurance: ShieldCheck,
-          compensation: CurrencyDollar
+          insurance: ShieldPlus,
+          compensation: UserCircleGear
         };
         const signals = data.data.items.map((item, idx) => ({
           id: item.id || idx,
