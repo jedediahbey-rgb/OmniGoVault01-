@@ -509,7 +509,7 @@ export default function DashboardPage({ user }) {
           transition={{ delay: 0.3 }}
           className="lg:col-span-8 self-stretch"
         >
-          <GlassCard className="h-full">
+          <GlassCard className="h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Your Portfolios</h3>
               <Button 
@@ -523,7 +523,7 @@ export default function DashboardPage({ user }) {
             </div>
             
             {portfolios.length > 0 ? (
-              <div className="space-y-3">
+              <div className="flex-1 flex flex-col gap-3">
                 {portfolios.map((portfolio) => {
                   const isDefault = portfolio.portfolio_id === defaultPortfolioId;
                   return (
