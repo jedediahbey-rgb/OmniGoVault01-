@@ -717,7 +717,53 @@ export default function BinderPage() {
     fetchSchedules();
     fetchCourtModeConfig();
     fetchRedactionSummary();
-  }, [fetchSchedules, fetchCourtModeConfig, fetchRedactionSummary]);
+    fetchDisputes();
+    fetchEvidenceRuns();
+  }, [fetchSchedules, fetchCourtModeConfig, fetchRedactionSummary, fetchDisputes, fetchEvidenceRuns]);
+
+  // Generate Evidence Binder
+  const handleGenerateEvidence = async () => {
+    if (!selectedDispute || !portfolioId) {
+      toast({ title: 'Error', description: 'Please select a dispute', variant: 'destructive' });
+      return;
+    }
+
+    setGenerating(true);
+    try {
+      const res = await fetch(`${API_URL}/api/evidence-binder/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          portfolio_id: portfolioId,
+          dispute_id: selectedDispute,
+          rules: evidenceConfig
+        })
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        toast({
+          title: 'Evidence Binder Generated',
+          description: `Created binder with ${data.data.total_exhibits} exhibits`
+        });
+        fetchEvidenceRuns();
+      } else {
+        toast({
+          title: 'Generation Failed',
+          description: data.error?.message || 'Failed to generate evidence binder',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to generate evidence binder',
+        variant: 'destructive'
+      });
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   // Create schedule
   const handleCreateSchedule = async () => {
