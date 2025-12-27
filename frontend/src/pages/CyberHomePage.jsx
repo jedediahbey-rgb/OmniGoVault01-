@@ -637,6 +637,10 @@ export default function CyberHomePage() {
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
   
+  // Scroll progress for animated progress bar
+  const { scrollYProgress } = useScroll();
+  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  
   // Handle scroll to show/hide scroll-to-top button
   useEffect(() => {
     const handleScroll = () => {
