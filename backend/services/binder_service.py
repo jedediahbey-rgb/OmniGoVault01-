@@ -2132,6 +2132,9 @@ class BinderService:
         # Build lookup map by record_id
         redaction_map = {}
         for r in redactions:
+            # Ensure r is a dict (safety check)
+            if not isinstance(r, dict):
+                continue
             rid = r.get("record_id")
             if rid not in redaction_map:
                 redaction_map[rid] = []
@@ -2139,6 +2142,9 @@ class BinderService:
         
         adhoc_map = {}
         for a in adhoc_redactions:
+            # Ensure a is a dict (safety check)
+            if not isinstance(a, dict):
+                continue
             rid = a.get("record_id")
             if rid not in adhoc_map:
                 adhoc_map[rid] = []
