@@ -216,23 +216,15 @@ export default function AuditLogPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
         <div className="flex flex-col gap-4 mb-8">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                <ClipboardText className="w-7 h-7 text-vault-gold" weight="fill" />
-                Audit Log
-                <PageHelpTooltip pageKey="auditLog" />
-              </h1>
-              <p className="text-vault-muted mt-1 text-sm">Your complete diary of all system activities</p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => { fetchEntries(); fetchSummary(); }}
-              className="text-vault-muted hover:text-white shrink-0"
-            >
-              <ArrowClockwise className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-            </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+              <ClipboardText className="w-7 h-7 text-vault-gold" weight="fill" />
+              Audit Log
+            </h1>
+            <p className="text-vault-muted mt-1 text-sm flex items-center gap-2">
+              Your complete diary of all system activities
+              <PageHelpTooltip pageKey="auditLog" />
+            </p>
           </div>
           
           {/* Action buttons - wrap on mobile */}
@@ -263,6 +255,14 @@ export default function AuditLogPage() {
             >
               <Download className="w-4 h-4 mr-2" />
               Download
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { fetchEntries(); fetchSummary(); }}
+              className="text-vault-muted hover:text-white"
+            >
+              <ArrowClockwise className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </Button>
           </div>
         </div>
