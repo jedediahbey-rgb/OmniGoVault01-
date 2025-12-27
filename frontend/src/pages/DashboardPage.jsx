@@ -474,12 +474,12 @@ export default function DashboardPage({ user }) {
           </GlassCard>
         </motion.div>
 
-        {/* Portfolios List */}
+        {/* Portfolios List - determines row height */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="lg:col-span-8 lg:row-span-1"
+          className="lg:col-span-8 self-stretch"
         >
           <GlassCard className="h-full">
             <div className="flex items-center justify-between mb-4">
