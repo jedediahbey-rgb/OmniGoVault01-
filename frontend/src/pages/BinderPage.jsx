@@ -626,6 +626,23 @@ export default function BinderPage() {
     }
   }, [portfolioId]);
 
+  // Fetch Gaps Analysis
+  const fetchGapsAnalysis = useCallback(async () => {
+    if (!portfolioId) return;
+    setGapsLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/binder/gaps/analyze?portfolio_id=${portfolioId}`);
+      const data = await res.json();
+      if (data.ok) {
+        setGapsAnalysis(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching gaps analysis:', error);
+    } finally {
+      setGapsLoading(false);
+    }
+  }, [portfolioId]);
+
   // Fetch schedules when portfolioId changes
   useEffect(() => {
     fetchSchedules();
