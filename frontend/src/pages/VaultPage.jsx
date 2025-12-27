@@ -19,6 +19,7 @@ import {
   MagnifyingGlass,
   Package,
   Plus,
+  ShieldCheck,
   SquaresFour,
   Star,
   Tag,
