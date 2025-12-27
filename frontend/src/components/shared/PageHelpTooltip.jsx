@@ -112,7 +112,7 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.2 }}
                 onClick={(e) => e.stopPropagation()}
-                className="relative w-full max-w-[320px] bg-gradient-to-b from-[#0D1420] to-[#080C14] border border-vault-gold/40 rounded-2xl shadow-2xl overflow-hidden"
+                className="relative w-full max-w-sm bg-gradient-to-b from-[#0D1420] to-[#080C14] border border-vault-gold/40 rounded-2xl shadow-2xl overflow-hidden"
               >
                 {/* Header */}
                 <div className="px-5 pt-5 pb-3 border-b border-vault-gold/20">
