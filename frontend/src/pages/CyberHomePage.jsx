@@ -740,17 +740,42 @@ export default function CyberHomePage() {
       {/* ===== SIGNAL FEED SECTION ===== */}
       <section id="signals" className="py-8 lg:py-12 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Signal Feed */}
+          {/* Section Header - Centered */}
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={`border-white/10 text-xs whitespace-nowrap ${demoMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}
+                onClick={() => {
+                  if (demoMode && liveSignals.length > 0) {
+                    setDemoMode(false);
+                  } else {
+                    setDemoMode(true);
+                  }
+                }}
+              >
+                {demoMode ? 'Demo' : 'Live'}
+              </Button>
+            </div>
+          </div>
+          
+          {/* Two cards side by side - aligned at top */}
+          <div className="grid lg:grid-cols-2 gap-6 items-start">
+            {/* Signal Feed Card */}
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: '-100px' }}
-              variants={staggerContainer}
+              variants={fadeInUp}
             >
-              <motion.div variants={fadeInUp} className="mb-4 text-center lg:text-left">
-                {/* Mode Toggle Row - Centered on mobile */}
-                <div className="flex items-center justify-center lg:justify-start gap-2 mb-3">
+              <HoloCard className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-lg font-bold text-white">Signal Console</h3>
+                    <p className="text-xs text-slate-400">Real-time governance activity</p>
+                  </div>
                   {!demoMode && (
                     <Button 
                       variant="ghost" 
@@ -762,40 +787,18 @@ export default function CyberHomePage() {
                       <ClockCounterClockwise className={`w-4 h-4 ${signalsLoading ? 'animate-spin' : ''}`} />
                     </Button>
                   )}
-                  <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className={`border-white/10 text-xs sm:text-sm whitespace-nowrap ${demoMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}
-                    onClick={() => {
-                      if (demoMode && liveSignals.length > 0) {
-                        setDemoMode(false);
-                      } else {
-                        setDemoMode(true);
-                      }
-                    }}
-                  >
-                    {demoMode ? 'Demo' : 'Live'}
-                  </Button>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white">Signal Console</h2>
-                <p className="text-sm sm:text-base text-slate-400">Real-time governance activity</p>
-              </motion.div>
-              
-              <motion.div variants={fadeInUp}>
-                <HoloCard className="p-3 sm:p-4">
-                  {signalsLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                      <div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  ) : (
-                    <SignalFeed signals={demoMode ? DEMO_SIGNALS : (liveSignals.length > 0 ? liveSignals : DEMO_SIGNALS)} />
-                  )}
-                </HoloCard>
-              </motion.div>
+                {signalsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  <SignalFeed signals={demoMode ? DEMO_SIGNALS : (liveSignals.length > 0 ? liveSignals : DEMO_SIGNALS)} />
+                )}
+              </HoloCard>
             </motion.div>
             
-            {/* Trust Health */}
+            {/* Trust Health Card - Aligned with Signal Console card */}
             <motion.div
               initial="hidden"
               whileInView="visible"
