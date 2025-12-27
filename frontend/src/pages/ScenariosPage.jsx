@@ -86,7 +86,7 @@ const scenarioTemplates = [
     title: 'Insurance Proceeds Distribution',
     description: 'Model how life insurance payouts flow through the trust',
     icon: ShieldCheck,
-    color: 'green',
+    color: 'emerald',
     category: 'distribution',
     variables: [
       { name: 'deathBenefit', label: 'Death Benefit Amount', type: 'currency', default: 500000 },
