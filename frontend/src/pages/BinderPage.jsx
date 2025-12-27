@@ -1469,9 +1469,18 @@ export default function BinderPage() {
 
               {/* Generate Button */}
               <Button
-                onClick={handleGenerate}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleGenerate();
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleGenerate();
+                }}
                 disabled={generating || !selectedProfile}
-                className="w-full bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold py-6 text-lg"
+                className="w-full bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold py-6 text-lg touch-manipulation select-none"
               >
                 {generating ? (
                   <>
