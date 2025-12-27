@@ -2294,8 +2294,41 @@ class BinderService:
                     }
                     content["_redaction_log"] = redaction_log
             
+            # ============ PHASE 5: Gap Analysis ============
+            gap_analysis = None
+            include_gaps_analysis = rules.get("include_gaps_analysis", True)
+            
+            if include_gaps_analysis:
+                try:
+                    gap_analysis = await self.analyze_gaps(portfolio_id, user_id, content)
+                    content["_gap_analysis"] = gap_analysis
+                except Exception as e:
+                    # If gap analysis fails, continue without it
+                    gap_analysis = {
+                        "summary": {"error": str(e)},
+                        "results": [],
+                        "error": f"Gap analysis failed: {str(e)}"
+                    }
+            
             # Generate manifest
             manifest = self.generate_manifest(content)
+            
+            # ============ PHASE 5: Prepare Integrity Stamp (pre-PDF) ============
+            # We generate a preliminary stamp here, but the final hash is computed after PDF
+            include_integrity_stamp = rules.get("include_integrity_stamp", True)
+            preliminary_stamp = None
+            
+            if include_integrity_stamp:
+                # Create preliminary stamp with placeholder hash (will be updated after PDF)
+                preliminary_stamp = self.generate_integrity_stamp(
+                    pdf_bytes=b"placeholder",  # Placeholder, real hash computed later
+                    manifest=manifest,
+                    run_id=run["id"],
+                    portfolio_id=portfolio_id,
+                    user_id=user_id,
+                    base_url=os.environ.get("REACT_APP_BACKEND_URL", "")
+                )
+                content["_integrity_stamp"] = preliminary_stamp
             
             # Generate PDF (will include missing items page if needed)
             pdf_bytes = await self.generate_pdf(
@@ -2309,6 +2342,27 @@ class BinderService:
                 pdf_bytes, bates_page_map = self.apply_bates_numbering(
                     pdf_bytes, rules, portfolio_abbrev
                 )
+            
+            # ============ PHASE 5: Final Integrity Stamp (post-PDF) ============
+            integrity_stamp = None
+            if include_integrity_stamp:
+                # Now compute the real hash on final PDF bytes
+                integrity_stamp = self.generate_integrity_stamp(
+                    pdf_bytes=pdf_bytes,
+                    manifest=manifest,
+                    run_id=run["id"],
+                    portfolio_id=portfolio_id,
+                    user_id=user_id,
+                    base_url=os.environ.get("REACT_APP_BACKEND_URL", "")
+                )
+                # Update page count
+                try:
+                    from PyPDF2 import PdfReader
+                    from io import BytesIO
+                    reader = PdfReader(BytesIO(pdf_bytes))
+                    integrity_stamp["total_pages"] = len(reader.pages)
+                except:
+                    pass
             
             # Encode PDF as base64 for storage
             import base64
