@@ -641,43 +641,44 @@ class EvidenceBinderAPITester:
             return False
 
     def run_all_tests(self):
-        """Run all Comprehensive Audit Log backend tests"""
-        self.log("🧪 Starting Comprehensive Audit Log Backend API Tests")
+        """Run all Evidence Binder backend tests"""
+        self.log("🧪 Starting Evidence Binder Backend API Tests")
         self.log("=" * 60)
         self.log(f"Using Portfolio ID: {self.test_portfolio_id}")
         
-        self.log("\n📋 Test 1: Audit Categories and Metadata")
+        self.log("\n📋 Test 1: Evidence Binder Configuration")
         self.log("-" * 50)
-        self.test_audit_categories()
+        self.test_evidence_config()
         
-        self.log(f"\n📊 Test 2: Audit Log CRUD")
+        self.log(f"\n📊 Test 2: Disputes Listing")
         self.log("-" * 30)
-        self.test_audit_log_basic()
-        self.test_audit_log_category_filter()
-        self.test_audit_log_severity_filter()
-        self.test_audit_log_search()
+        self.test_get_disputes()
+        self.test_create_test_dispute_if_needed()
         
-        self.log(f"\n📈 Test 3: Analytics")
-        self.log("-" * 25)
-        self.test_audit_summary()
-        self.test_audit_timeline()
+        self.log(f"\n🔗 Test 3: Dispute Links Management")
+        self.log("-" * 40)
+        self.test_add_dispute_link()
+        self.test_get_dispute_links()
+        self.test_auto_link_dispute_items()
         
-        self.log(f"\n📤 Test 4: Export")
+        self.log(f"\n👁️ Test 4: Evidence Preview")
+        self.log("-" * 30)
+        self.test_evidence_preview()
+        
+        self.log(f"\n📄 Test 5: Evidence Binder Generation")
+        self.log("-" * 45)
+        self.test_generate_evidence_binder()
+        
+        self.log(f"\n📚 Test 6: Evidence Binder Runs")
+        self.log("-" * 35)
+        self.test_get_evidence_runs()
+        self.test_get_evidence_run_details()
+        self.test_get_evidence_manifest()
+        self.test_download_evidence_binder()
+        
+        self.log(f"\n🧹 Test 7: Cleanup")
         self.log("-" * 20)
-        self.test_audit_export_json()
-        self.test_audit_export_csv()
-        
-        self.log(f"\n📋 Test 5: Compliance Report")
-        self.log("-" * 35)
-        self.test_compliance_report()
-        
-        self.log(f"\n🔍 Test 6: Resource History")
-        self.log("-" * 35)
-        self.test_resource_history()
-        
-        self.log(f"\n🔗 Test 7: Integration - Generate Binder and Check Audit")
-        self.log("-" * 65)
-        self.test_generate_binder_and_check_audit()
+        self.test_cleanup_test_link()
         
         self.log("\n📊 Test Summary")
         self.log("=" * 60)
