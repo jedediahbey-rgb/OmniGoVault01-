@@ -3674,7 +3674,8 @@ init_binder_routes(db, get_current_user)
 app.include_router(binder_router)
 
 # Initialize and include Audit Log routes
-from routes.audit_log import router as audit_log_router
+from routes.audit_log import router as audit_log_router, init_audit_log_routes
+init_audit_log_routes(db, get_current_user)
 app.include_router(audit_log_router)
 
 app.add_middleware(
