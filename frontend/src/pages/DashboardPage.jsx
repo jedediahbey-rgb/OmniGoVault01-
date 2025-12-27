@@ -479,9 +479,9 @@ export default function DashboardPage({ user }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="lg:col-span-8"
+          className="lg:col-span-8 flex"
         >
-          <GlassCard>
+          <GlassCard className="w-full">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Your Portfolios</h3>
               <Button 
