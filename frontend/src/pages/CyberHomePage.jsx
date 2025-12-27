@@ -763,7 +763,7 @@ export default function CyberHomePage() {
       </nav>
       
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center pb-16 sm:pb-20 lg:h-screen lg:pb-0">
+      <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center pb-16 sm:pb-20 lg:h-screen lg:pb-0 lg:pt-16">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -773,16 +773,16 @@ export default function CyberHomePage() {
               animate="visible"
               variants={staggerContainer}
             >
-              {/* OMNIGOVAULT Logo - Centered, large on mobile, fits desktop */}
+              {/* OMNIGOVAULT Logo - Centered, fully visible */}
               <motion.div 
                 variants={fadeInUp}
-                className="mb-3 lg:mb-5"
+                className="mb-3 lg:mb-4"
               >
-                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[340px] mx-auto">
+                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[280px] mx-auto">
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
-                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[220px] object-contain mx-auto"
+                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[160px] object-contain mx-auto"
                     style={{ imageRendering: 'crisp-edges' }}
                   />
                 </div>
@@ -790,42 +790,42 @@ export default function CyberHomePage() {
               
               <motion.h2
                 variants={fadeInUp}
-                className="text-lg sm:text-xl lg:text-3xl text-slate-300 font-light"
+                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light"
               >
                 A matrix system for trust governance.
               </motion.h2>
               
               <motion.p 
                 variants={fadeInUp}
-                className="mt-2 lg:mt-4 text-xs sm:text-sm lg:text-base text-slate-400 max-w-md lg:max-w-xl mx-auto leading-relaxed italic"
+                className="mt-2 lg:mt-3 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed italic"
               >
-                &ldquo;In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will.&rdquo;&nbsp;&nbsp;<span className="text-[10px] lg:text-sm text-white/30 not-italic">— Ephesians 1:11</span>
+                &ldquo;In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will.&rdquo;&nbsp;&nbsp;<span className="text-[10px] text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
               
-              <motion.div variants={fadeInUp} className="mt-4 lg:mt-6 flex justify-center">
+              <motion.div variants={fadeInUp} className="mt-4 flex justify-center">
                 <Link to="/login">
-                  <Button size="default" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-6 lg:px-8 lg:py-3 lg:text-base">
+                  <Button size="default" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-6">
                     Enter the Vault
                   </Button>
                 </Link>
               </motion.div>
               
               {/* Microcopy */}
-              <motion.p variants={fadeInUp} className="mt-2 lg:mt-3 text-[10px] lg:text-sm text-slate-500 flex items-center gap-1.5 justify-center">
-                <ClockCounterClockwise className="w-3 h-3 lg:w-4 lg:h-4" />
+              <motion.p variants={fadeInUp} className="mt-2 text-[10px] text-slate-500 flex items-center gap-1.5 justify-center">
+                <ClockCounterClockwise className="w-3 h-3" />
                 Draft → Finalize → Amend (with traceable history).
               </motion.p>
               
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="mt-4 lg:mt-8 flex flex-wrap gap-6 lg:gap-12 justify-center">
+              <motion.div variants={fadeInUp} className="mt-4 flex flex-wrap gap-6 lg:gap-10 justify-center">
                 {[
                   { value: '500+', label: 'Trusts Managed' },
                   { value: '10k+', label: 'Documents Filed' },
                   { value: '99.9%', label: 'Uptime' },
                 ].map((stat) => (
                   <div key={stat.label} className="text-center">
-                    <div className="text-lg lg:text-3xl font-bold text-white">{stat.value}</div>
-                    <div className="text-[10px] lg:text-sm text-slate-500">{stat.label}</div>
+                    <div className="text-lg lg:text-xl font-bold text-white">{stat.value}</div>
+                    <div className="text-[10px] text-slate-500">{stat.label}</div>
                   </div>
                 ))}
               </motion.div>
@@ -833,16 +833,16 @@ export default function CyberHomePage() {
           </div>
         </div>
         
-        {/* Scroll indicator - higher on mobile, at bottom on desktop */}
+        {/* Scroll indicator - positioned below stats with proper spacing */}
         <motion.div 
-          className="absolute bottom-20 sm:bottom-16 lg:bottom-10 left-1/2 -translate-x-1/2"
+          className="absolute bottom-20 sm:bottom-16 lg:bottom-4 left-1/2 -translate-x-1/2"
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <div className="relative w-5 h-8 lg:w-7 lg:h-12 rounded-full border-2 border-[#C6A87C]/40 flex justify-center pt-1.5 lg:pt-2 bg-[#0B1221]/50 backdrop-blur-sm">
+          <div className="relative w-5 h-8 rounded-full border-2 border-[#C6A87C]/40 flex justify-center pt-1.5 bg-[#0B1221]/50 backdrop-blur-sm">
             <motion.div 
-              className="w-1 h-1.5 lg:w-1.5 lg:h-3 bg-gradient-to-b from-[#C6A87C] to-[#C6A87C]/50 rounded-full"
-              animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
+              className="w-1 h-1.5 bg-gradient-to-b from-[#C6A87C] to-[#C6A87C]/50 rounded-full"
+              animate={{ y: [0, 6, 0], opacity: [1, 0.3, 1] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
