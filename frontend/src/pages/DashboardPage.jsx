@@ -422,7 +422,7 @@ export default function DashboardPage({ user }) {
                   className="bg-[#0B1221] border-vault-gold/20 w-52 max-h-80 overflow-y-auto z-[100]"
                 >
                   <div className="px-2 py-1.5 text-xs text-white/50 font-medium">
-                    Select Actions ({selectedActions.length}/{maxQuickActions} slots)
+                    Select Actions ({Math.min(selectedActions.length, maxQuickActions)}/{maxQuickActions} slots)
                   </div>
                   {/* New Document - Primary action */}
                   <DropdownMenuItem
