@@ -173,14 +173,19 @@ export default function DashboardPage({ user }) {
   const toggleQuickAction = (actionId) => {
     setSelectedActions(prev => {
       let newSelected;
+      // Cap current length at max before checking
+      const currentLength = Math.min(prev.length, maxQuickActions);
+      
       if (prev.includes(actionId)) {
         newSelected = prev.filter(id => id !== actionId);
-      } else if (prev.length < maxQuickActions) {
-        // Allow adding up to maxQuickActions (dynamic based on portfolios)
-        newSelected = [...prev, actionId];
+      } else if (currentLength < maxQuickActions) {
+        // Allow adding up to maxQuickActions
+        newSelected = [...prev.slice(0, maxQuickActions - 1), actionId];
       } else {
         return prev; // Max reached
       }
+      // Always cap at max
+      newSelected = newSelected.slice(0, maxQuickActions);
       localStorage.setItem('quickActions', JSON.stringify(newSelected));
       return newSelected;
     });
