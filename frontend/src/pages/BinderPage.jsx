@@ -997,6 +997,178 @@ export default function BinderPage() {
                 })}
               </div>
 
+              {/* Court Mode Panel */}
+              <div className="mb-6">
+                <button
+                  onClick={() => setShowCourtModePanel(!showCourtModePanel)}
+                  className="w-full flex items-center justify-between p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Scales className="w-5 h-5 text-blue-400" />
+                    <span className="text-white font-medium text-sm">Court Mode</span>
+                    {(courtModeConfig.bates_enabled || courtModeConfig.redaction_mode !== 'standard') && (
+                      <span className="px-2 py-0.5 text-xs rounded bg-blue-500/30 text-blue-300">Active</span>
+                    )}
+                  </div>
+                  <CaretRight className={`w-4 h-4 text-vault-muted transition-transform ${showCourtModePanel ? 'rotate-90' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                  {showCourtModePanel && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-3 p-4 rounded-lg bg-[#05080F] border border-vault-gold/10 space-y-4">
+                        {/* Bates Numbering Section */}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Stamp className="w-4 h-4 text-vault-gold" />
+                              <span className="text-white text-sm font-medium">Bates Numbering</span>
+                            </div>
+                            <Switch
+                              checked={courtModeConfig.bates_enabled}
+                              onCheckedChange={(checked) => setCourtModeConfig(prev => ({ ...prev, bates_enabled: checked }))}
+                            />
+                          </div>
+
+                          {courtModeConfig.bates_enabled && (
+                            <div className="pl-6 space-y-3">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="text-vault-muted text-xs mb-1 block">Prefix</label>
+                                  <Input
+                                    value={courtModeConfig.bates_prefix}
+                                    onChange={(e) => setCourtModeConfig(prev => ({ ...prev, bates_prefix: e.target.value.toUpperCase() }))}
+                                    placeholder={courtModeInfo?.bates?.default_prefix || 'DOC-'}
+                                    className="bg-[#0B1221] border-vault-gold/30 text-white h-9 text-sm"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-vault-muted text-xs mb-1 block">Start #</label>
+                                  <Input
+                                    type="number"
+                                    value={courtModeConfig.bates_start_number}
+                                    onChange={(e) => setCourtModeConfig(prev => ({ ...prev, bates_start_number: parseInt(e.target.value) || 1 }))}
+                                    min={1}
+                                    className="bg-[#0B1221] border-vault-gold/30 text-white h-9 text-sm"
+                                  />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="text-vault-muted text-xs mb-1 block">Digits</label>
+                                  <Select
+                                    value={String(courtModeConfig.bates_digits)}
+                                    onValueChange={(v) => setCourtModeConfig(prev => ({ ...prev, bates_digits: parseInt(v) }))}
+                                  >
+                                    <SelectTrigger className="bg-[#0B1221] border-vault-gold/30 text-white h-9">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-[#0B1221] border-vault-gold/30">
+                                      <SelectItem value="4" className="text-white">4 digits</SelectItem>
+                                      <SelectItem value="5" className="text-white">5 digits</SelectItem>
+                                      <SelectItem value="6" className="text-white">6 digits</SelectItem>
+                                      <SelectItem value="7" className="text-white">7 digits</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <label className="text-vault-muted text-xs mb-1 block">Position</label>
+                                  <Select
+                                    value={courtModeConfig.bates_position}
+                                    onValueChange={(v) => setCourtModeConfig(prev => ({ ...prev, bates_position: v }))}
+                                  >
+                                    <SelectTrigger className="bg-[#0B1221] border-vault-gold/30 text-white h-9">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-[#0B1221] border-vault-gold/30">
+                                      <SelectItem value="bottom-right" className="text-white">Bottom Right</SelectItem>
+                                      <SelectItem value="bottom-left" className="text-white">Bottom Left</SelectItem>
+                                      <SelectItem value="bottom-center" className="text-white">Bottom Center</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Switch
+                                  checked={courtModeConfig.bates_include_cover}
+                                  onCheckedChange={(checked) => setCourtModeConfig(prev => ({ ...prev, bates_include_cover: checked }))}
+                                  className="scale-75"
+                                />
+                                <span className="text-vault-muted text-xs">Include cover page</span>
+                              </div>
+                              {/* Preview */}
+                              <div className="p-2 rounded bg-vault-gold/10 border border-vault-gold/20">
+                                <span className="text-vault-muted text-xs">Preview: </span>
+                                <span className="text-vault-gold font-mono text-sm">
+                                  {courtModeConfig.bates_prefix || courtModeInfo?.bates?.default_prefix || 'DOC-'}
+                                  {String(courtModeConfig.bates_start_number).padStart(courtModeConfig.bates_digits, '0')}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="border-t border-vault-gold/10" />
+
+                        {/* Redaction Section */}
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <EyeSlash className="w-4 h-4 text-vault-gold" />
+                            <span className="text-white text-sm font-medium">Redaction Mode</span>
+                          </div>
+                          <Select
+                            value={courtModeConfig.redaction_mode}
+                            onValueChange={(v) => setCourtModeConfig(prev => ({ ...prev, redaction_mode: v }))}
+                          >
+                            <SelectTrigger className="bg-[#0B1221] border-vault-gold/30 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#0B1221] border-vault-gold/30">
+                              <SelectItem value="standard" className="text-white">
+                                <div className="flex items-center gap-2">
+                                  <LockOpen className="w-4 h-4" />
+                                  <span>Standard (No redactions)</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="redacted" className="text-white">
+                                <div className="flex items-center gap-2">
+                                  <Lock className="w-4 h-4" />
+                                  <span>Redacted (Apply all redactions)</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="privileged" className="text-white">
+                                <div className="flex items-center gap-2">
+                                  <ShieldCheck className="w-4 h-4" />
+                                  <span>Privileged (Include privileged content)</span>
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+
+                          {/* Redaction Summary */}
+                          {redactionSummary && redactionSummary.total_redactions > 0 && (
+                            <div className="p-2 rounded bg-amber-500/10 border border-amber-500/20">
+                              <div className="flex items-center gap-2">
+                                <Info className="w-4 h-4 text-amber-400" />
+                                <span className="text-amber-400 text-xs">
+                                  {redactionSummary.total_redactions} redaction marker{redactionSummary.total_redactions !== 1 ? 's' : ''} on {redactionSummary.records_affected} record{redactionSummary.records_affected !== 1 ? 's' : ''}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Generate Button */}
               <Button
                 onClick={handleGenerate}
