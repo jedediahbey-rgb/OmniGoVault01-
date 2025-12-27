@@ -132,81 +132,96 @@ const HomePage = () => {
         </motion.div>
       </section>
 
-      {/* Features SquaresFour */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0F172A]">
+      {/* Features Section */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0B1221]/80">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10 sm:mb-16">
-            <h2 className="font-serif text-2xl sm:text-4xl text-[#F8FAFC] mb-4">
-              Your Complete <span className="text-[#C6A87C]">Trust Platform</span>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-center mb-10 sm:mb-16"
+          >
+            <h2 className="font-heading text-2xl sm:text-4xl text-white mb-4">
+              Your Complete <span className="text-vault-gold">Trust Platform</span>
             </h2>
-            <p className="font-sans text-sm sm:text-base text-slate-400 max-w-2xl mx-auto px-4">
+            <p className="text-sm sm:text-base text-vault-muted max-w-2xl mx-auto px-4">
               Everything you need to understand equity law and manage your trust documents in one secure platform.
             </p>
-          </div>
+          </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {features.map((feature, index) => (
-              <Link
+              <motion.div
                 key={index}
-                to={feature.link}
-                className="group bg-[#111827] border border-white/5 p-6 sm:p-8 rounded-sm hover:border-[#C6A87C]/30 transition-all duration-300"
-                data-testid={`feature-${index}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 * index }}
               >
-                <div className="text-[#C6A87C] mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
-                  {feature.icon}
-                </div>
-                <h3 className="font-serif text-lg sm:text-xl text-[#F8FAFC] mb-2 sm:mb-3">{feature.title}</h3>
-                <p className="font-sans text-sm text-slate-400 mb-4 sm:mb-6 leading-relaxed">{feature.description}</p>
-                <span className="inline-flex items-center gap-2 text-[#C6A87C] font-sans text-sm font-medium group-hover:gap-3 transition-all">
-                  {feature.cta}
-                  <ArrowRight className="w-4 h-4" weight="bold" />
-                </span>
-              </Link>
+                <Link
+                  to={feature.link}
+                  className="group block bg-[#0B1221] border border-vault-gold/10 p-6 sm:p-8 rounded-xl hover:border-vault-gold/30 transition-all duration-300"
+                  data-testid={`feature-${index}`}
+                >
+                  <div className="text-vault-gold mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+                    {feature.icon}
+                  </div>
+                  <h3 className="font-heading text-lg sm:text-xl text-white mb-2 sm:mb-3">{feature.title}</h3>
+                  <p className="text-sm text-vault-muted mb-4 sm:mb-6 leading-relaxed">{feature.description}</p>
+                  <span className="inline-flex items-center gap-2 text-vault-gold text-sm font-medium group-hover:gap-3 transition-all">
+                    {feature.cta}
+                    <ArrowRight className="w-4 h-4" weight="bold" />
+                  </span>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Source Documents Section */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0B1221]">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-vault-dark">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-            <div>
-              <h2 className="font-serif text-2xl sm:text-4xl text-[#F8FAFC] mb-4 sm:mb-6">
-                Grounded in <span className="text-[#C6A87C]">Authority</span>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="font-heading text-2xl sm:text-4xl text-white mb-4 sm:mb-6">
+                Grounded in <span className="text-vault-gold">Authority</span>
               </h2>
-              <p className="font-sans text-sm sm:text-base text-slate-400 mb-6 sm:mb-8 leading-relaxed">
+              <p className="text-sm sm:text-base text-vault-muted mb-6 sm:mb-8 leading-relaxed">
                 Every piece of knowledge on this platform is sourced from authoritative documents 
                 on equity jurisprudence. Every claim includes a citation — no hallucinations, no guessing.
               </p>
               <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-[#111827] border border-white/5 rounded-sm">
-                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#C6A87C] mt-1 flex-shrink-0" weight="duotone" />
+                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-[#0B1221]/80 border border-vault-gold/10 rounded-xl">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-vault-gold mt-1 flex-shrink-0" weight="duotone" />
                   <div className="min-w-0">
-                    <h4 className="font-sans font-semibold text-[#F8FAFC] mb-1 text-sm sm:text-base">Kingdom vs Empire (Roark)</h4>
-                    <p className="font-sans text-xs sm:text-sm text-slate-400">Comprehensive guide to equity jurisprudence, maxims, and trust relationships.</p>
+                    <h4 className="font-semibold text-white mb-1 text-sm sm:text-base">Kingdom vs Empire (Roark)</h4>
+                    <p className="text-xs sm:text-sm text-vault-muted">Comprehensive guide to equity jurisprudence, maxims, and trust relationships.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-[#111827] border border-white/5 rounded-sm">
-                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#C6A87C] mt-1 flex-shrink-0" weight="duotone" />
+                <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-[#0B1221]/80 border border-vault-gold/10 rounded-xl">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-vault-gold mt-1 flex-shrink-0" weight="duotone" />
                   <div className="min-w-0">
-                    <h4 className="font-sans font-semibold text-[#F8FAFC] mb-1 text-sm sm:text-base">Exclusive Trust Under Equity</h4>
-                    <p className="font-sans text-xs sm:text-sm text-slate-400">Template documents and forms for establishing exclusive equity trusts.</p>
+                    <h4 className="font-semibold text-white mb-1 text-sm sm:text-base">Exclusive Trust Under Equity</h4>
+                    <p className="text-xs sm:text-sm text-vault-muted">Template documents and forms for establishing exclusive equity trusts.</p>
                   </div>
                 </div>
               </div>
-              <Link to="/sources" className="inline-flex items-center gap-2 mt-6 sm:mt-8 text-[#C6A87C] font-sans font-medium text-sm hover:gap-3 transition-all" data-testid="view-sources">
+              <Link to="/sources" className="inline-flex items-center gap-2 mt-6 sm:mt-8 text-vault-gold font-medium text-sm hover:gap-3 transition-all" data-testid="view-sources">
                 View Source Library
                 <ArrowRight className="w-4 h-4" weight="bold" />
               </Link>
-            </div>
+            </motion.div>
             <div className="relative hidden lg:block">
-              <div className="aspect-square bg-gradient-to-br from-[#1E293B] to-[#0F172A] rounded-sm p-12 flex items-center justify-center">
+              <div className="aspect-square bg-gradient-to-br from-[#1E293B] to-vault-dark rounded-xl p-12 flex items-center justify-center border border-vault-gold/10">
                 <div className="text-center">
-                  <Users className="w-24 h-24 text-[#C6A87C]/20 mx-auto mb-6" weight="duotone" />
-                  <p className="font-serif text-2xl text-[#C6A87C] italic">
+                  <Users className="w-24 h-24 text-vault-gold/20 mx-auto mb-6" weight="duotone" />
+                  <p className="font-heading text-2xl text-vault-gold italic">
                     "Equity looks to the intent rather than to the form"
                   </p>
-                  <p className="font-sans text-xs text-slate-500 mt-4 uppercase tracking-wider">
+                  <p className="text-xs text-vault-muted mt-4 uppercase tracking-wider">
                     — Maxim of Equity, Roark p.6
                   </p>
                 </div>
@@ -217,40 +232,45 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0F172A]">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-serif text-2xl sm:text-4xl text-[#F8FAFC] mb-4 sm:mb-6">
-            Ready to Begin Your <span className="text-[#C6A87C]">Journey</span>?
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0B1221]/80">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-4xl mx-auto text-center"
+        >
+          <h2 className="font-heading text-2xl sm:text-4xl text-white mb-4 sm:mb-6">
+            Ready to Begin Your <span className="text-vault-gold">Journey</span>?
           </h2>
-          <p className="font-sans text-sm sm:text-base text-slate-400 mb-8 sm:mb-10 max-w-2xl mx-auto px-4">
+          <p className="text-sm sm:text-base text-vault-muted mb-8 sm:mb-10 max-w-2xl mx-auto px-4">
             Create your secure vault, explore the knowledge base, or chat with our AI assistant 
             to start learning about exclusive equity trusts today.
           </p>
           <div className="flex flex-wrap justify-center gap-4 px-4">
             <Link to="/vault" data-testid="cta-vault" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto bg-[#C6A87C] text-[#0B1221] hover:bg-[#E8D5B5] font-sans font-bold uppercase tracking-wider text-xs px-8 sm:px-10 py-3 sm:py-4 rounded-sm shadow-[0_0_20px_rgba(198,168,124,0.3)]">
+              <Button className="w-full sm:w-auto bg-vault-gold text-vault-dark hover:bg-vault-gold/90 font-bold uppercase tracking-wider text-xs px-8 sm:px-10 py-3 sm:py-4 rounded-lg shadow-[0_0_20px_rgba(212,175,55,0.3)]">
                 Create Your Vault
                 <ArrowRight className="w-4 h-4 ml-2" weight="bold" />
               </Button>
             </Link>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 sm:py-12 px-4 sm:px-6 bg-[#0B1221] border-t border-white/5">
+      <footer className="py-8 sm:py-12 px-4 sm:px-6 bg-vault-dark border-t border-vault-gold/10">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col items-center gap-4 sm:gap-6 text-center md:flex-row md:justify-between md:text-left">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#C6A87C]/20 rounded-sm flex items-center justify-center">
-                <Scales className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C6A87C]" weight="duotone" />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-vault-gold/20 rounded-lg flex items-center justify-center">
+                <Scales className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-vault-gold" weight="duotone" />
               </div>
-              <span className="font-serif text-base sm:text-lg text-[#F8FAFC]">Equity Trust</span>
+              <span className="font-heading text-base sm:text-lg text-white">Equity Trust</span>
             </div>
-            <p className="font-sans text-xs text-slate-500">
+            <p className="text-xs text-vault-muted">
               Educational Platform · Not Legal Advice
             </p>
-            <p className="font-sans text-xs text-slate-600">
+            <p className="text-xs text-vault-muted/60">
               © {new Date().getFullYear()} All rights reserved.
             </p>
           </div>
