@@ -644,12 +644,23 @@ export default function CyberHomePage() {
   const [liveSignals, setLiveSignals] = useState([]);
   const [signalsLoading, setSignalsLoading] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [vaultOpening, setVaultOpening] = useState(false);
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
   
   // Scroll progress for animated progress bar
   const { scrollYProgress } = useScroll();
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  
+  // Handle vault entry animation
+  const handleEnterVault = (e) => {
+    e.preventDefault();
+    setVaultOpening(true);
+    // Navigate after animation completes
+    setTimeout(() => {
+      navigate('/vault');
+    }, 1200);
+  };
   
   // Handle scroll to show/hide scroll-to-top button
   useEffect(() => {
