@@ -5,6 +5,7 @@ import {
   BookOpen,
   CaretRight,
   ChartLine,
+  ClipboardText,
   FilePdf,
   FileText,
   Gavel,
@@ -42,6 +43,7 @@ const navItems = [
   { name: 'Diagnostics', href: '/diagnostics', icon: ShieldCheck, section: 'tools' },
   { name: 'Thread Manager', href: '/ledger-threads', icon: GitBranch, section: 'tools' },
   { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
+  { name: 'Audit Log', href: '/audit-log', icon: ClipboardText, section: 'tools' },
   { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
 ];
 
