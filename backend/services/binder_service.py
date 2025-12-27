@@ -1702,6 +1702,21 @@ class BinderService:
             content["_missing_items"] = validation.get("missing_items", [])
             content["_validation_warnings"] = validation.get("warnings", [])
             
+            # ============ COURT MODE: Process Redactions ============
+            redaction_mode = rules.get("redaction_mode", RedactionMode.STANDARD.value)
+            redaction_log = None
+            
+            if redaction_mode != RedactionMode.STANDARD.value:
+                # Get persistent redactions
+                persistent_redactions = await self.get_persistent_redactions(portfolio_id, user_id)
+                adhoc_redactions = rules.get("adhoc_redactions", [])
+                
+                # Apply redactions to content
+                content, redaction_log = self.process_content_redactions(
+                    content, persistent_redactions, adhoc_redactions, redaction_mode
+                )
+                content["_redaction_log"] = redaction_log
+            
             # Generate manifest
             manifest = self.generate_manifest(content)
             
@@ -1710,14 +1725,28 @@ class BinderService:
                 portfolio_id, user_id, profile, content, manifest
             )
             
+            # ============ COURT MODE: Apply Bates Numbering ============
+            bates_page_map = []
+            if rules.get("bates_enabled", False):
+                portfolio_abbrev = await self._get_portfolio_abbreviation(portfolio_id)
+                pdf_bytes, bates_page_map = self.apply_bates_numbering(
+                    pdf_bytes, rules, portfolio_abbrev
+                )
+            
             # Encode PDF as base64 for storage
             import base64
             pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
             
-            # Prepare run metadata including validation info
+            # Prepare run metadata including validation info and Court Mode data
             run_metadata = {
                 "validation": validation,
-                "generated_with_warnings": len(validation.get("warnings", [])) > 0
+                "generated_with_warnings": len(validation.get("warnings", [])) > 0,
+                "court_mode": {
+                    "bates_enabled": rules.get("bates_enabled", False),
+                    "bates_page_map": bates_page_map if bates_page_map else None,
+                    "redaction_mode": redaction_mode,
+                    "redaction_log": redaction_log
+                }
             }
             
             # Update run with success
@@ -1734,7 +1763,9 @@ class BinderService:
                 {"id": run["id"]},
                 {"$set": {
                     "metadata_json": run_metadata,
-                    "missing_items": validation.get("missing_items", [])
+                    "missing_items": validation.get("missing_items", []),
+                    "bates_page_map": bates_page_map,
+                    "redaction_log": redaction_log
                 }}
             )
             
@@ -1744,7 +1775,12 @@ class BinderService:
                 "status": BinderStatus.COMPLETE.value,
                 "total_items": len(manifest),
                 "message": "Binder generated successfully",
-                "warnings": validation.get("warnings", [])
+                "warnings": validation.get("warnings", []),
+                "court_mode": {
+                    "bates_enabled": rules.get("bates_enabled", False),
+                    "bates_pages": len([p for p in bates_page_map if p.get("bates_number")]) if bates_page_map else 0,
+                    "redactions_applied": redaction_log.get("total_persistent", 0) + redaction_log.get("total_adhoc", 0) if redaction_log else 0
+                }
             }
             
         except Exception as e:
