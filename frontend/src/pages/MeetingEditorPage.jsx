@@ -1085,17 +1085,17 @@ export default function MeetingEditorPage({ user }) {
                   {meeting.attendees.map((att, i) => (
                     <div 
                       key={i}
-                      className="flex items-center justify-between p-2 rounded-lg bg-vault-dark/30"
+                      className="flex items-center justify-between p-2 rounded-lg bg-vault-dark/30 gap-2"
                     >
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${att.present ? 'bg-emerald-400' : 'bg-slate-500'}`} />
-                        <span className="text-white">{att.name}</span>
-                        <Badge className={`text-xs ${roleColors[att.role] || roleColors.observer} border`}>
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${att.present ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                        <span className="text-white text-sm whitespace-nowrap">{att.name}</span>
+                        <Badge className={`text-xs ${roleColors[att.role] || roleColors.observer} border shrink-0`}>
                           {att.role?.replace('_', ' ')}
                         </Badge>
                       </div>
                       {isDraft && (
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 shrink-0">
                           <Button
                             variant="ghost"
                             size="sm"
