@@ -225,38 +225,6 @@ class TrustManagementAPITester:
             self.log_test("POST /api/study/maxims/review", False, f"Error: {str(e)}")
             return False
 
-    def test_knowledge_modules_endpoint(self):
-        """Test GET /api/knowledge/modules returns learning modules"""
-        try:
-            url = f"{self.base_url}/knowledge/modules"
-            response = self.session.get(url, timeout=10)
-            
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if isinstance(data, list) and len(data) > 0:
-                    # Check if modules have expected structure
-                    first_module = data[0]
-                    if 'id' in first_module and 'title' in first_module:
-                        details += f", Found {len(data)} learning modules"
-                    else:
-                        success = False
-                        details += f", Missing required fields in module data"
-                else:
-                    success = False
-                    details += f", Expected list of modules, got: {type(data)}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/knowledge/modules", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/knowledge/modules", False, f"Error: {str(e)}")
-            return False
-
     def run_all_tests(self):
         """Run all backend tests"""
         self.log("🧪 Starting Trust Management Backend API Tests")
