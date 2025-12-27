@@ -763,7 +763,7 @@ export default function CyberHomePage() {
       </nav>
       
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-64px)] lg:h-[calc(100vh-64px)] flex flex-col justify-center pb-20 sm:pb-24 lg:pb-16">
+      <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center pb-16 sm:pb-20 lg:pb-12 lg:h-[calc(100vh-64px)]">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -773,10 +773,10 @@ export default function CyberHomePage() {
               animate="visible"
               variants={staggerContainer}
             >
-              {/* OMNIGOVAULT Logo - Centered, responsive sizes */}
+              {/* OMNIGOVAULT Logo - Centered, large on mobile, fits desktop */}
               <motion.div 
                 variants={fadeInUp}
-                className="mb-2 lg:mb-3"
+                className="mb-3"
               >
                 <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[280px] mx-auto">
                   <img 
@@ -802,7 +802,7 @@ export default function CyberHomePage() {
                 &ldquo;In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will.&rdquo;&nbsp;&nbsp;<span className="text-[10px] text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
               
-              <motion.div variants={fadeInUp} className="mt-3 lg:mt-4 flex justify-center">
+              <motion.div variants={fadeInUp} className="mt-4 flex justify-center">
                 <Link to="/login">
                   <Button size="default" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-6">
                     Enter the Vault
@@ -817,7 +817,7 @@ export default function CyberHomePage() {
               </motion.p>
               
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="mt-3 lg:mt-4 flex flex-wrap gap-6 justify-center">
+              <motion.div variants={fadeInUp} className="mt-4 flex flex-wrap gap-6 justify-center">
                 {[
                   { value: '500+', label: 'Trusts Managed' },
                   { value: '10k+', label: 'Documents Filed' },
@@ -833,9 +833,9 @@ export default function CyberHomePage() {
           </div>
         </div>
         
-        {/* Scroll indicator - positioned properly */}
+        {/* Scroll indicator - higher on mobile, visible on desktop */}
         <motion.div 
-          className="absolute bottom-6 sm:bottom-8 lg:bottom-6 left-1/2 -translate-x-1/2"
+          className="absolute bottom-20 sm:bottom-16 lg:bottom-6 left-1/2 -translate-x-1/2"
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
