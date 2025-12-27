@@ -726,11 +726,13 @@ export default function CyberHomePage() {
   
   return (
     <div className="min-h-screen bg-[#05080F] text-white overflow-x-hidden">
-      {/* Scroll Progress Bar */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#C6A87C] via-[#E8D5B5] to-[#C6A87C] origin-left z-50"
-        style={{ scaleX }}
-      />
+      {/* Scroll Progress Bar - Solid background */}
+      <div className="fixed top-0 left-0 right-0 h-1 bg-[#05080F] z-50">
+        <motion.div
+          className="h-full bg-gradient-to-r from-[#C6A87C] via-[#E8D5B5] to-[#C6A87C] origin-left"
+          style={{ scaleX }}
+        />
+      </div>
       
       {/* Scanline overlay */}
       <div 
