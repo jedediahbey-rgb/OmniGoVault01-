@@ -762,7 +762,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== SCENARIOS SECTION ===== */}
-      <section id="scenarios" className="py-10 lg:py-24 bg-[#05080F]">
+      <section id="scenarios" className="py-10 lg:py-16 bg-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
