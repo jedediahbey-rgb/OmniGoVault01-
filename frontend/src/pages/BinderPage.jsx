@@ -321,6 +321,21 @@ export default function BinderPage() {
   const [refreshingHistory, setRefreshingHistory] = useState(false);
   const [deleteConfirmRun, setDeleteConfirmRun] = useState(null);
 
+  // Court Mode state
+  const [showCourtModePanel, setShowCourtModePanel] = useState(false);
+  const [courtModeConfig, setCourtModeConfig] = useState({
+    bates_enabled: false,
+    bates_prefix: '',
+    bates_start_number: 1,
+    bates_digits: 6,
+    bates_position: 'bottom-right',
+    bates_include_cover: false,
+    redaction_mode: 'standard',
+    adhoc_redactions: []
+  });
+  const [courtModeInfo, setCourtModeInfo] = useState(null);
+  const [redactionSummary, setRedactionSummary] = useState(null);
+
   // Default portfolio state (read-only - set from Dashboard)
   const [isDefaultPortfolio, setIsDefaultPortfolio] = useState(false);
   
