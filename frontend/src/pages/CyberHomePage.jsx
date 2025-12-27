@@ -649,7 +649,7 @@ export default function CyberHomePage() {
       </nav>
       
       {/* ===== HERO SECTION ===== */}
-      <section className="relative h-[calc(100vh-64px)] flex flex-col justify-center">
+      <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center pb-16 sm:pb-20 lg:pb-0 lg:h-[calc(100vh-64px)]">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -659,16 +659,16 @@ export default function CyberHomePage() {
               animate="visible"
               variants={staggerContainer}
             >
-              {/* OMNIGOVAULT Logo - Centered */}
+              {/* OMNIGOVAULT Logo - Centered, larger on mobile */}
               <motion.div 
                 variants={fadeInUp}
                 className="mb-3"
               >
-                <div className="w-full max-w-[200px] mx-auto">
+                <div className="w-full max-w-[280px] sm:max-w-[240px] lg:max-w-[200px] mx-auto">
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
-                    className="w-full h-auto max-h-[100px] sm:max-h-[120px] object-contain mx-auto"
+                    className="w-full h-auto max-h-[140px] sm:max-h-[130px] lg:max-h-[120px] object-contain mx-auto"
                   />
                 </div>
               </motion.div>
@@ -718,9 +718,9 @@ export default function CyberHomePage() {
           </div>
         </div>
         
-        {/* Scroll indicator - positioned at bottom */}
+        {/* Scroll indicator - positioned higher on mobile */}
         <motion.div 
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="absolute bottom-20 sm:bottom-16 lg:bottom-8 left-1/2 -translate-x-1/2"
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
