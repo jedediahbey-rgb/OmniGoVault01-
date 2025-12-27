@@ -893,10 +893,20 @@ async def update_trust_profile(profile_id: str, data: TrustProfileUpdate, user: 
     
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
     
+    # Track if we're transitioning from placeholder to real RM-ID
+    was_placeholder = existing.get("rm_id_is_placeholder", True)
+    is_setting_real_rmid = False
+    
     # Auto-normalize RM-ID if raw is provided
     if "rm_id_raw" in update_data and update_data["rm_id_raw"]:
-        update_data["rm_id_normalized"] = normalize_rm_id(update_data["rm_id_raw"])
-        update_data["rm_id_is_placeholder"] = False
+        normalized = normalize_rm_id(update_data["rm_id_raw"])
+        update_data["rm_id_normalized"] = normalized
+        
+        # Check if this is a real RM-ID (not TEMP)
+        if not normalized.startswith("TEMP"):
+            update_data["rm_id_is_placeholder"] = False
+            is_setting_real_rmid = was_placeholder  # Only migrate if transitioning from placeholder
+        
         # Also update legacy field for backward compatibility
         update_data["rm_record_id"] = update_data["rm_id_raw"]
     
@@ -904,7 +914,118 @@ async def update_trust_profile(profile_id: str, data: TrustProfileUpdate, user: 
     
     await db.trust_profiles.update_one({"profile_id": profile_id}, {"$set": update_data})
     doc = await db.trust_profiles.find_one({"profile_id": profile_id}, {"_id": 0})
-    return doc
+    
+    # Auto-migrate TEMP RM-IDs if transitioning from placeholder to real
+    migration_result = None
+    if is_setting_real_rmid and doc.get("portfolio_id"):
+        try:
+            # Call migration logic inline
+            portfolio_id = doc["portfolio_id"]
+            rm_base = re.sub(r'\s+', '', doc["rm_id_normalized"].strip().upper())
+            
+            # Count records that need migration
+            temp_gov_count = await db.governance_records.count_documents(
+                {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}}
+            )
+            temp_doc_count = await db.documents.count_documents(
+                {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}}
+            )
+            temp_asset_count = await db.assets.count_documents(
+                {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}}
+            )
+            temp_ledger_count = await db.ledger_entries.count_documents(
+                {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}}
+            )
+            
+            total_to_migrate = temp_gov_count + temp_doc_count + temp_asset_count + temp_ledger_count
+            
+            if total_to_migrate > 0:
+                # Helper function
+                async def generate_new_rm_id(old_rm_id: str) -> str:
+                    if not old_rm_id or not old_rm_id.startswith("TEMP"):
+                        return old_rm_id
+                    match = re.match(r'^TEMP[A-F0-9]+-(\d+)\.(\d+)$', old_rm_id)
+                    if match:
+                        group = int(match.group(1))
+                        sub = int(match.group(2))
+                        return f"{rm_base}-{group}.{sub:03d}"
+                    return f"{rm_base}-99.001"
+                
+                migrated = 0
+                
+                # Migrate governance records
+                temp_gov_records = await db.governance_records.find(
+                    {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}},
+                    {"_id": 0, "id": 1, "rm_id": 1}
+                ).to_list(1000)
+                for record in temp_gov_records:
+                    old_rm_id = record.get("rm_id", "")
+                    new_rm_id = await generate_new_rm_id(old_rm_id)
+                    if new_rm_id != old_rm_id:
+                        await db.governance_records.update_one(
+                            {"id": record["id"]},
+                            {"$set": {"rm_id": new_rm_id, "updated_at": datetime.now(timezone.utc).isoformat()}}
+                        )
+                        migrated += 1
+                
+                # Migrate documents
+                temp_docs = await db.documents.find(
+                    {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}},
+                    {"_id": 0, "document_id": 1, "rm_id": 1}
+                ).to_list(1000)
+                for doc_rec in temp_docs:
+                    old_rm_id = doc_rec.get("rm_id", "")
+                    new_rm_id = await generate_new_rm_id(old_rm_id)
+                    if new_rm_id != old_rm_id:
+                        await db.documents.update_one(
+                            {"document_id": doc_rec["document_id"]},
+                            {"$set": {"rm_id": new_rm_id, "sub_record_id": new_rm_id, "updated_at": datetime.now(timezone.utc).isoformat()}}
+                        )
+                        migrated += 1
+                
+                # Migrate assets
+                temp_assets = await db.assets.find(
+                    {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}},
+                    {"_id": 0, "asset_id": 1, "rm_id": 1}
+                ).to_list(1000)
+                for asset in temp_assets:
+                    old_rm_id = asset.get("rm_id", "")
+                    new_rm_id = await generate_new_rm_id(old_rm_id)
+                    if new_rm_id != old_rm_id:
+                        await db.assets.update_one(
+                            {"asset_id": asset["asset_id"]},
+                            {"$set": {"rm_id": new_rm_id, "updated_at": datetime.now(timezone.utc).isoformat()}}
+                        )
+                        migrated += 1
+                
+                # Migrate ledger entries
+                temp_ledger = await db.ledger_entries.find(
+                    {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}},
+                    {"_id": 0, "entry_id": 1, "rm_id": 1}
+                ).to_list(1000)
+                for entry in temp_ledger:
+                    old_rm_id = entry.get("rm_id", "")
+                    new_rm_id = await generate_new_rm_id(old_rm_id)
+                    if new_rm_id != old_rm_id:
+                        await db.ledger_entries.update_one(
+                            {"entry_id": entry["entry_id"]},
+                            {"$set": {"rm_id": new_rm_id, "updated_at": datetime.now(timezone.utc).isoformat()}}
+                        )
+                        migrated += 1
+                
+                migration_result = {
+                    "auto_migrated": True,
+                    "records_migrated": migrated,
+                    "rm_base": rm_base
+                }
+        except Exception as e:
+            migration_result = {"auto_migrated": False, "error": str(e)}
+    
+    result = dict(doc)
+    if migration_result:
+        result["migration"] = migration_result
+    
+    return result
 
 
 @api_router.post("/trust-profiles/{profile_id}/generate-placeholder-rm-id")
