@@ -1902,6 +1902,217 @@ class BinderService:
             </div>
             """)
         
+        # 10. Gap Analysis Report (if included)
+        gap_analysis = content.get("_gap_analysis")
+        if gap_analysis:
+            section_counter += 1
+            summary = gap_analysis.get("summary", {})
+            
+            # Determine overall status
+            if summary.get("high_risk", 0) > 0:
+                overall_status = "HIGH RISK"
+                status_color = "#dc2626"
+            elif summary.get("missing", 0) > 0 or summary.get("medium_risk", 0) > 0:
+                overall_status = "NEEDS ATTENTION"
+                status_color = "#d97706"
+            else:
+                overall_status = "COMPLIANT"
+                status_color = "#16a34a"
+            
+            html_parts.append(f"""
+            <div class="section-divider" id="section-gaps">
+                <h1 class="bookmark-l1" data-bookmark="Section {section_counter}: Compliance Gaps Analysis" style="visibility: hidden; height: 0; margin: 0;">Gaps Analysis</h1>
+                <div class="section-icon">
+                    <span class="section-icon-text">📋</span>
+                </div>
+                <div class="section-number">Section {section_counter}</div>
+                <div class="section-title">Compliance Gaps Analysis</div>
+                <div class="section-subtitle" style="color: {status_color};">{overall_status}</div>
+                <div class="section-meta">
+                    {gap_analysis.get('checklist_version', 'Trust Administration Checklist')}
+                </div>
+            </div>
+            <div class="record-page" id="gaps-report">
+                <h2 class="bookmark-l2" data-bookmark="Compliance Summary" style="visibility: hidden; height: 0; margin: 0;">Gaps Report</h2>
+                <h2 style="color: #d4af37;">Compliance Summary</h2>
+                
+                <div style="display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 150px; padding: 16px; background: #16a34a20; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: bold; color: #16a34a;">{summary.get('complete', 0)}</div>
+                        <div style="font-size: 10pt; color: #666;">Complete ✅</div>
+                    </div>
+                    <div style="flex: 1; min-width: 150px; padding: 16px; background: #d9770620; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: bold; color: #d97706;">{summary.get('partial', 0)}</div>
+                        <div style="font-size: 10pt; color: #666;">Partial ⚠️</div>
+                    </div>
+                    <div style="flex: 1; min-width: 150px; padding: 16px; background: #dc262620; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: bold; color: #dc2626;">{summary.get('missing', 0)}</div>
+                        <div style="font-size: 10pt; color: #666;">Missing ❌</div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 24px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 10pt;">
+                        <span><strong>High Risk Items:</strong> {summary.get('high_risk', 0)}</span>
+                        <span><strong>Medium Risk:</strong> {summary.get('medium_risk', 0)}</span>
+                        <span><strong>Low Risk:</strong> {summary.get('low_risk', 0)}</span>
+                        <span><strong>N/A:</strong> {summary.get('not_applicable', 0)}</span>
+                    </div>
+                </div>
+            """)
+            
+            # Add detailed results by category
+            by_category = gap_analysis.get("by_category", {})
+            for category, items in by_category.items():
+                html_parts.append(f"""
+                <h3 style="color: #333; margin-top: 20px; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">
+                    {category}
+                </h3>
+                <table class="manifest-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Item</th>
+                            <th style="width: 15%;">Status</th>
+                            <th style="width: 12%;">Risk</th>
+                            <th style="width: 48%;">Notes / Remediation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                """)
+                
+                for item in items:
+                    status = item.get("status", "")
+                    if status == "complete":
+                        status_icon = "✅"
+                        status_color = "#16a34a"
+                    elif status == "partial":
+                        status_icon = "⚠️"
+                        status_color = "#d97706"
+                    elif status == "missing":
+                        status_icon = "❌"
+                        status_color = "#dc2626"
+                    else:
+                        status_icon = "—"
+                        status_color = "#9ca3af"
+                    
+                    risk = item.get("risk_level", "low")
+                    if risk == "high":
+                        risk_badge = '<span style="background: #dc262620; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-size: 9pt;">HIGH</span>'
+                    elif risk == "medium":
+                        risk_badge = '<span style="background: #d9770620; color: #d97706; padding: 2px 8px; border-radius: 4px; font-size: 9pt;">MEDIUM</span>'
+                    else:
+                        risk_badge = '<span style="background: #16a34a20; color: #16a34a; padding: 2px 8px; border-radius: 4px; font-size: 9pt;">LOW</span>'
+                    
+                    notes = item.get("reason", "")
+                    if item.get("remediation"):
+                        notes += f"<br><em style='color: #6b7280; font-size: 9pt;'>→ {item['remediation']}</em>"
+                    
+                    html_parts.append(f"""
+                        <tr>
+                            <td>{item.get('item_name', '—')}</td>
+                            <td style="color: {status_color};">{status_icon} {status.title()}</td>
+                            <td>{risk_badge}</td>
+                            <td style="font-size: 9pt;">{notes}</td>
+                        </tr>
+                    """)
+                
+                html_parts.append("""
+                    </tbody>
+                </table>
+                """)
+            
+            html_parts.append(f"""
+                <div style="margin-top: 24px; padding: 12px; background: #fffbeb; border-left: 4px solid #d97706; font-size: 9pt;">
+                    <strong>Analysis Date:</strong> {gap_analysis.get('analyzed_at', '—')[:19]}<br>
+                    <strong>Checklist Version:</strong> {gap_analysis.get('checklist_version', 'v1')}
+                </div>
+            </div>
+            """)
+        
+        # 11. Integrity Certificate (final page)
+        integrity_stamp = content.get("_integrity_stamp")
+        if integrity_stamp:
+            section_counter += 1
+            
+            html_parts.append(f"""
+            <div class="section-divider" id="section-integrity" style="page-break-before: always;">
+                <h1 class="bookmark-l1" data-bookmark="Section {section_counter}: Integrity Certificate" style="visibility: hidden; height: 0; margin: 0;">Integrity Certificate</h1>
+                <div class="section-icon">
+                    <span class="section-icon-text">🔒</span>
+                </div>
+                <div class="section-number">Section {section_counter}</div>
+                <div class="section-title">Integrity Certificate</div>
+                <div class="section-subtitle">Cryptographic Verification</div>
+            </div>
+            <div class="record-page" id="integrity-certificate">
+                <h2 class="bookmark-l2" data-bookmark="Certificate Details" style="visibility: hidden; height: 0; margin: 0;">Certificate</h2>
+                
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="font-size: 18pt; color: #d4af37; margin-bottom: 8px;">✓ VERIFIED DOCUMENT PACKAGE</div>
+                    <div style="font-size: 10pt; color: #666;">This binder has been cryptographically sealed</div>
+                </div>
+                
+                <div style="background: #f8fafc; border: 2px solid #d4af37; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; width: 35%;"><strong>Binder Hash (SHA-256):</strong></td>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-family: monospace; font-size: 8pt; word-break: break-all;">{integrity_stamp.get('binder_pdf_sha256', '—')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Manifest Hash:</strong></td>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-family: monospace; font-size: 8pt; word-break: break-all;">{integrity_stamp.get('manifest_sha256', '—')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Run ID:</strong></td>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-family: monospace;">{integrity_stamp.get('run_id', '—')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Portfolio ID:</strong></td>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-family: monospace;">{integrity_stamp.get('portfolio_id', '—')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Generated At:</strong></td>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{integrity_stamp.get('generated_at', '—')[:19] if integrity_stamp.get('generated_at') else '—'}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Generated By:</strong></td>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{integrity_stamp.get('generated_by', '—')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Generator Version:</strong></td>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{integrity_stamp.get('generator_version', '—')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Total Items:</strong></td>
+                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{integrity_stamp.get('total_items', 0)}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Seal Coverage:</strong></td>
+                            <td style="padding: 8px 0;">{integrity_stamp.get('seal_coverage_percent', 0)}%</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="text-align: center; margin-top: 24px;">
+                    <div style="font-size: 10pt; color: #666; margin-bottom: 12px;">
+                        <strong>Verification URL:</strong><br>
+                        <span style="font-family: monospace; font-size: 9pt; word-break: break-all;">{integrity_stamp.get('verification_url', '')}</span>
+                    </div>
+                    <div style="margin-top: 16px; padding: 16px; background: #f0f9ff; border-radius: 8px;">
+                        <p style="font-size: 9pt; color: #0369a1; margin: 0;">
+                            <strong>To verify this binder:</strong> Scan the QR code or visit the verification URL above. 
+                            You can also compute the SHA-256 hash of this PDF file and compare it with the Binder Hash shown above.
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 32px; text-align: center; color: #9ca3af; font-size: 8pt;">
+                    <p>This certificate is generated automatically by the Trust Management System.<br>
+                    Tampering with this document will invalidate the cryptographic seal.</p>
+                </div>
+            </div>
+            """)
+        
         # Combine HTML
         full_html = f"""
         <!DOCTYPE html>
