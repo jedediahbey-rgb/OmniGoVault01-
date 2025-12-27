@@ -736,7 +736,7 @@ export default function LearnPage({ user }) {
     const lessonId = searchParams.get('lesson');
     if (lessonId) {
       // Find the module containing this lesson
-      for (const module of modules) {
+      for (const module of learningModules) {
         const lesson = module.lessons.find(l => l.id === lessonId);
         if (lesson) {
           setSelectedModule(module);
