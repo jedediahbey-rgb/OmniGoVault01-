@@ -342,7 +342,13 @@ export default function DashboardPage({ user }) {
                     <DotsThreeVertical className="w-5 h-5" weight="bold" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" side="bottom" sideOffset={5} className="bg-[#0B1221] border-vault-gold/20 w-52 max-h-80 overflow-y-auto z-50">
+                <DropdownMenuContent 
+                  align="end" 
+                  side="bottom" 
+                  sideOffset={8}
+                  avoidCollisions={false}
+                  className="bg-[#0B1221] border-vault-gold/20 w-52 max-h-80 overflow-y-auto z-[100]"
+                >
                   <div className="px-2 py-1.5 text-xs text-white/50 font-medium">Customize (max 4)</div>
                   {/* New Document - Primary action */}
                   <DropdownMenuItem
