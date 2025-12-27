@@ -28,6 +28,7 @@ import {
   Newspaper,
   Package,
   PencilSimple,
+  ShieldCheck,
   Plus,
   Scales,
   ShieldCheck,
