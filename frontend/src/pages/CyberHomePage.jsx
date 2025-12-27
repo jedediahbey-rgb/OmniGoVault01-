@@ -763,7 +763,7 @@ export default function CyberHomePage() {
       </nav>
       
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center pb-16 sm:pb-20 lg:h-screen lg:pb-0 lg:pt-16">
+      <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center pb-16 sm:pb-20 lg:h-screen lg:pb-0 lg:pt-4">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -776,13 +776,13 @@ export default function CyberHomePage() {
               {/* OMNIGOVAULT Logo - Centered, fully visible */}
               <motion.div 
                 variants={fadeInUp}
-                className="mb-3 lg:mb-4"
+                className="mb-2 lg:mb-3"
               >
-                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[560px] mx-auto">
+                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[480px] mx-auto">
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
-                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[320px] object-contain mx-auto"
+                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[260px] object-contain mx-auto"
                     style={{ imageRendering: 'crisp-edges' }}
                   />
                 </div>
@@ -797,12 +797,12 @@ export default function CyberHomePage() {
               
               <motion.p 
                 variants={fadeInUp}
-                className="mt-2 lg:mt-3 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed italic"
+                className="mt-1 lg:mt-2 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed italic"
               >
                 &ldquo;In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will.&rdquo;&nbsp;&nbsp;<span className="text-[10px] text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
               
-              <motion.div variants={fadeInUp} className="mt-4 flex justify-center">
+              <motion.div variants={fadeInUp} className="mt-3 flex justify-center">
                 <Link to="/login">
                   <Button size="default" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-6">
                     Enter the Vault
@@ -811,13 +811,13 @@ export default function CyberHomePage() {
               </motion.div>
               
               {/* Microcopy */}
-              <motion.p variants={fadeInUp} className="mt-2 text-[10px] text-slate-500 flex items-center gap-1.5 justify-center">
+              <motion.p variants={fadeInUp} className="mt-1 text-[10px] text-slate-500 flex items-center gap-1.5 justify-center">
                 <ClockCounterClockwise className="w-3 h-3" />
                 Draft → Finalize → Amend (with traceable history).
               </motion.p>
               
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="mt-4 flex flex-wrap gap-6 lg:gap-10 justify-center">
+              <motion.div variants={fadeInUp} className="mt-3 flex flex-wrap gap-6 lg:gap-10 justify-center">
                 {[
                   { value: '500+', label: 'Trusts Managed' },
                   { value: '10k+', label: 'Documents Filed' },
