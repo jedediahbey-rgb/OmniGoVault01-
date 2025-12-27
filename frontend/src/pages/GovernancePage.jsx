@@ -1376,7 +1376,14 @@ export default function GovernancePage({ user }) {
                           <div className="flex items-start gap-3 flex-1 min-w-0">
                             {/* Icon - consistent p-2 rounded-lg */}
                             <div className={`p-2 rounded-lg ${typeConfig.bg} shrink-0`}>
-                              <TypeIcon className={`w-5 h-5 ${typeConfig.color}`} weight="duotone" />
+                              {typeConfig.icon === CyberDateIcon ? (
+                                <CyberDateIcon 
+                                  className={`w-5 h-5 ${typeConfig.color}`} 
+                                  day={meeting.created_at ? new Date(meeting.created_at).getDate() : null}
+                                />
+                              ) : (
+                                <TypeIcon className={`w-5 h-5 ${typeConfig.color}`} weight="duotone" />
+                              )}
                             </div>
                             
                             <div className="flex-1 min-w-0">
