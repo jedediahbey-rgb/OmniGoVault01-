@@ -608,7 +608,7 @@ export default function DashboardPage({ user }) {
               </div>
             ) : (
               <div className="text-center py-12">
-                <Vault className="w-16 h-16 text-white/10 mx-auto mb-4" weight="duotone" />
+                <ShieldCheck className="w-16 h-16 text-white/10 mx-auto mb-4" weight="duotone" />
                 <p className="text-white/40 mb-4">No portfolios yet</p>
                 <Button onClick={() => setShowNewPortfolio(true)} className="btn-primary">
                   <Plus className="w-4 h-4 mr-2" weight="duotone" /> Create Your First Portfolio
