@@ -778,11 +778,11 @@ export default function CyberHomePage() {
                 variants={fadeInUp}
                 className="mb-3 lg:mb-4"
               >
-                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[280px] mx-auto">
+                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[560px] mx-auto">
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
-                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[160px] object-contain mx-auto"
+                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[320px] object-contain mx-auto"
                     style={{ imageRendering: 'crisp-edges' }}
                   />
                 </div>
