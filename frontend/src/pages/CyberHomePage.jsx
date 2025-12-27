@@ -732,7 +732,7 @@ export default function CyberHomePage() {
   }, []);
   
   return (
-    <div className="min-h-screen bg-[#05080F] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#05080F] text-white overflow-y-auto overflow-x-hidden" style={{ scrollbarGutter: 'stable' }}>
       {/* Vault Opening Animation Overlay */}
       <AnimatePresence>
         {vaultOpening && (
