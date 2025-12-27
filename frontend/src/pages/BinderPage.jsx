@@ -1096,6 +1096,38 @@ export default function BinderPage() {
                 Generate Binder
               </h2>
 
+              {/* Binder Mode Toggle */}
+              <div className="flex gap-2 mb-6 p-1 bg-[#05080F] rounded-lg">
+                <button
+                  onClick={() => setBinderMode('portfolio')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    binderMode === 'portfolio'
+                      ? 'bg-vault-gold text-vault-dark'
+                      : 'text-vault-muted hover:text-white'
+                  }`}
+                >
+                  <Books className="w-4 h-4" />
+                  Portfolio Binder
+                </button>
+                <button
+                  onClick={() => {
+                    setBinderMode('evidence');
+                    if (disputes.length === 0) fetchDisputes();
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    binderMode === 'evidence'
+                      ? 'bg-red-500 text-white'
+                      : 'text-vault-muted hover:text-white'
+                  }`}
+                >
+                  <Gavel className="w-4 h-4" />
+                  Evidence Binder
+                </button>
+              </div>
+
+              {/* Portfolio Binder Mode */}
+              {binderMode === 'portfolio' && (
+                <>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                 {profiles.map((profile) => {
                   const Icon = PROFILE_ICONS[profile.profile_type] || FileText;
