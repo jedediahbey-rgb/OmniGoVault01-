@@ -15,21 +15,22 @@ import hashlib
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://uipolish-2.preview.emergentagent.com/api"
 
-class TrustManagementAPITester:
+class Phase5APITester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'Trust-Management-API-Tester/1.0'
+            'User-Agent': 'Phase5-API-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
-        self.test_portfolio_id = None
-        self.test_thread_id = None
-        self.test_schedule_id = None
+        # Use the specific portfolio ID from the review request
+        self.test_portfolio_id = "port_0e9a783c1a71"
         self.test_profile_id = None
+        self.test_run_id = None
+        self.test_hash = None
         self.test_results = []
 
     def log(self, message):
