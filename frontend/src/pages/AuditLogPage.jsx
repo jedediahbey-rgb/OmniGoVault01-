@@ -487,17 +487,29 @@ export default function AuditLogPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-[#0A0F1A] rounded-lg border border-vault-gold/20 max-w-4xl w-full max-h-[80vh] overflow-hidden"
+              className="bg-[#0A0F1A] rounded-lg border border-vault-gold/20 max-w-5xl w-full max-h-[85vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between p-4 border-b border-vault-gold/10">
                 <div>
-                  <h2 className="text-lg font-bold text-white">Audit Log Export</h2>
+                  <h2 className="text-lg font-bold text-white">Audit Log Report</h2>
                   <p className="text-vault-muted text-sm">
-                    {exportData.total} entries • Exported {new Date(exportData.exported_at).toLocaleString()}
+                    {exportData.total} activities • Generated {new Date(exportData.exported_at).toLocaleString()}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // Print the report
+                      window.print();
+                    }}
+                    className="border-vault-gold/30 text-vault-muted hover:text-white"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Print
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
@@ -505,7 +517,7 @@ export default function AuditLogPage() {
                     className="border-vault-gold/30 text-vault-muted hover:text-white"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Download JSON
+                    Download
                   </Button>
                   <Button
                     variant="ghost"
@@ -518,10 +530,99 @@ export default function AuditLogPage() {
                 </div>
               </div>
               
-              <div className="p-4 overflow-auto max-h-[calc(80vh-80px)]">
-                <pre className="text-xs text-vault-muted bg-black/30 p-4 rounded-lg overflow-x-auto whitespace-pre-wrap font-mono">
-                  {JSON.stringify(exportData, null, 2)}
-                </pre>
+              <div className="p-4 overflow-auto max-h-[calc(85vh-80px)]">
+                {/* Summary Section */}
+                <div className="mb-6 p-4 bg-vault-gold/5 rounded-lg border border-vault-gold/10">
+                  <h3 className="text-white font-medium mb-3">Report Summary</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-vault-muted">Total Activities:</span>
+                      <span className="text-white ml-2 font-medium">{exportData.total}</span>
+                    </div>
+                    <div>
+                      <span className="text-vault-muted">Report Period:</span>
+                      <span className="text-white ml-2">Last 30 days</span>
+                    </div>
+                    <div>
+                      <span className="text-vault-muted">Generated:</span>
+                      <span className="text-white ml-2">{new Date(exportData.exported_at).toLocaleDateString()}</span>
+                    </div>
+                    <div>
+                      <span className="text-vault-muted">Format:</span>
+                      <span className="text-white ml-2">Activity Report</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Activity Table */}
+                <div className="border border-vault-gold/10 rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-vault-gold/10">
+                      <tr>
+                        <th className="text-left p-3 text-vault-muted font-medium">Date & Time</th>
+                        <th className="text-left p-3 text-vault-muted font-medium">Activity</th>
+                        <th className="text-left p-3 text-vault-muted font-medium">Category</th>
+                        <th className="text-left p-3 text-vault-muted font-medium">Priority</th>
+                        <th className="text-left p-3 text-vault-muted font-medium">Details</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-vault-gold/10">
+                      {exportData.entries?.map((entry, idx) => {
+                        const catConfig = CATEGORY_CONFIG[entry.category] || CATEGORY_CONFIG.system;
+                        const sevConfig = SEVERITY_CONFIG[entry.severity] || SEVERITY_CONFIG.info;
+                        
+                        return (
+                          <tr key={idx} className="hover:bg-vault-gold/5">
+                            <td className="p-3 text-vault-muted whitespace-nowrap">
+                              {new Date(entry.timestamp).toLocaleString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </td>
+                            <td className="p-3 text-white">{entry.action}</td>
+                            <td className="p-3">
+                              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs ${catConfig.bg} ${catConfig.color}`}>
+                                {entry.category}
+                              </span>
+                            </td>
+                            <td className="p-3">
+                              <span className={`px-2 py-1 rounded text-xs ${sevConfig.badge} ${sevConfig.color}`}>
+                                {entry.severity === 'info' ? 'Normal' : 
+                                 entry.severity === 'notice' ? 'Notable' :
+                                 entry.severity === 'warning' ? 'Warning' : 'Critical'}
+                              </span>
+                            </td>
+                            <td className="p-3 text-vault-muted text-xs max-w-[200px] truncate">
+                              {entry.details && Object.keys(entry.details).length > 0 
+                                ? Object.entries(entry.details)
+                                    .filter(([k]) => !k.startsWith('_'))
+                                    .slice(0, 2)
+                                    .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`)
+                                    .join(', ')
+                                : '—'}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* What is this report? */}
+                <div className="mt-6 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <h4 className="text-blue-400 font-medium mb-2 flex items-center gap-2">
+                    <Info className="w-4 h-4" />
+                    What is this Audit Log?
+                  </h4>
+                  <p className="text-sm text-vault-muted">
+                    The Audit Log tracks all important activities in your trust management system. 
+                    This includes when documents are created or modified, when binders are generated, 
+                    when records are finalized, and other significant events. This record helps you 
+                    maintain compliance and provides a complete history of actions taken.
+                  </p>
+                </div>
               </div>
             </motion.div>
           </motion.div>
