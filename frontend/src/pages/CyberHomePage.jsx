@@ -726,16 +726,22 @@ export default function CyberHomePage() {
   
   return (
     <div className="min-h-screen bg-[#05080F] text-white overflow-x-hidden">
+      {/* Scroll Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#C6A87C] via-[#E8D5B5] to-[#C6A87C] origin-left z-50"
+        style={{ scaleX }}
+      />
+      
       {/* Scanline overlay */}
       <div 
-        className="fixed inset-0 pointer-events-none z-50 opacity-[0.02]"
+        className="fixed inset-0 pointer-events-none z-40 opacity-[0.02]"
         style={{
           backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px)'
         }}
       />
       
       {/* ===== TOP NAV ===== */}
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-[#05080F]/80 backdrop-blur-xl border-b border-white/5">
+      <nav className="fixed top-1 left-0 right-0 z-40 bg-[#05080F]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-16">
             {/* Logo - Private Equity & Trusts - Centered */}
