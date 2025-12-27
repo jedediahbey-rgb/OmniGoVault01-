@@ -594,7 +594,7 @@ async def get_evidence_manifest(run_id: str, request: Request):
 async def get_evidence_config(request: Request):
     """Get evidence binder configuration options."""
     try:
-        user = await get_current_user(request)
+        _ = await get_current_user(request)  # Auth check
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
