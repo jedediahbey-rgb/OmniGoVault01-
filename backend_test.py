@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for Trust Management Application
-Testing Maxims and Knowledge Base API endpoints
+Testing P2 Features: Ledger Thread Management and Binder Schedule Management
 """
 
 import requests
@@ -25,7 +25,10 @@ class TrustManagementAPITester:
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
-        self.test_portfolio_id = f"test_portfolio_{uuid.uuid4().hex[:8]}"
+        self.test_portfolio_id = None
+        self.test_thread_id = None
+        self.test_schedule_id = None
+        self.test_profile_id = None
         self.test_results = []
 
     def log(self, message):
