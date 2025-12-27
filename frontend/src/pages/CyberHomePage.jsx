@@ -23,6 +23,7 @@ import {
   Key,
   Lightning,
   Lock,
+  LockOpen,
   MagnifyingGlass,
   Notebook,
   Pulse,
