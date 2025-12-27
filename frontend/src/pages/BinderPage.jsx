@@ -1191,6 +1191,135 @@ export default function BinderPage() {
                 </AnimatePresence>
               </div>
 
+              {/* Compliance Gaps Panel */}
+              <div className="mb-6">
+                <button
+                  onClick={() => {
+                    setShowGapsPanel(!showGapsPanel);
+                    if (!gapsAnalysis && !gapsLoading) {
+                      fetchGapsAnalysis();
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <FileText className="w-5 h-5 text-amber-400" />
+                    <span className="text-white font-medium text-sm">Compliance Gaps</span>
+                    {gapsAnalysis?.summary && (
+                      <span className={`px-2 py-0.5 text-xs rounded ${
+                        gapsAnalysis.summary.high_risk > 0 
+                          ? 'bg-red-500/30 text-red-300'
+                          : gapsAnalysis.summary.missing > 0 || gapsAnalysis.summary.partial > 0
+                            ? 'bg-amber-500/30 text-amber-300'
+                            : 'bg-green-500/30 text-green-300'
+                      }`}>
+                        {gapsAnalysis.summary.high_risk > 0 
+                          ? `${gapsAnalysis.summary.high_risk} High Risk`
+                          : gapsAnalysis.summary.missing > 0 
+                            ? `${gapsAnalysis.summary.missing} Missing`
+                            : 'Compliant'}
+                      </span>
+                    )}
+                  </div>
+                  <CaretRight className={`w-4 h-4 text-vault-muted transition-transform ${showGapsPanel ? 'rotate-90' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                  {showGapsPanel && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-3 p-4 rounded-lg bg-[#05080F] border border-vault-gold/10">
+                        {gapsLoading ? (
+                          <div className="flex items-center justify-center py-8">
+                            <ArrowClockwise className="w-6 h-6 text-vault-gold animate-spin" />
+                            <span className="ml-2 text-vault-muted">Analyzing compliance...</span>
+                          </div>
+                        ) : gapsAnalysis ? (
+                          <div className="space-y-4">
+                            {/* Summary Stats */}
+                            <div className="grid grid-cols-4 gap-2">
+                              <div className="p-3 rounded bg-green-500/10 text-center">
+                                <div className="text-2xl font-bold text-green-400">{gapsAnalysis.summary.complete}</div>
+                                <div className="text-xs text-vault-muted">Complete</div>
+                              </div>
+                              <div className="p-3 rounded bg-amber-500/10 text-center">
+                                <div className="text-2xl font-bold text-amber-400">{gapsAnalysis.summary.partial}</div>
+                                <div className="text-xs text-vault-muted">Partial</div>
+                              </div>
+                              <div className="p-3 rounded bg-red-500/10 text-center">
+                                <div className="text-2xl font-bold text-red-400">{gapsAnalysis.summary.missing}</div>
+                                <div className="text-xs text-vault-muted">Missing</div>
+                              </div>
+                              <div className="p-3 rounded bg-gray-500/10 text-center">
+                                <div className="text-2xl font-bold text-gray-400">{gapsAnalysis.summary.not_applicable}</div>
+                                <div className="text-xs text-vault-muted">N/A</div>
+                              </div>
+                            </div>
+
+                            {/* Risk Summary */}
+                            <div className="p-2 rounded bg-vault-gold/5 border border-vault-gold/10">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="text-red-400">High Risk: {gapsAnalysis.summary.high_risk}</span>
+                                <span className="text-amber-400">Medium: {gapsAnalysis.summary.medium_risk}</span>
+                                <span className="text-green-400">Low: {gapsAnalysis.summary.low_risk}</span>
+                              </div>
+                            </div>
+
+                            {/* High Risk Items */}
+                            {gapsAnalysis.results && gapsAnalysis.results.filter(r => r.risk_level === 'high').length > 0 && (
+                              <div className="space-y-2">
+                                <h4 className="text-sm font-medium text-red-400 flex items-center gap-2">
+                                  <Warning className="w-4 h-4" />
+                                  High Risk Items
+                                </h4>
+                                <div className="space-y-1 max-h-48 overflow-y-auto">
+                                  {gapsAnalysis.results
+                                    .filter(r => r.risk_level === 'high')
+                                    .slice(0, 5)
+                                    .map((item, idx) => (
+                                      <div key={idx} className="p-2 rounded bg-red-500/10 border border-red-500/20">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-white text-sm">{item.item_name}</span>
+                                          <span className={`text-xs px-2 py-0.5 rounded ${
+                                            item.status === 'missing' ? 'bg-red-500/30 text-red-300' : 'bg-amber-500/30 text-amber-300'
+                                          }`}>
+                                            {item.status}
+                                          </span>
+                                        </div>
+                                        {item.remediation && (
+                                          <p className="text-xs text-vault-muted mt-1">→ {item.remediation}</p>
+                                        )}
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Refresh Button */}
+                            <button
+                              onClick={() => fetchGapsAnalysis()}
+                              className="w-full py-2 text-xs text-vault-muted hover:text-white flex items-center justify-center gap-2"
+                            >
+                              <ArrowClockwise className="w-3 h-3" />
+                              Refresh Analysis
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-center py-4 text-vault-muted text-sm">
+                            Click to analyze compliance gaps
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Generate Button */}
               <Button
                 onClick={handleGenerate}
