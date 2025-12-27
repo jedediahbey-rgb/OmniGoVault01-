@@ -454,12 +454,12 @@ export default function DashboardPage({ user }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex-1 grid grid-cols-2 auto-rows-fr gap-3 content-stretch">
+            <div className="flex-1 grid grid-cols-2 auto-rows-fr gap-3">
               {quickActions.map((action) => (
                 <button
                   key={action.id}
                   onClick={action.action}
-                  className={`rounded-lg border transition-all duration-200 flex flex-col items-center justify-center gap-2 group min-h-[70px] ${
+                  className={`rounded-lg border transition-all duration-200 flex flex-col items-center justify-center gap-1 group ${
                     action.color === 'blue' 
                       ? 'border-vault-blue/20 hover:bg-vault-blue/10 hover:border-vault-blue/40'
                       : 'border-vault-gold/20 hover:bg-vault-gold/10 hover:border-vault-gold/40'
