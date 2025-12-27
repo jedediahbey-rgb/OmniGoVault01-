@@ -141,7 +141,17 @@ async def generate_binder(request: Request):
     Body:
     {
         "portfolio_id": "...",
-        "profile_id": "..."
+        "profile_id": "...",
+        "court_mode": {  // Optional Court Mode overrides
+            "bates_enabled": true,
+            "bates_prefix": "CASE-",
+            "bates_start_number": 1,
+            "bates_digits": 6,
+            "bates_position": "bottom-right",
+            "bates_include_cover": false,
+            "redaction_mode": "redacted",
+            "adhoc_redactions": [...]
+        }
     }
     """
     try:
@@ -153,6 +163,7 @@ async def generate_binder(request: Request):
         body = await request.json()
         portfolio_id = body.get("portfolio_id")
         profile_id = body.get("profile_id")
+        court_mode_overrides = body.get("court_mode", {})
         
         if not portfolio_id:
             return error_response("MISSING_FIELD", "portfolio_id is required")
@@ -160,6 +171,24 @@ async def generate_binder(request: Request):
             return error_response("MISSING_FIELD", "profile_id is required")
         
         binder_service = create_binder_service(db)
+        
+        # Get profile and apply court mode overrides
+        profile = await binder_service.get_profile(profile_id)
+        if not profile:
+            return error_response("NOT_FOUND", "Profile not found", status_code=404)
+        
+        # Merge court mode overrides into profile rules
+        rules = profile.get("rules_json", {}).copy()
+        if court_mode_overrides:
+            for key, value in court_mode_overrides.items():
+                rules[key] = value
+        
+        # Update profile with merged rules for generation
+        await db.binder_profiles.update_one(
+            {"id": profile_id},
+            {"$set": {"rules_json": rules}}
+        )
+        
         result = await binder_service.generate_binder(
             portfolio_id=portfolio_id,
             user_id=user.user_id,
