@@ -492,7 +492,7 @@ export default function VaultPage({ user, initialView }) {
             </div>
           ) : selectedPortfolio && (
             <div className="flex items-center gap-2 text-white/40 text-sm mb-4">
-              <FolderSimple className="w-4 h-4" weight="duotone" />
+              <ShieldCheck className="w-4 h-4" weight="duotone" />
               <span>{selectedPortfolio.name}</span>
             </div>
           )}
