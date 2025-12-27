@@ -22,6 +22,7 @@ import {
   HandCoins,
   Hash,
   House,
+  Key,
   Lock,
   MagnifyingGlass,
   Newspaper,

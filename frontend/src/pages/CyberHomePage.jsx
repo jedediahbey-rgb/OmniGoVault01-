@@ -946,20 +946,6 @@ export default function CyberHomePage() {
         )}
       </AnimatePresence>
       
-      {/* Custom Scroll Indicator for Mobile - Shows gold bar on right side */}
-      <motion.div
-        className="fixed right-0 top-0 bottom-0 w-1.5 bg-[#0B1221]/80 z-40 md:hidden"
-        style={{ opacity: useTransform(scrollYProgress, [0, 0.05], [0, 1]) }}
-      >
-        <motion.div
-          className="w-full bg-gradient-to-b from-[#C6A87C] to-[#D4B896] rounded-full"
-          style={{ 
-            height: useTransform(scrollYProgress, [0, 1], ['10%', '100%']),
-            boxShadow: '0 0 10px rgba(198, 168, 124, 0.5)'
-          }}
-        />
-      </motion.div>
-      
       {/* Scroll Progress Bar - Solid background */}
       <div className="fixed top-0 left-0 right-0 h-1.5 bg-[#05080F] z-50">
         <motion.div
