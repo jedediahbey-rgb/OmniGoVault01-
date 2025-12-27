@@ -712,21 +712,6 @@ export default function CyberHomePage() {
     }
   };
   
-  // Keyboard shortcut for command palette
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setShowCommandPalette(true);
-      }
-      if (e.key === 'Escape') {
-        setShowCommandPalette(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-  
   // Try to fetch live signals on mount
   useEffect(() => {
     fetchLiveSignals();
