@@ -12,7 +12,7 @@ import json
 from datetime import datetime
 
 class EquityTrustBugFixTester:
-    def __init__(self, base_url="https://uipolish-2.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://gaps-analyzer.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0
