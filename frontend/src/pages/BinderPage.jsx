@@ -1491,10 +1491,287 @@ export default function BinderPage() {
                   Using profile: <span className="text-white">{currentProfile.name}</span>
                 </p>
               )}
+                </>
+              )}
+
+              {/* Evidence Binder Mode */}
+              {binderMode === 'evidence' && (
+                <>
+                  {/* Dispute Selection */}
+                  <div className="mb-6">
+                    <label className="text-vault-muted text-sm mb-2 block">Select Dispute</label>
+                    <Select
+                      value={selectedDispute || ''}
+                      onValueChange={(v) => {
+                        setSelectedDispute(v);
+                        setEvidencePreview(null);
+                      }}
+                    >
+                      <SelectTrigger className="bg-[#05080F] border-vault-gold/30 text-white">
+                        <SelectValue placeholder="Choose a dispute...">
+                          {disputes.find(d => d.id === selectedDispute)?.title || 'Choose a dispute...'}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#0B1221] border-vault-gold/30 z-[100]">
+                        {disputes.length === 0 ? (
+                          <div className="p-4 text-center text-vault-muted text-sm">
+                            No disputes found in this portfolio
+                          </div>
+                        ) : (
+                          disputes.map((dispute) => (
+                            <SelectItem
+                              key={dispute.id}
+                              value={dispute.id}
+                              className="text-white hover:bg-vault-gold/20"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Gavel className="w-4 h-4 text-red-400" />
+                                <span className="truncate">{dispute.title}</span>
+                                <Badge className="text-xs bg-vault-gold/20 text-vault-gold ml-2">
+                                  {dispute.status}
+                                </Badge>
+                              </div>
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Evidence Configuration Panel */}
+                  {selectedDispute && (
+                    <div className="mb-6">
+                      <button
+                        onClick={() => setShowEvidencePanel(!showEvidencePanel)}
+                        className="w-full flex items-center justify-between p-3 rounded-lg bg-red-500/10 border border-red-500/30 hover:bg-red-500/20 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <ListNumbers className="w-5 h-5 text-red-400" />
+                          <span className="text-white font-medium text-sm">Evidence Configuration</span>
+                        </div>
+                        <CaretRight className={`w-4 h-4 text-vault-muted transition-transform ${showEvidencePanel ? 'rotate-90' : ''}`} />
+                      </button>
+
+                      <AnimatePresence>
+                        {showEvidencePanel && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-3 p-4 rounded-lg bg-[#05080F] border border-vault-gold/10 space-y-4">
+                              {/* Exhibit Format */}
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="text-vault-muted text-xs mb-1 block">Exhibit Format</label>
+                                  <Select
+                                    value={evidenceConfig.exhibit_format}
+                                    onValueChange={(v) => setEvidenceConfig(prev => ({ ...prev, exhibit_format: v }))}
+                                  >
+                                    <SelectTrigger className="bg-[#0B1221] border-vault-gold/30 text-white h-9">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-[#0B1221] border-vault-gold/30">
+                                      <SelectItem value="letters" className="text-white">Letters (A, B, C...)</SelectItem>
+                                      <SelectItem value="numbers" className="text-white">Numbers (1, 2, 3...)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <label className="text-vault-muted text-xs mb-1 block">Prefix (optional)</label>
+                                  <Input
+                                    value={evidenceConfig.exhibit_prefix}
+                                    onChange={(e) => setEvidenceConfig(prev => ({ ...prev, exhibit_prefix: e.target.value.toUpperCase() }))}
+                                    placeholder="e.g., PX-"
+                                    className="bg-[#0B1221] border-vault-gold/30 text-white h-9 text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Categories */}
+                              <div>
+                                <label className="text-vault-muted text-xs mb-2 block">Categories to Include</label>
+                                <div className="flex flex-wrap gap-2">
+                                  {[
+                                    { key: 'documents', label: 'Documents', color: 'orange' },
+                                    { key: 'communications', label: 'Communications', color: 'purple' },
+                                    { key: 'financial', label: 'Financial', color: 'green' },
+                                    { key: 'governance', label: 'Governance', color: 'blue' }
+                                  ].map((cat) => {
+                                    const isEnabled = evidenceConfig.categories_enabled.includes(cat.key);
+                                    return (
+                                      <button
+                                        key={cat.key}
+                                        onClick={() => {
+                                          setEvidenceConfig(prev => ({
+                                            ...prev,
+                                            categories_enabled: isEnabled
+                                              ? prev.categories_enabled.filter(c => c !== cat.key)
+                                              : [...prev.categories_enabled, cat.key]
+                                          }));
+                                        }}
+                                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                          isEnabled
+                                            ? `bg-${cat.color}-500/20 text-${cat.color}-400 border border-${cat.color}-500/30`
+                                            : 'bg-vault-dark/50 text-vault-muted border border-vault-gold/10'
+                                        }`}
+                                      >
+                                        {cat.label}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Options */}
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <Timer className="w-4 h-4 text-vault-muted" />
+                                    <span className="text-white text-sm">Include Timeline</span>
+                                  </div>
+                                  <Switch
+                                    checked={evidenceConfig.include_timeline}
+                                    onCheckedChange={(checked) => setEvidenceConfig(prev => ({ ...prev, include_timeline: checked }))}
+                                  />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <Tag className="w-4 h-4 text-vault-muted" />
+                                    <span className="text-white text-sm">Linked Items Only</span>
+                                  </div>
+                                  <Switch
+                                    checked={evidenceConfig.include_linked_only}
+                                    onCheckedChange={(checked) => setEvidenceConfig(prev => ({ ...prev, include_linked_only: checked }))}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Preview Button */}
+                              <button
+                                onClick={fetchEvidencePreview}
+                                disabled={evidenceLoading}
+                                className="w-full py-2 text-sm text-vault-muted hover:text-white flex items-center justify-center gap-2 rounded-md border border-vault-gold/20 hover:border-vault-gold/40"
+                              >
+                                {evidenceLoading ? (
+                                  <ArrowClockwise className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Eye className="w-4 h-4" />
+                                )}
+                                Preview Evidence Items
+                              </button>
+
+                              {/* Preview Results */}
+                              {evidencePreview && (
+                                <div className="p-3 rounded bg-vault-gold/5 border border-vault-gold/10">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-vault-gold text-sm font-medium">
+                                      {evidencePreview.total_items} Items Found
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2 text-xs">
+                                    {Object.entries(evidencePreview.by_category || {}).map(([cat, count]) => (
+                                      <span key={cat} className="px-2 py-0.5 rounded bg-vault-dark/50 text-vault-muted">
+                                        {cat}: {count}
+                                      </span>
+                                    ))}
+                                  </div>
+                                  {evidencePreview.exhibits_preview?.length > 0 && (
+                                    <div className="mt-2 space-y-1 max-h-32 overflow-y-auto">
+                                      {evidencePreview.exhibits_preview.map((ex, idx) => (
+                                        <div key={idx} className="text-xs text-vault-muted flex items-center gap-2">
+                                          <span className="text-red-400 font-medium">{ex.exhibit_label}</span>
+                                          <span className="truncate">{ex.title}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+
+                  {/* Generate Evidence Button */}
+                  <Button
+                    onClick={handleGenerateEvidence}
+                    disabled={generating || !selectedDispute}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-6 text-lg"
+                  >
+                    {generating ? (
+                      <>
+                        <ArrowClockwise className="w-5 h-5 mr-2 animate-spin" />
+                        Generating Evidence Binder...
+                      </>
+                    ) : (
+                      <>
+                        <Gavel className="w-5 h-5 mr-2" />
+                        Generate Evidence Binder (PDF)
+                      </>
+                    )}
+                  </Button>
+
+                  {selectedDispute && (
+                    <p className="text-center text-vault-muted text-xs mt-3">
+                      Dispute: <span className="text-red-400">{disputes.find(d => d.id === selectedDispute)?.title}</span>
+                    </p>
+                  )}
+
+                  {/* Recent Evidence Binders */}
+                  {evidenceRuns.length > 0 && (
+                    <div className="mt-6 pt-6 border-t border-vault-gold/10">
+                      <h3 className="text-sm font-medium text-vault-muted mb-3">Recent Evidence Binders</h3>
+                      <div className="space-y-2">
+                        {evidenceRuns.slice(0, 3).map((run) => {
+                          const StatusIcon = STATUS_CONFIG[run.status]?.icon || Clock;
+                          return (
+                            <div key={run.id} className="p-3 rounded-lg bg-vault-dark/50 border border-vault-gold/10">
+                              <div className="flex items-center justify-between">
+                                <span className="text-white text-sm truncate">{run.profile_name}</span>
+                                <Badge className={`text-xs ${STATUS_CONFIG[run.status]?.color} border`}>
+                                  <StatusIcon className="w-3 h-3 mr-1" />
+                                  {STATUS_CONFIG[run.status]?.label}
+                                </Badge>
+                              </div>
+                              <p className="text-vault-muted text-xs mt-1">
+                                {new Date(run.started_at).toLocaleString()}
+                              </p>
+                              {run.status === 'complete' && (
+                                <div className="flex gap-2 mt-2">
+                                  <a
+                                    href={`${API_URL}/api/evidence-binder/runs/${run.id}/view`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-vault-muted hover:text-white flex items-center gap-1"
+                                  >
+                                    <Eye className="w-3 h-3" /> View
+                                  </a>
+                                  <a
+                                    href={`${API_URL}/api/evidence-binder/runs/${run.id}/download`}
+                                    download
+                                    className="text-xs text-vault-muted hover:text-white flex items-center gap-1"
+                                  >
+                                    <Download className="w-3 h-3" /> Download
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </motion.div>
 
             {/* Latest Binder Card */}
-            {latestRun && (
+            {latestRun && binderMode === 'portfolio' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
