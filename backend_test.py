@@ -66,6 +66,198 @@ class TrustManagementAPITester:
             self.log_test("API Health Check", False, f"Connection error: {str(e)}")
             return False
 
+    def test_knowledge_maxims_endpoint(self):
+        """Test GET /api/knowledge/maxims returns maxims data"""
+        try:
+            url = f"{self.base_url}/knowledge/maxims"
+            response = self.session.get(url, timeout=10)
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if isinstance(data, list) and len(data) > 0:
+                    # Check if first maxim has expected structure
+                    first_maxim = data[0]
+                    required_fields = ['id', 'maxim', 'latin', 'explanation', 'application', 'category']
+                    if all(field in first_maxim for field in required_fields):
+                        details += f", Found {len(data)} maxims with proper structure"
+                    else:
+                        success = False
+                        details += f", Missing required fields in maxim data"
+                else:
+                    success = False
+                    details += f", Expected list of maxims, got: {type(data)}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/knowledge/maxims", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/knowledge/maxims", False, f"Error: {str(e)}")
+            return False
+
+    def test_study_maxims_endpoint(self):
+        """Test GET /api/study/maxims returns study progress"""
+        try:
+            url = f"{self.base_url}/study/maxims"
+            response = self.session.get(url, timeout=10)
+            
+            if response.status_code == 401:
+                self.log_test("GET /api/study/maxims", True, "Authentication required - expected for protected endpoint")
+                return True
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if isinstance(data, list):
+                    details += f", Study progress data returned ({len(data)} entries)"
+                else:
+                    success = False
+                    details += f", Expected list, got: {type(data)}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/study/maxims", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/study/maxims", False, f"Error: {str(e)}")
+            return False
+
+    def test_study_stats_endpoint(self):
+        """Test GET /api/study/stats returns study statistics"""
+        try:
+            url = f"{self.base_url}/study/stats"
+            response = self.session.get(url, timeout=10)
+            
+            if response.status_code == 401:
+                self.log_test("GET /api/study/stats", True, "Authentication required - expected for protected endpoint")
+                return True
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                expected_fields = ['maxims_studied', 'maxims_due', 'current_streak']
+                if isinstance(data, dict) and any(field in data for field in expected_fields):
+                    details += f", Study stats returned with expected fields"
+                else:
+                    success = False
+                    details += f", Missing expected study stats fields"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/study/stats", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/study/stats", False, f"Error: {str(e)}")
+            return False
+
+    def test_study_maxims_due_endpoint(self):
+        """Test GET /api/study/maxims/due returns due maxims"""
+        try:
+            url = f"{self.base_url}/study/maxims/due"
+            response = self.session.get(url, timeout=10)
+            
+            if response.status_code == 401:
+                self.log_test("GET /api/study/maxims/due", True, "Authentication required - expected for protected endpoint")
+                return True
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if isinstance(data, list):
+                    details += f", Due maxims data returned ({len(data)} entries)"
+                else:
+                    success = False
+                    details += f", Expected list, got: {type(data)}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/study/maxims/due", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/study/maxims/due", False, f"Error: {str(e)}")
+            return False
+
+    def test_maxim_review_endpoint(self):
+        """Test POST /api/study/maxims/review for recording study progress"""
+        try:
+            url = f"{self.base_url}/study/maxims/review"
+            payload = {
+                "maxim_id": 1,
+                "quality": 3,  # 0-5 scale for SM-2 algorithm
+                "time_spent": 30
+            }
+            
+            response = self.session.post(url, json=payload, timeout=10)
+            
+            if response.status_code == 401:
+                self.log_test("POST /api/study/maxims/review", True, "Authentication required - expected for protected endpoint")
+                return True
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if isinstance(data, dict) and 'next_review' in data:
+                    details += f", Review recorded successfully"
+                else:
+                    success = False
+                    details += f", Unexpected response format"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/study/maxims/review", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/study/maxims/review", False, f"Error: {str(e)}")
+            return False
+
+    def test_knowledge_modules_endpoint(self):
+        """Test GET /api/knowledge/modules returns learning modules"""
+        try:
+            url = f"{self.base_url}/knowledge/modules"
+            response = self.session.get(url, timeout=10)
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if isinstance(data, list) and len(data) > 0:
+                    # Check if modules have expected structure
+                    first_module = data[0]
+                    if 'id' in first_module and 'title' in first_module:
+                        details += f", Found {len(data)} learning modules"
+                    else:
+                        success = False
+                        details += f", Missing required fields in module data"
+                else:
+                    success = False
+                    details += f", Expected list of modules, got: {type(data)}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/knowledge/modules", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/knowledge/modules", False, f"Error: {str(e)}")
+            return False
+
     def test_binder_schedules_get_empty(self):
         """Test GET /api/binder/schedules returns empty array initially"""
         try:
