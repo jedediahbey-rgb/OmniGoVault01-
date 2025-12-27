@@ -563,7 +563,7 @@ export default function LedgerThreadsPage() {
 
         {!portfolioId ? (
           <div className="text-center py-16 bg-[#0B1221]/50 rounded-xl border border-vault-gold/10">
-            <FolderSimple className="w-10 h-10 text-vault-muted mx-auto mb-3" />
+            <FlowArrow className="w-10 h-10 text-vault-muted mx-auto mb-3" />
             <h3 className="text-base font-medium text-white mb-1">Select a Portfolio</h3>
             <p className="text-vault-muted text-sm">Choose a portfolio to manage threads</p>
           </div>
