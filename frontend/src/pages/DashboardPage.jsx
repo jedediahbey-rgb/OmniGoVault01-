@@ -378,7 +378,7 @@ export default function DashboardPage({ user }) {
           transition={{ delay: 0.2 }}
           className="lg:col-span-4"
         >
-          <GlassCard className="h-full">
+          <GlassCard className="h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Quick Actions</h3>
               <DropdownMenu>
