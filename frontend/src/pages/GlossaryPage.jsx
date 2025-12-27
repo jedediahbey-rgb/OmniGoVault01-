@@ -587,21 +587,26 @@ export default function GlossaryPage({ user }) {
       // Close the detail view and go back to list
       setSelectedTerm(null);
       
-      // Scroll to top immediately, then scroll to the specific term after render
+      // Scroll to top immediately
       window.scrollTo({ top: 0, behavior: 'instant' });
       
-      // Scroll to the term after list renders
-      setTimeout(() => {
+      // Try scrolling to the term multiple times to ensure it works after animation
+      const scrollToTerm = () => {
         const element = document.getElementById(`term-${termId}`);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }, 300);
+      };
+      
+      // Try at different intervals to catch when the element is ready
+      setTimeout(scrollToTerm, 100);
+      setTimeout(scrollToTerm, 400);
+      setTimeout(scrollToTerm, 700);
       
       // Clear highlight after animation
       setTimeout(() => {
         setHighlightedTermId(null);
-      }, 3000);
+      }, 4000);
     }
   };
 
