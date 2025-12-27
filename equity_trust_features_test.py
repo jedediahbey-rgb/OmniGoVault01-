@@ -8,7 +8,7 @@ import uuid
 import subprocess
 
 # Get backend URL from frontend .env
-BACKEND_URL = "https://landingpage-fix.preview.emergentagent.com"
+BACKEND_URL = "https://polish-ui-flow.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class EquityTrustFeaturesTest:
