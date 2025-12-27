@@ -6,7 +6,7 @@ Test different redaction modes
 import requests
 import json
 
-BASE_URL = "https://gaps-analyzer.preview.emergentagent.com/api"
+BASE_URL = "https://proof-vault.preview.emergentagent.com/api"
 PORTFOLIO_ID = "port_0e9a783c1a71"
 
 def test_different_modes():
