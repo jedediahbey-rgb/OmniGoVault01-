@@ -600,21 +600,21 @@ const GovernanceMatrixSection = () => {
               })}
             </div>
           </div>
-                    <h3 className="text-white font-semibold text-sm mb-1">{module.title}</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">{module.desc}</p>
-                  </HoloCard>
-                );
-              })}
-            </div>
-          </motion.div>
           
-          {/* CTA Row - Centered */}
-          <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap items-center justify-center gap-4">
+          {/* CTA Row - Centered with animation */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            className="mt-6 flex flex-wrap items-center justify-center gap-4"
+          >
             <Link to="/vault/governance">
-              <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
-                Open Governance Console
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
+                  Open Governance Console
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </motion.div>
             </Link>
             <Link to="/ledger" className="text-sm text-[#C6A87C] hover:text-[#C6A87C]/80 flex items-center gap-1">
               View a sample ledger <CaretRight className="w-4 h-4" />
