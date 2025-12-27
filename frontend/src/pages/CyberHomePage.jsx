@@ -620,17 +620,23 @@ const GovernanceMatrixSection = () => {
             transition={{ delay: 0.8, duration: 0.6 }}
             className="mt-6 flex flex-wrap items-center justify-center gap-4"
           >
-            <Link to="/vault/governance">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
-                  Open Governance Console
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </motion.div>
-            </Link>
-            <Link to="/ledger" className="text-sm text-[#C6A87C] hover:text-[#C6A87C]/80 flex items-center gap-1">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button 
+                className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold"
+                onClick={handleNavigateWithTransition('/vault/governance')}
+              >
+                Open Governance Console
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </motion.div>
+            <motion.button 
+              whileHover={{ scale: 1.05 }} 
+              whileTap={{ scale: 0.95 }}
+              onClick={handleNavigateWithTransition('/ledger')}
+              className="text-sm text-[#C6A87C] hover:text-[#C6A87C]/80 flex items-center gap-1"
+            >
               View a sample ledger <CaretRight className="w-4 h-4" />
-            </Link>
+            </motion.button>
           </motion.div>
         </motion.div>
       </div>
