@@ -659,16 +659,17 @@ export default function CyberHomePage() {
               animate="visible"
               variants={staggerContainer}
             >
-              {/* OMNIGOVAULT Logo - Centered, larger on mobile */}
+              {/* OMNIGOVAULT Logo - Centered, much larger on mobile */}
               <motion.div 
                 variants={fadeInUp}
                 className="mb-3"
               >
-                <div className="w-full max-w-[280px] sm:max-w-[240px] lg:max-w-[200px] mx-auto">
+                <div className="w-full max-w-[360px] sm:max-w-[300px] lg:max-w-[220px] mx-auto">
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
-                    className="w-full h-auto max-h-[140px] sm:max-h-[130px] lg:max-h-[120px] object-contain mx-auto"
+                    className="w-full h-auto max-h-[200px] sm:max-h-[160px] lg:max-h-[130px] object-contain mx-auto"
+                    style={{ imageRendering: 'crisp-edges' }}
                   />
                 </div>
               </motion.div>
