@@ -122,11 +122,11 @@ export default function DashboardPage({ user }) {
       let newSelected;
       if (prev.includes(actionId)) {
         newSelected = prev.filter(id => id !== actionId);
-      } else if (prev.length <= 3) {
-        // Allow adding up to 4 actions total (0,1,2,3 -> can add to make 4)
+      } else if (prev.length < maxQuickActions) {
+        // Allow adding up to maxQuickActions (dynamic based on portfolios)
         newSelected = [...prev, actionId];
       } else {
-        return prev; // Max 4 actions
+        return prev; // Max reached
       }
       localStorage.setItem('quickActions', JSON.stringify(newSelected));
       return newSelected;
