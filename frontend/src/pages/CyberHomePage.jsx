@@ -1121,7 +1121,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== FINAL CTA ===== */}
-      <section className="py-8 lg:py-12 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
+      <section className="py-10 lg:py-14 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial="hidden"
@@ -1130,19 +1130,20 @@ export default function CyberHomePage() {
             variants={staggerContainer}
           >
             <motion.div 
-              initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
-              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              initial={{ opacity: 0, scale: 0.5 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: "easeOut" }}
+              className="mb-4"
             >
-              <Vault className="w-12 h-12 text-[#C6A87C] mx-auto mb-3" weight="duotone" />
+              <Vault className="w-10 h-10 sm:w-12 sm:h-12 text-[#C6A87C] mx-auto" weight="duotone" />
             </motion.div>
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2"
+              className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-2"
             >
               Ready to Transform Your Trust Governance?
             </motion.h2>
@@ -1151,7 +1152,7 @@ export default function CyberHomePage() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-sm sm:text-base text-slate-400 mb-5"
+              className="text-xs sm:text-sm text-slate-400 mb-4"
             >
               Start with our demo or create your secure vault today.
             </motion.p>
