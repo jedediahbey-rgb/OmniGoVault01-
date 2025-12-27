@@ -392,7 +392,7 @@ export default function DashboardPage({ user }) {
           <StatCard label="Documents" value={stats?.documents || 0} icon={FileText} variant="gold" />
         </motion.div>
         <motion.div variants={fadeInUp}>
-          <StatCard label="Assets" value={stats?.assets || 0} icon={Briefcase} variant="gold" />
+          <StatCard label="Assets" value={stats?.assets || 0} icon={Coins} variant="gold" />
         </motion.div>
         <motion.div variants={fadeInUp}>
           <StatCard label="Notices" value={stats?.pending_notices || 0} icon={Bell} variant="gold" />
