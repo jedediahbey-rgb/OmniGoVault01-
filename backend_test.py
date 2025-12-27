@@ -21,7 +21,7 @@ class AuditLogAPITester:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'Phase5-API-Tester/1.0'
+            'User-Agent': 'AuditLog-API-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
