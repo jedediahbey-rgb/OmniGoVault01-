@@ -1222,13 +1222,14 @@ export default function CyberHomePage() {
                   <Lightning className="w-4 h-4 text-emerald-400" />
                   <span className="text-sm text-emerald-400">3-day streak</span>
                 </div>
-                <Link to="/learn">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F]">
-                      Start Learning
-                    </Button>
-                  </motion.div>
-                </Link>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button 
+                    className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F]"
+                    onClick={handleNavigateWithTransition('/learn')}
+                  >
+                    Start Learning
+                  </Button>
+                </motion.div>
               </motion.div>
             </motion.div>
             
