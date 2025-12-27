@@ -117,10 +117,10 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
                 {/* Header */}
                 <div className="px-5 pt-5 pb-3 border-b border-vault-gold/20">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-lg font-semibold text-vault-gold">{content.title}</h4>
+                    <h4 className="text-lg font-semibold text-vault-gold flex-1 text-center">{content.title}</h4>
                     <button
                       onClick={() => setIsOpen(false)}
-                      className="p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+                      className="p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors absolute right-4 top-4"
                     >
                       <X className="w-4 h-4" weight="bold" />
                     </button>
