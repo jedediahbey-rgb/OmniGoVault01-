@@ -803,7 +803,7 @@ export default function CyberHomePage() {
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="flex flex-col items-center lg:items-start lg:flex-row lg:justify-between gap-4 mb-8 text-center lg:text-left">
+            <motion.div variants={fadeInUp} className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 text-center lg:text-left">
               <div>
                 <div className="flex justify-center lg:justify-start">
                   <IconChip icon={Sparkle} label="Education" variant="gold" />
@@ -811,8 +811,8 @@ export default function CyberHomePage() {
                 <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">Maxims Explorer</h2>
                 <p className="mt-2 text-slate-400">Master the foundational principles of equity law</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
+              <div className="flex items-center justify-center lg:justify-end gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
                   <Lightning className="w-4 h-4 text-emerald-400" />
                   <span className="text-sm text-emerald-400">3-day streak</span>
                 </div>
