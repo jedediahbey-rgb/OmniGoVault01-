@@ -81,13 +81,13 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
   if (!content) return null;
   
   return (
-    <div className={`relative inline-block ${className}`}>
+    <span className={`relative inline-flex items-center ${className}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-6 h-6 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 flex items-center justify-center transition-all duration-200 group"
+        className="w-5 h-5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 flex items-center justify-center transition-all duration-200 group"
         aria-label={`Help for ${content.title}`}
       >
-        <Question className="w-3.5 h-3.5 text-white/40 group-hover:text-white/70" weight="bold" />
+        <Question className="w-3 h-3 text-white/40 group-hover:text-white/70" weight="bold" />
       </button>
       
       <AnimatePresence>
