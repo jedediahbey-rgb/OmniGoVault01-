@@ -121,6 +121,17 @@ class ManifestItem:
     version: Optional[str]
     page_start: Optional[int] = None
     page_end: Optional[int] = None
+    bates_start: Optional[str] = None  # First Bates number for this item
+    bates_end: Optional[str] = None    # Last Bates number for this item
+
+
+@dataclass
+class RedactionLog:
+    """Log of all redactions applied to a binder."""
+    entries: List[Dict] = field(default_factory=list)
+    total_persistent: int = 0
+    total_adhoc: int = 0
+    generated_at: Optional[str] = None
 
 
 # Default profile configurations
