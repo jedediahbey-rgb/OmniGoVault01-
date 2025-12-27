@@ -1790,8 +1790,12 @@ class BinderService:
             content = await self.collect_binder_content(portfolio_id, user_id, rules)
             
             # Add missing items info to content for inclusion in PDF
-            content["_missing_items"] = validation.get("missing_items", [])
-            content["_validation_warnings"] = validation.get("warnings", [])
+            if isinstance(validation, dict):
+                content["_missing_items"] = validation.get("missing_items", [])
+                content["_validation_warnings"] = validation.get("warnings", [])
+            else:
+                content["_missing_items"] = []
+                content["_validation_warnings"] = []
             
             # ============ COURT MODE: Process Redactions ============
             redaction_mode = rules.get("redaction_mode", RedactionMode.STANDARD.value)
