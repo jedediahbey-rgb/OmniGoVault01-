@@ -1268,7 +1268,7 @@ export default function PortfolioOverviewPage({ user }) {
                                 {record.rm_id && (
                                   <>
                                     <span className="text-white/20">•</span>
-                                    <MonoChip variant="muted" size="xs" className="truncate max-w-[120px] sm:max-w-none">{record.rm_id}</MonoChip>
+                                    <MonoChip variant="muted" size="xs" truncateRmId maxLength={18} className="max-w-[120px] sm:max-w-none">{record.rm_id}</MonoChip>
                                   </>
                                 )}
                               </div>
