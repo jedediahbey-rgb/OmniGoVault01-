@@ -858,15 +858,18 @@ export default function CyberHomePage() {
           {/* Section Header - Centered */}
           <div className="text-center mb-6">
             <div className="flex items-center justify-center mb-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className={`border-white/10 text-xs whitespace-nowrap flex items-center gap-2 ${demoMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}
-                onClick={() => setDemoMode(!demoMode)}
+              <button 
+                type="button"
+                className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border transition-all duration-200 ${
+                  demoMode 
+                    ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30' 
+                    : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30'
+                }`}
+                onClick={() => setDemoMode(prev => !prev)}
               >
                 <Pulse className="w-4 h-4" weight="fill" />
                 {demoMode ? 'Demo Mode' : 'Live Feed'}
-              </Button>
+              </button>
             </div>
           </div>
           
