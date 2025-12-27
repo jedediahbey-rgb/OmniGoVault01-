@@ -134,6 +134,261 @@ class RedactionLog:
     generated_at: Optional[str] = None
 
 
+# ============ GAPS ANALYSIS: CHECKLIST TEMPLATE ============
+
+class GapStatus(str, Enum):
+    """Gap analysis status for checklist items."""
+    COMPLETE = "complete"       # ✅ All requirements met
+    PARTIAL = "partial"         # ⚠️ Document exists but incomplete
+    MISSING = "missing"         # ❌ Required but not found
+    NOT_APPLICABLE = "n/a"      # Not applicable to this portfolio
+
+
+class RiskLevel(str, Enum):
+    """Risk level for missing/incomplete items."""
+    HIGH = "high"       # Required + missing + time-sensitive
+    MEDIUM = "medium"   # Required + partial or missing (not time-triggered)
+    LOW = "low"         # Optional/supporting
+
+
+@dataclass
+class ChecklistItem:
+    """Single item in the compliance checklist."""
+    id: str
+    category: str
+    name: str
+    description: str
+    tier: int  # 1=highest priority, 2=medium, 3=lower
+    required: bool = True
+    time_sensitive: bool = False
+    trigger_condition: Optional[str] = None  # e.g., "after_death", "tax_year_end"
+    validation_rules: List[str] = field(default_factory=list)  # e.g., "has_signature", "has_date"
+    document_types: List[str] = field(default_factory=list)  # Matching document types
+
+
+@dataclass
+class GapAnalysisResult:
+    """Result of gap analysis for a single checklist item."""
+    item_id: str
+    item_name: str
+    category: str
+    status: str  # GapStatus value
+    risk_level: str  # RiskLevel value
+    reason: str
+    remediation: Optional[str] = None
+    matched_documents: List[str] = field(default_factory=list)
+    missing_requirements: List[str] = field(default_factory=list)
+
+
+@dataclass  
+class IntegrityStamp:
+    """Integrity stamp for binder verification."""
+    binder_pdf_sha256: str
+    manifest_sha256: str
+    run_id: str
+    portfolio_id: str
+    generated_at: str
+    generated_by: str
+    generator_version: str
+    total_items: int
+    total_pages: int
+    seal_coverage_percent: float
+    verification_url: str
+
+
+# Default Trust Administration Checklist v1
+CHECKLIST_TEMPLATE_V1 = [
+    # Tier 1 - Highest Priority
+    ChecklistItem(
+        id="trust_agreement",
+        category="Core Trust Documents",
+        name="Trust Agreement",
+        description="Original signed trust agreement with all amendments and restatements",
+        tier=1,
+        required=True,
+        time_sensitive=False,
+        validation_rules=["has_signature", "has_date", "has_notarization"],
+        document_types=["trust_agreement", "trust_instrument", "declaration_of_trust"]
+    ),
+    ChecklistItem(
+        id="trust_amendments",
+        category="Core Trust Documents", 
+        name="Trust Amendments",
+        description="All amendments and restatements to the trust agreement",
+        tier=1,
+        required=True,
+        time_sensitive=False,
+        validation_rules=["has_signature", "has_date"],
+        document_types=["amendment", "restatement", "trust_amendment"]
+    ),
+    ChecklistItem(
+        id="trustee_acceptance",
+        category="Core Trust Documents",
+        name="Trustee Acceptance / Certification",
+        description="Formal acceptance of trusteeship or certification of trust",
+        tier=1,
+        required=True,
+        time_sensitive=True,
+        trigger_condition="upon_appointment",
+        validation_rules=["has_signature", "has_date", "has_trustee_name"],
+        document_types=["trustee_acceptance", "certification_of_trust", "trustee_certificate"]
+    ),
+    ChecklistItem(
+        id="death_certificate",
+        category="Death & Notices",
+        name="Death Certificate",
+        description="Certified copy of grantor's death certificate (if applicable)",
+        tier=1,
+        required=False,  # Only if death-triggered
+        time_sensitive=True,
+        trigger_condition="after_death",
+        validation_rules=["certified_copy", "has_date"],
+        document_types=["death_certificate", "certificate_of_death"]
+    ),
+    ChecklistItem(
+        id="beneficiary_notices",
+        category="Death & Notices",
+        name="Beneficiary Notices",
+        description="Notices to beneficiaries with proof of mailing/service (e.g., Probate Code §16061.7)",
+        tier=1,
+        required=True,
+        time_sensitive=True,
+        trigger_condition="within_60_days_of_death",
+        validation_rules=["has_recipients", "has_proof_of_delivery", "has_date"],
+        document_types=["beneficiary_notice", "notice_to_beneficiaries", "16061_notice"]
+    ),
+    ChecklistItem(
+        id="asset_inventory",
+        category="Asset Inventory",
+        name="Asset Inventory",
+        description="Complete inventory of trust assets with date-of-death or as-of valuations",
+        tier=1,
+        required=True,
+        time_sensitive=False,
+        validation_rules=["has_values", "has_date", "is_complete"],
+        document_types=["asset_inventory", "inventory", "asset_schedule"]
+    ),
+    ChecklistItem(
+        id="asset_valuations",
+        category="Asset Inventory",
+        name="Asset Valuations",
+        description="Date-of-death or current valuations for all assets",
+        tier=1,
+        required=True,
+        time_sensitive=False,
+        validation_rules=["has_values", "has_valuation_date", "has_source"],
+        document_types=["valuation", "appraisal", "date_of_death_value"]
+    ),
+    ChecklistItem(
+        id="ein_number",
+        category="Tax & Reporting",
+        name="EIN for Trust/Estate",
+        description="Employer Identification Number for the trust or estate",
+        tier=1,
+        required=True,
+        time_sensitive=True,
+        trigger_condition="upon_trust_becoming_irrevocable",
+        validation_rules=["has_ein"],
+        document_types=["ein", "ein_letter", "ss4_confirmation"]
+    ),
+    ChecklistItem(
+        id="fiduciary_tax_returns",
+        category="Tax & Reporting",
+        name="Fiduciary Tax Returns",
+        description="Form 1041 or equivalent fiduciary income tax returns",
+        tier=1,
+        required=True,
+        time_sensitive=True,
+        trigger_condition="tax_year_end",
+        validation_rules=["has_signature", "has_date", "is_filed"],
+        document_types=["form_1041", "fiduciary_return", "tax_return"]
+    ),
+    
+    # Tier 2 - Medium Priority
+    ChecklistItem(
+        id="pour_over_will",
+        category="Core Trust Documents",
+        name="Pour-Over Will",
+        description="Pour-over will directing probate assets to trust (if applicable)",
+        tier=2,
+        required=False,
+        time_sensitive=False,
+        validation_rules=["has_signature", "has_witnesses", "has_date"],
+        document_types=["pour_over_will", "will", "last_will"]
+    ),
+    ChecklistItem(
+        id="letters_testamentary",
+        category="Core Trust Documents",
+        name="Letters Testamentary/Administration",
+        description="Court-issued letters if estate administration involved",
+        tier=2,
+        required=False,
+        time_sensitive=True,
+        trigger_condition="if_probate_required",
+        validation_rules=["court_issued", "has_date"],
+        document_types=["letters_testamentary", "letters_of_administration"]
+    ),
+    ChecklistItem(
+        id="deeds_titles",
+        category="Asset Inventory",
+        name="Deeds & Title Documents",
+        description="Deeds, titles, and proof of retitling for real property and titled assets",
+        tier=2,
+        required=True,
+        time_sensitive=False,
+        validation_rules=["has_recording_info", "has_date"],
+        document_types=["deed", "title", "grant_deed", "quitclaim_deed", "transfer_deed"]
+    ),
+    ChecklistItem(
+        id="appraisals",
+        category="Asset Inventory",
+        name="Professional Appraisals",
+        description="Appraisals for real property, unique assets, and closely-held business interests",
+        tier=2,
+        required=False,
+        time_sensitive=False,
+        validation_rules=["has_appraiser", "has_date", "has_methodology"],
+        document_types=["appraisal", "professional_appraisal", "valuation_report"]
+    ),
+    
+    # Tier 3 - Lower Priority
+    ChecklistItem(
+        id="power_of_attorney",
+        category="Supporting Documents",
+        name="Power of Attorney",
+        description="Durable power of attorney (if applicable)",
+        tier=3,
+        required=False,
+        time_sensitive=False,
+        validation_rules=["has_signature", "has_date", "has_notarization"],
+        document_types=["power_of_attorney", "poa", "durable_poa"]
+    ),
+    ChecklistItem(
+        id="healthcare_directive",
+        category="Supporting Documents",
+        name="Healthcare Directive",
+        description="Advance healthcare directive or healthcare proxy",
+        tier=3,
+        required=False,
+        time_sensitive=False,
+        validation_rules=["has_signature", "has_date"],
+        document_types=["healthcare_directive", "advance_directive", "living_will"]
+    ),
+    ChecklistItem(
+        id="creditor_notices",
+        category="Death & Notices",
+        name="Creditor Notices",
+        description="Notices to known creditors with proof of service",
+        tier=3,
+        required=False,
+        time_sensitive=True,
+        trigger_condition="after_death",
+        validation_rules=["has_recipients", "has_proof_of_delivery"],
+        document_types=["creditor_notice", "notice_to_creditors"]
+    ),
+]
+
+
 # Default profile configurations
 PROFILE_DEFAULTS = {
     BinderProfile.AUDIT: BinderRules(
