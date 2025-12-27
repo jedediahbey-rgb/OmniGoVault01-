@@ -29,7 +29,9 @@ import {
   Clock,
   Funnel,
   Export,
-  ChartBar
+  ChartBar,
+  Eye,
+  X
 } from '@phosphor-icons/react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
