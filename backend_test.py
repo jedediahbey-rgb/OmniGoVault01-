@@ -21,7 +21,7 @@ class EquityTrustAPITester:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'EvidenceBinder-API-Tester/1.0'
+            'User-Agent': 'EquityTrust-API-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
@@ -31,6 +31,7 @@ class EquityTrustAPITester:
         self.test_dispute_id = None
         self.test_run_id = None
         self.test_link_id = None
+        self.test_binder_run_id = None
         self.test_results = []
 
     def log(self, message):
