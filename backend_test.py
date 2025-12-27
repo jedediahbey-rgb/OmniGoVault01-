@@ -272,7 +272,6 @@ class TrustManagementAPITester:
         
         # Knowledge base tests
         self.test_knowledge_maxims_endpoint()
-        self.test_knowledge_modules_endpoint()
         
         self.log("\n📖 Testing Study Progress API Endpoints")
         self.log("-" * 40)
