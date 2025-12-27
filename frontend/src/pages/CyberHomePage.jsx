@@ -944,11 +944,13 @@ export default function CyberHomePage() {
               </motion.p>
               
               <motion.div variants={fadeInUp} className="mt-6 sm:mt-5 lg:mt-3 flex justify-center">
-                <Link to="/login">
-                  <Button size="default" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-6">
-                    Enter the Vault
-                  </Button>
-                </Link>
+                <Button 
+                  size="default" 
+                  className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-6"
+                  onClick={handleEnterVault}
+                >
+                  Enter the Vault
+                </Button>
               </motion.div>
               
               {/* Microcopy */}
