@@ -32,7 +32,11 @@ import {
   LockOpen,
   Stamp,
   EyeSlash,
-  Info
+  Info,
+  Gavel,
+  ListNumbers,
+  Tag,
+  Timer
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
