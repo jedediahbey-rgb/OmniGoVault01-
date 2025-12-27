@@ -81,7 +81,7 @@ export default function DashboardPage({ user }) {
     { id: 'nodemap', icon: MapTrifold, label: 'Node Map', action: () => navigate('/node-map'), color: 'gold' },
     { id: 'scenarios', icon: ChartLine, label: 'Scenarios', action: () => navigate('/scenarios'), color: 'gold' },
     { id: 'ledger', icon: Scroll, label: 'Ledger', action: () => navigate('/ledger'), color: 'gold' },
-    { id: 'vault', icon: FolderSimple, label: 'Vault', action: () => navigate('/vault/documents'), color: 'gold' },
+    { id: 'vault', icon: Vault, label: 'Vault', action: () => navigate('/vault/documents'), color: 'gold' },
     { id: 'governance', icon: Gavel, label: 'Governance', action: () => navigate('/vault/governance'), color: 'gold' },
     { id: 'templates', icon: FileText, label: 'Templates', action: () => navigate('/templates'), color: 'gold' },
     // Tools
