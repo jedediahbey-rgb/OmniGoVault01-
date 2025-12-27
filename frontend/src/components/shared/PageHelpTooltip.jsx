@@ -103,26 +103,36 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center"
+              className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-6"
             >
-              {/* Tooltip - Centered modal with consistent text alignment */}
+              {/* Modal */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-[280px] mx-4 p-5 bg-[#0A0F1A] border border-vault-gold/30 rounded-xl shadow-2xl"
+                className="relative w-full max-w-[320px] bg-gradient-to-b from-[#0D1420] to-[#080C14] border border-vault-gold/40 rounded-2xl shadow-2xl overflow-hidden"
               >
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="absolute top-3 right-3 p-1 text-white/40 hover:text-white/70 transition-colors"
-                >
-                  <X className="w-4 h-4" weight="bold" />
-                </button>
+                {/* Header */}
+                <div className="px-5 pt-5 pb-3 border-b border-vault-gold/20">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-lg font-semibold text-vault-gold">{content.title}</h4>
+                    <button
+                      onClick={() => setIsOpen(false)}
+                      className="p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+                    >
+                      <X className="w-4 h-4" weight="bold" />
+                    </button>
+                  </div>
+                </div>
                 
-                <h4 className="text-base font-semibold text-vault-gold mb-3">{content.title}</h4>
-                <p className="text-sm text-white/70 leading-[1.6] text-justify">{content.description}</p>
+                {/* Content */}
+                <div className="px-5 py-4">
+                  <p className="text-sm text-white/80 leading-relaxed">
+                    {content.description}
+                  </p>
+                </div>
               </motion.div>
             </motion.div>
           </>
