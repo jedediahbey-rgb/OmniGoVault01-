@@ -18,7 +18,7 @@ import {
   Warning,
   Info,
   ArrowLeft,
-  FolderSimple,
+  FlowArrow,
   ArrowClockwise,
   DotsThreeVertical,
   ShieldCheck
