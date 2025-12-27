@@ -331,7 +331,7 @@ class EvidenceBinderService:
                         if isinstance(payload_raw, str):
                             try:
                                 payload = json.loads(payload_raw)
-                            except:
+                            except (json.JSONDecodeError, TypeError):
                                 payload = {}
                         elif isinstance(payload_raw, dict):
                             payload = payload_raw
