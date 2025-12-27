@@ -502,7 +502,7 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
             </div>
           </div>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>
+      </div>,
+    document.body
   );
 }
