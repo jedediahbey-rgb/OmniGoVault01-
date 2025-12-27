@@ -6,6 +6,7 @@ Produces single printable PDFs with deterministic ordering.
 """
 
 import io
+import os
 import json
 import hashlib
 from datetime import datetime, timezone
