@@ -10,6 +10,7 @@ import {
   CaretRight,
   Certificate,
   CheckCircle,
+  ClockCountdown,
   Coins,
   Command,
   CurrencyDollar,
@@ -17,6 +18,8 @@ import {
   Gavel,
   Gear,
   Handshake,
+  HandCoins,
+  Heartbeat,
   Key,
   Lightning,
   Lock,
@@ -25,12 +28,13 @@ import {
   Pulse,
   Scales,
   Scroll,
-  ShieldCheck,
+  ShieldPlus,
   SignIn,
   Sparkle,
   Stamp,
   Timer,
   UserCheck,
+  UserCircleGear,
   Users,
   Vault,
   Eye,
@@ -48,8 +52,8 @@ const DEMO_SIGNALS = [
   { id: 1, type: 'meeting', message: 'Meeting Finalized', detail: 'RM-ID RF743916765US-20.001', time: '2m ago', icon: Notebook },
   { id: 2, type: 'distribution', message: 'Distribution Logged', detail: 'Beneficiary shares updated', time: '5m ago', icon: CurrencyDollar },
   { id: 3, type: 'dispute', message: 'Dispute Opened', detail: 'Evidence attached to case', time: '12m ago', icon: Gavel },
-  { id: 4, type: 'insurance', message: 'Premium Due Alert', detail: 'Policy renewal in 30 days', time: '1h ago', icon: ShieldCheck },
-  { id: 5, type: 'compensation', message: 'Compensation Approved', detail: 'Q4 trustee payment logged', time: '2h ago', icon: Users },
+  { id: 4, type: 'insurance', message: 'Premium Due Alert', detail: 'Policy renewal in 30 days', time: '1h ago', icon: ShieldPlus },
+  { id: 5, type: 'compensation', message: 'Compensation Approved', detail: 'Q4 trustee payment logged', time: '2h ago', icon: UserCircleGear },
 ];
 
 // Governance Matrix Modules
@@ -68,7 +72,7 @@ const MATRIX_MODULES = [
     desc: 'Visualize shares, allocations, and what-if scenarios in real time.',
     chip: 'Transparent',
     chipColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-    icon: CurrencyDollar
+    icon: HandCoins
   },
   { 
     id: 'disputes', 
@@ -84,7 +88,7 @@ const MATRIX_MODULES = [
     desc: 'Model life insurance, beneficiaries, premiums, and proceeds flow.',
     chip: 'Automated',
     chipColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-    icon: ShieldCheck
+    icon: ShieldPlus
   },
   { 
     id: 'compensation', 
@@ -92,15 +96,15 @@ const MATRIX_MODULES = [
     desc: 'Log trustee time, approvals, and reasonableness with audit trails.',
     chip: 'Documented',
     chipColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-    icon: Users
+    icon: UserCircleGear
   },
 ];
 
 const SCENARIOS = [
   { id: 1, title: 'Sibling Dispute', desc: 'When beneficiaries disagree on asset distribution', icon: Gavel },
-  { id: 2, title: 'Trustee Compensation', desc: 'Setting fair compensation with documentation', icon: Users },
-  { id: 3, title: 'Insurance Proceeds', desc: 'Managing life insurance payouts to the trust', icon: ShieldCheck },
-  { id: 4, title: 'Late Distributions', desc: 'Handling delayed beneficiary payments', icon: Timer },
+  { id: 2, title: 'Trustee Compensation', desc: 'Setting fair compensation with documentation', icon: UserCircleGear },
+  { id: 3, title: 'Insurance Proceeds', desc: 'Managing life insurance payouts to the trust', icon: ShieldPlus },
+  { id: 4, title: 'Late Distributions', desc: 'Handling delayed beneficiary payments', icon: ClockCountdown },
 ];
 
 const TEMPLATES = [
