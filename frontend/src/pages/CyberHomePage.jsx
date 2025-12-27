@@ -855,25 +855,6 @@ export default function CyberHomePage() {
       {/* ===== SIGNAL FEED SECTION ===== */}
       <section id="signals" className="py-8 lg:py-12 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header - Centered */}
-          <div className="text-center mb-6">
-            <div className="flex items-center justify-center mb-2">
-              <button 
-                type="button"
-                style={{
-                  backgroundColor: demoMode ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
-                  color: demoMode ? '#fbbf24' : '#34d399',
-                  borderColor: demoMode ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)',
-                }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border outline-none focus:outline-none active:outline-none"
-                onClick={() => setDemoMode(prev => !prev)}
-              >
-                <Pulse className="w-4 h-4" weight="fill" />
-                {demoMode ? 'Demo Mode' : 'Live Feed'}
-              </button>
-            </div>
-          </div>
-          
           {/* Two cards side by side - aligned at top */}
           <div className="grid lg:grid-cols-2 gap-6 items-start">
             {/* Signal Feed Card */}
@@ -889,17 +870,32 @@ export default function CyberHomePage() {
                     <h3 className="text-lg font-bold text-white">Signal Console</h3>
                     <p className="text-xs text-slate-400">Real-time governance activity</p>
                   </div>
-                  {!demoMode && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-slate-400 hover:text-white p-2"
-                      onClick={fetchLiveSignals}
-                      disabled={signalsLoading}
+                  <div className="flex items-center gap-2">
+                    {!demoMode && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-slate-400 hover:text-white p-2"
+                        onClick={fetchLiveSignals}
+                        disabled={signalsLoading}
+                      >
+                        <ClockCounterClockwise className={`w-4 h-4 ${signalsLoading ? 'animate-spin' : ''}`} />
+                      </Button>
+                    )}
+                    <button 
+                      type="button"
+                      style={{
+                        backgroundColor: demoMode ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                        color: demoMode ? '#fbbf24' : '#34d399',
+                        borderColor: demoMode ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)',
+                      }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium rounded-md border outline-none focus:outline-none active:outline-none"
+                      onClick={() => setDemoMode(prev => !prev)}
                     >
-                      <ClockCounterClockwise className={`w-4 h-4 ${signalsLoading ? 'animate-spin' : ''}`} />
-                    </Button>
-                  )}
+                      <Pulse className="w-3 h-3" weight="fill" />
+                      {demoMode ? 'Demo' : 'Live'}
+                    </button>
+                  </div>
                 </div>
                 {signalsLoading ? (
                   <div className="flex items-center justify-center py-8">
