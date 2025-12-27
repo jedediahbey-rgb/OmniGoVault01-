@@ -266,10 +266,6 @@ export default function AuditLogPage() {
             </Button>
           </div>
         </div>
-              <ArrowClockwise className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </Button>
-          </div>
-        </div>
 
         {/* Summary Cards */}
         {summary && (
