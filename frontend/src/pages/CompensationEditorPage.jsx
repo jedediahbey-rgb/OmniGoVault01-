@@ -359,16 +359,16 @@ export default function CompensationEditorPage({ user }) {
 
   return (
     <div className="min-h-screen pb-24">
-      <PageHeader 
-        title="Compensation Details"
-        breadcrumbs={[
-          { label: 'Vault', href: '/vault' },
-          { label: 'Governance', href: '/vault/governance?tab=compensation' },
-          { label: 'Compensation' },
-        ]}
-      />
-
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <PageHeader 
+          title="Compensation Details"
+          breadcrumbs={[
+            { label: 'Vault', href: '/vault' },
+            { label: 'Governance', href: '/vault/governance?tab=compensation' },
+            { label: 'Compensation' },
+          ]}
+        />
+
         {/* Header Card */}
         <motion.div {...fadeInUp} className="mb-6">
           <GlassCard className="p-4 sm:p-6">
