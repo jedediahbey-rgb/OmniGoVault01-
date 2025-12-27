@@ -1766,9 +1766,10 @@ class BinderService:
         # 8. Integrity Summary
         if profile.get("rules_json", {}).get("include_integrity_summary", True):
             sealed_count = sum(
-                1 for section in content.values()
+                1 for section_key, section in content.items()
+                if not section_key.startswith("_") and isinstance(section, list)
                 for item in section
-                if item.get("data", {}).get("integrity_seal_id")
+                if isinstance(item, dict) and item.get("data", {}).get("integrity_seal_id")
             )
             
             html_parts.append(f"""
