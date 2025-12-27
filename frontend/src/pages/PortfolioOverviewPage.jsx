@@ -1083,7 +1083,7 @@ export default function PortfolioOverviewPage({ user }) {
                               {asset.rm_id && (
                                 <>
                                   <span className="text-white/20">•</span>
-                                  <MonoChip variant="gold" size="xs" className="truncate max-w-[100px] sm:max-w-none">{asset.rm_id}</MonoChip>
+                                  <MonoChip variant="gold" size="xs" truncateRmId maxLength={18} className="max-w-[120px] sm:max-w-none">{asset.rm_id}</MonoChip>
                                 </>
                               )}
                             </div>
