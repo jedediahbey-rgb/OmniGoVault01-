@@ -954,11 +954,11 @@ export default function CyberHomePage() {
       <nav className="fixed top-1 left-0 right-0 z-40 bg-[#05080F]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-16">
-            {/* Logo - Private Equity & Trusts - Centered */}
-            <Link to="/vault" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <Key className="w-5 h-5 text-vault-gold" weight="fill" />
-              <span className="text-base font-medium text-white">Private Equity & Trusts</span>
-            </Link>
+            {/* Logo - Simple key icon */}
+            <div className="flex items-center gap-2">
+              <Key className="w-6 h-6 text-vault-gold" weight="fill" />
+              <span className="text-lg font-heading text-white tracking-wide">OmniGoVault</span>
+            </div>
           </div>
         </div>
       </nav>
