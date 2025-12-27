@@ -558,10 +558,47 @@ export default function BinderPage() {
     }
   }, [portfolioId]);
 
+  // Fetch Court Mode config
+  const fetchCourtModeConfig = useCallback(async () => {
+    if (!portfolioId) return;
+    try {
+      const res = await fetch(`${API_URL}/api/binder/court-mode/config?portfolio_id=${portfolioId}`);
+      const data = await res.json();
+      if (data.ok) {
+        setCourtModeInfo(data.data);
+        // Set default prefix
+        if (data.data.bates?.default_prefix) {
+          setCourtModeConfig(prev => ({
+            ...prev,
+            bates_prefix: data.data.bates.default_prefix
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching court mode config:', error);
+    }
+  }, [portfolioId]);
+
+  // Fetch redaction summary
+  const fetchRedactionSummary = useCallback(async () => {
+    if (!portfolioId) return;
+    try {
+      const res = await fetch(`${API_URL}/api/binder/redactions/summary?portfolio_id=${portfolioId}`);
+      const data = await res.json();
+      if (data.ok) {
+        setRedactionSummary(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching redaction summary:', error);
+    }
+  }, [portfolioId]);
+
   // Fetch schedules when portfolioId changes
   useEffect(() => {
     fetchSchedules();
-  }, [fetchSchedules]);
+    fetchCourtModeConfig();
+    fetchRedactionSummary();
+  }, [fetchSchedules, fetchCourtModeConfig, fetchRedactionSummary]);
 
   // Create schedule
   const handleCreateSchedule = async () => {
