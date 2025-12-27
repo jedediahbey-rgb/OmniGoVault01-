@@ -825,15 +825,16 @@ export default function MeetingEditorPage({ user }) {
             // View mode
             <div className="flex flex-col gap-4">
               {/* Header content */}
-              <div className="flex items-start gap-4">
-                <div className={`p-4 rounded-xl ${typeConfig.bg} shrink-0`}>
+              <div className="flex items-start gap-3 sm:gap-4">
+                {/* Icon container - smaller on mobile */}
+                <div className={`p-2.5 sm:p-4 rounded-xl ${typeConfig.bg} shrink-0`}>
                   {meeting.meeting_type === 'regular' ? (
                     <DynamicCalendarIcon 
                       day={meeting.date_time ? new Date(meeting.date_time).getDate() : null} 
-                      className={`w-8 h-8 ${typeConfig.color}`} 
+                      className={`w-6 h-6 sm:w-8 sm:h-8 ${typeConfig.color}`} 
                     />
                   ) : (
-                    <TypeIcon className={`w-8 h-8 ${typeConfig.color}`} />
+                    <TypeIcon className={`w-6 h-6 sm:w-8 sm:h-8 ${typeConfig.color}`} />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -851,21 +852,22 @@ export default function MeetingEditorPage({ user }) {
                       {typeConfig.label}
                     </Badge>
                   </div>
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-heading text-white mb-2 break-words">
+                  <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-heading text-white mb-2 break-words">
                     {meeting.title}
                   </h1>
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-vault-muted">
+                  {/* Meta info - stack vertically on mobile */}
+                  <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3 text-sm text-vault-muted">
                     {meeting.rm_id && (
-                      <span className="font-mono bg-vault-dark/50 px-2 py-0.5 rounded text-xs break-all">
+                      <span className="font-mono bg-vault-dark/50 px-2 py-0.5 rounded text-[11px] sm:text-xs break-all w-fit">
                         {meeting.rm_id}
                       </span>
                     )}
                     <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
+                      <Clock className="w-4 h-4 shrink-0" />
                       {formatDate(meeting.date_time)}
                     </span>
                     {meeting.location && (
-                      <span>📍 {meeting.location}</span>
+                      <span className="truncate">📍 {meeting.location}</span>
                     )}
                   </div>
                 </div>
