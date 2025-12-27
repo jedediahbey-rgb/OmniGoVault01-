@@ -647,10 +647,12 @@ export default function NodeMapPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-heading text-white">Trust Node Map</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <p className="text-white/50 text-sm">Visual representation of trust relationships</p>
-              <PageHelpTooltip pageKey="nodeMap" />
-            </div>
+            <p className="text-white/50 text-sm mt-1">
+              Visual representation of trust relationships
+              <span className="inline-flex align-middle ml-1.5">
+                <PageHelpTooltip pageKey="nodeMap" />
+              </span>
+            </p>
           </div>
         </div>
         
