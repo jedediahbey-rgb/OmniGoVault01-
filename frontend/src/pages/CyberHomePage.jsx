@@ -770,7 +770,7 @@ export default function CyberHomePage() {
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="text-center mb-8">
+            <motion.div variants={fadeInUp} className="text-center mb-6">
               <IconChip icon={BookOpen} label="Case Studies" variant="gold" />
               <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">Real-World Scenarios</h2>
               <p className="mt-2 text-slate-400">See how OMNIGOVAULT solves common governance challenges</p>
