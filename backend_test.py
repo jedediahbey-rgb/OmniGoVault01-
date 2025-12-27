@@ -1025,47 +1025,75 @@ class EquityTrustAPITester:
             return False
 
     def run_all_tests(self):
-        """Run all Evidence Binder backend tests"""
-        self.log("🧪 Starting Evidence Binder Backend API Tests")
-        self.log("=" * 60)
+        """Run comprehensive regression tests for Equity Trust Portfolio application"""
+        self.log("🧪 Starting Comprehensive Regression Testing")
+        self.log("=" * 70)
         self.log(f"Using Portfolio ID: {self.test_portfolio_id}")
         
-        self.log("\n📋 Test 1: Evidence Binder Configuration")
+        # 1. Core System Health
+        self.log("\n🏥 Test 1: Core System Health")
+        self.log("-" * 40)
+        self.test_system_health()
+        
+        # 2. Core Binder System
+        self.log("\n📁 Test 2: Core Binder System")
+        self.log("-" * 40)
+        self.test_binder_profiles()
+        self.test_binder_generate()
+        self.test_binder_runs()
+        self.test_binder_download()
+        
+        # 3. Audit Log System
+        self.log("\n📊 Test 3: Audit Log System")
+        self.log("-" * 40)
+        self.test_audit_log_list()
+        self.test_audit_log_categories()
+        self.test_audit_log_summary()
+        self.test_audit_log_export()
+        
+        # 4. Governance Module
+        self.log("\n⚖️ Test 4: Governance Module")
+        self.log("-" * 40)
+        self.test_governance_records()
+        self.test_governance_subjects()
+        
+        # 5. Evidence Binder (P5 Feature)
+        self.log("\n📋 Test 5: Evidence Binder Configuration")
         self.log("-" * 50)
         self.test_evidence_config()
         
-        self.log(f"\n📊 Test 2: Disputes Listing")
-        self.log("-" * 30)
+        self.log(f"\n📊 Test 6: Evidence Binder Disputes")
+        self.log("-" * 40)
         self.test_get_disputes()
         self.test_create_test_dispute_if_needed()
         
-        self.log(f"\n🔗 Test 3: Dispute Links Management")
-        self.log("-" * 40)
+        self.log(f"\n🔗 Test 7: Evidence Binder Links Management")
+        self.log("-" * 50)
         self.test_add_dispute_link()
         self.test_get_dispute_links()
         self.test_auto_link_dispute_items()
         
-        self.log(f"\n👁️ Test 4: Evidence Preview")
-        self.log("-" * 30)
+        self.log(f"\n👁️ Test 8: Evidence Binder Preview")
+        self.log("-" * 40)
         self.test_evidence_preview()
         
-        self.log(f"\n📄 Test 5: Evidence Binder Generation")
-        self.log("-" * 45)
+        self.log(f"\n📄 Test 9: Evidence Binder Generation")
+        self.log("-" * 50)
         self.test_generate_evidence_binder()
         
-        self.log(f"\n📚 Test 6: Evidence Binder Runs")
-        self.log("-" * 35)
+        self.log(f"\n📚 Test 10: Evidence Binder Runs")
+        self.log("-" * 40)
         self.test_get_evidence_runs()
         self.test_get_evidence_run_details()
         self.test_get_evidence_manifest()
         self.test_download_evidence_binder()
         
-        self.log(f"\n🧹 Test 7: Cleanup")
-        self.log("-" * 20)
+        self.log(f"\n🧹 Test 11: Cleanup")
+        self.log("-" * 25)
         self.test_cleanup_test_link()
         
-        self.log("\n📊 Test Summary")
-        self.log("=" * 60)
+        self.log("\n📊 Final Test Summary")
+        self.log("=" * 70)
         self.log(f"Tests run: {self.tests_run}")
         self.log(f"Tests passed: {self.tests_passed}")
         self.log(f"Success rate: {(self.tests_passed/self.tests_run*100):.1f}%")
@@ -1074,6 +1102,8 @@ class EquityTrustAPITester:
             self.log("\n❌ Failed Tests:")
             for test in self.failed_tests:
                 self.log(f"  - {test['test']}: {test.get('details', 'Unknown error')}")
+        else:
+            self.log("\n✅ All tests passed successfully!")
         
         return self.tests_passed == self.tests_run
 
