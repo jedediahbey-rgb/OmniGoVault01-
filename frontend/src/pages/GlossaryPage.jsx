@@ -812,9 +812,15 @@ export default function GlossaryPage({ user }) {
         {filteredTerms.map((term, idx) => {
           const isFirstOfLetter = idx === 0 || 
             filteredTerms[idx - 1].term[0].toUpperCase() !== term.term[0].toUpperCase();
+          const isHighlighted = highlightedTermId === term.id;
           
           return (
-            <motion.div key={term.id} variants={fadeInUp}>
+            <motion.div 
+              key={term.id} 
+              variants={fadeInUp}
+              id={`term-${term.id}`}
+              style={{ scrollMarginTop: '20px' }}
+            >
               {isFirstOfLetter && (
                 <div 
                   id={`letter-${term.term[0].toUpperCase()}`}
@@ -826,7 +832,11 @@ export default function GlossaryPage({ user }) {
               <GlassCard
                 interactive
                 onClick={() => setSelectedTerm(term)}
-                className="group"
+                className={`group transition-all duration-500 ${
+                  isHighlighted 
+                    ? 'ring-2 ring-vault-gold ring-offset-2 ring-offset-vault-dark shadow-[0_0_30px_rgba(212,175,55,0.3)]' 
+                    : ''
+                }`}
               >
                 <div className="flex items-start gap-4">
                   <div className="flex-1 min-w-0">
