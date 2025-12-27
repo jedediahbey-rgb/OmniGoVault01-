@@ -1212,53 +1212,72 @@ export default function CyberHomePage() {
       
       {/* Command Palette Modal - Rendered via Portal to avoid overflow issues */}
       {showCommandPalette && createPortal(
-        <AnimatePresence>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            paddingTop: '15vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={() => setShowCommandPalette(false)}
+        >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex items-start justify-center pt-[15vh] bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowCommandPalette(false)}
+            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            style={{
+              width: '100%',
+              maxWidth: '32rem',
+              margin: '0 1rem',
+              backgroundColor: '#0B1221',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '1rem',
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="w-full max-w-lg mx-4 bg-[#0B1221] border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5">
-                <MagnifyingGlass className="w-5 h-5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search modules, templates, scenarios..."
-                  className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-slate-500"
-                  autoFocus
-                />
-                <kbd className="px-2 py-1 bg-white/5 rounded text-xs text-slate-500">ESC</kbd>
-              </div>
-              <div className="p-2 max-h-80 overflow-y-auto">
-                {MATRIX_MODULES.map((module) => {
-                  const Icon = module.icon;
-                  return (
-                    <button
-                      key={module.id}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left"
-                      onClick={() => {
-                        navigate(`/vault/governance?tab=${module.id}`);
-                        setShowCommandPalette(false);
-                      }}
-                    >
-                      <Icon className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
-                      <span className="text-white">{module.title}</span>
-                      <span className="text-xs text-slate-500 ml-auto">Module</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5">
+              <MagnifyingGlass className="w-5 h-5 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search modules, templates, scenarios..."
+                className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-slate-500"
+                autoFocus
+              />
+              <kbd className="px-2 py-1 bg-white/5 rounded text-xs text-slate-500">ESC</kbd>
+            </div>
+            <div className="p-2 max-h-80 overflow-y-auto">
+              {MATRIX_MODULES.map((module) => {
+                const Icon = module.icon;
+                return (
+                  <button
+                    key={module.id}
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left"
+                    onClick={() => {
+                      navigate(`/vault/governance?tab=${module.id}`);
+                      setShowCommandPalette(false);
+                    }}
+                  >
+                    <Icon className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
+                    <span className="text-white">{module.title}</span>
+                    <span className="text-xs text-slate-500 ml-auto">Module</span>
+                  </button>
+                );
+              })}
+            </div>
           </motion.div>
-        </AnimatePresence>,
+        </div>,
         document.body
       )}
     </div>
