@@ -879,8 +879,8 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== FINAL CTA ===== */}
-      <section className="py-10 lg:py-16 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-8 lg:py-12 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -888,17 +888,17 @@ export default function CyberHomePage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp}>
-              <Vault className="w-14 h-14 text-[#C6A87C] mx-auto mb-4" weight="duotone" />
+              <Vault className="w-12 h-12 text-[#C6A87C] mx-auto mb-3" weight="duotone" />
             </motion.div>
-            <motion.h2 variants={fadeInUp} className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3">
+            <motion.h2 variants={fadeInUp} className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">
               Ready to Transform Your Trust Governance?
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-base sm:text-lg text-slate-400 mb-6">
+            <motion.p variants={fadeInUp} className="text-sm sm:text-base text-slate-400 mb-5">
               Start with our demo or create your secure vault today.
             </motion.p>
-            <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row justify-center gap-3">
+            <motion.div variants={fadeInUp}>
               <Link to="/login">
-                <Button size="lg" className="w-full sm:w-auto bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
+                <Button size="lg" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-8">
                   Enter the Vault
                 </Button>
               </Link>
