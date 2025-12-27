@@ -20,7 +20,7 @@ const variantClasses = {
 };
 
 const sizeClasses = {
-  xs: 'text-[10px] px-1 py-0.5',
+  xs: 'text-[10px] px-1.5 py-0.5',
   sm: 'text-xs px-1.5 py-0.5',
   md: 'text-sm px-2 py-1',
 };
@@ -42,7 +42,7 @@ export default function MonoChip({
   return (
     <span
       className={cn(
-        'font-mono rounded border inline-flex items-center gap-1 tracking-wide',
+        'font-mono rounded border inline-block tracking-wide break-all',
         variantClasses[variant],
         sizeClasses[size],
         copyable && 'cursor-pointer hover:bg-white/10 transition-colors',
