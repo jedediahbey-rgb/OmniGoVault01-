@@ -493,7 +493,7 @@ const GovernanceMatrixSection = () => {
           {/* Module Grid - Cross/Diamond pattern with staggered animations */}
           <div className="max-w-4xl mx-auto">
             {/* Top row - 2 cards */}
-            <div className="flex justify-center gap-4 mb-4">
+            <div className="flex justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
               {MATRIX_MODULES.slice(0, 2).map((module, idx) => {
                 const Icon = module.icon;
                 return (
@@ -503,25 +503,28 @@ const GovernanceMatrixSection = () => {
                     variants={cardVariants}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
-                    className="w-full max-w-[280px]"
+                    className="w-full max-w-[160px] sm:max-w-[280px]"
                   >
                     <HoloCard 
-                      className="p-4 cursor-pointer h-full"
+                      className="p-3 sm:p-4 cursor-pointer h-full"
                       onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
                     >
-                      <div className="flex items-start justify-between mb-2 gap-2">
-                        <motion.div 
-                          className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center"
-                          whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
-                        >
-                          <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
-                        </motion.div>
-                        <Badge className={`text-[9px] border ${module.chipColor}`}>
-                          {module.chip}
-                        </Badge>
+                      {/* Mobile: Centered layout, Desktop: Row layout */}
+                      <div className="flex flex-col items-center text-center sm:text-left sm:items-start">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between w-full gap-2 mb-2">
+                          <motion.div 
+                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center"
+                            whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
+                          >
+                            <Icon className="w-5 h-5 sm:w-4 sm:h-4 text-[#C6A87C]" weight="duotone" />
+                          </motion.div>
+                          <Badge className={`text-[8px] sm:text-[9px] border ${module.chipColor}`}>
+                            {module.chip}
+                          </Badge>
+                        </div>
+                        <h3 className="text-white font-semibold text-xs sm:text-sm mb-1">{module.title}</h3>
+                        <p className="text-[10px] sm:text-xs text-slate-400 leading-relaxed">{module.desc}</p>
                       </div>
-                      <h3 className="text-white font-semibold text-sm mb-1">{module.title}</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">{module.desc}</p>
                     </HoloCard>
                   </motion.div>
                 );
@@ -529,7 +532,7 @@ const GovernanceMatrixSection = () => {
             </div>
             
             {/* Middle row - 1 center card */}
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-3 sm:mb-4">
               {MATRIX_MODULES.slice(2, 3).map((module) => {
                 const Icon = module.icon;
                 return (
@@ -539,25 +542,27 @@ const GovernanceMatrixSection = () => {
                     variants={cardVariants}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
-                    className="w-full max-w-[280px]"
+                    className="w-full max-w-[160px] sm:max-w-[280px]"
                   >
                     <HoloCard 
-                      className="p-4 cursor-pointer"
+                      className="p-3 sm:p-4 cursor-pointer"
                       onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
                     >
-                      <div className="flex items-start justify-between mb-2 gap-2">
-                        <motion.div 
-                          className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center"
-                          whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
-                        >
-                          <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
-                        </motion.div>
-                        <Badge className={`text-[9px] border ${module.chipColor}`}>
-                          {module.chip}
-                        </Badge>
+                      <div className="flex flex-col items-center text-center sm:text-left sm:items-start">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between w-full gap-2 mb-2">
+                          <motion.div 
+                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center"
+                            whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
+                          >
+                            <Icon className="w-5 h-5 sm:w-4 sm:h-4 text-[#C6A87C]" weight="duotone" />
+                          </motion.div>
+                          <Badge className={`text-[8px] sm:text-[9px] border ${module.chipColor}`}>
+                            {module.chip}
+                          </Badge>
+                        </div>
+                        <h3 className="text-white font-semibold text-xs sm:text-sm mb-1">{module.title}</h3>
+                        <p className="text-[10px] sm:text-xs text-slate-400 leading-relaxed">{module.desc}</p>
                       </div>
-                      <h3 className="text-white font-semibold text-sm mb-1">{module.title}</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">{module.desc}</p>
                     </HoloCard>
                   </motion.div>
                 );
@@ -565,7 +570,7 @@ const GovernanceMatrixSection = () => {
             </div>
             
             {/* Bottom row - 2 cards */}
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-3 sm:gap-4">
               {MATRIX_MODULES.slice(3, 5).map((module, idx) => {
                 const Icon = module.icon;
                 return (
@@ -575,25 +580,27 @@ const GovernanceMatrixSection = () => {
                     variants={cardVariants}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
-                    className="w-full max-w-[280px]"
+                    className="w-full max-w-[160px] sm:max-w-[280px]"
                   >
                     <HoloCard 
-                      className="p-4 cursor-pointer h-full"
+                      className="p-3 sm:p-4 cursor-pointer h-full"
                       onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
                     >
-                      <div className="flex items-start justify-between mb-2 gap-2">
-                        <motion.div 
-                          className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center"
-                          whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
-                        >
-                          <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
-                        </motion.div>
-                        <Badge className={`text-[9px] border ${module.chipColor}`}>
-                          {module.chip}
-                        </Badge>
+                      <div className="flex flex-col items-center text-center sm:text-left sm:items-start">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between w-full gap-2 mb-2">
+                          <motion.div 
+                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center"
+                            whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
+                          >
+                            <Icon className="w-5 h-5 sm:w-4 sm:h-4 text-[#C6A87C]" weight="duotone" />
+                          </motion.div>
+                          <Badge className={`text-[8px] sm:text-[9px] border ${module.chipColor}`}>
+                            {module.chip}
+                          </Badge>
+                        </div>
+                        <h3 className="text-white font-semibold text-xs sm:text-sm mb-1">{module.title}</h3>
+                        <p className="text-[10px] sm:text-xs text-slate-400 leading-relaxed">{module.desc}</p>
                       </div>
-                      <h3 className="text-white font-semibold text-sm mb-1">{module.title}</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">{module.desc}</p>
                     </HoloCard>
                   </motion.div>
                 );
