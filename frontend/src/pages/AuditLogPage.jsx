@@ -234,11 +234,20 @@ export default function AuditLogPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleExport('json')}
+              onClick={() => handleExport('json', false)}
+              className="border-vault-gold/30 text-vault-muted hover:text-white"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              View Export
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport('json', true)}
               className="border-vault-gold/30 text-vault-muted hover:text-white"
             >
               <Download className="w-4 h-4 mr-2" />
-              Export
+              Download
             </Button>
             <Button
               variant="ghost"
