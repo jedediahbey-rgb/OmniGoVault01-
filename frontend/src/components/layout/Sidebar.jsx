@@ -22,6 +22,7 @@ import {
   SignOut,
   Sparkle,
   StackSimple,
+  Stethoscope,
   TreeView,
   Vault,
   X
@@ -42,7 +43,7 @@ const navItems = [
   { name: 'Templates', href: '/templates', icon: StackSimple, section: 'workspace' },
   { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
   { name: 'Trust Health', href: '/health', icon: Heartbeat, section: 'tools' },
-  { name: 'Diagnostics', href: '/diagnostics', icon: ShieldCheck, section: 'tools' },
+  { name: 'Diagnostics', href: '/diagnostics', icon: Stethoscope, section: 'tools' },
   { name: 'Thread Manager', href: '/ledger-threads', icon: FlowArrow, section: 'tools' },
   { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
   { name: 'Audit Log', href: '/audit-log', icon: ClipboardText, section: 'tools' },
