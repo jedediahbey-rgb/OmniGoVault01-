@@ -183,7 +183,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
         <div className="flex items-center gap-2">
           <Key className="w-5 h-5 text-vault-gold" weight="fill" />
           <div className="min-w-0 flex-1">
-            <span className="font-heading text-base text-white tracking-tight block truncate">Private Equity & Trusts</span>
+            <span className="font-heading text-base text-white tracking-tight block truncate">OmniGoVault</span>
           </div>
         </div>
       </Link>
