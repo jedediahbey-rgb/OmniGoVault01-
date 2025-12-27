@@ -539,17 +539,17 @@ export default function DashboardPage({ user }) {
                           : 'border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5'
                       }`}
                     >
-                      <IconBadge icon={FolderSimple} size="lg" variant="gold" />
+                      <IconBadge icon={Vault} size="lg" variant="gold" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="text-white font-medium truncate">{portfolio.name}</p>
+                          <p className="text-white font-medium text-sm">{portfolio.name}</p>
                           {isDefault && (
                             <span className="px-2 py-0.5 text-[10px] font-medium bg-vault-gold/20 text-vault-gold rounded-full shrink-0">
                               Default
                             </span>
                           )}
                         </div>
-                        <p className="text-white/40 text-sm truncate">
+                        <p className="text-white/40 text-xs truncate">
                           {portfolio.description || 'No description'}
                         </p>
                       </div>
