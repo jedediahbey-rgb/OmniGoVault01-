@@ -295,15 +295,6 @@ export default function DashboardPage({ user }) {
       <PageHeader
         title={`Welcome back, ${welcomeName}`}
         subtitle="Your trust portfolio dashboard"
-        titleAction={
-          <Button 
-            onClick={() => setShowNewPortfolio(true)} 
-            size="sm"
-            className="bg-vault-gold/10 hover:bg-vault-gold/20 text-vault-gold border border-vault-gold/30"
-          >
-            <FolderSimplePlus className="w-4 h-4" weight="duotone" />
-          </Button>
-        }
         subtitleAction={<PageHelpTooltip pageKey="dashboard" />}
         actions={
           <div className="flex items-center gap-2">
