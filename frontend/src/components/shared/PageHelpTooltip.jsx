@@ -129,7 +129,7 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
                 
                 {/* Content */}
                 <div className="px-5 py-4">
-                  <p className="text-sm text-white/80 leading-[1.7] tracking-wide text-left">
+                  <p className="text-sm text-white/80 leading-[1.7] tracking-wide text-center">
                     {content.description}
                   </p>
                 </div>
