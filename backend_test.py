@@ -33,6 +33,10 @@ class EquityTrustAPITester:
         self.test_link_id = None
         self.test_binder_run_id = None
         self.test_results = []
+        # RM-ID migration testing variables
+        self.trust_profiles = []
+        self.proper_rm_id_profile = None
+        self.placeholder_rm_id_profile = None
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
