@@ -469,29 +469,41 @@ class TrustManagementAPITester:
             return False
 
     def run_all_tests(self):
-        """Run all backend tests"""
-        self.log("🧪 Starting Trust Management Backend API Tests")
+        """Run all P2 backend tests"""
+        self.log("🧪 Starting P2 Features Backend API Tests")
         self.log("=" * 60)
         
-        # Basic connectivity
-        if not self.test_api_health():
-            self.log("❌ API is not accessible, skipping remaining tests")
+        # Get portfolio ID first
+        self.log("\n📁 Getting Portfolio ID")
+        self.log("-" * 30)
+        if not self.test_get_portfolios():
+            self.log("❌ Cannot proceed without portfolio ID")
             return False
         
-        self.log("\n📚 Testing Knowledge Base & Maxims API Endpoints")
+        self.log(f"\n🧵 Testing Ledger Thread Management APIs")
         self.log("-" * 50)
         
-        # Knowledge base tests
-        self.test_knowledge_maxims_endpoint()
+        # Test thread CRUD operations
+        self.test_create_thread()
+        self.test_list_threads()
+        self.test_get_thread_details()
+        self.test_update_thread()
         
-        self.log("\n📖 Testing Study Progress API Endpoints")
-        self.log("-" * 40)
+        # Test thread operations (may depend on existing records)
+        self.test_thread_operations()
         
-        # Study progress tests
-        self.test_study_maxims_endpoint()
-        self.test_study_stats_endpoint()
-        self.test_study_maxims_due_endpoint()
-        self.test_maxim_review_endpoint()
+        # Test delete thread (should be last as it removes the thread)
+        self.test_delete_thread()
+        
+        self.log(f"\n📋 Testing Binder Schedule Management APIs")
+        self.log("-" * 50)
+        
+        # Test binder schedule CRUD operations
+        self.test_get_binder_profiles()
+        self.test_list_schedules()
+        self.test_create_schedule()
+        self.test_update_schedule()
+        self.test_delete_schedule()
         
         self.log("\n📊 Test Summary")
         self.log("=" * 60)
