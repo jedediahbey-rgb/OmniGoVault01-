@@ -413,7 +413,7 @@ const GovernanceMatrixSection = () => {
   const navigate = useNavigate();
   
   return (
-    <section id="matrix" className="py-10 lg:py-16 bg-[#0B1221]">
+    <section id="matrix" className="py-8 lg:py-12 bg-[#0B1221]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"
@@ -421,15 +421,13 @@ const GovernanceMatrixSection = () => {
           viewport={{ once: true, margin: '-100px' }}
           variants={staggerContainer}
         >
-          {/* Header - Centered on mobile */}
-          <motion.div variants={fadeInUp} className="mb-10 text-center lg:text-left">
-            <div className="flex justify-center lg:justify-start">
-              <IconChip icon={Gear} label="Governance Matrix" variant="gold" />
-            </div>
-            <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">
+          {/* Header - Centered */}
+          <motion.div variants={fadeInUp} className="mb-6 text-center">
+            <IconChip icon={Gear} label="Governance Matrix" variant="gold" />
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">
               The console for trust operations.
             </h2>
-            <p className="mt-3 text-slate-400 max-w-2xl mx-auto lg:mx-0">
+            <p className="mt-2 text-slate-400 max-w-2xl mx-auto">
               Minutes, distributions, disputes, policies, compensation—linked to a living ledger.
             </p>
           </motion.div>
