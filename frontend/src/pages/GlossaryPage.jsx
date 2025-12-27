@@ -544,6 +544,7 @@ export default function GlossaryPage({ user }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [expandedTerm, setExpandedTerm] = useState(null);
   const [selectedTerm, setSelectedTerm] = useState(null);
+  const [highlightedTermId, setHighlightedTermId] = useState(null);
   const detailRef = useRef(null);
 
   // Scroll to top when a term is selected
