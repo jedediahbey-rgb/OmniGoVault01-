@@ -634,7 +634,7 @@ const GovernanceMatrixSection = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button 
                 className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold"
-                onClick={handleNavigateWithTransition('/vault/governance')}
+                onClick={handleNavigation('/vault/governance')}
               >
                 Open Governance Console
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -643,7 +643,7 @@ const GovernanceMatrixSection = () => {
             <motion.button 
               whileHover={{ scale: 1.05 }} 
               whileTap={{ scale: 0.95 }}
-              onClick={handleNavigateWithTransition('/ledger')}
+              onClick={handleNavigation('/ledger')}
               className="text-sm text-[#C6A87C] hover:text-[#C6A87C]/80 flex items-center gap-1"
             >
               View a sample ledger <CaretRight className="w-4 h-4" />
