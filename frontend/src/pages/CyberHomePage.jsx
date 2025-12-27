@@ -657,10 +657,10 @@ export default function CyberHomePage() {
   const handleEnterVault = (e) => {
     e.preventDefault();
     setVaultOpening(true);
-    // Navigate after animation completes
+    // Navigate after animation completes - extended to 2 seconds for better visibility
     setTimeout(() => {
       navigate('/vault');
-    }, 1200);
+    }, 2000);
   };
   
   // Handle scroll to show/hide scroll-to-top button
