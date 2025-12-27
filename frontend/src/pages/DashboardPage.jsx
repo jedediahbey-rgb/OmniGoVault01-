@@ -124,52 +124,39 @@ export default function DashboardPage({ user }) {
       // Cap at reasonable max on load
       return parsed.slice(0, 16);
     }
-    // Default to first 4 actions
+    // Default to first 4 actions (will be expanded by auto-fill effect)
     return allActionIds.slice(0, 4);
   });
 
-  // ALWAYS ensure selectedActions doesn't exceed maxQuickActions
-  // This is the safety net that prevents the bug
+  // Auto-fill to max on initial load and when max increases
+  // Also trim when max decreases
   useEffect(() => {
     setSelectedActions(prev => {
-      // Always cap at maxQuickActions
-      if (prev.length > maxQuickActions) {
-        const trimmed = prev.slice(0, maxQuickActions);
-        localStorage.setItem('quickActions', JSON.stringify(trimmed));
-        return trimmed;
-      }
-      return prev;
-    });
-  }, [maxQuickActions]);
-
-  // Handle portfolio count changes: auto-fill or trim
-  useEffect(() => {
-    const currentCount = portfolios.length;
-    
-    if (currentCount !== prevPortfolioCount && prevPortfolioCount !== 0) {
-      const newMax = getMaxQuickActions(currentCount);
-      const oldMax = getMaxQuickActions(prevPortfolioCount);
+      let newSelected = [...prev];
       
-      setSelectedActions(prev => {
-        let newSelected = [...prev];
-        
-        if (newMax > oldMax && newSelected.length < newMax) {
-          // Portfolio added - fill the new slots
-          const slotsToAdd = Math.min(newMax - newSelected.length, newMax - oldMax);
-          const availableActions = allActionIds.filter(id => !newSelected.includes(id));
-          const toAdd = availableActions.slice(0, slotsToAdd);
-          newSelected = [...newSelected, ...toAdd].slice(0, newMax);
-        } else if (newMax < oldMax) {
-          // Portfolio removed - trim to fit
-          newSelected = newSelected.slice(0, newMax);
-        }
-        
+      // Trim if over max
+      if (newSelected.length > maxQuickActions) {
+        newSelected = newSelected.slice(0, maxQuickActions);
         localStorage.setItem('quickActions', JSON.stringify(newSelected));
         return newSelected;
-      });
-    }
-    
-    setPrevPortfolioCount(currentCount);
+      }
+      
+      // Auto-fill to max if under
+      if (newSelected.length < maxQuickActions) {
+        const availableActions = allActionIds.filter(id => !newSelected.includes(id));
+        const toAdd = availableActions.slice(0, maxQuickActions - newSelected.length);
+        newSelected = [...newSelected, ...toAdd];
+        localStorage.setItem('quickActions', JSON.stringify(newSelected));
+        return newSelected;
+      }
+      
+      return prev;
+    });
+  }, [maxQuickActions, allActionIds]);
+
+  // Handle portfolio count changes - track for debug purposes
+  useEffect(() => {
+    setPrevPortfolioCount(portfolios.length);
   }, [portfolios.length, prevPortfolioCount, getMaxQuickActions, allActionIds]);
 
   // Ensure quickActions is always capped at maxQuickActions
