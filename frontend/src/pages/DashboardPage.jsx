@@ -91,14 +91,21 @@ export default function DashboardPage({ user }) {
   ];
 
 
-  // Calculate max quick actions to match portfolio container height exactly
-  // Each portfolio row = 1 row of 2 quick action cards
-  // Minimum 2 rows (4 slots) when few portfolios
+  // Calculate max quick actions based on portfolio count
+  // Each portfolio item is roughly 77px (padding + content)
+  // Quick action card row is 72px + 12px gap = 84px
+  // Header area takes ~56px on both sides
+  // Formula: floor((portfolioHeight - header) / cardRowHeight) * 2 cards per row
   const getMaxQuickActions = useCallback((portfolioCount) => {
-    if (portfolioCount <= 1) return 4; // Base 2 rows
-    if (portfolioCount === 2) return 4; // 2 rows
-    // Each portfolio = 1 row of quick actions (2 slots)
-    return portfolioCount * 2;
+    if (portfolioCount <= 1) return 4; // Minimum 2 rows
+    // Portfolio container inner height ≈ portfolioCount * 77px
+    // Quick action row height = 72px card + 12px gap = 84px (last row no gap)
+    // Available height for cards (after header) = container - 56px header
+    const estimatedPortfolioHeight = portfolioCount * 77;
+    const availableHeight = estimatedPortfolioHeight - 20; // Less header offset since both have headers
+    const rowHeight = 84; // 72px card + 12px gap
+    const maxRows = Math.max(2, Math.floor(availableHeight / rowHeight));
+    return maxRows * 2; // 2 cards per row
   }, []);
 
   const maxQuickActions = getMaxQuickActions(portfolios.length);
