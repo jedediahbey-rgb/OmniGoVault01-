@@ -26,7 +26,7 @@ import {
   CurrencyDollar,
   Shield,
   Users,
-  FolderSimple,
+  Vault,
   Download,
   Command,
   ArrowUp,
@@ -54,7 +54,7 @@ const iconMap = {
   CurrencyDollar,
   Shield,
   Users,
-  FolderSimple,
+  Vault,
   Download,
   MagnifyingGlass
 };
