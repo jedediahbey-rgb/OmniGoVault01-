@@ -923,29 +923,47 @@ export default function CyberHomePage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
+            viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="text-center mb-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-6"
+            >
               <IconChip icon={BookOpen} label="Case Studies" variant="gold" />
               <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">Real-World Scenarios</h2>
               <p className="mt-2 text-slate-400">See how OMNIGOVAULT solves common governance challenges</p>
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-              {SCENARIOS.map((scenario) => {
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+              {SCENARIOS.map((scenario, idx) => {
                 const Icon = scenario.icon;
                 return (
-                  <HoloCard key={scenario.id} className="p-5 cursor-pointer text-center">
-                    <div className="flex justify-center">
-                      <Icon className="w-8 h-8 text-[#C6A87C] mb-3" weight="duotone" />
-                    </div>
-                    <h3 className="text-white font-semibold mb-2">{scenario.title}</h3>
-                    <p className="text-sm text-slate-400">{scenario.desc}</p>
-                  </HoloCard>
+                  <motion.div
+                    key={scenario.id}
+                    initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1, duration: 0.5 }}
+                  >
+                    <HoloCard className="p-5 cursor-pointer text-center h-full">
+                      <motion.div 
+                        className="flex justify-center"
+                        whileHover={{ scale: 1.2, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <Icon className="w-8 h-8 text-[#C6A87C] mb-3" weight="duotone" />
+                      </motion.div>
+                      <h3 className="text-white font-semibold mb-2">{scenario.title}</h3>
+                      <p className="text-sm text-slate-400">{scenario.desc}</p>
+                    </HoloCard>
+                  </motion.div>
                 );
               })}
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -956,28 +974,68 @@ export default function CyberHomePage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
+            viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="text-center mb-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-6"
+            >
               <IconChip icon={Sparkle} label="Education" variant="gold" />
               <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">Maxims Explorer</h2>
               <p className="mt-2 text-slate-400">Master the foundational principles of equity law</p>
-              <div className="mt-4 flex items-center justify-center gap-3">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="mt-4 flex items-center justify-center gap-3"
+              >
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
                   <Lightning className="w-4 h-4 text-emerald-400" />
                   <span className="text-sm text-emerald-400">3-day streak</span>
                 </div>
                 <Link to="/learn">
-                  <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F]">
-                    Start Learning
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F]">
+                      Start Learning
+                    </Button>
+                  </motion.div>
                 </Link>
-              </div>
+              </motion.div>
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="grid sm:grid-cols-3 gap-4">
-              {MAXIMS.map((maxim) => (
+            <div className="grid sm:grid-cols-3 gap-4">
+              {MAXIMS.map((maxim, idx) => (
+                <motion.div
+                  key={maxim.id}
+                  initial={{ opacity: 0, rotateY: -30, x: -50 }}
+                  whileInView={{ opacity: 1, rotateY: 0, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.15, duration: 0.6, ease: "easeOut" }}
+                >
+                  <HoloCard className="p-5 cursor-pointer group text-center h-full">
+                    <div className="flex justify-center mb-3">
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ type: "spring", stiffness: 400 }}
+                      >
+                        <IconChip label={maxim.category} variant="default" />
+                      </motion.div>
+                    </div>
+                    <p className="text-lg font-semibold text-white group-hover:text-[#C6A87C] transition-colors mb-2">
+                      {maxim.front}
+                    </p>
+                    <p className="text-sm text-slate-500 group-hover:text-slate-300 transition-colors">
+                      {maxim.back}
+                    </p>
+                  </HoloCard>
+                </motion.div>
+              ))}
+            </div>
                 <HoloCard key={maxim.id} className="p-5 cursor-pointer group text-center" hover>
                   <div className="flex justify-center mb-3">
                     <IconChip label={maxim.category} variant="default" />
