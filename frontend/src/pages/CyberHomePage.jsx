@@ -834,7 +834,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== TEMPLATE VAULT SECTION ===== */}
-      <section id="templates" className="py-10 lg:py-16 bg-[#0B1221]">
+      <section id="templates" className="py-8 lg:py-12 bg-[#0B1221]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -848,18 +848,18 @@ export default function CyberHomePage() {
               <p className="mt-2 text-slate-400">Professional trust document templates ready for customization</p>
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <motion.div variants={fadeInUp} className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
               {TEMPLATES.map((template) => {
                 const Icon = template.icon;
                 return (
-                  <HoloCard key={template.id} className="p-5 cursor-pointer">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
+                  <HoloCard key={template.id} className="p-4 cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-white font-semibold">{template.title}</h3>
-                        <p className="text-sm text-slate-400 mt-1">{template.desc}</p>
+                        <h3 className="text-white font-medium text-sm">{template.title}</h3>
+                        <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{template.desc}</p>
                       </div>
                     </div>
                   </HoloCard>
@@ -867,7 +867,7 @@ export default function CyberHomePage() {
               })}
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="mt-6 text-center">
+            <motion.div variants={fadeInUp} className="mt-5 text-center">
               <Link to="/templates">
                 <Button variant="outline" className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10">
                   Browse All Templates <ArrowRight className="w-4 h-4 ml-2" />
