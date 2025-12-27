@@ -449,20 +449,48 @@ export default function BinderPage() {
 
     setGenerating(true);
     try {
+      // Build request body with Court Mode options if enabled
+      const requestBody = {
+        portfolio_id: portfolioId,
+        profile_id: selectedProfile
+      };
+
+      // Add Court Mode options if any are enabled
+      if (courtModeConfig.bates_enabled || courtModeConfig.redaction_mode !== 'standard') {
+        requestBody.court_mode = {
+          bates_enabled: courtModeConfig.bates_enabled,
+          bates_prefix: courtModeConfig.bates_prefix,
+          bates_start_number: courtModeConfig.bates_start_number,
+          bates_digits: courtModeConfig.bates_digits,
+          bates_position: courtModeConfig.bates_position,
+          bates_include_cover: courtModeConfig.bates_include_cover,
+          redaction_mode: courtModeConfig.redaction_mode,
+          adhoc_redactions: courtModeConfig.adhoc_redactions
+        };
+      }
+
       const res = await fetch(`${API_URL}/api/binder/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          portfolio_id: portfolioId,
-          profile_id: selectedProfile
-        })
+        body: JSON.stringify(requestBody)
       });
       const data = await res.json();
 
       if (data.ok) {
+        // Build success message with Court Mode info
+        let description = `Successfully created binder with ${data.data.total_items} items`;
+        if (data.data.court_mode) {
+          if (data.data.court_mode.bates_pages > 0) {
+            description += ` • ${data.data.court_mode.bates_pages} Bates-stamped pages`;
+          }
+          if (data.data.court_mode.redactions_applied > 0) {
+            description += ` • ${data.data.court_mode.redactions_applied} redactions applied`;
+          }
+        }
+
         toast({
           title: 'Binder Generated',
-          description: `Successfully created binder with ${data.data.total_items} items`
+          description
         });
         
         // Fetch the newly created run to update Latest Binder section
