@@ -792,6 +792,7 @@ export default function MaximsPage({ user }) {
 
       {/* Maxims List */}
       <motion.div
+        key={selectedCategory + searchTerm}
         variants={staggerContainer}
         initial="initial"
         animate="animate"
