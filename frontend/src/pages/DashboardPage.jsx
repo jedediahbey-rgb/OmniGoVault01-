@@ -530,7 +530,7 @@ export default function DashboardPage({ user }) {
                     <div 
                       key={portfolio.portfolio_id}
                       onClick={() => navigate(`/vault/portfolio/${portfolio.portfolio_id}`)}
-                      className={`flex items-center gap-4 p-4 rounded-lg border transition-all cursor-pointer group ${
+                      className={`flex-1 flex items-center gap-4 p-4 rounded-lg border transition-all cursor-pointer group min-h-[60px] ${
                         isDefault 
                           ? 'border-vault-gold/40 bg-vault-gold/5 hover:bg-vault-gold/10' 
                           : 'border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5'
