@@ -1773,6 +1773,288 @@ class BinderService:
                 "error": error_info["user_message"]
             }
     
+    # ============ COURT MODE: BATES NUMBERING ============
+    
+    def _format_bates_number(self, prefix: str, number: int, digits: int) -> str:
+        """Format a Bates number with prefix and leading zeros."""
+        return f"{prefix}{str(number).zfill(digits)}"
+    
+    async def _get_portfolio_abbreviation(self, portfolio_id: str) -> str:
+        """Get or generate portfolio abbreviation for Bates prefix."""
+        portfolio = await self.db.portfolios.find_one(
+            {"portfolio_id": portfolio_id},
+            {"_id": 0, "name": 1, "abbreviation": 1}
+        )
+        
+        if not portfolio:
+            return "DOC-"
+        
+        # Use stored abbreviation if available
+        if portfolio.get("abbreviation"):
+            return f"{portfolio['abbreviation']}-"
+        
+        # Generate from portfolio name (first 4 uppercase letters)
+        name = portfolio.get("name", "DOC")
+        abbrev = ''.join(c for c in name.upper() if c.isalpha())[:4]
+        return f"{abbrev or 'DOC'}-"
+    
+    def apply_bates_numbering(
+        self,
+        pdf_bytes: bytes,
+        rules: Dict,
+        portfolio_abbrev: str
+    ) -> tuple:
+        """
+        Apply Bates numbering to final merged PDF.
+        Returns: (stamped_pdf_bytes, bates_page_map)
+        
+        Uses PyPDF2 with reportlab for stamping.
+        """
+        from io import BytesIO
+        try:
+            from PyPDF2 import PdfReader, PdfWriter
+            from reportlab.pdfgen import canvas
+            from reportlab.lib.pagesizes import letter
+            from reportlab.lib.units import inch
+        except ImportError:
+            # Return original if libraries not available
+            return pdf_bytes, []
+        
+        # Get Bates config from rules
+        bates_prefix = rules.get("bates_prefix") or portfolio_abbrev
+        start_number = rules.get("bates_start_number", 1)
+        digits = rules.get("bates_digits", 6)
+        position = rules.get("bates_position", BatesPosition.BOTTOM_RIGHT.value)
+        include_cover = rules.get("bates_include_cover", False)
+        font_size = rules.get("bates_font_size", 9)
+        margin_x = rules.get("bates_margin_x", 18)
+        margin_y = rules.get("bates_margin_y", 18)
+        
+        # Read the PDF
+        reader = PdfReader(BytesIO(pdf_bytes))
+        writer = PdfWriter()
+        
+        bates_map = []
+        current_number = start_number
+        
+        for page_idx, page in enumerate(reader.pages):
+            # Skip cover page if configured
+            if page_idx == 0 and not include_cover:
+                writer.add_page(page)
+                bates_map.append({
+                    "page_index": page_idx,
+                    "bates_number": None,
+                    "is_cover": True
+                })
+                continue
+            
+            # Get page dimensions
+            page_width = float(page.mediabox.width)
+            page_height = float(page.mediabox.height)
+            
+            # Create stamp PDF
+            stamp_buffer = BytesIO()
+            c = canvas.Canvas(stamp_buffer, pagesize=(page_width, page_height))
+            
+            # Format Bates number
+            bates_num = self._format_bates_number(bates_prefix, current_number, digits)
+            
+            # Calculate position
+            if position == BatesPosition.BOTTOM_RIGHT.value:
+                x = page_width - margin_x - (len(bates_num) * font_size * 0.5)
+                y = margin_y
+            elif position == BatesPosition.BOTTOM_LEFT.value:
+                x = margin_x
+                y = margin_y
+            else:  # bottom-center
+                x = page_width / 2 - (len(bates_num) * font_size * 0.25)
+                y = margin_y
+            
+            # Draw Bates number
+            c.setFont("Helvetica", font_size)
+            c.setFillColorRGB(0.3, 0.3, 0.3)  # Dark gray
+            c.drawString(x, y, bates_num)
+            c.save()
+            
+            # Merge stamp onto page
+            stamp_buffer.seek(0)
+            stamp_reader = PdfReader(stamp_buffer)
+            page.merge_page(stamp_reader.pages[0])
+            writer.add_page(page)
+            
+            # Record in map
+            bates_map.append({
+                "page_index": page_idx,
+                "bates_number": bates_num,
+                "is_cover": False
+            })
+            
+            current_number += 1
+        
+        # Write output
+        output_buffer = BytesIO()
+        writer.write(output_buffer)
+        output_buffer.seek(0)
+        
+        return output_buffer.read(), bates_map
+    
+    # ============ COURT MODE: REDACTION PROCESSING ============
+    
+    async def get_persistent_redactions(self, portfolio_id: str, user_id: str) -> List[Dict]:
+        """Get all persistent redaction markers for a portfolio."""
+        redactions = await self.db.redaction_markers.find(
+            {"portfolio_id": portfolio_id, "user_id": user_id},
+            {"_id": 0}
+        ).to_list(1000)
+        return redactions
+    
+    async def save_redaction_marker(
+        self,
+        portfolio_id: str,
+        user_id: str,
+        record_id: str,
+        field_path: str,
+        reason: str,
+        reason_type: str = "pii"
+    ) -> Dict:
+        """Save a persistent redaction marker."""
+        from uuid import uuid4
+        
+        marker_id = f"redact_{uuid4().hex[:12]}"
+        marker = {
+            "id": marker_id,
+            "portfolio_id": portfolio_id,
+            "user_id": user_id,
+            "record_id": record_id,
+            "field_path": field_path,
+            "reason": reason,
+            "reason_type": reason_type,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "is_persistent": True
+        }
+        
+        await self.db.redaction_markers.insert_one(marker)
+        marker.pop("_id", None)
+        return marker
+    
+    async def delete_redaction_marker(self, marker_id: str, user_id: str) -> bool:
+        """Delete a persistent redaction marker."""
+        result = await self.db.redaction_markers.delete_one(
+            {"id": marker_id, "user_id": user_id}
+        )
+        return result.deleted_count > 0
+    
+    def apply_redactions_to_text(
+        self,
+        text: str,
+        field_path: str,
+        redactions: List[Dict],
+        adhoc_redactions: List[Dict]
+    ) -> tuple:
+        """
+        Apply redactions to text content.
+        Returns: (redacted_text, was_redacted)
+        """
+        # Check if this field should be redacted
+        should_redact = False
+        redaction_reason = None
+        is_adhoc = False
+        
+        # Check adhoc redactions first (they can override persistent)
+        for adhoc in adhoc_redactions:
+            if adhoc.get("field_path") == field_path:
+                should_redact = True
+                redaction_reason = adhoc.get("reason", "Per-run redaction")
+                is_adhoc = True
+                break
+        
+        # Check persistent redactions
+        if not should_redact:
+            for redact in redactions:
+                if redact.get("field_path") == field_path:
+                    should_redact = True
+                    redaction_reason = redact.get("reason", "Redacted")
+                    break
+        
+        if should_redact:
+            return "[REDACTED]", True, redaction_reason, is_adhoc
+        
+        return text, False, None, False
+    
+    def process_content_redactions(
+        self,
+        content: Dict[str, List[Dict]],
+        redactions: List[Dict],
+        adhoc_redactions: List[Dict],
+        redaction_mode: str
+    ) -> tuple:
+        """
+        Process all content applying redactions.
+        Returns: (processed_content, redaction_log)
+        """
+        if redaction_mode == RedactionMode.STANDARD.value:
+            return content, {"entries": [], "total_persistent": 0, "total_adhoc": 0}
+        
+        redaction_log = {
+            "entries": [],
+            "total_persistent": 0,
+            "total_adhoc": 0,
+            "generated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Build lookup map by record_id
+        redaction_map = {}
+        for r in redactions:
+            rid = r.get("record_id")
+            if rid not in redaction_map:
+                redaction_map[rid] = []
+            redaction_map[rid].append(r)
+        
+        adhoc_map = {}
+        for a in adhoc_redactions:
+            rid = a.get("record_id")
+            if rid not in adhoc_map:
+                adhoc_map[rid] = []
+            adhoc_map[rid].append(a)
+        
+        # Process each section
+        for section_key, items in content.items():
+            if section_key.startswith("_"):
+                continue
+            
+            for item in items:
+                record_id = item.get("id")
+                if not record_id:
+                    continue
+                
+                record_redactions = redaction_map.get(record_id, [])
+                record_adhoc = adhoc_map.get(record_id, [])
+                
+                # Process payload fields
+                payload = item.get("payload", {})
+                if payload:
+                    for field_key, field_value in list(payload.items()):
+                        if isinstance(field_value, str):
+                            field_path = f"{record_id}.payload.{field_key}"
+                            redacted, was_redacted, reason, is_adhoc = self.apply_redactions_to_text(
+                                field_value, field_path, record_redactions, record_adhoc
+                            )
+                            if was_redacted:
+                                payload[field_key] = redacted
+                                redaction_log["entries"].append({
+                                    "record_id": record_id,
+                                    "field_path": field_path,
+                                    "reason": reason,
+                                    "is_adhoc": is_adhoc,
+                                    "timestamp": datetime.now(timezone.utc).isoformat()
+                                })
+                                if is_adhoc:
+                                    redaction_log["total_adhoc"] += 1
+                                else:
+                                    redaction_log["total_persistent"] += 1
+        
+        return content, redaction_log
+    
     def _get_user_friendly_error(self, e: Exception) -> str:
         """Convert technical errors to user-friendly messages."""
         error_str = str(e).lower()
