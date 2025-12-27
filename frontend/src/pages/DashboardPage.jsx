@@ -433,7 +433,7 @@ export default function DashboardPage({ user }) {
                     onClick={() => toggleQuickAction('newdocument')}
                     className="text-white hover:bg-vault-gold/20 cursor-pointer text-sm"
                   >
-                    <FileText className="w-4 h-4 mr-2 text-vault-gold" />
+                    <Notebook className="w-4 h-4 mr-2 text-vault-gold" />
                     <span className="flex-1">New Document</span>
                     {selectedActions.includes('newdocument') && (
                       <span className="text-vault-gold text-xs">✓</span>
