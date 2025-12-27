@@ -790,19 +790,19 @@ export default function CyberHomePage() {
               
               <motion.h2
                 variants={fadeInUp}
-                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light lg:-mt-4"
+                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light mt-4 sm:mt-2 lg:-mt-4"
               >
                 A matrix system for trust governance.
               </motion.h2>
               
               <motion.p 
                 variants={fadeInUp}
-                className="mt-1 lg:mt-1 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed italic"
+                className="mt-4 sm:mt-3 lg:mt-1 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed italic"
               >
                 &ldquo;In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will.&rdquo;&nbsp;&nbsp;<span className="text-[10px] text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
               
-              <motion.div variants={fadeInUp} className="mt-3 flex justify-center">
+              <motion.div variants={fadeInUp} className="mt-6 sm:mt-5 lg:mt-3 flex justify-center">
                 <Link to="/login">
                   <Button size="default" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-6">
                     Enter the Vault
@@ -811,13 +811,13 @@ export default function CyberHomePage() {
               </motion.div>
               
               {/* Microcopy */}
-              <motion.p variants={fadeInUp} className="mt-1 text-[10px] text-slate-500 flex items-center gap-1.5 justify-center">
+              <motion.p variants={fadeInUp} className="mt-4 sm:mt-3 lg:mt-1 text-[10px] text-slate-500 flex items-center gap-1.5 justify-center">
                 <ClockCounterClockwise className="w-3 h-3" />
                 Draft → Finalize → Amend (with traceable history).
               </motion.p>
               
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="mt-3 flex flex-wrap gap-6 lg:gap-10 justify-center">
+              <motion.div variants={fadeInUp} className="mt-6 sm:mt-5 lg:mt-3 flex flex-wrap gap-8 sm:gap-6 lg:gap-10 justify-center">
                 {[
                   { value: '500+', label: 'Trusts Managed' },
                   { value: '10k+', label: 'Documents Filed' },
