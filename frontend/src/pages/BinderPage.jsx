@@ -665,6 +665,53 @@ export default function BinderPage() {
     }
   }, [portfolioId]);
 
+  // Fetch disputes for Evidence Mode
+  const fetchDisputes = useCallback(async () => {
+    if (!portfolioId) return;
+    try {
+      const res = await fetch(`${API_URL}/api/evidence-binder/disputes?portfolio_id=${portfolioId}`);
+      const data = await res.json();
+      if (data.ok) {
+        setDisputes(data.data.disputes || []);
+      }
+    } catch (error) {
+      console.error('Error fetching disputes:', error);
+    }
+  }, [portfolioId]);
+
+  // Fetch evidence preview
+  const fetchEvidencePreview = useCallback(async () => {
+    if (!portfolioId || !selectedDispute) return;
+    setEvidenceLoading(true);
+    try {
+      const res = await fetch(
+        `${API_URL}/api/evidence-binder/preview?portfolio_id=${portfolioId}&dispute_id=${selectedDispute}&include_linked_only=${evidenceConfig.include_linked_only}&include_date_range=${evidenceConfig.include_date_range_items}`
+      );
+      const data = await res.json();
+      if (data.ok) {
+        setEvidencePreview(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching evidence preview:', error);
+    } finally {
+      setEvidenceLoading(false);
+    }
+  }, [portfolioId, selectedDispute, evidenceConfig.include_linked_only, evidenceConfig.include_date_range_items]);
+
+  // Fetch evidence binder runs
+  const fetchEvidenceRuns = useCallback(async () => {
+    if (!portfolioId) return;
+    try {
+      const res = await fetch(`${API_URL}/api/evidence-binder/runs?portfolio_id=${portfolioId}&limit=5`);
+      const data = await res.json();
+      if (data.ok) {
+        setEvidenceRuns(data.data.runs || []);
+      }
+    } catch (error) {
+      console.error('Error fetching evidence runs:', error);
+    }
+  }, [portfolioId]);
+
   // Fetch schedules when portfolioId changes
   useEffect(() => {
     fetchSchedules();
