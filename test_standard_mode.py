@@ -6,7 +6,7 @@ Test generation without redaction mode
 import requests
 import json
 
-BASE_URL = "https://proof-vault.preview.emergentagent.com/api"
+BASE_URL = "https://mobileflow-2.preview.emergentagent.com/api"
 PORTFOLIO_ID = "port_0e9a783c1a71"
 
 def test_without_redaction():

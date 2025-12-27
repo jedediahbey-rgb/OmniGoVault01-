@@ -13,7 +13,7 @@ Verify RM-ID migration functionality for the OmniGovault application including:
 
 #### RM-ID Migration Test Summary
 **Portfolio Tested**: port_d92308e007f1
-**Backend URL**: https://proof-vault.preview.emergentagent.com/api
+**Backend URL**: https://mobileflow-2.preview.emergentagent.com/api
 
 #### 1. Trust Profiles Check - ✅ PASS
 - **GET /api/trust-profiles**: ✅ Working correctly

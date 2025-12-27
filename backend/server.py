@@ -4018,7 +4018,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
-        "https://proof-vault.preview.emergentagent.com",
+        "https://mobileflow-2.preview.emergentagent.com",
         "http://localhost:3000",
         "http://127.0.0.1:3000"
     ],
