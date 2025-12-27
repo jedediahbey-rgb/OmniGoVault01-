@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for Trust Management Application
-Testing P1 (Integrity Seals) and P2 (Scheduled Binder Generation) features
+Testing Maxims and Knowledge Base API endpoints
 """
 
 import requests
