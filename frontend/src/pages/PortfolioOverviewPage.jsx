@@ -738,7 +738,7 @@ export default function PortfolioOverviewPage({ user }) {
         <StatCard
           title="Documents"
           value={documents.length}
-          icon={FileText}
+          icon={Notebook}
         />
         <StatCard
           title="Assets"
