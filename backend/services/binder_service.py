@@ -1556,6 +1556,86 @@ class BinderService:
             </div>
             """)
         
+        # 9. Redaction Log (Court Mode)
+        redaction_log = content.get("_redaction_log")
+        if redaction_log and redaction_log.get("entries"):
+            section_counter += 1
+            total_redactions = redaction_log.get("total_persistent", 0) + redaction_log.get("total_adhoc", 0)
+            
+            html_parts.append(f"""
+            <div class="section-divider" id="section-redaction_log">
+                <h1 class="bookmark-l1" data-bookmark="Section {section_counter}: Redaction Log" style="visibility: hidden; height: 0; margin: 0;">Redaction Log</h1>
+                <div class="section-icon">
+                    <span class="section-icon-text">🔒</span>
+                </div>
+                <div class="section-number">Section {section_counter}</div>
+                <div class="section-title">Redaction Log</div>
+                <div class="section-subtitle">{total_redactions} Redaction{'s' if total_redactions != 1 else ''} Applied</div>
+                <div class="section-meta">
+                    Court Mode: Sensitive information has been redacted
+                </div>
+            </div>
+            <div class="record-page" id="redaction-report">
+                <h2 class="bookmark-l2" data-bookmark="Redaction Log" style="visibility: hidden; height: 0; margin: 0;">Redactions</h2>
+                <h2 style="color: #d4af37;">Redaction Log</h2>
+                <div style="margin-bottom: 20px; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107;">
+                    <p style="font-size: 10pt; color: #856404; margin: 0;">
+                        <strong>Notice:</strong> This document contains redacted information. Content marked as [REDACTED] 
+                        has been removed pursuant to privacy regulations, attorney-client privilege, or other applicable protections.
+                    </p>
+                </div>
+                <div class="trust-profile-summary">
+                    <div class="profile-field">
+                        <div class="profile-label">Total Redactions</div>
+                        <div class="profile-value">{total_redactions}</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-label">Persistent Redactions</div>
+                        <div class="profile-value">{redaction_log.get('total_persistent', 0)}</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-label">Per-Run Redactions</div>
+                        <div class="profile-value">{redaction_log.get('total_adhoc', 0)}</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-label">Generated At</div>
+                        <div class="profile-value">{redaction_log.get('generated_at', '—')}</div>
+                    </div>
+                </div>
+                <h3 style="color: #333; margin-top: 24px;">Redaction Details</h3>
+                <table class="manifest-table">
+                    <thead>
+                        <tr>
+                            <th>Record ID</th>
+                            <th>Field</th>
+                            <th>Reason</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            """)
+            
+            for entry in redaction_log.get("entries", []):
+                record_id = entry.get("record_id", "—")[:20]
+                field_path = entry.get("field_path", "—").split(".")[-1]
+                reason = entry.get("reason", "—")
+                redact_type = "Per-Run" if entry.get("is_adhoc") else "Persistent"
+                
+                html_parts.append(f"""
+                    <tr>
+                        <td><code style="font-size: 8pt;">{record_id}</code></td>
+                        <td>{field_path}</td>
+                        <td>{reason}</td>
+                        <td>{redact_type}</td>
+                    </tr>
+                """)
+            
+            html_parts.append("""
+                    </tbody>
+                </table>
+            </div>
+            """)
+        
         # Combine HTML
         full_html = f"""
         <!DOCTYPE html>
