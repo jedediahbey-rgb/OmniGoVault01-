@@ -20,7 +20,8 @@ import {
   ArrowLeft,
   FolderSimple,
   ArrowClockwise,
-  DotsThreeVertical
+  DotsThreeVertical,
+  ShieldCheck
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
