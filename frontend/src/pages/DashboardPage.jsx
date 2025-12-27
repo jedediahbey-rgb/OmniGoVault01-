@@ -10,6 +10,7 @@ import {
   Briefcase,
   ChartLine,
   Clock,
+  Coins,
   DotsThreeVertical,
   FilePdf,
   FileText,
@@ -30,7 +31,9 @@ import {
   Sparkle,
   Stethoscope,
   Trash,
-  Star
+  Star,
+  Vault,
+  TreeStructure
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import PageHelpTooltip from '../components/shared/PageHelpTooltip';
