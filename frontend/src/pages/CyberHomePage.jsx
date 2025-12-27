@@ -835,7 +835,7 @@ export default function CyberHomePage() {
         
         {/* Scroll indicator - positioned below stats with proper spacing */}
         <motion.div 
-          className="absolute bottom-20 sm:bottom-16 lg:bottom-4 left-1/2 -translate-x-1/2"
+          className="absolute bottom-20 sm:bottom-16 lg:bottom-2 left-1/2 -translate-x-1/2"
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
