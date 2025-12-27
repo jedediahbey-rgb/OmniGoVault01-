@@ -223,6 +223,12 @@ const categories = [
   { id: 'trusts', label: 'Trusts' },
   { id: 'jurisdiction', label: 'Jurisdiction' },
   { id: 'priority', label: 'Priority' },
+  { id: 'distribution', label: 'Distribution' },
+  { id: 'consideration', label: 'Consideration' },
+  { id: 'relief', label: 'Relief' },
+  { id: 'practical', label: 'Practical' },
+  { id: 'fraud', label: 'Fraud' },
+  { id: 'allocation', label: 'Allocation' },
 ];
 
 export default function MaximsPage({ user }) {
