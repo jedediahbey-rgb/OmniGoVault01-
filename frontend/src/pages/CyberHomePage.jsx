@@ -790,14 +790,14 @@ export default function CyberHomePage() {
               
               <motion.h2
                 variants={fadeInUp}
-                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light"
+                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light lg:-mt-4"
               >
                 A matrix system for trust governance.
               </motion.h2>
               
               <motion.p 
                 variants={fadeInUp}
-                className="mt-1 lg:mt-2 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed italic"
+                className="mt-1 lg:mt-1 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed italic"
               >
                 &ldquo;In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will.&rdquo;&nbsp;&nbsp;<span className="text-[10px] text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
