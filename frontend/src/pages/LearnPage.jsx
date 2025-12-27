@@ -722,6 +722,7 @@ The jurat (notary attestation) verifies the affiant swore to the truth of statem
 ];
 
 export default function LearnPage({ user }) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedModule, setSelectedModule] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
@@ -729,6 +730,24 @@ export default function LearnPage({ user }) {
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [progress, setProgress] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // Handle direct navigation to a specific lesson via URL parameter
+  useEffect(() => {
+    const lessonId = searchParams.get('lesson');
+    if (lessonId) {
+      // Find the module containing this lesson
+      for (const module of modules) {
+        const lesson = module.lessons.find(l => l.id === lessonId);
+        if (lesson) {
+          setSelectedModule(module);
+          setSelectedLesson(lesson);
+          // Clear the URL parameter after navigation
+          setSearchParams({}, { replace: true });
+          break;
+        }
+      }
+    }
+  }, [searchParams, setSearchParams]);
 
   // Scroll to top when lesson/module is selected
   useEffect(() => {
