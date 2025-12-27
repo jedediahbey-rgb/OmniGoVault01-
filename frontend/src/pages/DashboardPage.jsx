@@ -386,7 +386,7 @@ export default function DashboardPage({ user }) {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
       >
         <motion.div variants={fadeInUp}>
-          <StatCard label="Portfolios" value={portfolios.length} icon={FolderSimple} variant="gold" />
+          <StatCard label="Portfolios" value={portfolios.length} icon={TreeStructure} variant="gold" />
         </motion.div>
         <motion.div variants={fadeInUp}>
           <StatCard label="Documents" value={stats?.documents || 0} icon={FileText} variant="gold" />
