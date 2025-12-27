@@ -36,7 +36,8 @@ import {
   Gavel,
   ListNumbers,
   Tag,
-  Timer
+  Timer,
+  ShieldCheck
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
