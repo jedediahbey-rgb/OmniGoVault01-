@@ -535,6 +535,7 @@ const categories = [
   { id: 'remedies', label: 'Remedies', icon: BookOpen },
   { id: 'documents', label: 'Documents', icon: BookOpen },
   { id: 'jurisdiction', label: 'Jurisdiction', icon: BookOpen },
+  { id: 'property', label: 'Property', icon: BookOpen },
 ];
 
 export default function GlossaryPage({ user }) {
@@ -783,6 +784,7 @@ export default function GlossaryPage({ user }) {
 
       {/* Terms List */}
       <motion.div
+        key={selectedCategory + searchTerm}
         variants={staggerContainer}
         initial="initial"
         animate="animate"
