@@ -856,7 +856,7 @@ export default function MeetingEditorPage({ user }) {
                   </h1>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-vault-muted">
                     {meeting.rm_id && (
-                      <span className="font-mono bg-vault-dark/50 px-2 py-0.5 rounded text-xs">
+                      <span className="font-mono bg-vault-dark/50 px-2 py-0.5 rounded text-xs break-all">
                         {meeting.rm_id}
                       </span>
                     )}
