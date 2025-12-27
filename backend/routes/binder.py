@@ -977,3 +977,263 @@ async def update_portfolio_abbreviation(portfolio_id: str, request: Request):
         
     except Exception as e:
         return error_response("UPDATE_ERROR", str(e), status_code=500)
+
+
+# ============ GAPS ANALYSIS ENDPOINTS (Phase 5) ============
+
+@router.get("/gaps/checklist")
+async def get_checklist(
+    request: Request,
+    portfolio_id: str = Query(...)
+):
+    """Get the compliance checklist for a portfolio."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        binder_service = create_binder_service(db)
+        checklist = await binder_service.get_checklist_template(portfolio_id, user.user_id)
+        
+        return success_response({
+            "checklist": checklist,
+            "total_items": len(checklist),
+            "version": "Trust Administration Checklist v1"
+        })
+        
+    except Exception as e:
+        return error_response("FETCH_ERROR", str(e), status_code=500)
+
+
+@router.post("/gaps/override")
+async def save_checklist_override(request: Request):
+    """
+    Save a checklist item override for a portfolio.
+    
+    Body:
+    {
+        "portfolio_id": "...",
+        "item_id": "trust_agreement",
+        "is_disabled": false,
+        "required": true,
+        "not_applicable": false,
+        "due_date": "2025-01-15"
+    }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        portfolio_id = body.get("portfolio_id")
+        item_id = body.get("item_id")
+        
+        if not portfolio_id:
+            return error_response("MISSING_FIELD", "portfolio_id is required")
+        if not item_id:
+            return error_response("MISSING_FIELD", "item_id is required")
+        
+        override_data = {
+            k: v for k, v in body.items() 
+            if k not in ["portfolio_id", "item_id"]
+        }
+        
+        binder_service = create_binder_service(db)
+        result = await binder_service.save_checklist_override(
+            portfolio_id, user.user_id, item_id, override_data
+        )
+        
+        return success_response({
+            "override": result,
+            "message": "Checklist override saved"
+        })
+        
+    except Exception as e:
+        return error_response("SAVE_ERROR", str(e), status_code=500)
+
+
+@router.get("/gaps/analyze")
+async def analyze_gaps(
+    request: Request,
+    portfolio_id: str = Query(...)
+):
+    """
+    Run gap analysis on a portfolio's documents.
+    Returns compliance status, risk levels, and remediation hints.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        binder_service = create_binder_service(db)
+        
+        # Get default rules to collect content
+        rules = {
+            "include_drafts": False,
+            "include_pending_approved_executed": True,
+            "include_voided_trashed": False,
+            "include_attachments": True,
+            "include_ledger_excerpts": True,
+            "date_range": "all"
+        }
+        
+        # Collect content
+        content = await binder_service.collect_binder_content(portfolio_id, user.user_id, rules)
+        
+        # Run gap analysis
+        gap_analysis = await binder_service.analyze_gaps(portfolio_id, user.user_id, content)
+        
+        return success_response(gap_analysis)
+        
+    except Exception as e:
+        return error_response("ANALYSIS_ERROR", str(e), status_code=500)
+
+
+# ============ INTEGRITY VERIFICATION ENDPOINTS (Phase 5) ============
+
+@router.get("/verify")
+async def verify_binder_by_hash(
+    request: Request,
+    hash: str = Query(None, description="SHA-256 hash of the PDF"),
+    run: str = Query(None, description="Run ID")
+):
+    """
+    Verify a binder by its hash or run ID.
+    Used for provenance checking.
+    """
+    try:
+        if not hash and not run:
+            return error_response("MISSING_FIELD", "Either 'hash' or 'run' parameter is required")
+        
+        binder_service = create_binder_service(db)
+        
+        if hash:
+            result = await binder_service.verify_binder_by_hash(hash)
+            
+            if not result:
+                return success_response({
+                    "verified": False,
+                    "message": "No binder found with this hash"
+                })
+            
+            return success_response(result)
+        
+        # Verify by run ID
+        run_data = await db.binder_runs.find_one(
+            {"id": run},
+            {"_id": 0, "id": 1, "portfolio_id": 1, "profile_name": 1, 
+             "finished_at": 1, "total_items": 1, "integrity_stamp": 1, "status": 1}
+        )
+        
+        if not run_data:
+            return success_response({
+                "verified": False,
+                "message": "Run not found"
+            })
+        
+        return success_response({
+            "verified": True,
+            "run_id": run_data.get("id"),
+            "portfolio_id": run_data.get("portfolio_id"),
+            "profile_name": run_data.get("profile_name"),
+            "status": run_data.get("status"),
+            "generated_at": run_data.get("finished_at"),
+            "total_items": run_data.get("total_items"),
+            "integrity_stamp": run_data.get("integrity_stamp")
+        })
+        
+    except Exception as e:
+        return error_response("VERIFY_ERROR", str(e), status_code=500)
+
+
+@router.post("/verify/upload")
+async def verify_binder_by_upload(request: Request):
+    """
+    Verify a binder by uploading the PDF file.
+    Computes SHA-256 and checks against stored records.
+    """
+    try:
+        # Get the file from multipart form data
+        form = await request.form()
+        file = form.get("file")
+        
+        if not file:
+            return error_response("MISSING_FIELD", "No file uploaded")
+        
+        # Read file content
+        content = await file.read()
+        
+        if len(content) == 0:
+            return error_response("VALIDATION_ERROR", "Empty file uploaded")
+        
+        binder_service = create_binder_service(db)
+        
+        # Compute hash
+        result = binder_service.verify_binder_by_upload(content)
+        computed_hash = result.get("computed_hash")
+        
+        # Check against database
+        verification = await binder_service.verify_binder_by_hash(computed_hash)
+        
+        if verification:
+            return success_response({
+                "verified": True,
+                "computed_hash": computed_hash,
+                "match_found": True,
+                **verification
+            })
+        
+        return success_response({
+            "verified": False,
+            "computed_hash": computed_hash,
+            "match_found": False,
+            "message": "No matching binder found in records"
+        })
+        
+    except Exception as e:
+        return error_response("VERIFY_ERROR", str(e), status_code=500)
+
+
+@router.get("/gaps/summary")
+async def get_gaps_summary(
+    request: Request,
+    portfolio_id: str = Query(...)
+):
+    """Get a quick summary of gaps without full analysis."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        binder_service = create_binder_service(db)
+        
+        # Get checklist
+        checklist = await binder_service.get_checklist_template(portfolio_id, user.user_id)
+        
+        # Get quick count of documents
+        doc_count = await db.governance_records.count_documents({
+            "portfolio_id": portfolio_id,
+            "status": {"$nin": ["voided", "trashed"]}
+        })
+        
+        # Categorize checklist items
+        tier1_count = len([c for c in checklist if c.get("tier") == 1])
+        required_count = len([c for c in checklist if c.get("required")])
+        
+        return success_response({
+            "checklist_items": len(checklist),
+            "tier1_items": tier1_count,
+            "required_items": required_count,
+            "documents_in_portfolio": doc_count,
+            "needs_full_analysis": True,
+            "hint": "Run /api/binder/gaps/analyze for detailed compliance report"
+        })
+        
+    except Exception as e:
+        return error_response("FETCH_ERROR", str(e), status_code=500)
