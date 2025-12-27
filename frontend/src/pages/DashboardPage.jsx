@@ -370,16 +370,16 @@ export default function DashboardPage({ user }) {
         </motion.div>
       </motion.div>
 
-      {/* Main Content SquaresFour */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Main Content - Quick Actions & Portfolios */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         {/* Quick Actions */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="lg:col-span-4"
+          className="lg:col-span-4 flex"
         >
-          <GlassCard className="h-full flex flex-col">
+          <GlassCard className="w-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading text-lg text-white">Quick Actions</h3>
               <DropdownMenu>
