@@ -501,18 +501,18 @@ export default function ScenariosPage() {
                       interactive
                       glow
                       onClick={() => selectScenario(scenario)}
-                      className="h-full group"
+                      className="h-full group flex flex-col"
                     >
                       <IconBadge icon={Icon} size="lg" variant={scenario.color} className="mb-4" />
                       <h3 className="text-lg font-heading text-white mb-2">{scenario.title}</h3>
-                      <p className="text-white/50 text-sm mb-4">{scenario.description}</p>
-                      <div className="flex items-center justify-between">
-                        <Badge variant="outline" className="text-white/40 border-white/20">
+                      <p className="text-white/50 text-sm mb-4 flex-1">{scenario.description}</p>
+                      <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/5">
+                        <Badge variant="outline" className="text-white/40 border-white/20 shrink-0">
                           {scenario.category}
                         </Badge>
-                        <div className="flex items-center text-vault-gold text-sm">
+                        <div className="flex items-center text-vault-gold text-sm whitespace-nowrap">
                           <span>Run Scenario</span>
-                          <ArrowRight className="w-4 h-4 ml-2" />
+                          <ArrowRight className="w-4 h-4 ml-1.5 shrink-0" />
                         </div>
                       </div>
                     </GlassCard>
