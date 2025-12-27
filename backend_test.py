@@ -376,10 +376,10 @@ class EquityTrustAPITester:
     # ============ GOVERNANCE MODULE TESTS ============
 
     def test_governance_records(self):
-        """Test GET /api/governance/records?portfolio_id={portfolio_id}"""
+        """Test GET /api/governance/v2/records?portfolio_id={portfolio_id}"""
         try:
             params = {"portfolio_id": self.test_portfolio_id}
-            response = self.session.get(f"{self.base_url}/governance/records", params=params, timeout=10)
+            response = self.session.get(f"{self.base_url}/governance/v2/records", params=params, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
@@ -407,18 +407,18 @@ class EquityTrustAPITester:
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/governance/records", success, details)
+            self.log_test("GET /api/governance/v2/records", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/governance/records", False, f"Error: {str(e)}")
+            self.log_test("GET /api/governance/v2/records", False, f"Error: {str(e)}")
             return False
 
     def test_governance_subjects(self):
-        """Test GET /api/governance/subjects?portfolio_id={portfolio_id}"""
+        """Test GET /api/rm/subjects?portfolio_id={portfolio_id}"""
         try:
             params = {"portfolio_id": self.test_portfolio_id}
-            response = self.session.get(f"{self.base_url}/governance/subjects", params=params, timeout=10)
+            response = self.session.get(f"{self.base_url}/rm/subjects", params=params, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
@@ -434,11 +434,11 @@ class EquityTrustAPITester:
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/governance/subjects", success, details)
+            self.log_test("GET /api/rm/subjects", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/governance/subjects", False, f"Error: {str(e)}")
+            self.log_test("GET /api/rm/subjects", False, f"Error: {str(e)}")
             return False
 
     # ============ EVIDENCE BINDER CONFIGURATION TESTS ============
