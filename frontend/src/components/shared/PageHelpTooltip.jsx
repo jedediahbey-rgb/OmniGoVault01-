@@ -103,16 +103,16 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 z-[100] bg-black/40"
+              className="fixed inset-0 z-[100] bg-black/50"
             />
             
-            {/* Tooltip - Centered modal with fixed width for consistent text alignment */}
+            {/* Tooltip - Centered modal with consistent text alignment */}
             <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="fixed z-[101] left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-[300px] p-4 bg-[#0A0F1A] border border-vault-gold/20 rounded-xl shadow-2xl"
+              className="fixed z-[101] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[280px] p-5 bg-[#0A0F1A] border border-vault-gold/30 rounded-xl shadow-2xl"
             >
               <button
                 onClick={() => setIsOpen(false)}
@@ -121,8 +121,8 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
                 <X className="w-4 h-4" weight="bold" />
               </button>
               
-              <h4 className="text-sm font-semibold text-vault-gold mb-3">{content.title}</h4>
-              <p className="text-sm text-white/70 leading-relaxed text-left">{content.description}</p>
+              <h4 className="text-base font-semibold text-vault-gold mb-3 pr-6">{content.title}</h4>
+              <p className="text-sm text-white/70 leading-[1.6] text-justify">{content.description}</p>
             </motion.div>
           </>
         )}
