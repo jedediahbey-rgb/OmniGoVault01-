@@ -206,7 +206,7 @@ class CourtModeAPITester:
     def test_update_portfolio_abbreviation(self):
         """Test 5: PUT /api/binder/portfolio/{portfolio_id}/abbreviation"""
         try:
-            payload = {"abbreviation": "TEST"}
+            payload = {"abbreviation": "COURT"}  # Use different abbreviation
             
             response = self.session.put(
                 f"{self.base_url}/binder/portfolio/{self.test_portfolio_id}/abbreviation", 
@@ -227,7 +227,7 @@ class CourtModeAPITester:
                     details += f", Bates prefix: {bates_prefix}"
                     
                     # Verify abbreviation validation
-                    if abbreviation == "TEST" and bates_prefix == "TEST-":
+                    if abbreviation == "COURT" and bates_prefix == "COURT-":
                         details += f", Abbreviation validation working correctly"
                     else:
                         success = False
