@@ -1225,7 +1225,7 @@ export default function CyberHomePage() {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button 
                     className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F]"
-                    onClick={handleNavigateWithTransition('/learn')}
+                    onClick={handleSimpleNavigation('/learn')}
                   >
                     Start Learning
                   </Button>
@@ -1328,7 +1328,7 @@ export default function CyberHomePage() {
                 <Button 
                   variant="outline" 
                   className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10"
-                  onClick={handleNavigateWithTransition('/templates')}
+                  onClick={handleSimpleNavigation('/templates')}
                 >
                   Browse All Templates <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
