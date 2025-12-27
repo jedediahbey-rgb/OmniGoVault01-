@@ -96,6 +96,25 @@ export default function DashboardPage({ user }) {
     return saved ? JSON.parse(saved) : ['newdocument', 'glossary', 'assistant', 'diagnostics'];
   });
 
+  // Calculate max quick actions based on portfolio count
+  // Base: 4 slots, +2 slots for every 2 portfolios (up to max 10)
+  const getMaxQuickActions = useCallback((portfolioCount) => {
+    const baseSlots = 4;
+    const bonusSlots = Math.floor(portfolioCount / 2) * 2;
+    return Math.min(baseSlots + bonusSlots, 10);
+  }, []);
+
+  const maxQuickActions = getMaxQuickActions(portfolios.length);
+
+  // Auto-trim selected actions when max decreases (portfolios deleted)
+  useEffect(() => {
+    if (selectedActions.length > maxQuickActions) {
+      const trimmed = selectedActions.slice(0, maxQuickActions);
+      setSelectedActions(trimmed);
+      localStorage.setItem('quickActions', JSON.stringify(trimmed));
+    }
+  }, [maxQuickActions, selectedActions]);
+
   const quickActions = allQuickActions.filter(a => selectedActions.includes(a.id));
 
   const toggleQuickAction = (actionId) => {
