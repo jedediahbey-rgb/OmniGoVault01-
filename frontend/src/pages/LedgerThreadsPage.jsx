@@ -512,10 +512,12 @@ export default function LedgerThreadsPage() {
                 <GitBranch className="w-5 h-5 text-vault-gold shrink-0" />
                 <h1 className="text-xl font-heading text-white truncate">Thread Manager</h1>
               </div>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-white/60 text-sm">Organize and manage ledger threads</p>
-                <PageHelpTooltip pageKey="threadManager" />
-              </div>
+              <p className="text-white/60 text-sm mt-1">
+                Organize and manage ledger threads
+                <span className="inline-flex align-middle ml-1.5">
+                  <PageHelpTooltip pageKey="threadManager" />
+                </span>
+              </p>
             </div>
           </div>
 

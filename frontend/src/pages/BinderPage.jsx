@@ -794,10 +794,12 @@ export default function BinderPage() {
                 <FilePdf className="w-5 h-5 text-vault-gold shrink-0" />
                 <h1 className="text-xl font-heading text-white truncate">Portfolio Binder</h1>
               </div>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-white/60 text-sm">Generate court-ready PDF binders</p>
-                <PageHelpTooltip pageKey="binder" />
-              </div>
+              <p className="text-white/60 text-sm mt-1">
+                Generate court-ready PDF binders
+                <span className="inline-flex align-middle ml-1.5">
+                  <PageHelpTooltip pageKey="binder" />
+                </span>
+              </p>
             </div>
           </div>
 
