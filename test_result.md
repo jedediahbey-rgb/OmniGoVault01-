@@ -1974,3 +1974,43 @@ Test the new Court Mode features:
 
 ### Test Status
 Testing in progress...
+
+
+## Phase 5 Testing: Gaps Analysis & Integrity Stamping
+Date: 2025-12-27
+
+### Testing Goal
+Test the Phase 5 features:
+1. Gaps Analysis - Compliance checklist, gap detection, risk levels
+2. Integrity Stamping - SHA-256 hash, verification endpoint
+3. Frontend UI - Compliance Gaps panel
+
+### Features to Test
+
+#### Backend APIs:
+- GET /api/binder/gaps/checklist - Get compliance checklist template
+- GET /api/binder/gaps/analyze - Run full gap analysis
+- GET /api/binder/gaps/summary - Quick gaps summary
+- POST /api/binder/gaps/override - Save checklist item override
+- GET /api/binder/verify?hash=xxx - Verify by hash
+- GET /api/binder/verify?run=xxx - Verify by run ID
+- POST /api/binder/verify/upload - Verify by uploading PDF
+
+#### Binder Generation with Phase 5:
+- POST /api/binder/generate - Should include gaps_analysis and integrity in response
+- Generated PDF should have Gap Report and Integrity Certificate sections
+
+#### Frontend UI:
+- Compliance Gaps panel (expandable)
+- Gap analysis stats (Complete/Partial/Missing)
+- Risk summary
+- High risk items list
+- Refresh analysis button
+
+### Key Files
+- /app/backend/services/binder_service.py - Gap analysis and integrity stamp logic
+- /app/backend/routes/binder.py - Phase 5 endpoints
+- /app/frontend/src/pages/BinderPage.jsx - Compliance Gaps UI
+
+### Test Status
+Testing in progress...
