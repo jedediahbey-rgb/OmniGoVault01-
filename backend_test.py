@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Trust Management Application
-Testing Evidence Binder Feature (P5)
+Backend API Testing for Equity Trust Portfolio Application
+Comprehensive Regression Testing for Multiple Feature Updates
 """
 
 import requests
@@ -15,7 +15,7 @@ import hashlib
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://gaps-analyzer.preview.emergentagent.com/api"
 
-class EvidenceBinderAPITester:
+class EquityTrustAPITester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
