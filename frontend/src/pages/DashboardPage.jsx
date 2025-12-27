@@ -539,7 +539,7 @@ export default function DashboardPage({ user }) {
                           : 'border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5'
                       }`}
                     >
-                      <IconBadge icon={Vault} size="lg" variant="gold" />
+                      <IconBadge icon={ShieldCheck} size="lg" variant="gold" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="text-white font-medium text-sm">{portfolio.name}</p>
