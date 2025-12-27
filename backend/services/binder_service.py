@@ -520,7 +520,18 @@ class BinderService:
                     {"_id": 0}
                 )
                 if revision:
-                    payload = safe_get(revision, "payload_json", {})
+                    payload_raw = safe_get(revision, "payload_json", {})
+                    # Ensure payload is always a dict (handle string JSON)
+                    if isinstance(payload_raw, str):
+                        try:
+                            import json
+                            payload = json.loads(payload_raw)
+                        except:
+                            payload = {}
+                    elif isinstance(payload_raw, dict):
+                        payload = payload_raw
+                    else:
+                        payload = {}
             
             # Use safe_title for record title
             record_title = safe_title(record, f"{module.title() if module else 'Unknown'} Record")
