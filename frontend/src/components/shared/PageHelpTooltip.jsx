@@ -68,6 +68,10 @@ export const PAGE_HELP_CONTENT = {
     title: 'Portfolio Binder',
     description: 'Generate court-ready PDF packets from your trust documents. Create consolidated binders with table of contents and bookmarks for audits or legal proceedings.'
   },
+  auditLog: {
+    title: 'Audit Log',
+    description: 'Your complete diary of all system activities. The Audit Log automatically tracks when documents are created or modified, when binders are generated, record finalizations, and other important events. Use this for compliance reporting, accountability, and maintaining a complete history of all actions taken in your trust management system.'
+  },
   settings: {
     title: 'Settings',
     description: 'Configure your account preferences, notification settings, and platform customizations.'
