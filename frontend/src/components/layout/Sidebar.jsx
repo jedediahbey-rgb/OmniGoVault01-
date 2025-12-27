@@ -50,7 +50,7 @@ const navItems = [
   { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
 ];
 
-// Sidebar nav item with transition effect
+// Sidebar nav item - clean, no transitions
 const SidebarNavItem = ({ item, onNavClick }) => {
   const location = useLocation();
   const isActive = location.pathname === item.href || 
@@ -61,42 +61,23 @@ const SidebarNavItem = ({ item, onNavClick }) => {
       to={item.href}
       onClick={onNavClick}
       className={cn(
-        'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative overflow-hidden',
+        'flex items-center gap-3 px-3 py-2.5 rounded-lg group relative',
         isActive
           ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20'
           : 'text-white/60 hover:text-white hover:bg-white/5'
       )}
     >
-      {/* Gold shimmer on hover */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-vault-gold/10 to-transparent"
-        initial={{ x: '-100%' }}
-        whileHover={{ x: '100%' }}
-        transition={{ duration: 0.5 }}
-      />
+      <item.icon className={cn(
+        'w-4 h-4 flex-shrink-0',
+        isActive ? 'text-vault-gold' : 'text-white/40 group-hover:text-white/70'
+      )} />
       
-      <motion.div
-        initial={false}
-        animate={isActive ? { scale: 1.1 } : { scale: 1 }}
-        transition={{ duration: 0.2 }}
-      >
-        <item.icon className={cn(
-          'w-4 h-4 transition-colors flex-shrink-0 relative z-10',
-          isActive ? 'text-vault-gold' : 'text-white/40 group-hover:text-white/70'
-        )} />
-      </motion.div>
-      
-      <span className="text-sm font-medium relative z-10">{item.name}</span>
+      <span className="text-sm font-medium">{item.name}</span>
       
       {isActive && (
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.2 }}
-          className="ml-auto"
-        >
+        <div className="ml-auto">
           <CaretRight className="w-3 h-3 text-vault-gold flex-shrink-0" weight="duotone" />
-        </motion.div>
+        </div>
       )}
     </NavLink>
   );
