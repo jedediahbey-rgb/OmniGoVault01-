@@ -460,8 +460,8 @@ const GovernanceMatrixSection = () => {
             })}
           </motion.div>
           
-          {/* CTA Row - Centered on mobile */}
-          <motion.div variants={fadeInUp} className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+          {/* CTA Row - Centered */}
+          <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap items-center justify-center gap-4">
             <Link to="/vault/governance">
               <Button className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold">
                 Open Governance Console
