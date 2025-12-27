@@ -7,7 +7,6 @@ import {
   ChartLine,
   FilePdf,
   FileText,
-  FolderSimple,
   Gavel,
   Gear,
   GitBranch,
@@ -21,6 +20,7 @@ import {
   ShieldCheck,
   SignOut,
   Sparkle,
+  Vault,
   X
 } from '@phosphor-icons/react';
 import { cn } from '../../lib/utils';
