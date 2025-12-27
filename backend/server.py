@@ -3673,6 +3673,11 @@ from routes.binder import router as binder_router, init_binder_routes
 init_binder_routes(db, get_current_user)
 app.include_router(binder_router)
 
+# Initialize and include Evidence Binder routes
+from routes.evidence_binder import router as evidence_binder_router, init_evidence_binder_routes
+init_evidence_binder_routes(db, get_current_user)
+app.include_router(evidence_binder_router)
+
 # Initialize and include Audit Log routes
 from routes.audit_log import router as audit_log_router, init_audit_log_routes
 init_audit_log_routes(db, get_current_user)
