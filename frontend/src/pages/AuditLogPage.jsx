@@ -149,7 +149,7 @@ export default function AuditLogPage() {
   }, [fetchEntries, fetchSummary]);
 
   // Export handler
-  const handleExport = async (format) => {
+  const handleExport = async (format, download = true) => {
     try {
       const params = new URLSearchParams({ format });
       if (portfolioId) params.append('portfolio_id', portfolioId);
@@ -158,19 +158,27 @@ export default function AuditLogPage() {
       const data = await res.json();
       
       if (data.ok) {
-        // Create download
-        const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `audit_log_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        toast({
-          title: 'Export Complete',
-          description: `Exported ${data.data.total} entries`
-        });
+        if (download) {
+          // Create download
+          const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `audit_log_${new Date().toISOString().split('T')[0]}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          
+          toast({
+            title: 'Export Complete',
+            description: `Downloaded ${data.data.total} audit entries as JSON`
+          });
+        } else {
+          // Show in modal
+          setExportData(data.data);
+          setShowExportModal(true);
+        }
       }
     } catch (error) {
       toast({
