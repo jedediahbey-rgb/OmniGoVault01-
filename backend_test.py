@@ -433,16 +433,23 @@ class Phase5APITester:
             if success:
                 data = response.json()
                 if data.get('ok') and 'data' in data:
-                    run_data = data['data']
+                    run_data = data['data'].get('run', {})
                     
-                    # Check for gap_analysis and integrity_stamp in metadata
+                    # Check for gap_analysis and integrity_stamp in top level
                     gap_analysis = run_data.get('gap_analysis')
                     integrity_stamp = run_data.get('integrity_stamp')
                     
+                    # Also check in metadata_json
+                    metadata_json = run_data.get('metadata_json', {})
+                    metadata_gaps = metadata_json.get('gaps_analysis')
+                    metadata_integrity = metadata_json.get('integrity_stamp')
+                    
                     if gap_analysis:
-                        details += f", Gap analysis found in metadata"
+                        details += f", Gap analysis found in top level"
+                    elif metadata_gaps:
+                        details += f", Gap analysis found in metadata_json"
                     else:
-                        details += f", No gap analysis in metadata"
+                        details += f", No gap analysis found"
                     
                     if integrity_stamp:
                         required_fields = ['binder_pdf_sha256', 'manifest_sha256', 'run_id', 'portfolio_id', 'generated_at', 'generated_by', 'generator_version', 'total_items', 'total_pages', 'seal_coverage_percent', 'verification_url']
@@ -452,8 +459,16 @@ class Phase5APITester:
                             details += f", Integrity stamp missing fields: {missing_fields}"
                         else:
                             details += f", Integrity stamp complete with all required fields"
+                    elif metadata_integrity:
+                        required_fields = ['binder_pdf_sha256', 'manifest_sha256', 'run_id', 'portfolio_id', 'generated_at', 'generated_by', 'generator_version', 'total_items', 'total_pages', 'seal_coverage_percent', 'verification_url']
+                        missing_fields = [field for field in required_fields if field not in metadata_integrity]
+                        
+                        if missing_fields:
+                            details += f", Integrity stamp in metadata missing fields: {missing_fields}"
+                        else:
+                            details += f", Integrity stamp in metadata complete with all required fields"
                     else:
-                        details += f", No integrity stamp in metadata"
+                        details += f", No integrity stamp found"
                 else:
                     success = False
                     details += f", Unexpected response format: {data}"
