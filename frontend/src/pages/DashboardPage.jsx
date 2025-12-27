@@ -104,6 +104,9 @@ export default function DashboardPage({ user }) {
   // Get all action IDs in order for auto-fill
   const allActionIds = allQuickActions.map(a => a.id);
 
+  // Track previous max to detect slot changes
+  const [prevMax, setPrevMax] = useState(maxQuickActions);
+
   // Default selected quick actions (stored in localStorage)
   const [selectedActions, setSelectedActions] = useState(() => {
     const saved = localStorage.getItem('quickActions');
@@ -114,32 +117,29 @@ export default function DashboardPage({ user }) {
     return allActionIds.slice(0, 4);
   });
 
-  // Auto-fill or trim selected actions based on max slots
+  // Handle slot changes: auto-fill NEW slots when max increases, trim when max decreases
   useEffect(() => {
-    setSelectedActions(prev => {
-      let newSelected = [...prev];
-      
-      // If we have more than max, trim
-      if (newSelected.length > maxQuickActions) {
-        newSelected = newSelected.slice(0, maxQuickActions);
-      }
-      // If we have fewer than max, auto-fill with next available actions
-      else if (newSelected.length < maxQuickActions) {
-        // Find actions not yet selected
-        const availableActions = allActionIds.filter(id => !newSelected.includes(id));
-        // Add actions until we reach max
-        const toAdd = availableActions.slice(0, maxQuickActions - newSelected.length);
-        newSelected = [...newSelected, ...toAdd];
-      }
-      
-      // Only update if changed
-      if (JSON.stringify(newSelected) !== JSON.stringify(prev)) {
+    if (maxQuickActions !== prevMax) {
+      setSelectedActions(prev => {
+        let newSelected = [...prev];
+        
+        if (maxQuickActions > prevMax) {
+          // Max increased - fill ONLY the new slots
+          const newSlots = maxQuickActions - prevMax;
+          const availableActions = allActionIds.filter(id => !newSelected.includes(id));
+          const toAdd = availableActions.slice(0, newSlots);
+          newSelected = [...newSelected, ...toAdd];
+        } else if (maxQuickActions < prevMax) {
+          // Max decreased - trim to fit
+          newSelected = newSelected.slice(0, maxQuickActions);
+        }
+        
         localStorage.setItem('quickActions', JSON.stringify(newSelected));
         return newSelected;
-      }
-      return prev;
-    });
-  }, [maxQuickActions, allActionIds]);
+      });
+      setPrevMax(maxQuickActions);
+    }
+  }, [maxQuickActions, prevMax, allActionIds]);
 
   const quickActions = allQuickActions.filter(a => selectedActions.includes(a.id));
 
