@@ -241,6 +241,37 @@
   }
 }
 
+/* Global Scrollbar - Gold Theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(11, 18, 33, 0.8);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(198, 168, 124, 0.4) 0%, rgba(198, 168, 124, 0.25) 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(198, 168, 124, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(198, 168, 124, 0.6) 0%, rgba(198, 168, 124, 0.4) 100%);
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(11, 18, 33, 0.8);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(198, 168, 124, 0.4) rgba(11, 18, 33, 0.8);
+}
+
 /* TipTap Editor Styles */
 .ProseMirror {
   @apply outline-none min-h-[400px] p-4;
