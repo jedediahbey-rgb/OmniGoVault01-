@@ -983,7 +983,7 @@ The implementation matches all requirements specified in the review request and 
 Date: Thu Dec 26 22:05:00 UTC 2025
 
 ### Test Environment
-- **URL**: https://bug-busters-hub.preview.emergentagent.com/glossary
+- **URL**: https://landingpage-fix.preview.emergentagent.com/glossary
 - **Viewport**: Desktop (1920x1080 pixels)
 - **Test Focus**: Complete Glossary to Maxims navigation flow as requested
 
@@ -1194,7 +1194,7 @@ Date: Thu Dec 26 19:05:00 UTC 2025
 Date: Thu Dec 26 22:30:00 UTC 2025
 
 ### Test Environment
-- **URL**: https://bug-busters-hub.preview.emergentagent.com
+- **URL**: https://landingpage-fix.preview.emergentagent.com
 - **Viewport**: Desktop (1920x1080 pixels)
 - **Test Focus**: Complete Glossary to Maxims navigation flow with scroll offset fix
 
@@ -1302,7 +1302,7 @@ The implementation addresses the original issue where maxim titles were cut off 
 Date: Thu Dec 26 20:45:00 UTC 2025
 
 ### Test Environment
-- **URL**: https://bug-busters-hub.preview.emergentagent.com
+- **URL**: https://landingpage-fix.preview.emergentagent.com
 - **Test Focus**: IconBadge component integration across multiple pages for Global Design System upgrade verification
 
 ### Test Goal

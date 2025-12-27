@@ -548,7 +548,7 @@ class GovernanceV2MigrationTester:
 def main():
     # Get backend URL from environment
     import os
-    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://bug-busters-hub.preview.emergentagent.com')
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://landingpage-fix.preview.emergentagent.com')
     
     print(f"Testing Governance V2 Migration at: {backend_url}")
     

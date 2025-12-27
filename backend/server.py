@@ -3677,7 +3677,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
-        "https://bug-busters-hub.preview.emergentagent.com",
+        "https://landingpage-fix.preview.emergentagent.com",
         "http://localhost:3000",
         "http://127.0.0.1:3000"
     ],
