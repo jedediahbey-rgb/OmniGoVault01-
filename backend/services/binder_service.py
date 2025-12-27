@@ -2406,6 +2406,27 @@ class BinderService:
                 }}
             )
             
+            # Log to audit trail
+            try:
+                from services.audit_log_service import create_audit_log_service, AuditCategory, AuditSeverity
+                audit_service = create_audit_log_service(self.db)
+                await audit_service.log_binder_event(
+                    event_type="generation_complete",
+                    run_id=run["id"],
+                    actor_id=user_id,
+                    portfolio_id=portfolio_id,
+                    profile_name=profile.get("name", "Unknown"),
+                    details={
+                        "total_items": len(manifest),
+                        "bates_enabled": rules.get("bates_enabled", False),
+                        "high_risk_gaps": gap_analysis.get("summary", {}).get("high_risk", 0) if gap_analysis else 0,
+                        "integrity_hash": integrity_stamp.get("binder_pdf_sha256") if integrity_stamp else None
+                    }
+                )
+            except Exception as audit_err:
+                # Don't fail generation if audit logging fails
+                print(f"Audit logging failed: {audit_err}")
+            
             return {
                 "success": True,
                 "run_id": run["id"],
