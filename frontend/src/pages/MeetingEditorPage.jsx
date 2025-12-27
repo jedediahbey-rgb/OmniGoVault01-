@@ -1085,40 +1085,45 @@ export default function MeetingEditorPage({ user }) {
                   {meeting.attendees.map((att, i) => (
                     <div 
                       key={i}
-                      className="flex items-start p-2.5 rounded-lg bg-vault-dark/30 gap-2"
+                      className="p-2.5 rounded-lg bg-vault-dark/30"
                     >
-                      {/* Presence indicator */}
-                      <div className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${att.present ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                      {/* Row 1: Name with presence indicator and actions */}
+                      <div className="flex items-center gap-2">
+                        {/* Presence dot */}
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${att.present ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                        
+                        {/* Name - takes remaining space */}
+                        <span className="text-white text-sm font-medium flex-1 min-w-0 truncate">{att.name}</span>
+                        
+                        {/* Actions - far right */}
+                        {isDraft && (
+                          <div className="flex items-center shrink-0 ml-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleTogglePresent(i)}
+                              className="h-6 w-6 p-0 text-vault-muted hover:text-white"
+                            >
+                              {att.present ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <X className="w-3.5 h-3.5" />}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveAttendee(i)}
+                              className="h-6 w-6 p-0 text-red-400 hover:text-red-300"
+                            >
+                              <Trash className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                       
-                      {/* Name and Role - stacked layout for better fit */}
-                      <div className="flex-1 min-w-0">
-                        <span className="text-white text-sm font-medium block truncate">{att.name}</span>
-                        <Badge className={`text-[10px] mt-1 ${roleColors[att.role] || roleColors.observer} border`}>
+                      {/* Row 2: Role badge */}
+                      <div className="mt-1.5 pl-4">
+                        <Badge className={`text-[10px] ${roleColors[att.role] || roleColors.observer} border`}>
                           {att.role?.replace('_', ' ')}
                         </Badge>
                       </div>
-                      
-                      {/* Actions - aligned to top right */}
-                      {isDraft && (
-                        <div className="flex items-center gap-0.5 shrink-0">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleTogglePresent(i)}
-                            className="h-7 w-7 p-0 text-vault-muted hover:text-white"
-                          >
-                            {att.present ? <Check className="w-4 h-4 text-emerald-400" /> : <X className="w-4 h-4" />}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveAttendee(i)}
-                            className="h-7 w-7 p-0 text-red-400 hover:text-red-300"
-                          >
-                            <Trash className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
