@@ -22,7 +22,7 @@ import {
   ArrowLeft,
   Plus,
   Lightning,
-  FolderSimple,
+  Archive,
   CalendarBlank,
   Trash,
   Play,
