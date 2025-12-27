@@ -116,11 +116,15 @@ export default function PageHeader({
               {titleAction && <div className="shrink-0">{titleAction}</div>}
             </div>
             {(safeSubtitle || helpKey || subtitleAction) && (
-              <div className="flex items-center gap-2 mt-1">
-                {safeSubtitle && <p className="text-white/60 text-sm sm:text-base">{safeSubtitle}</p>}
-                {subtitleAction && <div className="shrink-0">{subtitleAction}</div>}
-                {helpKey && <PageHelpTooltip pageKey={helpKey} className="shrink-0" />}
-              </div>
+              <p className="text-white/60 text-sm sm:text-base mt-1">
+                {safeSubtitle}
+                {(subtitleAction || helpKey) && (
+                  <span className="inline-flex align-middle ml-1.5">
+                    {subtitleAction}
+                    {helpKey && <PageHelpTooltip pageKey={helpKey} />}
+                  </span>
+                )}
+              </p>
             )}
           </div>
         </div>
