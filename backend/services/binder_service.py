@@ -144,7 +144,9 @@ PROFILE_DEFAULTS = {
         include_ledger_excerpts=True,
         include_integrity_summary=True,
         date_range="all",
-        attested_only_minutes=True
+        attested_only_minutes=True,
+        bates_enabled=False,
+        redaction_mode=RedactionMode.STANDARD.value
     ),
     BinderProfile.COURT: BinderRules(
         include_drafts=False,
@@ -153,7 +155,12 @@ PROFILE_DEFAULTS = {
         include_attachments=True,
         include_ledger_excerpts=True,
         include_integrity_summary=True,
-        date_range="24months"
+        date_range="24months",
+        bates_enabled=True,  # Court profile has Bates enabled by default
+        bates_digits=6,
+        bates_position=BatesPosition.BOTTOM_RIGHT.value,
+        bates_include_cover=False,
+        redaction_mode=RedactionMode.REDACTED.value  # Court profile uses redacted mode
     ),
     BinderProfile.OMNI: BinderRules(
         include_drafts=False,
@@ -162,7 +169,9 @@ PROFILE_DEFAULTS = {
         include_attachments=True,
         include_ledger_excerpts=True,
         include_integrity_summary=True,
-        date_range="all"
+        date_range="all",
+        bates_enabled=False,
+        redaction_mode=RedactionMode.STANDARD.value
     )
 }
 
