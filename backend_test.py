@@ -643,11 +643,11 @@ class AuditLogAPITester:
         return self.tests_passed == self.tests_run
 
 def main():
-    tester = Phase5APITester()
+    tester = AuditLogAPITester()
     success = tester.run_all_tests()
     
     # Save detailed results
-    with open('/tmp/phase5_test_results.json', 'w') as f:
+    with open('/tmp/audit_log_test_results.json', 'w') as f:
         json.dump({
             "timestamp": datetime.now().isoformat(),
             "total_tests": tester.tests_run,
