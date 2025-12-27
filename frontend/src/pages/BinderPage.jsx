@@ -985,7 +985,7 @@ export default function BinderPage() {
     return (
       <div className="min-h-screen bg-vault-dark p-6">
         <div className="max-w-4xl mx-auto text-center py-20">
-          <FolderSimple className="w-16 h-16 text-vault-gold mx-auto mb-4" />
+          <Archive className="w-16 h-16 text-vault-gold mx-auto mb-4" />
           <h1 className="text-2xl font-heading text-white mb-2">No Portfolios Found</h1>
           <p className="text-vault-muted mb-6">Create a portfolio first to generate binders</p>
           <Button onClick={() => navigate('/vault')} className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark">
