@@ -64,6 +64,8 @@ export default function AuditLogPage() {
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState(null);
   const [portfolios, setPortfolios] = useState([]);
+  const [exportData, setExportData] = useState(null);
+  const [showExportModal, setShowExportModal] = useState(false);
   
   // Filters
   const [portfolioId, setPortfolioId] = useState(searchParams.get('portfolio') || '');
