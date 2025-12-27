@@ -732,6 +732,148 @@ export default function CyberHomePage() {
   
   return (
     <div className="min-h-screen bg-[#05080F] text-white overflow-x-hidden">
+      {/* Vault Opening Animation Overlay */}
+      <AnimatePresence>
+        {vaultOpening && (
+          <motion.div
+            className="fixed inset-0 z-[9999] bg-[#05080F]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Vault door background */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-[#05080F] to-black">
+              {/* Horizontal lines texture */}
+              <div className="absolute inset-0 opacity-20">
+                {[...Array(30)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute h-px bg-gradient-to-r from-transparent via-[#C6A87C]/30 to-transparent"
+                    style={{ top: `${(i + 1) * 3.33}%`, left: 0, right: 0 }}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            {/* Center vault emblem */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                className="relative"
+                initial={{ scale: 1, rotate: 0 }}
+                animate={{ 
+                  scale: [1, 1.2, 1.5, 2],
+                  rotate: [0, -10, 10, 0],
+                }}
+                transition={{ duration: 1, ease: "easeInOut" }}
+              >
+                {/* Outer ring */}
+                <motion.div
+                  className="w-40 h-40 rounded-full border-4 border-[#C6A87C]/40 flex items-center justify-center"
+                  initial={{ boxShadow: '0 0 20px rgba(198, 168, 124, 0.2)' }}
+                  animate={{ 
+                    boxShadow: [
+                      '0 0 20px rgba(198, 168, 124, 0.2)',
+                      '0 0 80px rgba(198, 168, 124, 0.8)',
+                      '0 0 150px rgba(198, 168, 124, 1)',
+                    ],
+                    borderColor: ['rgba(198, 168, 124, 0.4)', 'rgba(198, 168, 124, 0.8)', 'rgba(198, 168, 124, 1)']
+                  }}
+                  transition={{ duration: 1 }}
+                >
+                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#C6A87C]/20 to-transparent flex items-center justify-center">
+                    <motion.div
+                      initial={{ opacity: 1 }}
+                      animate={{ opacity: [1, 0] }}
+                      transition={{ delay: 0.5, duration: 0.3 }}
+                    >
+                      <Lock className="w-14 h-14 text-[#C6A87C]" weight="duotone" />
+                    </motion.div>
+                    <motion.div
+                      className="absolute"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: [0, 1], scale: [0.5, 1] }}
+                      transition={{ delay: 0.5, duration: 0.3 }}
+                    >
+                      <LockOpen className="w-14 h-14 text-[#C6A87C]" weight="duotone" />
+                    </motion.div>
+                  </div>
+                </motion.div>
+                
+                {/* Rotating ring */}
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-dashed border-[#C6A87C]/30"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, ease: "linear" }}
+                />
+              </motion.div>
+            </div>
+            
+            {/* Gold particles */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 rounded-full bg-[#C6A87C]"
+                  initial={{
+                    x: `${Math.random() * 100}%`,
+                    y: '110%',
+                    opacity: 0,
+                  }}
+                  animate={{
+                    y: '-10%',
+                    opacity: [0, 1, 1, 0],
+                    scale: [0.5, 1, 0.5],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    delay: 0.2 + Math.random() * 0.5,
+                    ease: 'easeOut',
+                  }}
+                />
+              ))}
+            </div>
+            
+            {/* Text */}
+            <motion.div
+              className="absolute bottom-32 left-0 right-0 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <p className="text-[#C6A87C] font-heading text-xl tracking-wider">
+                Accessing Secure Vault...
+              </p>
+            </motion.div>
+            
+            {/* Gold shimmer sweep */}
+            <motion.div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(90deg, transparent 0%, rgba(198, 168, 124, 0) 40%, rgba(198, 168, 124, 0.3) 50%, rgba(198, 168, 124, 0) 60%, transparent 100%)',
+                backgroundSize: '200% 100%',
+              }}
+              initial={{ backgroundPosition: '-100% 0' }}
+              animate={{ backgroundPosition: '200% 0' }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+            />
+            
+            {/* Door split animation */}
+            <motion.div
+              className="absolute top-0 left-0 bottom-0 w-1/2 bg-[#0B1221] border-r-4 border-[#C6A87C]/50"
+              initial={{ x: 0 }}
+              animate={{ x: '-100%' }}
+              transition={{ delay: 0.8, duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            />
+            <motion.div
+              className="absolute top-0 right-0 bottom-0 w-1/2 bg-[#0B1221] border-l-4 border-[#C6A87C]/50"
+              initial={{ x: 0 }}
+              animate={{ x: '100%' }}
+              transition={{ delay: 0.8, duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* Scroll Progress Bar - Solid background */}
       <div className="fixed top-0 left-0 right-0 h-1 bg-[#05080F] z-50">
         <motion.div
