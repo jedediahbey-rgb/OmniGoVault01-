@@ -523,7 +523,7 @@ export default function LedgerThreadsPage() {
 
           {/* Portfolio Selector and New Thread Button Row */}
           <div className="flex items-center gap-2">
-            <FolderSimple className="w-4 h-4 text-vault-muted shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-vault-muted shrink-0" />
             <Select value={portfolioId} onValueChange={handlePortfolioChange}>
               <SelectTrigger className="flex-1 bg-[#05080F] border-vault-gold/30 text-white">
                 <SelectValue placeholder="Select portfolio">
