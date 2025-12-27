@@ -485,7 +485,7 @@ export default function DashboardPage({ user }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex-1 grid grid-cols-2 auto-rows-fr gap-3">
+            <div className="flex-1 grid grid-cols-2 gap-3 content-start" style={{ gridAutoRows: '72px' }}>
               {quickActions.map((action) => (
                 <button
                   key={action.id}
