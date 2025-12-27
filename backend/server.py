@@ -1102,35 +1102,63 @@ async def migrate_rm_ids(profile_id: str, user: User = Depends(get_current_user)
         "ledger_entries": {"migrated": 0, "failed": 0, "errors": []}
     }
     
-    # Helper to generate new RM-ID maintaining the group.sub structure
+    # Track allocated group numbers to ensure uniqueness
+    allocated_groups = {}  # Map from old_temp_base to new_group_num
+    group_sub_counters = {}  # Track next sub number for each group
+    
+    async def get_next_available_group() -> int:
+        """Find the next available group number not in use"""
+        # Get all existing groups for this portfolio/base
+        existing = await db.rm_groups.distinct("rm_group", {"portfolio_id": portfolio_id, "rm_base": rm_base})
+        used_set = set(existing) | set(allocated_groups.values())
+        
+        # Find first available in range 1-99
+        for g in range(1, 100):
+            if g not in used_set:
+                return g
+        raise ValueError("No available group numbers")
+    
     async def generate_new_rm_id(old_rm_id: str, record_type: str) -> str:
-        """Generate new RM-ID using proper base but preserving group.sub if possible"""
+        """Generate new unique RM-ID using proper base"""
         if not old_rm_id or not old_rm_id.startswith("TEMP"):
             return old_rm_id
         
-        # Try to parse existing group.sub from TEMP ID (e.g., TEMP1234ABCD-20.001 -> 20.001)
-        match = re.match(r'^TEMP[A-F0-9]+-(\d+)\.(\d+)$', old_rm_id)
-        if match:
-            group = int(match.group(1))
-            sub = int(match.group(2))
-            # Create new RM-ID with proper base
-            return f"{rm_base}-{group}.{sub:03d}"
+        # Parse the TEMP ID to extract the temp base (e.g., TEMP1234ABCD from TEMP1234ABCD-20.001)
+        match = re.match(r'^(TEMP[A-F0-9]+)-(\d+)\.(\d+)$', old_rm_id)
+        if not match:
+            # Can't parse, use allocator
+            if rmid_allocator:
+                try:
+                    result = await rmid_allocator.allocate(
+                        portfolio_id=portfolio_id,
+                        user_id=user.user_id,
+                        module_type=record_type
+                    )
+                    return result["rm_id"]
+                except Exception:
+                    pass
+            return f"{rm_base}-99.001"
         
-        # If can't parse, use the V2 allocator to generate new ID
-        if rmid_allocator:
-            try:
-                result = await rmid_allocator.allocate(
-                    portfolio_id=portfolio_id,
-                    user_id=user.user_id,
-                    module_type=record_type
-                )
-                return result["rm_id"]
-            except Exception as e:
-                print(f"Warning: Could not allocate new RM-ID: {e}")
+        temp_base = match.group(1)
+        old_group = int(match.group(2))
+        old_sub = int(match.group(3))
         
-        # Fallback: just replace TEMP prefix with proper base
-        # e.g., TEMP1234ABCD -> RF123456789US (with a simple suffix)
-        return f"{rm_base}-99.999"
+        # Create a unique key for this temp_base + old_group combination
+        temp_key = f"{temp_base}-{old_group}"
+        
+        if temp_key not in allocated_groups:
+            # Allocate a new unique group number for this temp prefix
+            new_group = await get_next_available_group()
+            allocated_groups[temp_key] = new_group
+            group_sub_counters[new_group] = 0
+        
+        new_group = allocated_groups[temp_key]
+        
+        # Increment sub counter for this group
+        group_sub_counters[new_group] += 1
+        new_sub = group_sub_counters[new_group]
+        
+        return f"{rm_base}-{new_group}.{new_sub:03d}"
     
     # 1. Migrate governance records
     temp_gov_records = await db.governance_records.find(
@@ -1154,7 +1182,7 @@ async def migrate_rm_ids(profile_id: str, user: User = Depends(get_current_user)
                 migration_results["governance_records"]["migrated"] += 1
         except Exception as e:
             migration_results["governance_records"]["failed"] += 1
-            migration_results["governance_records"]["errors"].append(f"{record.get('id')}: {str(e)}")
+            migration_results["governance_records"]["errors"].append(f"{record.get('id')}: {str(e)[:100]}")
     
     # 2. Migrate documents
     temp_docs = await db.documents.find(
@@ -1172,14 +1200,14 @@ async def migrate_rm_ids(profile_id: str, user: User = Depends(get_current_user)
                     {"document_id": doc["document_id"]},
                     {"$set": {
                         "rm_id": new_rm_id,
-                        "sub_record_id": new_rm_id,  # Also update sub_record_id
+                        "sub_record_id": new_rm_id,
                         "updated_at": datetime.now(timezone.utc).isoformat()
                     }}
                 )
                 migration_results["documents"]["migrated"] += 1
         except Exception as e:
             migration_results["documents"]["failed"] += 1
-            migration_results["documents"]["errors"].append(f"{doc.get('document_id')}: {str(e)}")
+            migration_results["documents"]["errors"].append(f"{doc.get('document_id')}: {str(e)[:100]}")
     
     # 3. Migrate assets
     temp_assets = await db.assets.find(
@@ -1203,7 +1231,7 @@ async def migrate_rm_ids(profile_id: str, user: User = Depends(get_current_user)
                 migration_results["assets"]["migrated"] += 1
         except Exception as e:
             migration_results["assets"]["failed"] += 1
-            migration_results["assets"]["errors"].append(f"{asset.get('asset_id')}: {str(e)}")
+            migration_results["assets"]["errors"].append(f"{asset.get('asset_id')}: {str(e)[:100]}")
     
     # 4. Migrate ledger entries
     temp_ledger = await db.ledger_entries.find(
@@ -1227,7 +1255,7 @@ async def migrate_rm_ids(profile_id: str, user: User = Depends(get_current_user)
                 migration_results["ledger_entries"]["migrated"] += 1
         except Exception as e:
             migration_results["ledger_entries"]["failed"] += 1
-            migration_results["ledger_entries"]["errors"].append(f"{entry.get('entry_id')}: {str(e)}")
+            migration_results["ledger_entries"]["errors"].append(f"{entry.get('entry_id')}: {str(e)[:100]}")
     
     total_migrated = sum(r["migrated"] for r in migration_results.values())
     total_failed = sum(r["failed"] for r in migration_results.values())
@@ -1236,6 +1264,7 @@ async def migrate_rm_ids(profile_id: str, user: User = Depends(get_current_user)
         "ok": True,
         "message": f"RM-ID migration complete. Migrated {total_migrated} records, {total_failed} failed.",
         "rm_base": rm_base,
+        "groups_allocated": len(allocated_groups),
         "results": migration_results
     }
 
