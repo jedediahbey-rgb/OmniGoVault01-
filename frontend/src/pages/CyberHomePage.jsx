@@ -756,7 +756,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== SCENARIOS SECTION ===== */}
-      <section id="scenarios" className="py-10 lg:py-16 bg-[#05080F]">
+      <section id="scenarios" className="py-8 lg:py-12 bg-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -770,7 +770,7 @@ export default function CyberHomePage() {
               <p className="mt-2 text-slate-400">See how OMNIGOVAULT solves common governance challenges</p>
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <motion.div variants={fadeInUp} className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
               {SCENARIOS.map((scenario) => {
                 const Icon = scenario.icon;
                 return (
