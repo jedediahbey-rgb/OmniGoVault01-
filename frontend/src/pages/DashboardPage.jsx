@@ -92,11 +92,12 @@ export default function DashboardPage({ user }) {
 
 
   // Calculate max quick actions based on portfolio count
-  // Base: 4 slots, +2 slots for every 2 portfolios (up to max 10)
+  // Each portfolio row on the right = 1 row of 2 quick action cards on the left
+  // Base: 4 slots (2 rows), +2 slots per portfolio (up to max 16)
   const getMaxQuickActions = useCallback((portfolioCount) => {
     const baseSlots = 4;
-    const bonusSlots = Math.floor(portfolioCount / 2) * 2;
-    return Math.min(baseSlots + bonusSlots, 10);
+    const bonusSlots = portfolioCount * 2; // 2 slots per portfolio
+    return Math.min(baseSlots + bonusSlots, 16);
   }, []);
 
   const maxQuickActions = getMaxQuickActions(portfolios.length);
