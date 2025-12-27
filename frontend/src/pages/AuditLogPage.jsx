@@ -247,23 +247,25 @@ export default function AuditLogPage() {
               <Eye className="w-4 h-4 mr-2" />
               View Report
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleExport('json', true)}
-              className="border-vault-gold/30 text-vault-muted hover:text-white"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Download
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => { fetchEntries(); fetchSummary(); }}
-              className="text-vault-muted hover:text-white"
-            >
-              <ArrowClockwise className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleExport('json', true)}
+                className="border-vault-gold/30 text-vault-muted hover:text-white"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => { fetchEntries(); fetchSummary(); }}
+                className="text-vault-muted hover:text-white px-2"
+              >
+                <ArrowClockwise className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
           </div>
         </div>
 
