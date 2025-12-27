@@ -90,11 +90,6 @@ export default function DashboardPage({ user }) {
     { id: 'settings', icon: Gear, label: 'Settings', action: () => navigate('/settings'), color: 'gold' },
   ];
 
-  // Default selected quick actions (stored in localStorage)
-  const [selectedActions, setSelectedActions] = useState(() => {
-    const saved = localStorage.getItem('quickActions');
-    return saved ? JSON.parse(saved) : ['newdocument', 'glossary', 'assistant', 'diagnostics'];
-  });
 
   // Calculate max quick actions based on portfolio count
   // Base: 4 slots, +2 slots for every 2 portfolios (up to max 10)
@@ -106,14 +101,45 @@ export default function DashboardPage({ user }) {
 
   const maxQuickActions = getMaxQuickActions(portfolios.length);
 
-  // Auto-trim selected actions when max decreases (portfolios deleted)
-  useEffect(() => {
-    if (selectedActions.length > maxQuickActions) {
-      const trimmed = selectedActions.slice(0, maxQuickActions);
-      setSelectedActions(trimmed);
-      localStorage.setItem('quickActions', JSON.stringify(trimmed));
+  // Get all action IDs in order for auto-fill
+  const allActionIds = allQuickActions.map(a => a.id);
+
+  // Default selected quick actions (stored in localStorage)
+  const [selectedActions, setSelectedActions] = useState(() => {
+    const saved = localStorage.getItem('quickActions');
+    if (saved) {
+      return JSON.parse(saved);
     }
-  }, [maxQuickActions, selectedActions]);
+    // Default to first 4 actions
+    return allActionIds.slice(0, 4);
+  });
+
+  // Auto-fill or trim selected actions based on max slots
+  useEffect(() => {
+    setSelectedActions(prev => {
+      let newSelected = [...prev];
+      
+      // If we have more than max, trim
+      if (newSelected.length > maxQuickActions) {
+        newSelected = newSelected.slice(0, maxQuickActions);
+      }
+      // If we have fewer than max, auto-fill with next available actions
+      else if (newSelected.length < maxQuickActions) {
+        // Find actions not yet selected
+        const availableActions = allActionIds.filter(id => !newSelected.includes(id));
+        // Add actions until we reach max
+        const toAdd = availableActions.slice(0, maxQuickActions - newSelected.length);
+        newSelected = [...newSelected, ...toAdd];
+      }
+      
+      // Only update if changed
+      if (JSON.stringify(newSelected) !== JSON.stringify(prev)) {
+        localStorage.setItem('quickActions', JSON.stringify(newSelected));
+        return newSelected;
+      }
+      return prev;
+    });
+  }, [maxQuickActions, allActionIds]);
 
   const quickActions = allQuickActions.filter(a => selectedActions.includes(a.id));
 
