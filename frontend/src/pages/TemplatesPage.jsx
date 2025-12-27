@@ -534,19 +534,26 @@ C/o: <strong>[ADDRESS]</strong><br/>
                 interactive
                 glow
                 onClick={() => handleSelectTemplate(template)}
-                className="h-full"
+                className="h-full flex flex-col"
               >
-                <div className="w-12 h-12 rounded-xl bg-vault-gold/10 flex items-center justify-center mb-4">
+                {/* Icon - Centered at top */}
+                <div className="w-12 h-12 rounded-xl bg-vault-gold/10 flex items-center justify-center mb-4 mx-auto sm:mx-0">
                   <Icon className="w-6 h-6 text-vault-gold" weight="duotone" />
                 </div>
-                <h3 className="text-xl font-heading text-white mb-2">{template.name}</h3>
-                <p className="text-white/50 text-sm mb-4">{template.description}</p>
-                {template.source && (
-                  <p className="text-vault-gold/60 text-xs mb-4">{template.source}</p>
-                )}
-                <div className="flex items-center justify-end">
-                  <span className="text-vault-gold text-sm flex items-center gap-1">
-                    Use Template <ArrowRight className="w-4 h-4" weight="duotone" />
+                
+                {/* Content area - grows to fill space */}
+                <div className="flex-1 flex flex-col">
+                  <h3 className="text-lg font-heading text-white mb-2 text-center sm:text-left">{template.name}</h3>
+                  <p className="text-white/50 text-sm mb-3 flex-1 text-center sm:text-left">{template.description}</p>
+                  {template.source && (
+                    <p className="text-vault-gold/60 text-xs mb-3 text-center sm:text-left">{template.source}</p>
+                  )}
+                </div>
+                
+                {/* Action - Always at bottom, aligned right */}
+                <div className="flex items-center justify-end pt-2 border-t border-white/5 mt-auto">
+                  <span className="text-vault-gold text-sm flex items-center gap-1.5 font-medium">
+                    Use Template <ArrowRight className="w-4 h-4" weight="bold" />
                   </span>
                 </div>
               </GlassCard>
