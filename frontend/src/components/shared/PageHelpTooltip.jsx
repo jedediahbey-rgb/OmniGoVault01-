@@ -124,6 +124,6 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
           </>
         )}
       </AnimatePresence>
-    </div>
+    </span>
   );
 }
