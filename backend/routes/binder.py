@@ -742,3 +742,238 @@ def calculate_next_run(schedule: dict) -> str:
                 next_run = next_run.replace(month=now.month + 1)
     
     return next_run.isoformat()
+
+
+# ============ REDACTION ENDPOINTS (Court Mode) ============
+
+@router.get("/redactions")
+async def get_redactions(
+    request: Request,
+    portfolio_id: str = Query(...)
+):
+    """Get all persistent redaction markers for a portfolio."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        binder_service = create_binder_service(db)
+        redactions = await binder_service.get_persistent_redactions(portfolio_id, user.user_id)
+        
+        return success_response({
+            "redactions": redactions,
+            "total": len(redactions)
+        })
+        
+    except Exception as e:
+        return error_response("FETCH_ERROR", str(e), status_code=500)
+
+
+@router.post("/redactions")
+async def create_redaction(request: Request):
+    """
+    Create a persistent redaction marker.
+    
+    Body:
+    {
+        "portfolio_id": "...",
+        "record_id": "...",
+        "field_path": "record_id.payload.field_name",
+        "reason": "PII - Social Security Number",
+        "reason_type": "pii|privileged|confidential|custom"
+    }
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        portfolio_id = body.get("portfolio_id")
+        record_id = body.get("record_id")
+        field_path = body.get("field_path")
+        reason = body.get("reason", "")
+        reason_type = body.get("reason_type", "pii")
+        
+        if not portfolio_id:
+            return error_response("MISSING_FIELD", "portfolio_id is required")
+        if not record_id:
+            return error_response("MISSING_FIELD", "record_id is required")
+        if not field_path:
+            return error_response("MISSING_FIELD", "field_path is required")
+        
+        if reason_type not in ["pii", "privileged", "confidential", "custom"]:
+            return error_response("VALIDATION_ERROR", "Invalid reason_type")
+        
+        binder_service = create_binder_service(db)
+        marker = await binder_service.save_redaction_marker(
+            portfolio_id=portfolio_id,
+            user_id=user.user_id,
+            record_id=record_id,
+            field_path=field_path,
+            reason=reason,
+            reason_type=reason_type
+        )
+        
+        return success_response({
+            "redaction": marker,
+            "message": "Redaction marker created"
+        })
+        
+    except Exception as e:
+        return error_response("CREATE_ERROR", str(e), status_code=500)
+
+
+@router.delete("/redactions/{redaction_id}")
+async def delete_redaction(redaction_id: str, request: Request):
+    """Delete a persistent redaction marker."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        binder_service = create_binder_service(db)
+        deleted = await binder_service.delete_redaction_marker(redaction_id, user.user_id)
+        
+        if not deleted:
+            return error_response("NOT_FOUND", "Redaction marker not found", status_code=404)
+        
+        return success_response({
+            "deleted": True,
+            "message": "Redaction marker deleted"
+        })
+        
+    except Exception as e:
+        return error_response("DELETE_ERROR", str(e), status_code=500)
+
+
+@router.get("/redactions/summary")
+async def get_redaction_summary(
+    request: Request,
+    portfolio_id: str = Query(...)
+):
+    """Get a summary of redactions for Court Mode preview."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        binder_service = create_binder_service(db)
+        redactions = await binder_service.get_persistent_redactions(portfolio_id, user.user_id)
+        
+        # Group by reason type
+        by_type = {}
+        by_record = {}
+        
+        for r in redactions:
+            rtype = r.get("reason_type", "other")
+            rid = r.get("record_id", "unknown")
+            
+            by_type[rtype] = by_type.get(rtype, 0) + 1
+            by_record[rid] = by_record.get(rid, 0) + 1
+        
+        return success_response({
+            "total_redactions": len(redactions),
+            "by_type": by_type,
+            "records_affected": len(by_record),
+            "breakdown": [
+                {"type": k, "count": v} for k, v in by_type.items()
+            ]
+        })
+        
+    except Exception as e:
+        return error_response("FETCH_ERROR", str(e), status_code=500)
+
+
+# ============ COURT MODE CONFIG ENDPOINT ============
+
+@router.get("/court-mode/config")
+async def get_court_mode_config(
+    request: Request,
+    portfolio_id: str = Query(...)
+):
+    """Get Court Mode configuration for a portfolio."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        # Get portfolio for abbreviation
+        portfolio = await db.portfolios.find_one(
+            {"portfolio_id": portfolio_id},
+            {"_id": 0, "name": 1, "abbreviation": 1}
+        )
+        
+        # Generate default prefix
+        if portfolio:
+            if portfolio.get("abbreviation"):
+                default_prefix = f"{portfolio['abbreviation']}-"
+            else:
+                name = portfolio.get("name", "DOC")
+                abbrev = ''.join(c for c in name.upper() if c.isalpha())[:4]
+                default_prefix = f"{abbrev or 'DOC'}-"
+        else:
+            default_prefix = "DOC-"
+        
+        # Get redaction count
+        binder_service = create_binder_service(db)
+        redactions = await binder_service.get_persistent_redactions(portfolio_id, user.user_id)
+        
+        return success_response({
+            "bates": {
+                "default_prefix": default_prefix,
+                "positions": ["bottom-right", "bottom-left", "bottom-center"],
+                "default_digits": 6,
+                "default_font_size": 9
+            },
+            "redaction": {
+                "total_markers": len(redactions),
+                "reason_types": ["pii", "privileged", "confidential", "custom"],
+                "modes": ["standard", "redacted", "privileged", "both"]
+            }
+        })
+        
+    except Exception as e:
+        return error_response("CONFIG_ERROR", str(e), status_code=500)
+
+
+@router.put("/portfolio/{portfolio_id}/abbreviation")
+async def update_portfolio_abbreviation(portfolio_id: str, request: Request):
+    """Update portfolio abbreviation for Bates numbering."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        abbreviation = body.get("abbreviation", "").upper()[:6]  # Max 6 chars
+        
+        if not abbreviation:
+            return error_response("MISSING_FIELD", "abbreviation is required")
+        
+        # Validate abbreviation (letters only)
+        if not abbreviation.isalpha():
+            return error_response("VALIDATION_ERROR", "Abbreviation must contain only letters")
+        
+        result = await db.portfolios.update_one(
+            {"portfolio_id": portfolio_id},
+            {"$set": {"abbreviation": abbreviation}}
+        )
+        
+        if result.modified_count == 0:
+            return error_response("NOT_FOUND", "Portfolio not found or no changes", status_code=404)
+        
+        return success_response({
+            "abbreviation": abbreviation,
+            "bates_prefix": f"{abbreviation}-",
+            "message": "Portfolio abbreviation updated"
+        })
+        
+    except Exception as e:
+        return error_response("UPDATE_ERROR", str(e), status_code=500)
