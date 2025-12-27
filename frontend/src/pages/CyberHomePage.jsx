@@ -691,7 +691,7 @@ export default function CyberHomePage() {
       <GovernanceMatrixSection />
       
       {/* ===== SIGNAL FEED SECTION ===== */}
-      <section id="signals" className="py-10 lg:py-24 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
+      <section id="signals" className="py-10 lg:py-16 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-12">
             {/* Signal Feed */}
