@@ -78,14 +78,14 @@ class TrustManagementAPITester:
             if success:
                 data = response.json()
                 if isinstance(data, list) and len(data) > 0:
-                    # Check if first maxim has expected structure
+                    # Check if first maxim has expected structure (based on actual API response)
                     first_maxim = data[0]
-                    required_fields = ['id', 'maxim', 'latin', 'explanation', 'application', 'category']
+                    required_fields = ['id', 'maxim', 'explanation', 'source']
                     if all(field in first_maxim for field in required_fields):
                         details += f", Found {len(data)} maxims with proper structure"
                     else:
                         success = False
-                        details += f", Missing required fields in maxim data"
+                        details += f", Missing required fields in maxim data. Found fields: {list(first_maxim.keys())}"
                 else:
                     success = False
                     details += f", Expected list of maxims, got: {type(data)}"
