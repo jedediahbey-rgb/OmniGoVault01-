@@ -60,12 +60,12 @@
     @apply border-border;
   }
   
-  /* Prevent double scrollbar - only body scrolls */
+  /* Prevent double scrollbar */
   html {
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: scroll;
     height: 100%;
   }
   
@@ -75,12 +75,12 @@
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: visible;
     height: 100%;
     min-height: 100dvh;
   }
   
-  /* Main app container - no overflow, let body handle it */
+  /* Main app container - no overflow, let html handle it */
   #root {
     display: flex;
     flex-direction: column;
