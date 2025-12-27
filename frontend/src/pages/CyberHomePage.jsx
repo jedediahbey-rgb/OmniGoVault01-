@@ -1324,13 +1324,15 @@ export default function CyberHomePage() {
               transition={{ delay: 0.5, duration: 0.5 }}
               className="mt-5 text-center"
             >
-              <Link to="/templates">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="outline" className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10">
-                    Browse All Templates <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </motion.div>
-              </Link>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  variant="outline" 
+                  className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10"
+                  onClick={handleNavigateWithTransition('/templates')}
+                >
+                  Browse All Templates <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>
