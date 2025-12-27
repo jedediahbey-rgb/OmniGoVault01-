@@ -2377,7 +2377,9 @@ class BinderService:
                     "bates_page_map": bates_page_map if bates_page_map else None,
                     "redaction_mode": redaction_mode,
                     "redaction_log": redaction_log
-                }
+                },
+                "gaps_analysis": gap_analysis.get("summary") if gap_analysis else None,
+                "integrity_stamp": integrity_stamp
             }
             
             # Update run with success
@@ -2396,7 +2398,9 @@ class BinderService:
                     "metadata_json": run_metadata,
                     "missing_items": validation.get("missing_items", []),
                     "bates_page_map": bates_page_map,
-                    "redaction_log": redaction_log
+                    "redaction_log": redaction_log,
+                    "gap_analysis": gap_analysis,
+                    "integrity_stamp": integrity_stamp
                 }}
             )
             
@@ -2411,6 +2415,15 @@ class BinderService:
                     "bates_enabled": rules.get("bates_enabled", False),
                     "bates_pages": len([p for p in bates_page_map if p.get("bates_number")]) if bates_page_map else 0,
                     "redactions_applied": redaction_log.get("total_persistent", 0) + redaction_log.get("total_adhoc", 0) if redaction_log else 0
+                },
+                "gaps_analysis": {
+                    "summary": gap_analysis.get("summary") if gap_analysis else None,
+                    "high_risk_count": gap_analysis.get("summary", {}).get("high_risk", 0) if gap_analysis else 0
+                },
+                "integrity": {
+                    "hash": integrity_stamp.get("binder_pdf_sha256") if integrity_stamp else None,
+                    "total_pages": integrity_stamp.get("total_pages", 0) if integrity_stamp else 0,
+                    "seal_coverage": integrity_stamp.get("seal_coverage_percent", 0) if integrity_stamp else 0
                 }
             }
             
