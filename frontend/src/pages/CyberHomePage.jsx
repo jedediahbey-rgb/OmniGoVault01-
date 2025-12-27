@@ -795,7 +795,7 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== LEARN SECTION ===== */}
-      <section id="learn" className="py-10 lg:py-24 bg-gradient-to-b from-[#05080F] to-[#0B1221]">
+      <section id="learn" className="py-10 lg:py-16 bg-gradient-to-b from-[#05080F] to-[#0B1221]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
