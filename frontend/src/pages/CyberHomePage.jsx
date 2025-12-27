@@ -857,12 +857,11 @@ export default function CyberHomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header - Centered */}
           <div className="text-center mb-6">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <IconChip icon={Pulse} label={demoMode ? "Demo Mode" : "Live Feed"} variant={demoMode ? "default" : "green"} />
+            <div className="flex items-center justify-center mb-2">
               <Button 
                 variant="outline" 
                 size="sm" 
-                className={`border-white/10 text-xs whitespace-nowrap ${demoMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}
+                className={`border-white/10 text-xs whitespace-nowrap flex items-center gap-2 ${demoMode ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}
                 onClick={() => {
                   if (demoMode && liveSignals.length > 0) {
                     setDemoMode(false);
@@ -871,7 +870,8 @@ export default function CyberHomePage() {
                   }
                 }}
               >
-                {demoMode ? 'Demo' : 'Live'}
+                <Pulse className="w-4 h-4" weight="fill" />
+                {demoMode ? 'Demo Mode' : 'Live Feed'}
               </Button>
             </div>
           </div>
