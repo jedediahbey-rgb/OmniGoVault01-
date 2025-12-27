@@ -336,6 +336,11 @@ export default function BinderPage() {
   const [courtModeInfo, setCourtModeInfo] = useState(null);
   const [redactionSummary, setRedactionSummary] = useState(null);
 
+  // Gaps Analysis state
+  const [showGapsPanel, setShowGapsPanel] = useState(false);
+  const [gapsAnalysis, setGapsAnalysis] = useState(null);
+  const [gapsLoading, setGapsLoading] = useState(false);
+
   // Default portfolio state (read-only - set from Dashboard)
   const [isDefaultPortfolio, setIsDefaultPortfolio] = useState(false);
   
