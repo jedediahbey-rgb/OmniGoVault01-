@@ -2466,6 +2466,439 @@ class BinderService:
         
         return content, redaction_log
     
+    # ============ PHASE 5: GAPS ANALYSIS ============
+    
+    async def get_checklist_template(self, portfolio_id: str, user_id: str) -> List[Dict]:
+        """
+        Get the compliance checklist for a portfolio.
+        Returns default template with any portfolio-specific overrides applied.
+        """
+        # Get portfolio overrides if any
+        overrides = await self.db.checklist_overrides.find_one(
+            {"portfolio_id": portfolio_id, "user_id": user_id},
+            {"_id": 0}
+        )
+        
+        # Start with default template
+        checklist = []
+        override_map = {}
+        
+        if overrides:
+            override_map = {o.get("item_id"): o for o in overrides.get("items", [])}
+        
+        for item in CHECKLIST_TEMPLATE_V1:
+            item_dict = asdict(item)
+            
+            # Apply overrides
+            if item.id in override_map:
+                override = override_map[item.id]
+                if override.get("is_disabled"):
+                    continue  # Skip disabled items
+                if override.get("required") is not None:
+                    item_dict["required"] = override["required"]
+                if override.get("not_applicable"):
+                    item_dict["not_applicable"] = True
+                if override.get("due_date"):
+                    item_dict["due_date"] = override["due_date"]
+            
+            checklist.append(item_dict)
+        
+        return checklist
+    
+    async def save_checklist_override(
+        self,
+        portfolio_id: str,
+        user_id: str,
+        item_id: str,
+        override_data: Dict
+    ) -> Dict:
+        """Save a checklist item override for a portfolio."""
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Upsert the override
+        result = await self.db.checklist_overrides.update_one(
+            {"portfolio_id": portfolio_id, "user_id": user_id},
+            {
+                "$set": {"updated_at": now},
+                "$setOnInsert": {"created_at": now, "portfolio_id": portfolio_id, "user_id": user_id},
+                "$push": {"items": {"item_id": item_id, **override_data}}
+            },
+            upsert=True
+        )
+        
+        # Remove any existing override for this item first, then add new one
+        await self.db.checklist_overrides.update_one(
+            {"portfolio_id": portfolio_id, "user_id": user_id},
+            {"$pull": {"items": {"item_id": item_id}}}
+        )
+        
+        await self.db.checklist_overrides.update_one(
+            {"portfolio_id": portfolio_id, "user_id": user_id},
+            {"$push": {"items": {"item_id": item_id, **override_data, "updated_at": now}}}
+        )
+        
+        return {"item_id": item_id, **override_data}
+    
+    async def analyze_gaps(
+        self,
+        portfolio_id: str,
+        user_id: str,
+        content: Dict[str, List[Dict]]
+    ) -> Dict:
+        """
+        Analyze portfolio content against compliance checklist.
+        Returns gap analysis results with status, risk levels, and remediation hints.
+        """
+        checklist = await self.get_checklist_template(portfolio_id, user_id)
+        
+        # Build a map of available documents by type
+        available_docs = {}
+        all_docs = []
+        
+        for section_key, items in content.items():
+            if section_key.startswith("_"):
+                continue
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                doc_type = item.get("type", "").lower()
+                doc_data = item.get("data", {})
+                
+                all_docs.append({
+                    "id": item.get("id"),
+                    "type": doc_type,
+                    "title": item.get("title", ""),
+                    "status": item.get("status", ""),
+                    "section": section_key,
+                    "data": doc_data
+                })
+                
+                # Index by type
+                if doc_type not in available_docs:
+                    available_docs[doc_type] = []
+                available_docs[doc_type].append(item)
+        
+        # Analyze each checklist item
+        results = []
+        summary = {
+            "total_items": len(checklist),
+            "complete": 0,
+            "partial": 0,
+            "missing": 0,
+            "not_applicable": 0,
+            "high_risk": 0,
+            "medium_risk": 0,
+            "low_risk": 0
+        }
+        
+        for check_item in checklist:
+            # Skip if marked not applicable
+            if check_item.get("not_applicable"):
+                result = GapAnalysisResult(
+                    item_id=check_item["id"],
+                    item_name=check_item["name"],
+                    category=check_item["category"],
+                    status=GapStatus.NOT_APPLICABLE.value,
+                    risk_level=RiskLevel.LOW.value,
+                    reason="Marked as not applicable for this portfolio",
+                    remediation=None,
+                    matched_documents=[],
+                    missing_requirements=[]
+                )
+                results.append(asdict(result))
+                summary["not_applicable"] += 1
+                continue
+            
+            # Find matching documents
+            matched_docs = []
+            for doc_type in check_item.get("document_types", []):
+                if doc_type in available_docs:
+                    matched_docs.extend(available_docs[doc_type])
+            
+            # Also search by title keywords
+            keywords = check_item["name"].lower().split()
+            for doc in all_docs:
+                title_lower = doc.get("title", "").lower()
+                if any(kw in title_lower for kw in keywords if len(kw) > 3):
+                    if doc not in matched_docs:
+                        matched_docs.append(doc)
+            
+            # Determine status and validate
+            status = GapStatus.MISSING.value
+            missing_requirements = []
+            reason = ""
+            remediation = None
+            
+            if matched_docs:
+                # Check validation rules
+                validation_rules = check_item.get("validation_rules", [])
+                rules_passed = 0
+                rules_failed = []
+                
+                for doc in matched_docs:
+                    doc_data = doc.get("data", {}) if isinstance(doc.get("data"), dict) else {}
+                    
+                    for rule in validation_rules:
+                        rule_passed = self._check_validation_rule(rule, doc_data)
+                        if rule_passed:
+                            rules_passed += 1
+                        else:
+                            rules_failed.append(rule)
+                
+                if not validation_rules or rules_passed >= len(validation_rules):
+                    status = GapStatus.COMPLETE.value
+                    reason = f"Document found and validated ({len(matched_docs)} matching)"
+                elif rules_passed > 0:
+                    status = GapStatus.PARTIAL.value
+                    missing_requirements = list(set(rules_failed))
+                    reason = f"Document found but incomplete: missing {', '.join(self._format_rule_name(r) for r in missing_requirements[:3])}"
+                    remediation = f"Update document to include: {', '.join(self._format_rule_name(r) for r in missing_requirements)}"
+                else:
+                    status = GapStatus.PARTIAL.value
+                    missing_requirements = rules_failed
+                    reason = "Document found but does not meet requirements"
+                    remediation = f"Ensure document has: {', '.join(self._format_rule_name(r) for r in validation_rules)}"
+            else:
+                status = GapStatus.MISSING.value
+                reason = f"Required document not found in portfolio"
+                remediation = f"Upload {check_item['name']} to the portfolio"
+            
+            # Determine risk level
+            risk_level = self._calculate_risk_level(
+                status=status,
+                required=check_item.get("required", True),
+                time_sensitive=check_item.get("time_sensitive", False),
+                tier=check_item.get("tier", 2)
+            )
+            
+            result = GapAnalysisResult(
+                item_id=check_item["id"],
+                item_name=check_item["name"],
+                category=check_item["category"],
+                status=status,
+                risk_level=risk_level,
+                reason=reason,
+                remediation=remediation,
+                matched_documents=[d.get("id", "") for d in matched_docs if isinstance(d, dict)],
+                missing_requirements=missing_requirements
+            )
+            
+            results.append(asdict(result))
+            
+            # Update summary
+            if status == GapStatus.COMPLETE.value:
+                summary["complete"] += 1
+            elif status == GapStatus.PARTIAL.value:
+                summary["partial"] += 1
+            elif status == GapStatus.MISSING.value:
+                summary["missing"] += 1
+            
+            if risk_level == RiskLevel.HIGH.value:
+                summary["high_risk"] += 1
+            elif risk_level == RiskLevel.MEDIUM.value:
+                summary["medium_risk"] += 1
+            else:
+                summary["low_risk"] += 1
+        
+        # Group by category
+        by_category = {}
+        for r in results:
+            cat = r["category"]
+            if cat not in by_category:
+                by_category[cat] = []
+            by_category[cat].append(r)
+        
+        return {
+            "summary": summary,
+            "results": results,
+            "by_category": by_category,
+            "analyzed_at": datetime.now(timezone.utc).isoformat(),
+            "checklist_version": "Trust Administration Checklist v1"
+        }
+    
+    def _check_validation_rule(self, rule: str, doc_data: Dict) -> bool:
+        """Check if a document meets a validation rule."""
+        if rule == "has_signature":
+            return bool(doc_data.get("has_signature") or doc_data.get("signed") or doc_data.get("signature_date"))
+        elif rule == "has_date":
+            return bool(doc_data.get("date") or doc_data.get("created_at") or doc_data.get("effective_date") or doc_data.get("document_date"))
+        elif rule == "has_notarization":
+            return bool(doc_data.get("notarized") or doc_data.get("notary_date"))
+        elif rule == "certified_copy":
+            return bool(doc_data.get("certified") or doc_data.get("is_certified"))
+        elif rule == "has_witnesses":
+            return bool(doc_data.get("witnesses") or doc_data.get("witness_count", 0) > 0)
+        elif rule == "has_recipients":
+            return bool(doc_data.get("recipients") or doc_data.get("sent_to"))
+        elif rule == "has_proof_of_delivery":
+            return bool(doc_data.get("delivery_proof") or doc_data.get("mailing_receipt") or doc_data.get("proof_of_service"))
+        elif rule == "has_values":
+            return bool(doc_data.get("values") or doc_data.get("total_value") or doc_data.get("valuation"))
+        elif rule == "has_ein":
+            return bool(doc_data.get("ein") or doc_data.get("tax_id"))
+        elif rule == "is_filed":
+            return bool(doc_data.get("filed") or doc_data.get("filing_date"))
+        elif rule == "court_issued":
+            return bool(doc_data.get("court_issued") or doc_data.get("court_name"))
+        elif rule == "has_recording_info":
+            return bool(doc_data.get("recording_number") or doc_data.get("recorded_date"))
+        elif rule == "has_trustee_name":
+            return bool(doc_data.get("trustee_name") or doc_data.get("trustee"))
+        elif rule == "has_appraiser":
+            return bool(doc_data.get("appraiser") or doc_data.get("appraiser_name"))
+        elif rule == "has_methodology":
+            return bool(doc_data.get("methodology") or doc_data.get("valuation_method"))
+        elif rule == "has_valuation_date":
+            return bool(doc_data.get("valuation_date") or doc_data.get("as_of_date"))
+        elif rule == "has_source":
+            return bool(doc_data.get("source") or doc_data.get("data_source"))
+        elif rule == "is_complete":
+            return bool(doc_data.get("is_complete") or doc_data.get("complete"))
+        
+        # Default: assume passed if rule not recognized
+        return True
+    
+    def _format_rule_name(self, rule: str) -> str:
+        """Format a rule name for display."""
+        return rule.replace("has_", "").replace("is_", "").replace("_", " ").title()
+    
+    def _calculate_risk_level(
+        self,
+        status: str,
+        required: bool,
+        time_sensitive: bool,
+        tier: int
+    ) -> str:
+        """Calculate risk level based on status and item properties."""
+        if status == GapStatus.COMPLETE.value:
+            return RiskLevel.LOW.value
+        
+        if status == GapStatus.NOT_APPLICABLE.value:
+            return RiskLevel.LOW.value
+        
+        # Missing or partial
+        if required and (time_sensitive or tier == 1):
+            return RiskLevel.HIGH.value
+        elif required:
+            return RiskLevel.MEDIUM.value
+        else:
+            return RiskLevel.LOW.value
+    
+    # ============ PHASE 5: INTEGRITY STAMPING ============
+    
+    def generate_integrity_stamp(
+        self,
+        pdf_bytes: bytes,
+        manifest: List[Dict],
+        run_id: str,
+        portfolio_id: str,
+        user_id: str,
+        base_url: str = ""
+    ) -> Dict:
+        """
+        Generate integrity stamp for a binder.
+        Hash is computed on final PDF bytes (after all processing).
+        """
+        # Compute SHA-256 of final PDF
+        pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
+        
+        # Compute manifest hash
+        manifest_str = json.dumps(manifest, sort_keys=True, default=str)
+        manifest_hash = hashlib.sha256(manifest_str.encode()).hexdigest()
+        
+        # Count sealed items
+        sealed_count = sum(
+            1 for item in manifest 
+            if isinstance(item, dict) and item.get("finalized_at")
+        )
+        seal_coverage = (sealed_count / len(manifest) * 100) if manifest else 0
+        
+        # Build verification URL
+        verification_url = f"{base_url}/api/binder/verify?hash={pdf_hash}&run={run_id}"
+        
+        stamp = IntegrityStamp(
+            binder_pdf_sha256=pdf_hash,
+            manifest_sha256=manifest_hash,
+            run_id=run_id,
+            portfolio_id=portfolio_id,
+            generated_at=datetime.now(timezone.utc).isoformat(),
+            generated_by=user_id,
+            generator_version="Binder Service v5.0",
+            total_items=len(manifest),
+            total_pages=0,  # Will be set after PDF processing
+            seal_coverage_percent=round(seal_coverage, 1),
+            verification_url=verification_url
+        )
+        
+        return asdict(stamp)
+    
+    async def verify_binder_by_hash(self, pdf_hash: str) -> Optional[Dict]:
+        """Verify a binder by its PDF hash."""
+        run = await self.db.binder_runs.find_one(
+            {"integrity_stamp.binder_pdf_sha256": pdf_hash},
+            {"_id": 0}
+        )
+        
+        if not run:
+            return None
+        
+        return {
+            "verified": True,
+            "run_id": run.get("id"),
+            "portfolio_id": run.get("portfolio_id"),
+            "profile_name": run.get("profile_name"),
+            "generated_at": run.get("finished_at"),
+            "total_items": run.get("total_items"),
+            "integrity_stamp": run.get("integrity_stamp")
+        }
+    
+    def verify_binder_by_upload(self, pdf_bytes: bytes, expected_hash: str = None) -> Dict:
+        """
+        Verify a binder by computing hash of uploaded PDF.
+        If expected_hash provided, compares against it.
+        """
+        computed_hash = hashlib.sha256(pdf_bytes).hexdigest()
+        
+        if expected_hash:
+            matches = computed_hash == expected_hash
+            return {
+                "computed_hash": computed_hash,
+                "expected_hash": expected_hash,
+                "matches": matches,
+                "verified": matches
+            }
+        
+        return {
+            "computed_hash": computed_hash,
+            "verified": None,  # Need to check against database
+            "message": "Hash computed. Use /api/binder/verify?hash=... to check provenance."
+        }
+    
+    def generate_qr_code(self, verification_url: str) -> bytes:
+        """Generate QR code containing verification URL."""
+        try:
+            import qrcode
+            from io import BytesIO
+            
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_M,
+                box_size=4,
+                border=2
+            )
+            qr.add_data(verification_url)
+            qr.make(fit=True)
+            
+            img = qr.make_image(fill_color="black", back_color="white")
+            
+            buffer = BytesIO()
+            img.save(buffer, format='PNG')
+            buffer.seek(0)
+            
+            return buffer.getvalue()
+        except ImportError:
+            return None
+    
     def _get_user_friendly_error(self, e: Exception) -> str:
         """Convert technical errors to user-friendly messages."""
         error_str = str(e).lower()
