@@ -4,12 +4,12 @@ import {
   ArrowRight,
   BookOpen,
   FileText,
-  FolderSimple,
   Robot,
   Scales,
   Shield,
   Sparkle,
-  Users
+  Users,
+  Vault
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { staggerContainer, fadeInUp } from '../lib/motion';
@@ -26,7 +26,7 @@ const features = [
     description: 'Study the foundational principles that govern equitable relationships'
   },
   {
-    icon: FolderSimple,
+    icon: Vault,
     title: 'Vault',
     description: 'Manage your trust portfolios, documents, and assets in one secure workspace'
   },
