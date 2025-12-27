@@ -1792,3 +1792,40 @@ Verify both P2 features are fully implemented and working:
 
 ### Test Status
 Testing in progress...
+
+
+## Court Mode Testing (Phase 4)
+Date: 2025-12-27
+
+### Testing Goal
+Test the new Court Mode features:
+1. Bates Numbering - sequential numbering on PDF pages
+2. Redaction System - persistent markers and redaction modes
+3. Court Mode Config API - portfolio abbreviation, prefix defaults
+4. Frontend Court Mode Panel - Bates controls, redaction mode selector
+
+### Features to Test
+
+#### Backend APIs:
+- GET /api/binder/court-mode/config - Court Mode configuration
+- GET /api/binder/redactions - List redaction markers
+- POST /api/binder/redactions - Create redaction marker
+- DELETE /api/binder/redactions/{id} - Delete redaction marker
+- GET /api/binder/redactions/summary - Redaction count summary
+- PUT /api/binder/portfolio/{id}/abbreviation - Update portfolio abbreviation
+- POST /api/binder/generate with court_mode options - Generate with Bates/redactions
+
+#### Frontend UI:
+- Court Mode expandable panel on Binder page
+- Bates Numbering toggle and options (prefix, start #, digits, position)
+- Redaction Mode dropdown
+- Bates preview display
+- Generate with Court Mode active
+
+### Key Files
+- /app/backend/services/binder_service.py - Court Mode logic
+- /app/backend/routes/binder.py - Court Mode endpoints
+- /app/frontend/src/pages/BinderPage.jsx - Court Mode UI panel
+
+### Test Status
+Testing in progress...
