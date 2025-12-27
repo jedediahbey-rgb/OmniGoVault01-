@@ -33,6 +33,7 @@ import {
   Eye,
   X
 } from '@phosphor-icons/react';
+import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
