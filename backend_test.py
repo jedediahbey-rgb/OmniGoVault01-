@@ -468,41 +468,46 @@ class Phase5APITester:
             return False
 
     def run_all_tests(self):
-        """Run all P2 backend tests"""
-        self.log("🧪 Starting P2 Features Backend API Tests")
+        """Run all Phase 5 backend tests"""
+        self.log("🧪 Starting Phase 5 Features Backend API Tests")
         self.log("=" * 60)
+        self.log(f"Using Portfolio ID: {self.test_portfolio_id}")
         
-        # Get portfolio ID first
-        self.log("\n📁 Getting Portfolio ID")
+        # Get profile ID first
+        self.log("\n📁 Getting Binder Profile ID")
         self.log("-" * 30)
-        if not self.test_get_portfolios():
-            self.log("❌ Cannot proceed without portfolio ID")
+        if not self.test_get_profiles():
+            self.log("❌ Cannot proceed without profile ID")
             return False
         
-        self.log(f"\n🧵 Testing Ledger Thread Management APIs")
+        self.log(f"\n🔍 Testing Gaps Analysis APIs")
+        self.log("-" * 40)
+        
+        # Test gaps analysis endpoints
+        self.test_gaps_checklist()
+        self.test_gaps_analyze()
+        self.test_gaps_summary()
+        self.test_gaps_override()
+        
+        self.log(f"\n📋 Testing Binder Generation with Phase 5")
         self.log("-" * 50)
         
-        # Test thread CRUD operations
-        self.test_create_thread()
-        self.test_list_threads()
-        self.test_get_thread_details()
-        self.test_update_thread()
+        # Test binder generation with Phase 5 features
+        self.test_binder_generation_with_phase5()
         
-        # Test thread operations (may depend on existing records)
-        self.test_thread_operations()
+        self.log(f"\n🔐 Testing Integrity Verification APIs")
+        self.log("-" * 45)
         
-        # Test delete thread (should be last as it removes the thread)
-        self.test_delete_thread()
+        # Test integrity verification endpoints
+        self.test_verify_by_run_id()
+        self.test_verify_by_hash()
+        self.test_verify_invalid_hash()
         
-        self.log(f"\n📋 Testing Binder Schedule Management APIs")
-        self.log("-" * 50)
+        self.log(f"\n📊 Testing Run Metadata Verification")
+        self.log("-" * 45)
         
-        # Test binder schedule CRUD operations
-        self.test_get_binder_profiles()
-        self.test_list_schedules()
-        self.test_create_schedule()
-        self.test_update_schedule()
-        self.test_delete_schedule()
+        # Test run metadata
+        self.test_run_metadata()
         
         self.log("\n📊 Test Summary")
         self.log("=" * 60)
