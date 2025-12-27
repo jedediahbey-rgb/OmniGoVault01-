@@ -93,11 +93,12 @@ export default function DashboardPage({ user }) {
 
   // Calculate max quick actions to match portfolio container height exactly
   // Each portfolio row = 1 row of 2 quick action cards
-  // Minimum 2 rows (4 slots) when no portfolios, then 1 row per portfolio
+  // Minimum 2 rows (4 slots) when few portfolios
   const getMaxQuickActions = useCallback((portfolioCount) => {
-    if (portfolioCount === 0) return 4; // Base 2 rows
+    if (portfolioCount <= 1) return 4; // Base 2 rows
+    if (portfolioCount === 2) return 4; // 2 rows
     // Each portfolio = 1 row of quick actions (2 slots)
-    return Math.max(4, portfolioCount * 2);
+    return portfolioCount * 2;
   }, []);
 
   const maxQuickActions = getMaxQuickActions(portfolios.length);
@@ -105,44 +106,69 @@ export default function DashboardPage({ user }) {
   // Get all action IDs in order for auto-fill
   const allActionIds = allQuickActions.map(a => a.id);
 
-  // Track previous max to detect slot changes
-  const [prevMax, setPrevMax] = useState(maxQuickActions);
+  // Track previous portfolio count to detect changes (more stable than maxQuickActions)
+  const [prevPortfolioCount, setPrevPortfolioCount] = useState(0);
 
   // Default selected quick actions (stored in localStorage)
   const [selectedActions, setSelectedActions] = useState(() => {
     const saved = localStorage.getItem('quickActions');
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      // Cap at reasonable max on load
+      return parsed.slice(0, 16);
     }
     // Default to first 4 actions
     return allActionIds.slice(0, 4);
   });
 
-  // Handle slot changes: auto-fill NEW slots when max increases, trim when max decreases
+  // ALWAYS ensure selectedActions doesn't exceed maxQuickActions
+  // This is the safety net that prevents the bug
   useEffect(() => {
-    if (maxQuickActions !== prevMax) {
+    setSelectedActions(prev => {
+      // Always cap at maxQuickActions
+      if (prev.length > maxQuickActions) {
+        const trimmed = prev.slice(0, maxQuickActions);
+        localStorage.setItem('quickActions', JSON.stringify(trimmed));
+        return trimmed;
+      }
+      return prev;
+    });
+  }, [maxQuickActions]);
+
+  // Handle portfolio count changes: auto-fill or trim
+  useEffect(() => {
+    const currentCount = portfolios.length;
+    
+    if (currentCount !== prevPortfolioCount && prevPortfolioCount !== 0) {
+      const newMax = getMaxQuickActions(currentCount);
+      const oldMax = getMaxQuickActions(prevPortfolioCount);
+      
       setSelectedActions(prev => {
         let newSelected = [...prev];
         
-        if (maxQuickActions > prevMax) {
-          // Max increased - fill ONLY the new slots
-          const newSlots = maxQuickActions - prevMax;
+        if (newMax > oldMax && newSelected.length < newMax) {
+          // Portfolio added - fill the new slots
+          const slotsToAdd = Math.min(newMax - newSelected.length, newMax - oldMax);
           const availableActions = allActionIds.filter(id => !newSelected.includes(id));
-          const toAdd = availableActions.slice(0, newSlots);
-          newSelected = [...newSelected, ...toAdd];
-        } else if (maxQuickActions < prevMax) {
-          // Max decreased - trim to fit
-          newSelected = newSelected.slice(0, maxQuickActions);
+          const toAdd = availableActions.slice(0, slotsToAdd);
+          newSelected = [...newSelected, ...toAdd].slice(0, newMax);
+        } else if (newMax < oldMax) {
+          // Portfolio removed - trim to fit
+          newSelected = newSelected.slice(0, newMax);
         }
         
         localStorage.setItem('quickActions', JSON.stringify(newSelected));
         return newSelected;
       });
-      setPrevMax(maxQuickActions);
     }
-  }, [maxQuickActions, prevMax, allActionIds]);
+    
+    setPrevPortfolioCount(currentCount);
+  }, [portfolios.length, prevPortfolioCount, getMaxQuickActions, allActionIds]);
 
-  const quickActions = allQuickActions.filter(a => selectedActions.includes(a.id));
+  // Ensure quickActions is always capped at maxQuickActions
+  const quickActions = allQuickActions
+    .filter(a => selectedActions.includes(a.id))
+    .slice(0, maxQuickActions);
 
   const toggleQuickAction = (actionId) => {
     setSelectedActions(prev => {
