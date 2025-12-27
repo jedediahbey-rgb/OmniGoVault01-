@@ -8,17 +8,45 @@ from fastapi import APIRouter, Request, Query
 from typing import Optional
 from datetime import datetime, timezone
 
-from db import db
-from auth import get_current_user
-from utils import success_response, error_response
-
 from services.audit_log_service import (
     create_audit_log_service,
     AuditCategory,
     AuditSeverity
 )
 
-router = APIRouter(prefix="/audit-log", tags=["Audit Log"])
+router = APIRouter(prefix="/api/audit-log", tags=["Audit Log"])
+
+# Dependencies injected from server.py
+db = None
+get_current_user = None
+
+
+def init_audit_log_routes(database, auth_func):
+    """Initialize routes with database and auth dependencies."""
+    global db, get_current_user
+    db = database
+    get_current_user = auth_func
+
+
+def success_response(data):
+    """Standard success response."""
+    return {"ok": True, "data": data}
+
+
+def error_response(code, message, details=None, status_code=400):
+    """Standard error response."""
+    from fastapi.responses import JSONResponse
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "ok": False,
+            "error": {
+                "code": code,
+                "message": message,
+                "details": details or {}
+            }
+        }
+    )
 
 
 # ============ AUDIT LOG RETRIEVAL ============
