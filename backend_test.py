@@ -1295,7 +1295,7 @@ class EquityTrustAPITester:
 
     def run_all_tests(self):
         """Run comprehensive regression tests for Equity Trust Portfolio application"""
-        self.log("🧪 Starting Comprehensive Regression Testing")
+        self.log("🧪 Starting RM-ID Migration Testing for OmniGovault")
         self.log("=" * 70)
         self.log(f"Using Portfolio ID: {self.test_portfolio_id}")
         
@@ -1304,60 +1304,69 @@ class EquityTrustAPITester:
         self.log("-" * 40)
         self.test_system_health()
         
-        # 2. Core Binder System
-        self.log("\n📁 Test 2: Core Binder System")
+        # 2. RM-ID Migration Tests (Primary Focus)
+        self.log("\n🔄 Test 2: RM-ID Migration Functionality")
+        self.log("-" * 50)
+        self.test_get_trust_profiles()
+        self.test_governance_records_rm_id_migration()
+        self.test_migrate_rm_ids_with_proper_profile()
+        self.test_migrate_rm_ids_with_placeholder_profile()
+        self.test_verify_rm_id_format_in_records()
+        
+        # 3. Core Binder System
+        self.log("\n📁 Test 3: Core Binder System")
         self.log("-" * 40)
         self.test_binder_profiles()
         self.test_binder_generate()
         self.test_binder_runs()
         self.test_binder_download()
         
-        # 3. Audit Log System
-        self.log("\n📊 Test 3: Audit Log System")
+        # 4. Audit Log System
+        self.log("\n📊 Test 4: Audit Log System")
         self.log("-" * 40)
         self.test_audit_log_list()
         self.test_audit_log_categories()
         self.test_audit_log_summary()
         self.test_audit_log_export()
         
-        # 4. Governance Module
-        self.log("\n⚖️ Test 4: Governance Module")
+        # 5. Governance Module
+        self.log("\n⚖️ Test 5: Governance Module")
         self.log("-" * 40)
         self.test_governance_records()
         self.test_governance_subjects()
         
-        # 5. Evidence Binder (P5 Feature)
-        self.log("\n📋 Test 5: Evidence Binder Configuration")
+        # 6. Evidence Binder (P5 Feature)
+        self.log("\n📋 Test 6: Evidence Binder Configuration")
         self.log("-" * 50)
         self.test_evidence_config()
         
-        self.log(f"\n📊 Test 6: Evidence Binder Disputes")
+        self.log(f"\n📊 Test 7: Evidence Binder Disputes")
         self.log("-" * 40)
         self.test_get_disputes()
         self.test_create_test_dispute_if_needed()
         
-        self.log(f"\n🔗 Test 7: Evidence Binder Links Management")
+        self.log(f"\n🔗 Test 8: Evidence Binder Links Management")
         self.log("-" * 50)
         self.test_add_dispute_link()
         self.test_get_dispute_links()
         self.test_auto_link_dispute_items()
         
-        self.log(f"\n👁️ Test 8: Evidence Binder Preview")
+        self.log(f"\n👁️ Test 9: Evidence Binder Preview")
         self.log("-" * 40)
         self.test_evidence_preview()
         
-        self.log(f"\n📄 Test 9: Evidence Binder Generation")
+        self.log(f"\n📄 Test 10: Evidence Binder Generation")
         self.log("-" * 50)
         self.test_generate_evidence_binder()
         
-        self.log(f"\n📚 Test 10: Evidence Binder Runs")
+        self.log(f"\n📚 Test 11: Evidence Binder Runs")
         self.log("-" * 40)
         self.test_get_evidence_runs()
         self.test_get_evidence_run_details()
         self.test_get_evidence_manifest()
         self.test_download_evidence_binder()
         
-        self.log(f"\n🧹 Test 11: Cleanup")
+        self.log(f"\n🧹 Test 12: Cleanup")
         self.log("-" * 25)
         self.test_cleanup_test_link()
         
