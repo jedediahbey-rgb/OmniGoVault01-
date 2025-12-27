@@ -399,37 +399,42 @@ export default function AuditLogPage() {
                 const Icon = catConfig.icon;
                 
                 return (
-                  <div key={entry.id} className="p-4 hover:bg-vault-gold/5 transition-colors">
-                    <div className="flex items-start gap-4">
-                      <div className={`p-2 rounded-lg ${catConfig.bg}`}>
-                        <Icon className={`w-5 h-5 ${catConfig.color}`} />
+                  <div key={entry.id} className="p-3 sm:p-4 hover:bg-vault-gold/5 transition-colors">
+                    <div className="flex gap-3">
+                      {/* Category Icon */}
+                      <div className={`p-2 rounded-lg ${catConfig.bg} shrink-0 self-start`}>
+                        <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${catConfig.color}`} />
                       </div>
                       
+                      {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-white font-medium">{entry.action}</span>
-                          <span className={`px-2 py-0.5 text-xs rounded ${sevConfig.badge} ${sevConfig.color}`}>
+                        {/* Action + Severity */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1.5">
+                          <span className="text-white font-medium text-sm sm:text-base">{entry.action}</span>
+                          <span className={`px-2 py-0.5 text-[10px] sm:text-xs rounded w-fit ${sevConfig.badge} ${sevConfig.color}`}>
                             {entry.severity}
                           </span>
                         </div>
                         
-                        <div className="flex items-center gap-4 text-xs text-vault-muted">
+                        {/* Meta info - stack on mobile, row on desktop */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs text-vault-muted">
                           <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
+                            <Clock className="w-3 h-3 shrink-0" />
                             {formatTime(entry.timestamp)}
                           </span>
                           <span className="capitalize">{entry.category}</span>
                           {entry.resource_id && (
-                            <span className="font-mono text-vault-gold/70 truncate max-w-[150px]">
+                            <span className="font-mono text-vault-gold/70 break-all text-[10px] sm:text-xs">
                               {entry.resource_id}
                             </span>
                           )}
                         </div>
                         
+                        {/* Details */}
                         {entry.details && Object.keys(entry.details).length > 0 && (
-                          <div className="mt-2 text-xs text-vault-muted/70">
+                          <div className="mt-2 text-[10px] sm:text-xs text-vault-muted/70 space-y-0.5 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-x-3">
                             {Object.entries(entry.details).slice(0, 3).map(([k, v]) => (
-                              <span key={k} className="mr-3">
+                              <span key={k} className="block sm:inline">
                                 <span className="text-vault-muted">{k.replace(/_/g, ' ')}:</span>{' '}
                                 <span className="text-white/70">{String(v).substring(0, 30)}</span>
                               </span>
