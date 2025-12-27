@@ -1603,3 +1603,43 @@ However, these appear to be frontend-only features using static data and client-
 - **Results**: `/tmp/backend_test_results.json`
 
 
+
+
+## P2 Feature Testing: Ledger Thread Management & Portfolio Binder Scheduled Generation
+Date: $(date)
+
+### Testing Goal
+Verify both P2 features are fully implemented and working:
+1. **Ledger Thread Management** - Merge, Split, Reassign functionality
+2. **Portfolio Binder Phase 3** - Scheduled binder generation
+
+### Test Environment
+- Backend URL: Read from /app/frontend/.env REACT_APP_BACKEND_URL
+- Test Type: Backend API testing + Frontend UI testing
+
+### Features to Test
+
+#### P2-1: Ledger Thread Management
+- POST /api/ledger-threads - Create thread
+- GET /api/ledger-threads?portfolio_id={id} - List threads
+- GET /api/ledger-threads/{thread_id} - Get thread details
+- POST /api/ledger-threads/{thread_id}/merge - Merge threads
+- POST /api/ledger-threads/{thread_id}/split - Split thread
+- POST /api/ledger-threads/reassign - Reassign records
+- PUT /api/ledger-threads/{thread_id} - Update thread
+- DELETE /api/ledger-threads/{thread_id} - Delete thread
+
+#### P2-2: Portfolio Binder Scheduled Generation
+- GET /api/binder/schedules?portfolio_id={id} - List schedules
+- POST /api/binder/schedules - Create schedule
+- PUT /api/binder/schedules/{schedule_id} - Update schedule
+- DELETE /api/binder/schedules/{schedule_id} - Delete schedule
+
+### Key Files
+- /app/backend/routes/ledger_threads.py - Thread management API
+- /app/backend/routes/binder.py - Binder schedule API
+- /app/frontend/src/pages/LedgerThreadsPage.jsx - Thread management UI
+- /app/frontend/src/pages/BinderPage.jsx - Binder page UI with schedules
+
+### Test Status
+Testing in progress...
