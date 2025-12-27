@@ -579,8 +579,26 @@ export default function GlossaryPage({ user }) {
   const handleRelatedTermClick = (termId) => {
     const term = getTermById(termId);
     if (term) {
-      setSelectedTerm(term);
-      setExpandedTerm(null);
+      // Close the detail view and go back to list
+      setSelectedTerm(null);
+      // Clear filters to ensure term is visible
+      setSelectedCategory('all');
+      setSearchTerm('');
+      // Set highlight
+      setHighlightedTermId(termId);
+      
+      // Scroll to the term after a short delay for the list to render
+      setTimeout(() => {
+        const element = document.getElementById(`term-${termId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      
+      // Clear highlight after animation
+      setTimeout(() => {
+        setHighlightedTermId(null);
+      }, 3000);
     }
   };
 
