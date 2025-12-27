@@ -58,6 +58,389 @@ class EquityTrustAPITester:
             "timestamp": datetime.now().isoformat()
         })
 
+    # ============ CORE SYSTEM HEALTH TESTS ============
+
+    def test_system_health(self):
+        """Test basic system health - GET /api/portfolios"""
+        try:
+            response = self.session.get(f"{self.base_url}/portfolios", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if isinstance(data, list):
+                    details += f", Found {len(data)} portfolios"
+                    # Verify our test portfolio exists
+                    portfolio_found = any(p.get('portfolio_id') == self.test_portfolio_id for p in data)
+                    if portfolio_found:
+                        details += f", Test portfolio {self.test_portfolio_id} found"
+                    else:
+                        details += f", Test portfolio {self.test_portfolio_id} not found"
+                else:
+                    success = False
+                    details += f", Unexpected response format"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/portfolios (System Health)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/portfolios (System Health)", False, f"Error: {str(e)}")
+            return False
+
+    # ============ CORE BINDER SYSTEM TESTS ============
+
+    def test_binder_profiles(self):
+        """Test GET /api/binder/profiles?portfolio_id={portfolio_id}"""
+        try:
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/binder/profiles", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    profiles = data['data'].get('profiles', [])
+                    details += f", Found {len(profiles)} binder profiles"
+                    
+                    # Verify expected profiles exist
+                    profile_names = [p.get('name', '') for p in profiles]
+                    expected_profiles = ['Audit Binder', 'Court / Litigation Binder', 'Omni Binder']
+                    found_profiles = [name for name in expected_profiles if any(name in pname for pname in profile_names)]
+                    
+                    details += f", Profiles: {found_profiles}"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/binder/profiles", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/binder/profiles", False, f"Error: {str(e)}")
+            return False
+
+    def test_binder_generate(self):
+        """Test POST /api/binder/generate"""
+        try:
+            # First get a profile to use
+            params = {"portfolio_id": self.test_portfolio_id}
+            profiles_response = self.session.get(f"{self.base_url}/binder/profiles", params=params, timeout=10)
+            
+            if profiles_response.status_code != 200:
+                self.log_test("POST /api/binder/generate", False, "Could not get binder profiles")
+                return False
+            
+            profiles_data = profiles_response.json()
+            profiles = profiles_data.get('data', {}).get('profiles', [])
+            if not profiles:
+                self.log_test("POST /api/binder/generate", False, "No binder profiles available")
+                return False
+            
+            # Use first available profile
+            profile_id = profiles[0].get('id')
+            
+            payload = {
+                "portfolio_id": self.test_portfolio_id,
+                "profile_id": profile_id,
+                "options": {
+                    "include_drafts": True,
+                    "include_attachments": True
+                }
+            }
+            
+            response = self.session.post(f"{self.base_url}/binder/generate", json=payload, timeout=30)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    result = data['data']
+                    binder_success = result.get('success', False)
+                    self.test_binder_run_id = result.get('run_id')
+                    
+                    if binder_success and self.test_binder_run_id:
+                        details += f", Generated successfully: run_id={self.test_binder_run_id}"
+                        total_items = result.get('total_items', 0)
+                        details += f", Total items: {total_items}"
+                    else:
+                        success = False
+                        error = result.get('error', 'Unknown error')
+                        details += f", Generation failed: {error}"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/binder/generate", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/binder/generate", False, f"Error: {str(e)}")
+            return False
+
+    def test_binder_runs(self):
+        """Test GET /api/binder/runs?portfolio_id={portfolio_id}"""
+        try:
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/binder/runs", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    runs = data['data'].get('runs', [])
+                    total = data['data'].get('total', 0)
+                    details += f", Found {len(runs)} runs (total: {total})"
+                    
+                    # Verify our test run if it exists
+                    if self.test_binder_run_id:
+                        found_run = next((r for r in runs if r.get('id') == self.test_binder_run_id), None)
+                        if found_run:
+                            details += f", Test run found: {found_run.get('status')}"
+                        else:
+                            details += f", Test run not found"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/binder/runs", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/binder/runs", False, f"Error: {str(e)}")
+            return False
+
+    def test_binder_download(self):
+        """Test GET /api/binder/runs/{run_id}/download"""
+        if not self.test_binder_run_id:
+            self.log_test("GET /api/binder/runs/{run_id}/download", False, "No binder run ID available")
+            return False
+        
+        try:
+            response = self.session.get(f"{self.base_url}/binder/runs/{self.test_binder_run_id}/download", timeout=15)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                content_type = response.headers.get('content-type', '')
+                content_length = response.headers.get('content-length', '0')
+                
+                if content_type == 'application/pdf':
+                    details += f", PDF download successful: {content_length} bytes"
+                else:
+                    success = False
+                    details += f", Unexpected content type: {content_type}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/binder/runs/{run_id}/download", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/binder/runs/{run_id}/download", False, f"Error: {str(e)}")
+            return False
+
+    # ============ AUDIT LOG SYSTEM TESTS ============
+
+    def test_audit_log_list(self):
+        """Test GET /api/audit-log?limit=10"""
+        try:
+            params = {"limit": 10}
+            response = self.session.get(f"{self.base_url}/audit-log", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    entries = data['data'].get('entries', [])
+                    total = data['data'].get('total', 0)
+                    details += f", Found {len(entries)} entries (total: {total})"
+                    
+                    # Verify entry structure if entries exist
+                    if entries:
+                        first_entry = entries[0]
+                        required_fields = ['id', 'event_type', 'timestamp']
+                        missing_fields = [field for field in required_fields if field not in first_entry]
+                        
+                        if missing_fields:
+                            success = False
+                            details += f", Missing fields: {missing_fields}"
+                        else:
+                            details += f", Entry structure verified"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/audit-log", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/audit-log", False, f"Error: {str(e)}")
+            return False
+
+    def test_audit_log_categories(self):
+        """Test GET /api/audit-log/categories"""
+        try:
+            response = self.session.get(f"{self.base_url}/audit-log/categories", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    categories = data['data'].get('categories', [])
+                    severities = data['data'].get('severities', [])
+                    details += f", Found {len(categories)} categories, {len(severities)} severities"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/audit-log/categories", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/audit-log/categories", False, f"Error: {str(e)}")
+            return False
+
+    def test_audit_log_summary(self):
+        """Test GET /api/audit-log/summary?days=30"""
+        try:
+            params = {"days": 30}
+            response = self.session.get(f"{self.base_url}/audit-log/summary", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    summary = data['data']
+                    total_events = summary.get('total_events', 0)
+                    by_category = summary.get('by_category', {})
+                    by_severity = summary.get('by_severity', {})
+                    details += f", Total events: {total_events}, Categories: {len(by_category)}, Severities: {len(by_severity)}"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/audit-log/summary", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/audit-log/summary", False, f"Error: {str(e)}")
+            return False
+
+    def test_audit_log_export(self):
+        """Test GET /api/audit-log/export?format=json"""
+        try:
+            params = {"format": "json"}
+            response = self.session.get(f"{self.base_url}/audit-log/export", params=params, timeout=15)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                content_type = response.headers.get('content-type', '')
+                content_length = response.headers.get('content-length', '0')
+                
+                if 'json' in content_type.lower():
+                    details += f", JSON export successful: {content_length} bytes"
+                else:
+                    details += f", Export successful: {content_length} bytes, Type: {content_type}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/audit-log/export", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/audit-log/export", False, f"Error: {str(e)}")
+            return False
+
+    # ============ GOVERNANCE MODULE TESTS ============
+
+    def test_governance_records(self):
+        """Test GET /api/governance/records?portfolio_id={portfolio_id}"""
+        try:
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/governance/records", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    records = data['data'].get('records', [])
+                    total = data['data'].get('total', 0)
+                    details += f", Found {len(records)} records (total: {total})"
+                    
+                    # Verify record structure if records exist
+                    if records:
+                        first_record = records[0]
+                        required_fields = ['id', 'module_type', 'title', 'status']
+                        missing_fields = [field for field in required_fields if field not in first_record]
+                        
+                        if missing_fields:
+                            success = False
+                            details += f", Missing fields: {missing_fields}"
+                        else:
+                            details += f", Record structure verified"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/governance/records", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/governance/records", False, f"Error: {str(e)}")
+            return False
+
+    def test_governance_subjects(self):
+        """Test GET /api/governance/subjects?portfolio_id={portfolio_id}"""
+        try:
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/governance/subjects", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    subjects = data['data'].get('subjects', [])
+                    total = data['data'].get('total', 0)
+                    details += f", Found {len(subjects)} RM subjects (total: {total})"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/governance/subjects", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/governance/subjects", False, f"Error: {str(e)}")
+            return False
+
     # ============ EVIDENCE BINDER CONFIGURATION TESTS ============
 
     def test_evidence_config(self):
