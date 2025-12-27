@@ -441,6 +441,17 @@ const GovernanceMatrixSection = () => {
   const navigate = useNavigate();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-50px' });
+  const [isNavigating, setIsNavigating] = useState(false);
+  
+  // Handle navigation with vault transition
+  const handleNavigation = (path) => (e) => {
+    e.preventDefault();
+    setIsNavigating(true);
+    // Navigate after brief animation
+    setTimeout(() => {
+      navigate(path);
+    }, 300);
+  };
   
   // Individual card animation with stagger effect
   const cardVariants = {
