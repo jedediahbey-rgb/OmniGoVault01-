@@ -2156,6 +2156,9 @@ class BinderService:
                 continue
             
             for item in items:
+                # Ensure item is a dict (safety check)
+                if not isinstance(item, dict):
+                    continue
                 record_id = item.get("id")
                 if not record_id:
                     continue
