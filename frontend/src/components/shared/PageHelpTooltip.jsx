@@ -103,26 +103,27 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 z-[100] bg-black/50"
-            />
-            
-            {/* Tooltip - Centered modal with consistent text alignment */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.15 }}
-              className="fixed z-[101] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[280px] p-5 bg-[#0A0F1A] border border-vault-gold/30 rounded-xl shadow-2xl"
+              className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center"
             >
-              <button
-                onClick={() => setIsOpen(false)}
-                className="absolute top-3 right-3 p-1 text-white/40 hover:text-white/70 transition-colors"
+              {/* Tooltip - Centered modal with consistent text alignment */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-[280px] mx-4 p-5 bg-[#0A0F1A] border border-vault-gold/30 rounded-xl shadow-2xl"
               >
-                <X className="w-4 h-4" weight="bold" />
-              </button>
-              
-              <h4 className="text-base font-semibold text-vault-gold mb-3 pr-6">{content.title}</h4>
-              <p className="text-sm text-white/70 leading-[1.6] text-justify">{content.description}</p>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="absolute top-3 right-3 p-1 text-white/40 hover:text-white/70 transition-colors"
+                >
+                  <X className="w-4 h-4" weight="bold" />
+                </button>
+                
+                <h4 className="text-base font-semibold text-vault-gold mb-3">{content.title}</h4>
+                <p className="text-sm text-white/70 leading-[1.6] text-justify">{content.description}</p>
+              </motion.div>
             </motion.div>
           </>
         )}
