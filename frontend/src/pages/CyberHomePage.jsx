@@ -432,32 +432,85 @@ const GovernanceMatrixSection = () => {
             </p>
           </motion.div>
           
-          {/* Module Grid */}
+          {/* Module Grid - Cross/Diamond pattern for 5 cards */}
           <motion.div 
             variants={fadeInUp}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            className="max-w-4xl mx-auto"
           >
-            {MATRIX_MODULES.map((module) => {
-              const Icon = module.icon;
-              return (
-                <HoloCard 
-                  key={module.id} 
-                  className="p-5 cursor-pointer text-center sm:text-left"
-                  onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
-                >
-                  <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between mb-3 gap-2">
-                    <div className="w-10 h-10 rounded-xl bg-[#C6A87C]/10 flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
+            {/* Top row - 2 cards centered */}
+            <div className="flex justify-center gap-4 mb-4">
+              {MATRIX_MODULES.slice(0, 2).map((module) => {
+                const Icon = module.icon;
+                return (
+                  <HoloCard 
+                    key={module.id} 
+                    className="p-4 cursor-pointer w-full max-w-[280px]"
+                    onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
+                  >
+                    <div className="flex items-start justify-between mb-2 gap-2">
+                      <div className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center">
+                        <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
+                      </div>
+                      <Badge className={`text-[9px] border ${module.chipColor}`}>
+                        {module.chip}
+                      </Badge>
                     </div>
-                    <Badge className={`text-[10px] border ${module.chipColor}`}>
-                      {module.chip}
-                    </Badge>
-                  </div>
-                  <h3 className="text-white font-semibold mb-2">{module.title}</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">{module.desc}</p>
-                </HoloCard>
-              );
-            })}
+                    <h3 className="text-white font-semibold text-sm mb-1">{module.title}</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">{module.desc}</p>
+                  </HoloCard>
+                );
+              })}
+            </div>
+            
+            {/* Middle row - 1 center card */}
+            <div className="flex justify-center mb-4">
+              {MATRIX_MODULES.slice(2, 3).map((module) => {
+                const Icon = module.icon;
+                return (
+                  <HoloCard 
+                    key={module.id} 
+                    className="p-4 cursor-pointer w-full max-w-[280px]"
+                    onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
+                  >
+                    <div className="flex items-start justify-between mb-2 gap-2">
+                      <div className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center">
+                        <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
+                      </div>
+                      <Badge className={`text-[9px] border ${module.chipColor}`}>
+                        {module.chip}
+                      </Badge>
+                    </div>
+                    <h3 className="text-white font-semibold text-sm mb-1">{module.title}</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">{module.desc}</p>
+                  </HoloCard>
+                );
+              })}
+            </div>
+            
+            {/* Bottom row - 2 cards centered */}
+            <div className="flex justify-center gap-4">
+              {MATRIX_MODULES.slice(3, 5).map((module) => {
+                const Icon = module.icon;
+                return (
+                  <HoloCard 
+                    key={module.id} 
+                    className="p-4 cursor-pointer w-full max-w-[280px]"
+                    onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
+                  >
+                    <div className="flex items-start justify-between mb-2 gap-2">
+                      <div className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center">
+                        <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
+                      </div>
+                      <Badge className={`text-[9px] border ${module.chipColor}`}>
+                        {module.chip}
+                      </Badge>
+                    </div>
+                    <h3 className="text-white font-semibold text-sm mb-1">{module.title}</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">{module.desc}</p>
+                  </HoloCard>
+                );
+              })}
+            </div>
           </motion.div>
           
           {/* CTA Row - Centered */}
