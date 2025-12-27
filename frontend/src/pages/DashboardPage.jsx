@@ -92,72 +92,73 @@ export default function DashboardPage({ user }) {
 
 
   // Calculate max quick actions based on portfolio count
-  // Each portfolio item is roughly 77px (padding + content)
-  // Quick action card row is 72px + 12px gap = 84px
-  // Header area takes ~56px on both sides
-  // Formula: floor((portfolioHeight - header) / cardRowHeight) * 2 cards per row
+  // Simple rule: 2 slots per portfolio row, minimum 4 slots
   const getMaxQuickActions = useCallback((portfolioCount) => {
-    if (portfolioCount <= 1) return 4; // Minimum 2 rows
-    // Portfolio container inner height ≈ portfolioCount * 77px
-    // Quick action row height = 72px card + 12px gap = 84px (last row no gap)
-    // Available height for cards (after header) = container - 56px header
-    const estimatedPortfolioHeight = portfolioCount * 77;
-    const availableHeight = estimatedPortfolioHeight - 20; // Less header offset since both have headers
-    const rowHeight = 84; // 72px card + 12px gap
-    const maxRows = Math.max(2, Math.floor(availableHeight / rowHeight));
-    return maxRows * 2; // 2 cards per row
+    if (portfolioCount <= 2) return 4; // Minimum 2 rows (4 cards)
+    // Each portfolio gives us 2 more card slots
+    return Math.min(portfolioCount * 2, 16); // Cap at 16 max
   }, []);
 
   const maxQuickActions = getMaxQuickActions(portfolios.length);
 
   // Get all action IDs in order for auto-fill
-  const allActionIds = allQuickActions.map(a => a.id);
+  const allActionIds = useMemo(() => allQuickActions.map(a => a.id), []);
 
-  // Track previous portfolio count to detect changes (more stable than maxQuickActions)
-  const [prevPortfolioCount, setPrevPortfolioCount] = useState(0);
+  // Track previous max to detect changes
+  const prevMaxRef = useRef(maxQuickActions);
 
   // Default selected quick actions (stored in localStorage)
   const [selectedActions, setSelectedActions] = useState(() => {
     const saved = localStorage.getItem('quickActions');
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Cap at reasonable max on load
       return parsed.slice(0, 16);
     }
-    // Default to first 4 actions (will be expanded by auto-fill effect)
     return allActionIds.slice(0, 4);
   });
 
-  // Auto-fill to max on initial load and when max increases
-  // Also trim when max decreases
+  // Respond to maxQuickActions changes - auto-fill or trim
   useEffect(() => {
-    setSelectedActions(prev => {
-      let newSelected = [...prev];
-      
-      // Trim if over max
-      if (newSelected.length > maxQuickActions) {
-        newSelected = newSelected.slice(0, maxQuickActions);
+    const prevMax = prevMaxRef.current;
+    
+    if (maxQuickActions !== prevMax) {
+      setSelectedActions(prev => {
+        let newSelected = [...prev];
+        
+        if (maxQuickActions > prevMax) {
+          // Max INCREASED - add new cards to fill new slots
+          const slotsToAdd = maxQuickActions - newSelected.length;
+          if (slotsToAdd > 0) {
+            const availableActions = allActionIds.filter(id => !newSelected.includes(id));
+            const toAdd = availableActions.slice(0, slotsToAdd);
+            newSelected = [...newSelected, ...toAdd];
+          }
+        } else {
+          // Max DECREASED - trim excess cards
+          newSelected = newSelected.slice(0, maxQuickActions);
+        }
+        
         localStorage.setItem('quickActions', JSON.stringify(newSelected));
         return newSelected;
-      }
+      });
       
-      // Auto-fill to max if under
-      if (newSelected.length < maxQuickActions) {
-        const availableActions = allActionIds.filter(id => !newSelected.includes(id));
-        const toAdd = availableActions.slice(0, maxQuickActions - newSelected.length);
-        newSelected = [...newSelected, ...toAdd];
-        localStorage.setItem('quickActions', JSON.stringify(newSelected));
-        return newSelected;
-      }
-      
-      return prev;
-    });
+      prevMaxRef.current = maxQuickActions;
+    }
   }, [maxQuickActions, allActionIds]);
 
-  // Handle portfolio count changes - track for debug purposes
+  // Also ensure we're at max on initial load
   useEffect(() => {
-    setPrevPortfolioCount(portfolios.length);
-  }, [portfolios.length, prevPortfolioCount, getMaxQuickActions, allActionIds]);
+    setSelectedActions(prev => {
+      if (prev.length < maxQuickActions) {
+        const availableActions = allActionIds.filter(id => !prev.includes(id));
+        const toAdd = availableActions.slice(0, maxQuickActions - prev.length);
+        const newSelected = [...prev, ...toAdd];
+        localStorage.setItem('quickActions', JSON.stringify(newSelected));
+        return newSelected;
+      }
+      return prev;
+    });
+  }, []); // Only run once on mount
 
   // Ensure quickActions is always capped at maxQuickActions
   const quickActions = allQuickActions
