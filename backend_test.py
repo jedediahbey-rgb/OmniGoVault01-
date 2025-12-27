@@ -26,8 +26,8 @@ class EquityTrustAPITester:
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
-        # Use the specific portfolio ID from the review request
-        self.test_portfolio_id = "port_0e9a783c1a71"
+        # Use the specific portfolio ID from the review request for RM-ID migration testing
+        self.test_portfolio_id = "port_d92308e007f1"
         self.test_dispute_id = None
         self.test_run_id = None
         self.test_link_id = None
