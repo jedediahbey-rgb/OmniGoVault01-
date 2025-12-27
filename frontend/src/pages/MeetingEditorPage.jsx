@@ -1085,22 +1085,27 @@ export default function MeetingEditorPage({ user }) {
                   {meeting.attendees.map((att, i) => (
                     <div 
                       key={i}
-                      className="flex items-center justify-between p-2 rounded-lg bg-vault-dark/30 gap-2"
+                      className="flex items-start p-2.5 rounded-lg bg-vault-dark/30 gap-2"
                     >
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <div className={`w-2 h-2 rounded-full shrink-0 ${att.present ? 'bg-emerald-400' : 'bg-slate-500'}`} />
-                        <span className="text-white text-sm whitespace-nowrap">{att.name}</span>
-                        <Badge className={`text-xs ${roleColors[att.role] || roleColors.observer} border shrink-0`}>
+                      {/* Presence indicator */}
+                      <div className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${att.present ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                      
+                      {/* Name and Role - stacked layout for better fit */}
+                      <div className="flex-1 min-w-0">
+                        <span className="text-white text-sm font-medium block truncate">{att.name}</span>
+                        <Badge className={`text-[10px] mt-1 ${roleColors[att.role] || roleColors.observer} border`}>
                           {att.role?.replace('_', ' ')}
                         </Badge>
                       </div>
+                      
+                      {/* Actions - aligned to top right */}
                       {isDraft && (
-                        <div className="flex items-center gap-1 shrink-0">
+                        <div className="flex items-center gap-0.5 shrink-0">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleTogglePresent(i)}
-                            className="h-7 px-2 text-vault-muted hover:text-white"
+                            className="h-7 w-7 p-0 text-vault-muted hover:text-white"
                           >
                             {att.present ? <Check className="w-4 h-4 text-emerald-400" /> : <X className="w-4 h-4" />}
                           </Button>
@@ -1108,7 +1113,7 @@ export default function MeetingEditorPage({ user }) {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleRemoveAttendee(i)}
-                            className="h-7 px-2 text-red-400 hover:text-red-300"
+                            className="h-7 w-7 p-0 text-red-400 hover:text-red-300"
                           >
                             <Trash className="w-4 h-4" />
                           </Button>
