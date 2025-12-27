@@ -21,16 +21,16 @@ class EvidenceBinderAPITester:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'AuditLog-API-Tester/1.0'
+            'User-Agent': 'EvidenceBinder-API-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         # Use the specific portfolio ID from the review request
         self.test_portfolio_id = "port_0e9a783c1a71"
-        self.test_profile_id = None
+        self.test_dispute_id = None
         self.test_run_id = None
-        self.test_hash = None
+        self.test_link_id = None
         self.test_results = []
 
     def log(self, message):
