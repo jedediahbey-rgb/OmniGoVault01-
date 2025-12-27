@@ -591,46 +591,43 @@ class AuditLogAPITester:
             return False
 
     def run_all_tests(self):
-        """Run all Phase 5 backend tests"""
-        self.log("🧪 Starting Phase 5 Features Backend API Tests")
+        """Run all Comprehensive Audit Log backend tests"""
+        self.log("🧪 Starting Comprehensive Audit Log Backend API Tests")
         self.log("=" * 60)
         self.log(f"Using Portfolio ID: {self.test_portfolio_id}")
         
-        # Get profile ID first
-        self.log("\n📁 Getting Binder Profile ID")
-        self.log("-" * 30)
-        if not self.test_get_profiles():
-            self.log("❌ Cannot proceed without profile ID")
-            return False
-        
-        self.log(f"\n🔍 Testing Gaps Analysis APIs")
-        self.log("-" * 40)
-        
-        # Test gaps analysis endpoints
-        self.test_gaps_checklist()
-        self.test_gaps_analyze()
-        self.test_gaps_summary()
-        self.test_gaps_override()
-        
-        self.log(f"\n📋 Testing Binder Generation with Phase 5")
+        self.log("\n📋 Test 1: Audit Categories and Metadata")
         self.log("-" * 50)
+        self.test_audit_categories()
         
-        # Test binder generation with Phase 5 features
-        self.test_binder_generation_with_phase5()
+        self.log(f"\n📊 Test 2: Audit Log CRUD")
+        self.log("-" * 30)
+        self.test_audit_log_basic()
+        self.test_audit_log_category_filter()
+        self.test_audit_log_severity_filter()
+        self.test_audit_log_search()
         
-        self.log(f"\n🔐 Testing Integrity Verification APIs")
-        self.log("-" * 45)
+        self.log(f"\n📈 Test 3: Analytics")
+        self.log("-" * 25)
+        self.test_audit_summary()
+        self.test_audit_timeline()
         
-        # Test integrity verification endpoints
-        self.test_verify_by_run_id()
-        self.test_verify_by_hash()
-        self.test_verify_invalid_hash()
+        self.log(f"\n📤 Test 4: Export")
+        self.log("-" * 20)
+        self.test_audit_export_json()
+        self.test_audit_export_csv()
         
-        self.log(f"\n📊 Testing Run Metadata Verification")
-        self.log("-" * 45)
+        self.log(f"\n📋 Test 5: Compliance Report")
+        self.log("-" * 35)
+        self.test_compliance_report()
         
-        # Test run metadata
-        self.test_run_metadata()
+        self.log(f"\n🔍 Test 6: Resource History")
+        self.log("-" * 35)
+        self.test_resource_history()
+        
+        self.log(f"\n🔗 Test 7: Integration - Generate Binder and Check Audit")
+        self.log("-" * 65)
+        self.test_generate_binder_and_check_audit()
         
         self.log("\n📊 Test Summary")
         self.log("=" * 60)
