@@ -820,7 +820,7 @@ export default function PortfolioOverviewPage({ user }) {
                       {doc.is_locked ? 'Finalized' : doc.status}
                     </span>
                     {doc.rm_id && (
-                      <MonoChip variant="gold" size="xs" className="truncate max-w-[100px] sm:max-w-[150px]">
+                      <MonoChip variant="gold" size="xs" truncateRmId maxLength={18} className="max-w-[120px] sm:max-w-[180px]">
                         {doc.sub_record_id || doc.rm_id}
                       </MonoChip>
                     )}
