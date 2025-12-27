@@ -57,257 +57,8 @@ class Phase5APITester:
             "timestamp": datetime.now().isoformat()
         })
 
-    def test_get_portfolios(self):
-        """Test GET /api/portfolios to get a portfolio ID"""
-        try:
-            response = self.session.get(f"{self.base_url}/portfolios", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if isinstance(data, list) and len(data) > 0:
-                    self.test_portfolio_id = data[0].get('portfolio_id')
-                    details += f", Found {len(data)} portfolios, using portfolio: {self.test_portfolio_id}"
-                else:
-                    success = False
-                    details += ", No portfolios found"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/portfolios", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/portfolios", False, f"Error: {str(e)}")
-            return False
-
-    # ============ LEDGER THREAD MANAGEMENT TESTS ============
-
-    def test_create_thread(self):
-        """Test POST /api/ledger-threads"""
-        if not self.test_portfolio_id:
-            self.log_test("POST /api/ledger-threads", False, "No portfolio ID available")
-            return False
-            
-        try:
-            payload = {
-                "portfolio_id": self.test_portfolio_id,
-                "title": "Test Thread for P2 Testing",
-                "category": "minutes"
-            }
-            
-            response = self.session.post(f"{self.base_url}/ledger-threads", json=payload, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get('ok') and 'data' in data:
-                    thread_data = data['data']
-                    self.test_thread_id = thread_data.get('thread_id')
-                    details += f", Thread created: {self.test_thread_id}, RM Group: {thread_data.get('rm_group')}, RM Preview: {thread_data.get('rm_id_preview')}"
-                else:
-                    success = False
-                    details += f", Unexpected response format: {data}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("POST /api/ledger-threads", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/ledger-threads", False, f"Error: {str(e)}")
-            return False
-
-    def test_list_threads(self):
-        """Test GET /api/ledger-threads?portfolio_id={portfolio_id}"""
-        if not self.test_portfolio_id:
-            self.log_test("GET /api/ledger-threads (list)", False, "No portfolio ID available")
-            return False
-            
-        try:
-            params = {"portfolio_id": self.test_portfolio_id}
-            response = self.session.get(f"{self.base_url}/ledger-threads", params=params, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get('ok') and 'data' in data:
-                    items = data['data'].get('items', [])
-                    total = data['data'].get('total', 0)
-                    details += f", Found {len(items)} threads (total: {total})"
-                else:
-                    success = False
-                    details += f", Unexpected response format: {data}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/ledger-threads (list)", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/ledger-threads (list)", False, f"Error: {str(e)}")
-            return False
-
-    def test_get_thread_details(self):
-        """Test GET /api/ledger-threads/{thread_id}"""
-        if not self.test_thread_id:
-            self.log_test("GET /api/ledger-threads/{thread_id}", False, "No thread ID available")
-            return False
-            
-        try:
-            response = self.session.get(f"{self.base_url}/ledger-threads/{self.test_thread_id}", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get('ok') and 'data' in data:
-                    thread = data['data'].get('thread', {})
-                    records = data['data'].get('records', [])
-                    details += f", Thread: {thread.get('title')}, Records: {len(records)}"
-                else:
-                    success = False
-                    details += f", Unexpected response format: {data}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/ledger-threads/{thread_id}", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/ledger-threads/{thread_id}", False, f"Error: {str(e)}")
-            return False
-
-    def test_update_thread(self):
-        """Test PUT /api/ledger-threads/{thread_id}"""
-        if not self.test_thread_id:
-            self.log_test("PUT /api/ledger-threads/{thread_id}", False, "No thread ID available")
-            return False
-            
-        try:
-            payload = {
-                "title": "Updated Test Thread",
-                "external_ref": "TEST-REF-001"
-            }
-            
-            response = self.session.put(f"{self.base_url}/ledger-threads/{self.test_thread_id}", json=payload, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get('ok') and 'data' in data:
-                    thread = data['data'].get('thread', {})
-                    details += f", Updated thread: {thread.get('title')}, External ref: {thread.get('external_ref')}"
-                else:
-                    success = False
-                    details += f", Unexpected response format: {data}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("PUT /api/ledger-threads/{thread_id}", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("PUT /api/ledger-threads/{thread_id}", False, f"Error: {str(e)}")
-            return False
-
-    def test_delete_thread(self):
-        """Test DELETE /api/ledger-threads/{thread_id} - only works if thread has 0 records"""
-        if not self.test_thread_id:
-            self.log_test("DELETE /api/ledger-threads/{thread_id}", False, "No thread ID available")
-            return False
-            
-        try:
-            response = self.session.delete(f"{self.base_url}/ledger-threads/{self.test_thread_id}", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get('ok') and 'data' in data:
-                    details += f", Thread deleted: {data['data'].get('deleted')}"
-                else:
-                    success = False
-                    details += f", Unexpected response format: {data}"
-            else:
-                # This might fail if thread has records, which is expected
-                details += f", Response: {response.text[:200]}"
-                if "records" in response.text.lower():
-                    success = True  # Expected failure due to records
-                    details += " (Expected: thread has records)"
-            
-            self.log_test("DELETE /api/ledger-threads/{thread_id}", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("DELETE /api/ledger-threads/{thread_id}", False, f"Error: {str(e)}")
-            return False
-
-    def test_thread_operations(self):
-        """Test thread operations (merge, split, reassign) - may depend on existing records"""
-        # These operations require existing records, so we'll test the endpoints but expect they may fail
-        
-        # Test merge threads
-        if self.test_thread_id:
-            try:
-                payload = {
-                    "source_thread_ids": ["dummy_thread_id"],
-                    "merge_reason": "Test merge"
-                }
-                response = self.session.post(f"{self.base_url}/ledger-threads/{self.test_thread_id}/merge", json=payload, timeout=10)
-                success = response.status_code in [200, 404]  # 404 is expected for dummy thread
-                details = f"Merge - Status: {response.status_code}"
-                if response.status_code == 404:
-                    details += " (Expected: dummy thread not found)"
-                self.log_test("POST /api/ledger-threads/{thread_id}/merge", success, details)
-            except Exception as e:
-                self.log_test("POST /api/ledger-threads/{thread_id}/merge", False, f"Error: {str(e)}")
-        
-        # Test split thread
-        if self.test_thread_id:
-            try:
-                payload = {
-                    "record_ids": ["dummy_record_id"],
-                    "new_thread_title": "Split Test",
-                    "split_reason": "Test split"
-                }
-                response = self.session.post(f"{self.base_url}/ledger-threads/{self.test_thread_id}/split", json=payload, timeout=10)
-                success = response.status_code in [200, 400]  # 400 is expected for no valid records
-                details = f"Split - Status: {response.status_code}"
-                if response.status_code == 400:
-                    details += " (Expected: no valid records found)"
-                self.log_test("POST /api/ledger-threads/{thread_id}/split", success, details)
-            except Exception as e:
-                self.log_test("POST /api/ledger-threads/{thread_id}/split", False, f"Error: {str(e)}")
-        
-        # Test reassign records
-        try:
-            payload = {
-                "record_ids": ["dummy_record_id"],
-                "target_thread_id": self.test_thread_id or "dummy_thread_id",
-                "reassign_reason": "Test reassign"
-            }
-            response = self.session.post(f"{self.base_url}/ledger-threads/reassign", json=payload, timeout=10)
-            success = response.status_code in [200, 400, 404]  # Various expected failures
-            details = f"Reassign - Status: {response.status_code}"
-            if response.status_code in [400, 404]:
-                details += " (Expected: no valid records or thread not found)"
-            self.log_test("POST /api/ledger-threads/reassign", success, details)
-        except Exception as e:
-            self.log_test("POST /api/ledger-threads/reassign", False, f"Error: {str(e)}")
-
-    # ============ BINDER SCHEDULE MANAGEMENT TESTS ============
-
-    def test_get_binder_profiles(self):
-        """Test GET /api/binder/profiles?portfolio_id={portfolio_id}"""
-        if not self.test_portfolio_id:
-            self.log_test("GET /api/binder/profiles", False, "No portfolio ID available")
-            return False
-            
+    def test_get_profiles(self):
+        """Test GET /api/binder/profiles?portfolio_id={portfolio_id} to get profile IDs"""
         try:
             params = {"portfolio_id": self.test_portfolio_id}
             response = self.session.get(f"{self.base_url}/binder/profiles", params=params, timeout=10)
@@ -337,137 +88,383 @@ class Phase5APITester:
             self.log_test("GET /api/binder/profiles", False, f"Error: {str(e)}")
             return False
 
-    def test_list_schedules(self):
-        """Test GET /api/binder/schedules?portfolio_id={portfolio_id}"""
-        if not self.test_portfolio_id:
-            self.log_test("GET /api/binder/schedules", False, "No portfolio ID available")
-            return False
-            
+    # ============ GAPS ANALYSIS TESTS ============
+
+    def test_gaps_checklist(self):
+        """Test GET /api/binder/gaps/checklist?portfolio_id={portfolio_id}"""
         try:
             params = {"portfolio_id": self.test_portfolio_id}
-            response = self.session.get(f"{self.base_url}/binder/schedules", params=params, timeout=10)
+            response = self.session.get(f"{self.base_url}/binder/gaps/checklist", params=params, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 if data.get('ok') and 'data' in data:
-                    schedules = data['data'].get('schedules', [])
-                    details += f", Found {len(schedules)} schedules"
+                    checklist = data['data'].get('checklist', [])
+                    total_items = data['data'].get('total_items', 0)
+                    details += f", Found {len(checklist)} checklist items (total: {total_items})"
+                    
+                    # Verify structure of first item
+                    if checklist:
+                        first_item = checklist[0]
+                        required_fields = ['id', 'category', 'name', 'description', 'tier', 'required', 'validation_rules']
+                        missing_fields = [field for field in required_fields if field not in first_item]
+                        if missing_fields:
+                            success = False
+                            details += f", Missing fields in checklist item: {missing_fields}"
+                        else:
+                            details += f", Checklist structure verified"
                 else:
                     success = False
                     details += f", Unexpected response format: {data}"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/binder/schedules", success, details)
+            self.log_test("GET /api/binder/gaps/checklist", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/binder/schedules", False, f"Error: {str(e)}")
+            self.log_test("GET /api/binder/gaps/checklist", False, f"Error: {str(e)}")
             return False
 
-    def test_create_schedule(self):
-        """Test POST /api/binder/schedules"""
-        if not self.test_portfolio_id or not self.test_profile_id:
-            self.log_test("POST /api/binder/schedules", False, "No portfolio ID or profile ID available")
+    def test_gaps_analyze(self):
+        """Test GET /api/binder/gaps/analyze?portfolio_id={portfolio_id}"""
+        try:
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/binder/gaps/analyze", params=params, timeout=15)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    analysis = data['data']
+                    
+                    # Verify summary structure
+                    summary = analysis.get('summary', {})
+                    required_summary_fields = ['complete', 'partial', 'missing', 'not_applicable', 'high_risk', 'medium_risk', 'low_risk']
+                    missing_summary_fields = [field for field in required_summary_fields if field not in summary]
+                    
+                    # Verify results array
+                    results = analysis.get('results', [])
+                    by_category = analysis.get('by_category', {})
+                    
+                    if missing_summary_fields:
+                        success = False
+                        details += f", Missing summary fields: {missing_summary_fields}"
+                    elif not results:
+                        success = False
+                        details += f", No results array found"
+                    else:
+                        # Check first result structure
+                        if results:
+                            first_result = results[0]
+                            if 'status' not in first_result or 'risk_level' not in first_result:
+                                success = False
+                                details += f", Results missing status or risk_level"
+                            else:
+                                details += f", Analysis complete: {len(results)} items analyzed, {len(by_category)} categories"
+                        else:
+                            details += f", Analysis complete: 0 items"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/binder/gaps/analyze", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/binder/gaps/analyze", False, f"Error: {str(e)}")
+            return False
+
+    def test_gaps_summary(self):
+        """Test GET /api/binder/gaps/summary?portfolio_id={portfolio_id}"""
+        try:
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/binder/gaps/summary", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    summary = data['data']
+                    required_fields = ['checklist_items', 'tier1_items', 'required_items', 'documents_in_portfolio']
+                    missing_fields = [field for field in required_fields if field not in summary]
+                    
+                    if missing_fields:
+                        success = False
+                        details += f", Missing fields: {missing_fields}"
+                    else:
+                        details += f", Summary: {summary.get('checklist_items')} checklist items, {summary.get('tier1_items')} tier1, {summary.get('required_items')} required, {summary.get('documents_in_portfolio')} documents"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/binder/gaps/summary", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/binder/gaps/summary", False, f"Error: {str(e)}")
+            return False
+
+    def test_gaps_override(self):
+        """Test POST /api/binder/gaps/override"""
+        try:
+            payload = {
+                "portfolio_id": self.test_portfolio_id,
+                "item_id": "power_of_attorney",
+                "not_applicable": True,
+                "required": False
+            }
+            
+            response = self.session.post(f"{self.base_url}/binder/gaps/override", json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    override = data['data'].get('override', {})
+                    details += f", Override saved for item: {payload['item_id']}"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/binder/gaps/override", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/binder/gaps/override", False, f"Error: {str(e)}")
+            return False
+
+    # ============ BINDER GENERATION WITH PHASE 5 ============
+
+    def test_binder_generation_with_phase5(self):
+        """Test POST /api/binder/generate with Phase 5 features"""
+        if not self.test_profile_id:
+            self.log_test("POST /api/binder/generate (Phase 5)", False, "No profile ID available")
             return False
             
         try:
             payload = {
                 "portfolio_id": self.test_portfolio_id,
-                "profile_id": self.test_profile_id,
-                "frequency": "weekly",
-                "day_of_week": 1,
-                "hour": 9,
-                "minute": 0,
-                "enabled": True
+                "profile_id": self.test_profile_id
             }
             
-            response = self.session.post(f"{self.base_url}/binder/schedules", json=payload, timeout=10)
+            response = self.session.post(f"{self.base_url}/binder/generate", json=payload, timeout=30)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 if data.get('ok') and 'data' in data:
-                    schedule = data['data'].get('schedule', {})
-                    self.test_schedule_id = schedule.get('id')
-                    details += f", Schedule created: {self.test_schedule_id}, Next run: {schedule.get('next_run_at')}"
+                    result = data['data']
+                    self.test_run_id = result.get('run_id')
+                    
+                    # Check for Phase 5 features
+                    gaps_analysis = result.get('gaps_analysis')
+                    integrity = result.get('integrity')
+                    
+                    if gaps_analysis:
+                        summary = gaps_analysis.get('summary', {})
+                        high_risk_count = gaps_analysis.get('high_risk_count', 0)
+                        details += f", Gaps analysis included: {high_risk_count} high risk items"
+                    else:
+                        details += f", No gaps analysis in response"
+                    
+                    if integrity:
+                        hash_value = integrity.get('hash')
+                        total_pages = integrity.get('total_pages')
+                        seal_coverage = integrity.get('seal_coverage')
+                        if hash_value:
+                            self.test_hash = hash_value
+                        details += f", Integrity stamp: hash={hash_value[:16] if hash_value else 'None'}..., pages={total_pages}, seal_coverage={seal_coverage}%"
+                    else:
+                        details += f", No integrity stamp in response"
+                    
+                    details += f", Run ID: {self.test_run_id}"
                 else:
                     success = False
                     details += f", Unexpected response format: {data}"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("POST /api/binder/schedules", success, details)
+            self.log_test("POST /api/binder/generate (Phase 5)", success, details)
             return success
             
         except Exception as e:
-            self.log_test("POST /api/binder/schedules", False, f"Error: {str(e)}")
+            self.log_test("POST /api/binder/generate (Phase 5)", False, f"Error: {str(e)}")
             return False
 
-    def test_update_schedule(self):
-        """Test PUT /api/binder/schedules/{schedule_id}"""
-        if not self.test_schedule_id:
-            self.log_test("PUT /api/binder/schedules/{schedule_id}", False, "No schedule ID available")
+    # ============ INTEGRITY VERIFICATION TESTS ============
+
+    def test_verify_by_run_id(self):
+        """Test GET /api/binder/verify?run={run_id}"""
+        if not self.test_run_id:
+            self.log_test("GET /api/binder/verify (by run_id)", False, "No run ID available")
             return False
             
         try:
-            payload = {
-                "frequency": "daily",
-                "hour": 6,
-                "enabled": False
-            }
-            
-            response = self.session.put(f"{self.base_url}/binder/schedules/{self.test_schedule_id}", json=payload, timeout=10)
+            params = {"run": self.test_run_id}
+            response = self.session.get(f"{self.base_url}/binder/verify", params=params, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 if data.get('ok') and 'data' in data:
-                    schedule = data['data'].get('schedule', {})
-                    details += f", Schedule updated: frequency={schedule.get('frequency')}, enabled={schedule.get('enabled')}"
+                    result = data['data']
+                    verified = result.get('verified')
+                    integrity_stamp = result.get('integrity_stamp', {})
+                    
+                    if verified:
+                        details += f", Verified: {verified}, Run ID: {result.get('run_id')}"
+                        if integrity_stamp:
+                            details += f", Integrity stamp fields: {list(integrity_stamp.keys())}"
+                    else:
+                        success = False
+                        details += f", Verification failed"
                 else:
                     success = False
                     details += f", Unexpected response format: {data}"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("PUT /api/binder/schedules/{schedule_id}", success, details)
+            self.log_test("GET /api/binder/verify (by run_id)", success, details)
             return success
             
         except Exception as e:
-            self.log_test("PUT /api/binder/schedules/{schedule_id}", False, f"Error: {str(e)}")
+            self.log_test("GET /api/binder/verify (by run_id)", False, f"Error: {str(e)}")
             return False
 
-    def test_delete_schedule(self):
-        """Test DELETE /api/binder/schedules/{schedule_id}"""
-        if not self.test_schedule_id:
-            self.log_test("DELETE /api/binder/schedules/{schedule_id}", False, "No schedule ID available")
+    def test_verify_by_hash(self):
+        """Test GET /api/binder/verify?hash={sha256_hash}"""
+        if not self.test_hash:
+            self.log_test("GET /api/binder/verify (by hash)", False, "No hash available")
             return False
             
         try:
-            response = self.session.delete(f"{self.base_url}/binder/schedules/{self.test_schedule_id}", timeout=10)
+            params = {"hash": self.test_hash}
+            response = self.session.get(f"{self.base_url}/binder/verify", params=params, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                if data.get('ok'):
-                    details += f", Schedule deleted successfully"
+                if data.get('ok') and 'data' in data:
+                    result = data['data']
+                    verified = result.get('verified')
+                    
+                    if verified:
+                        details += f", Verified: {verified}, Hash: {self.test_hash[:16]}..."
+                        run_details = result.get('run_id')
+                        if run_details:
+                            details += f", Run details found"
+                    else:
+                        success = False
+                        details += f", Verification failed"
                 else:
                     success = False
                     details += f", Unexpected response format: {data}"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("DELETE /api/binder/schedules/{schedule_id}", success, details)
+            self.log_test("GET /api/binder/verify (by hash)", success, details)
             return success
             
         except Exception as e:
-            self.log_test("DELETE /api/binder/schedules/{schedule_id}", False, f"Error: {str(e)}")
+            self.log_test("GET /api/binder/verify (by hash)", False, f"Error: {str(e)}")
+            return False
+
+    def test_verify_invalid_hash(self):
+        """Test GET /api/binder/verify with invalid hash"""
+        try:
+            invalid_hash = "0000000000000000000000000000000000000000000000000000000000000000"
+            params = {"hash": invalid_hash}
+            response = self.session.get(f"{self.base_url}/binder/verify", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    result = data['data']
+                    verified = result.get('verified')
+                    
+                    if verified == False:
+                        details += f", Correctly returned verified=false for invalid hash"
+                    else:
+                        success = False
+                        details += f", Should have returned verified=false, got: {verified}"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/binder/verify (invalid hash)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/binder/verify (invalid hash)", False, f"Error: {str(e)}")
+            return False
+
+    # ============ RUN METADATA VERIFICATION ============
+
+    def test_run_metadata(self):
+        """Test GET /api/binder/runs/{run_id}"""
+        if not self.test_run_id:
+            self.log_test("GET /api/binder/runs/{run_id}", False, "No run ID available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/binder/runs/{self.test_run_id}", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    run_data = data['data']
+                    
+                    # Check for gap_analysis and integrity_stamp in metadata
+                    gap_analysis = run_data.get('gap_analysis')
+                    integrity_stamp = run_data.get('integrity_stamp')
+                    
+                    if gap_analysis:
+                        details += f", Gap analysis found in metadata"
+                    else:
+                        details += f", No gap analysis in metadata"
+                    
+                    if integrity_stamp:
+                        required_fields = ['binder_pdf_sha256', 'manifest_sha256', 'run_id', 'portfolio_id', 'generated_at', 'generated_by', 'generator_version', 'total_items', 'total_pages', 'seal_coverage_percent', 'verification_url']
+                        missing_fields = [field for field in required_fields if field not in integrity_stamp]
+                        
+                        if missing_fields:
+                            details += f", Integrity stamp missing fields: {missing_fields}"
+                        else:
+                            details += f", Integrity stamp complete with all required fields"
+                    else:
+                        details += f", No integrity stamp in metadata"
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/binder/runs/{run_id}", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/binder/runs/{run_id}", False, f"Error: {str(e)}")
             return False
 
     def run_all_tests(self):
