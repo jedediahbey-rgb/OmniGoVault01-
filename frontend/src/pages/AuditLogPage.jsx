@@ -227,45 +227,43 @@ export default function AuditLogPage() {
             </p>
           </div>
           
-          {/* Action buttons - wrap on mobile */}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Action buttons - all on one line */}
+          <div className="flex items-center gap-1.5">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
-              className="border-vault-gold/30 text-vault-muted hover:text-white"
+              className="border-vault-gold/30 text-vault-muted hover:text-white px-2 sm:px-3 text-xs sm:text-sm"
             >
-              <Funnel className="w-4 h-4 mr-2" />
-              Filters
+              <Funnel className="w-3.5 h-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Filters</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleExport('json', false)}
-              className="border-vault-gold/30 text-vault-muted hover:text-white"
+              className="border-vault-gold/30 text-vault-muted hover:text-white px-2 sm:px-3 text-xs sm:text-sm"
             >
-              <Eye className="w-4 h-4 mr-2" />
-              View Report
+              <Eye className="w-3.5 h-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">View Report</span>
             </Button>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleExport('json', true)}
-                className="border-vault-gold/30 text-vault-muted hover:text-white"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => { fetchEntries(); fetchSummary(); }}
-                className="text-vault-muted hover:text-white px-2"
-              >
-                <ArrowClockwise className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport('json', true)}
+              className="border-vault-gold/30 text-vault-muted hover:text-white px-2 sm:px-3 text-xs sm:text-sm"
+            >
+              <Download className="w-3.5 h-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Download</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { fetchEntries(); fetchSummary(); }}
+              className="text-vault-muted hover:text-white px-1.5"
+            >
+              <ArrowClockwise className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
           </div>
         </div>
 
