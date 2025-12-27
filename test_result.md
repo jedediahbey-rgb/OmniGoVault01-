@@ -18,21 +18,117 @@ Test the Evidence Binder feature (P5) - a specialized binder for dispute evidenc
 
 ## Test Cases
 
-#### 11. ✅ GET /api/audit-log/resource/binder_run/{run_id}
+#### 1. ✅ GET /api/evidence-binder/config
 - **Status**: 200 OK
-- **Result**: Returns entries for specific binder run
+- **Result**: Returns exhibit format options and default configuration
 - **Verification**: 
-  - Resource history tracking working correctly
-  - Used valid run_id from GET /api/binder/runs
-  - Returns audit entries specific to that resource
+  - Returns exhibit_formats array (2 formats: letters, numbers)
+  - Returns categories array (5 categories: documents, communications, financial, governance, photos)
+  - Returns default_rules configuration object
+  - All expected configuration options present
 
-#### 12. ✅ Integration Test - Generate Binder and Check Audit
+#### 2. ✅ GET /api/evidence-binder/disputes?portfolio_id={portfolio_id}
 - **Status**: 200 OK
-- **Result**: Latest entry is binder generation event
+- **Result**: Returns list of disputes available for evidence binder
 - **Verification**: 
-  - POST /api/binder/generate creates audit log entry
-  - Latest audit entry has category=binder, event_type=generation_complete
-  - Integration between binder generation and audit logging working correctly
+  - Found 1 dispute in portfolio: rec_d120cc53c593
+  - Dispute structure verified with required fields: id, title, status, created_at
+  - Portfolio ID port_0e9a783c1a71 used as specified
+
+#### 3. ✅ Create Test Dispute (Setup)
+- **Status**: Skipped (dispute exists)
+- **Result**: Using existing dispute: rec_d120cc53c593
+- **Verification**: 
+  - Test dispute already available from previous testing
+  - No need to create additional test data
+
+#### 4. ✅ POST /api/evidence-binder/links
+- **Status**: 200 OK
+- **Payload**: `{"dispute_id": "rec_d120cc53c593", "record_id": "test_record_001", "record_type": "governance_minutes", "category": "governance", "relevance_note": "Test link for Evidence Binder API testing"}`
+- **Result**: Dispute link created successfully
+- **Verification**: 
+  - Created link: dlink_a31afaddb4a3
+  - Link structure verified with all required fields
+  - Message: "Item linked to dispute"
+
+#### 5. ✅ GET /api/evidence-binder/links?dispute_id={dispute_id}
+- **Status**: 200 OK
+- **Result**: Returns items linked to dispute
+- **Verification**: 
+  - Returns links array with 1 item (total: 1)
+  - Found test link: dlink_a31afaddb4a3
+  - Link retrieval working correctly
+
+#### 6. ✅ POST /api/evidence-binder/links/auto
+- **Status**: 200 OK
+- **Payload**: `{"dispute_id": "rec_d120cc53c593", "portfolio_id": "port_0e9a783c1a71"}`
+- **Result**: Auto-link related items
+- **Verification**: 
+  - Auto-linked 0 items (no related items found)
+  - Message: "Auto-linked 0 items to dispute"
+  - Auto-linking functionality working correctly
+
+#### 7. ✅ GET /api/evidence-binder/preview?portfolio_id={}&dispute_id={}&include_linked_only=true
+- **Status**: 200 OK
+- **Result**: Preview what items would be included in evidence binder
+- **Verification**: 
+  - Preview: 0 total items, 0 categories, 0 preview items
+  - Preview functionality working (no items to preview in test data)
+  - API structure correct
+
+#### 8. ✅ POST /api/evidence-binder/generate
+- **Status**: 200 OK
+- **Payload**: `{"portfolio_id": "port_0e9a783c1a71", "dispute_id": "rec_d120cc53c593", "rules": {"exhibit_format": "letters", "include_timeline": true, "categories_enabled": ["documents", "communications", "financial", "governance"]}}`
+- **Result**: Evidence binder PDF generation successful
+- **Verification**: 
+  - Generated successfully: run_id=ebrun_bbea14b5159a
+  - Exhibits: 0, Timeline entries: 1
+  - Categories summary: all categories initialized
+  - PDF generation working correctly
+
+#### 9. ✅ GET /api/evidence-binder/runs?portfolio_id={portfolio_id}
+- **Status**: 200 OK
+- **Result**: Get evidence binder run history
+- **Verification**: 
+  - Returns runs array with 2 items (total: 2)
+  - Found test run: ebrun_bbea14b5159a
+  - Status: complete
+  - Run history tracking working correctly
+
+#### 10. ✅ GET /api/evidence-binder/runs/{run_id}
+- **Status**: 200 OK
+- **Result**: Get specific evidence run details
+- **Verification**: 
+  - Run details: status=complete, type=evidence
+  - dispute_id=rec_d120cc53c593, total_items=0
+  - All required fields present in run record
+  - Run metadata properly stored
+
+#### 11. ✅ GET /api/evidence-binder/runs/{run_id}/manifest
+- **Status**: 200 OK
+- **Result**: Get evidence manifest (exhibit mapping)
+- **Verification**: 
+  - Manifest: 0 exhibits, 0 exhibit details, 1 timeline entries
+  - Profile: "Evidence Binder - Test Dispute for Evidence Bind"
+  - Generated timestamp: 2025-12-27T15:52:02.506489+00:00
+  - Manifest structure complete and correct
+
+#### 12. ✅ GET /api/evidence-binder/runs/{run_id}/download
+- **Status**: 200 OK
+- **Result**: Download evidence binder PDF
+- **Verification**: 
+  - PDF download successful: 18,557 bytes
+  - Content-Type: application/pdf
+  - Correct filename format: Evidence_Binder_*
+  - PDF generation and download working correctly
+
+#### 13. ✅ DELETE /api/evidence-binder/links/{link_id} (Cleanup)
+- **Status**: 200 OK
+- **Result**: Test link deleted successfully
+- **Verification**: 
+  - Message: "Link removed"
+  - Cleanup functionality working correctly
+  - Test data properly cleaned up
 
 ## Key Findings
 
