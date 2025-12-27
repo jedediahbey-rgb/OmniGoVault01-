@@ -682,7 +682,7 @@ export default function DashboardPage({ user }) {
                     onClick={() => navigate(`/vault/document/${doc.document_id}`)}
                     className="flex items-center gap-4 p-3 rounded-lg border border-white/5 hover:border-vault-gold/30 hover:bg-vault-gold/5 cursor-pointer transition-all group"
                   >
-                    <IconBadge icon={FileText} size="md" variant="muted" />
+                    <IconBadge icon={Notebook} size="md" variant="muted" />
                     <div className="flex-1 min-w-0">
                       <p className="text-white truncate">{doc.title}</p>
                       <p className="text-xs text-white/40 flex items-center gap-1">
@@ -695,7 +695,7 @@ export default function DashboardPage({ user }) {
               </div>
             ) : (
               <div className="text-center py-8">
-                <FileText className="w-12 h-12 text-white/10 mx-auto mb-3" weight="duotone" />
+                <Notebook className="w-12 h-12 text-white/10 mx-auto mb-3" weight="duotone" />
                 <p className="text-white/40">No documents yet</p>
               </div>
             )}
