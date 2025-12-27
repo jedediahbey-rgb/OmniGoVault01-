@@ -1036,19 +1036,6 @@ export default function CyberHomePage() {
                 </motion.div>
               ))}
             </div>
-                <HoloCard key={maxim.id} className="p-5 cursor-pointer group text-center" hover>
-                  <div className="flex justify-center mb-3">
-                    <IconChip label={maxim.category} variant="default" />
-                  </div>
-                  <p className="text-lg font-semibold text-white group-hover:text-[#C6A87C] transition-colors mb-2">
-                    {maxim.front}
-                  </p>
-                  <p className="text-sm text-slate-500 group-hover:text-slate-300 transition-colors">
-                    {maxim.back}
-                  </p>
-                </HoloCard>
-              ))}
-            </motion.div>
           </motion.div>
         </div>
       </section>
