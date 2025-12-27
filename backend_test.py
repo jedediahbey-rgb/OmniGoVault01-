@@ -529,17 +529,21 @@ class TrustManagementAPITester:
             self.log("❌ API is not accessible, skipping remaining tests")
             return False
         
-        self.log("\n📅 Testing P2: Scheduled Binder Generation")
+        self.log("\n📚 Testing Knowledge Base & Maxims API Endpoints")
+        self.log("-" * 50)
+        
+        # Knowledge base tests
+        self.test_knowledge_maxims_endpoint()
+        self.test_knowledge_modules_endpoint()
+        
+        self.log("\n📖 Testing Study Progress API Endpoints")
         self.log("-" * 40)
         
-        # P2: Schedule CRUD tests
-        self.test_binder_schedules_get_empty()
-        self.test_binder_schedules_post()
-        self.test_binder_schedules_put()
-        self.test_binder_schedules_put_disable()
-        self.test_binder_schedules_delete()
-        self.test_schedule_next_run_calculation()
-        self.test_binder_page_ui_endpoint()
+        # Study progress tests
+        self.test_study_maxims_endpoint()
+        self.test_study_stats_endpoint()
+        self.test_study_maxims_due_endpoint()
+        self.test_maxim_review_endpoint()
         
         self.log("\n📊 Test Summary")
         self.log("=" * 60)
