@@ -341,6 +341,24 @@ export default function BinderPage() {
   const [gapsAnalysis, setGapsAnalysis] = useState(null);
   const [gapsLoading, setGapsLoading] = useState(false);
 
+  // Evidence Mode state
+  const [binderMode, setBinderMode] = useState('portfolio'); // 'portfolio' | 'evidence'
+  const [showEvidencePanel, setShowEvidencePanel] = useState(false);
+  const [disputes, setDisputes] = useState([]);
+  const [selectedDispute, setSelectedDispute] = useState(null);
+  const [evidenceConfig, setEvidenceConfig] = useState({
+    exhibit_format: 'letters',
+    exhibit_prefix: '',
+    include_timeline: true,
+    include_linked_only: true,
+    include_date_range_items: true,
+    categories_enabled: ['documents', 'communications', 'financial', 'governance'],
+    include_bates: false
+  });
+  const [evidencePreview, setEvidencePreview] = useState(null);
+  const [evidenceLoading, setEvidenceLoading] = useState(false);
+  const [evidenceRuns, setEvidenceRuns] = useState([]);
+
   // Default portfolio state (read-only - set from Dashboard)
   const [isDefaultPortfolio, setIsDefaultPortfolio] = useState(false);
   
