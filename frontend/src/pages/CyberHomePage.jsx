@@ -1046,39 +1046,65 @@ export default function CyberHomePage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
+            viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="text-center mb-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-6"
+            >
               <IconChip icon={FileText} label="Templates" variant="gold" />
               <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">Template Studio</h2>
               <p className="mt-2 text-slate-400">Professional trust document templates ready for customization</p>
             </motion.div>
             
-            <motion.div variants={fadeInUp} className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
-              {TEMPLATES.map((template) => {
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+              {TEMPLATES.map((template, idx) => {
                 const Icon = template.icon;
                 return (
-                  <HoloCard key={template.id} className="p-4 cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
+                  <motion.div
+                    key={template.id}
+                    initial={{ opacity: 0, x: idx % 2 === 0 ? -30 : 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.08, duration: 0.5 }}
+                  >
+                    <HoloCard className="p-4 cursor-pointer h-full">
+                      <div className="flex items-center gap-3">
+                        <motion.div 
+                          className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0"
+                          whileHover={{ scale: 1.15, rotate: 5 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                        >
+                          <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
+                        </motion.div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-white font-medium text-sm">{template.title}</h3>
+                          <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{template.desc}</p>
+                        </div>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-white font-medium text-sm">{template.title}</h3>
-                        <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{template.desc}</p>
-                      </div>
-                    </div>
-                  </HoloCard>
+                    </HoloCard>
+                  </motion.div>
                 );
               })}
-            </motion.div>
+            </div>
             
-            <motion.div variants={fadeInUp} className="mt-5 text-center">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="mt-5 text-center"
+            >
               <Link to="/templates">
-                <Button variant="outline" className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10">
-                  Browse All Templates <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button variant="outline" className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10">
+                    Browse All Templates <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </motion.div>
               </Link>
             </motion.div>
           </motion.div>
@@ -1094,10 +1120,21 @@ export default function CyberHomePage() {
             viewport={{ once: true }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp}>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
               <Vault className="w-12 h-12 text-[#C6A87C] mx-auto mb-3" weight="duotone" />
             </motion.div>
-            <motion.h2 variants={fadeInUp} className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2"
+            >
               Ready to Transform Your Trust Governance?
             </motion.h2>
             <motion.p variants={fadeInUp} className="text-sm sm:text-base text-slate-400 mb-5">
