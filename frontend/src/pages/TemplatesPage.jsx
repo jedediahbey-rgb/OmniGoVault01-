@@ -566,13 +566,25 @@ C/o: <strong>[ADDRESS]</strong><br/>
           <GlassCard
             interactive
             onClick={() => handleSelectTemplate({ id: 'custom', name: 'Blank Document', fields: [] })}
-            className="h-full border-dashed"
+            className="h-full border-dashed flex flex-col"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4">
+            {/* Icon - Centered at top */}
+            <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4 mx-auto sm:mx-0">
               <Plus className="w-6 h-6 text-white/40" weight="duotone" />
             </div>
-            <h3 className="text-xl font-heading text-white mb-2">Blank Document</h3>
-            <p className="text-white/50 text-sm">Start from scratch with a blank document</p>
+            
+            {/* Content area */}
+            <div className="flex-1 flex flex-col">
+              <h3 className="text-lg font-heading text-white mb-2 text-center sm:text-left">Blank Document</h3>
+              <p className="text-white/50 text-sm flex-1 text-center sm:text-left">Start from scratch with a blank document</p>
+            </div>
+            
+            {/* Action - Always at bottom */}
+            <div className="flex items-center justify-end pt-2 border-t border-white/5 mt-auto">
+              <span className="text-white/40 text-sm flex items-center gap-1.5 font-medium">
+                Create <ArrowRight className="w-4 h-4" weight="bold" />
+              </span>
+            </div>
           </GlassCard>
         </motion.div>
       </motion.div>
