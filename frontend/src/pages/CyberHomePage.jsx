@@ -963,23 +963,19 @@ export default function CyberHomePage() {
         </div>
       </section>
       
-      {/* Sleek Scroll-to-Top Indicator */}
+      {/* Scroll-to-Top Arrow - Desktop only, bottom right */}
       <AnimatePresence>
         {showScrollTop && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-16 left-1/2 -translate-x-1/2 z-40"
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={scrollToTop}
+            className="hidden lg:flex fixed bottom-8 right-8 z-40 w-10 h-10 items-center justify-center rounded-full bg-[#0B1221]/90 border border-[#C6A87C]/30 hover:border-[#C6A87C] hover:bg-[#C6A87C]/10 transition-all duration-300 shadow-lg backdrop-blur-sm"
+            aria-label="Scroll to top"
           >
-            <button
-              onClick={scrollToTop}
-              className="group flex flex-col items-center gap-1 px-6 py-3"
-              aria-label="Scroll to top"
-            >
-              <div className="w-12 h-1.5 rounded-full bg-white/40 group-hover:bg-[#C6A87C] transition-all duration-300 group-hover:w-16 shadow-sm" />
-            </button>
-          </motion.div>
+            <ArrowUp className="w-5 h-5 text-[#C6A87C]" weight="bold" />
+          </motion.button>
         )}
       </AnimatePresence>
       
