@@ -862,12 +862,12 @@ export default function CyberHomePage() {
               {TEMPLATES.map((template) => {
                 const Icon = template.icon;
                 return (
-                  <HoloCard key={template.id} className="p-5 cursor-pointer text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center">
+                  <HoloCard key={template.id} className="p-5 cursor-pointer">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0">
                         <Icon className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
                       </div>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <h3 className="text-white font-semibold">{template.title}</h3>
                         <p className="text-sm text-slate-400 mt-1">{template.desc}</p>
                       </div>
