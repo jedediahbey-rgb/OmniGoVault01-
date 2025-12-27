@@ -122,8 +122,9 @@ class EquityTrustAPITester:
             if success:
                 data = response.json()
                 if data.get('ok') and 'data' in data:
-                    records = data['data'].get('records', [])
-                    total = data['data'].get('total', 0)
+                    # Handle both 'records' and 'items' keys for backward compatibility
+                    records = data['data'].get('records', data['data'].get('items', []))
+                    total = data['data'].get('total', len(records))
                     details += f", Found {len(records)} records (total: {total})"
                     
                     # Analyze RM-ID patterns
@@ -155,8 +156,13 @@ class EquityTrustAPITester:
                     migration_success_rate = len(proper_ids) / len(records) if records else 0
                     details += f"\n    Migration success rate: {migration_success_rate:.1%}"
                     
-                    if migration_success_rate < 0.5:  # Less than 50% migrated
-                        details += f"\n    WARNING: Low migration success rate"
+                    # Success if at least 70% are migrated (allowing for some TEMP IDs)
+                    if migration_success_rate >= 0.7:
+                        details += f"\n    ✅ Migration largely successful"
+                    elif migration_success_rate >= 0.5:
+                        details += f"\n    ⚠️ Partial migration success"
+                    else:
+                        details += f"\n    ❌ Low migration success rate"
                         
                 else:
                     success = False
