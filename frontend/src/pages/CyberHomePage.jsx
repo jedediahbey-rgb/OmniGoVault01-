@@ -855,16 +855,17 @@ export default function CyberHomePage() {
       {/* ===== SIGNAL FEED SECTION ===== */}
       <section id="signals" className="py-8 lg:py-12 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Two cards side by side - aligned at top */}
-          <div className="grid lg:grid-cols-2 gap-6 items-start">
+          {/* Two cards side by side - aligned at top, same height */}
+          <div className="grid lg:grid-cols-2 gap-6 items-stretch">
             {/* Signal Feed Card */}
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: '-100px' }}
               variants={fadeInUp}
+              className="h-full"
             >
-              <HoloCard className="p-4">
+              <HoloCard className="p-4 h-full flex flex-col">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h3 className="text-lg font-bold text-white">Signal Console</h3>
@@ -897,13 +898,15 @@ export default function CyberHomePage() {
                     </button>
                   </div>
                 </div>
-                {signalsLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" />
-                  </div>
-                ) : (
-                  <SignalFeed signals={demoMode ? DEMO_SIGNALS : (liveSignals.length > 0 ? liveSignals : DEMO_SIGNALS)} />
-                )}
+                <div className="flex-1 overflow-auto">
+                  {signalsLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  ) : (
+                    <SignalFeed signals={demoMode ? DEMO_SIGNALS.slice(0, 4) : (liveSignals.length > 0 ? liveSignals.slice(0, 4) : DEMO_SIGNALS.slice(0, 4))} />
+                  )}
+                </div>
               </HoloCard>
             </motion.div>
             
@@ -913,6 +916,7 @@ export default function CyberHomePage() {
               whileInView="visible"
               viewport={{ once: true, margin: '-100px' }}
               variants={fadeInUp}
+              className="h-full"
             >
               <TrustHealthCard />
             </motion.div>
