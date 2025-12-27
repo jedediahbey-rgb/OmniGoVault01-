@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import { 
   Scales, Plus, FileText, ArrowLeft, User, SignOut, Briefcase,
   Wallet, Bell, Clock, CheckCircle, Trash, Download, Edit,
