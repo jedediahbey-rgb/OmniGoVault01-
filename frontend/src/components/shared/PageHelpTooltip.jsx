@@ -70,7 +70,7 @@ export const PAGE_HELP_CONTENT = {
   },
   auditLog: {
     title: 'Audit Log',
-    description: 'Your complete diary of all system activities. The Audit Log automatically tracks when documents are created or modified, when binders are generated, record finalizations, and other important events. Use this for compliance reporting, accountability, and maintaining a complete history of all actions taken in your trust management system.'
+    description: 'Your complete diary of all system activities. Automatically tracks document changes, binder generation, record finalizations, and other important events. Use for compliance reporting and accountability.'
   },
   settings: {
     title: 'Settings',
@@ -106,24 +106,23 @@ export default function PageHelpTooltip({ pageKey, className = '' }) {
               className="fixed inset-0 z-[100] bg-black/40"
             />
             
-            {/* Tooltip - Centered modal */}
+            {/* Tooltip - Centered modal with fixed width for consistent text alignment */}
             <motion.div
               initial={{ opacity: 0, y: 8, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="fixed z-[101] inset-x-4 top-1/4 p-4 bg-vault-void border border-white/10 rounded-xl shadow-2xl"
-              style={{ maxWidth: '320px', margin: '0 auto' }}
+              className="fixed z-[101] left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-[300px] p-4 bg-[#0A0F1A] border border-vault-gold/20 rounded-xl shadow-2xl"
             >
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute top-2 right-2 p-1 text-white/40 hover:text-white/70 transition-colors"
+                className="absolute top-3 right-3 p-1 text-white/40 hover:text-white/70 transition-colors"
               >
                 <X className="w-4 h-4" weight="bold" />
               </button>
               
-              <h4 className="text-sm font-semibold text-vault-gold mb-2 pr-6">{content.title}</h4>
-              <p className="text-xs text-white/60 leading-relaxed">{content.description}</p>
+              <h4 className="text-sm font-semibold text-vault-gold mb-3">{content.title}</h4>
+              <p className="text-sm text-white/70 leading-relaxed text-left">{content.description}</p>
             </motion.div>
           </>
         )}
