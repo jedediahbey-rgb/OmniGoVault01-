@@ -675,7 +675,7 @@ export default function PortfolioOverviewPage({ user }) {
       </button>
 
       <PageHeader
-        icon={FolderSimple}
+        icon={ShieldCheck}
         title={portfolio?.name}
         subtitle={portfolio?.description || 'Portfolio workspace'}
         actions={
