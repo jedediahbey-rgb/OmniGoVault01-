@@ -28,6 +28,57 @@ class BinderStatus(str, Enum):
     FAILED = "failed"
 
 
+class RedactionMode(str, Enum):
+    """Redaction output modes."""
+    STANDARD = "standard"      # No redactions applied
+    REDACTED = "redacted"      # Redactions applied, content replaced with [REDACTED]
+    PRIVILEGED = "privileged"  # Include privileged content (attorney-client)
+    BOTH = "both"              # Generate both redacted and unredacted versions
+
+
+class BatesPosition(str, Enum):
+    """Bates number position on page."""
+    BOTTOM_RIGHT = "bottom-right"
+    BOTTOM_LEFT = "bottom-left"
+    BOTTOM_CENTER = "bottom-center"
+
+
+@dataclass
+class BatesConfig:
+    """Configuration for Bates numbering."""
+    enabled: bool = False
+    prefix: str = ""  # Will default to portfolio abbreviation
+    start_number: int = 1
+    digits: int = 6  # Number of digits with leading zeros
+    position: str = BatesPosition.BOTTOM_RIGHT.value
+    include_cover: bool = False
+    font_size: int = 9
+    margin_x: int = 18  # pixels from edge
+    margin_y: int = 18  # pixels from edge
+
+
+@dataclass
+class RedactionEntry:
+    """Single redaction marker."""
+    record_id: str
+    field_path: str
+    reason: str = ""
+    reason_type: str = "pii"  # "pii", "privileged", "confidential", "custom"
+    timestamp: Optional[str] = None
+    user_id: Optional[str] = None
+    is_persistent: bool = True  # True = saved on record, False = per-run
+
+
+@dataclass
+class BatesPageEntry:
+    """Single page in the Bates map."""
+    page_index: int
+    bates_number: str
+    source_section: str
+    source_record_id: Optional[str] = None
+    source_title: Optional[str] = None
+
+
 @dataclass
 class BinderRules:
     """Configuration rules for a binder profile."""
@@ -43,6 +94,18 @@ class BinderRules:
     attested_only_minutes: bool = False  # For Audit profile
     case_thread_ids: List[str] = field(default_factory=list)  # For Court profile
     dispute_id: Optional[str] = None  # For Court profile
+    # Court Mode options
+    bates_enabled: bool = False
+    bates_prefix: Optional[str] = None  # None = use portfolio abbreviation
+    bates_start_number: int = 1
+    bates_digits: int = 6
+    bates_position: str = BatesPosition.BOTTOM_RIGHT.value
+    bates_include_cover: bool = False
+    bates_font_size: int = 9
+    bates_margin_x: int = 18
+    bates_margin_y: int = 18
+    redaction_mode: str = RedactionMode.STANDARD.value
+    adhoc_redactions: List[Dict] = field(default_factory=list)  # Per-run redactions
 
 
 @dataclass
