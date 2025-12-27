@@ -664,6 +664,15 @@ export default function PortfolioOverviewPage({ user }) {
 
   return (
     <div className="p-8">
+      {/* Private Equity & Trusts Header - Links to Landing Page */}
+      <Link 
+        to="/"
+        className="inline-flex items-center gap-2 text-vault-gold hover:text-vault-gold/80 mb-4 transition-colors"
+      >
+        <Key className="w-4 h-4" weight="fill" />
+        <span className="text-sm font-medium">Private Equity & Trusts</span>
+      </Link>
+      
       {/* Back Button */}
       <button
         onClick={() => navigate('/vault')}
