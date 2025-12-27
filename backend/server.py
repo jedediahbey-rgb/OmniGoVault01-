@@ -938,6 +938,187 @@ async def generate_placeholder_rm_id(profile_id: str, user: User = Depends(get_c
     }
 
 
+@api_router.post("/trust-profiles/{profile_id}/migrate-rm-ids")
+async def migrate_rm_ids(profile_id: str, user: User = Depends(get_current_user)):
+    """
+    Migrate all TEMP RM-IDs to proper RM-IDs when a real RM-ID is set.
+    This regenerates RM-IDs for all governance records, documents, assets, and ledger entries
+    that still have TEMP prefixes, using the proper base RM-ID from the trust profile.
+    """
+    # Get trust profile
+    trust_profile = await db.trust_profiles.find_one(
+        {"profile_id": profile_id, "user_id": user.user_id},
+        {"_id": 0}
+    )
+    if not trust_profile:
+        raise HTTPException(status_code=404, detail="Trust profile not found")
+    
+    # Check if profile has a proper (non-placeholder) RM-ID
+    if trust_profile.get("rm_id_is_placeholder", True):
+        raise HTTPException(
+            status_code=400, 
+            detail="Cannot migrate: Trust profile still has a placeholder RM-ID. Please set a proper RM-ID first."
+        )
+    
+    rm_id_normalized = trust_profile.get("rm_id_normalized") or trust_profile.get("rm_record_id", "")
+    if not rm_id_normalized or rm_id_normalized.startswith("TEMP"):
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot migrate: No valid base RM-ID found in trust profile."
+        )
+    
+    # Normalize the base RM-ID (remove spaces, uppercase)
+    rm_base = re.sub(r'\s+', '', rm_id_normalized.strip().upper())
+    portfolio_id = trust_profile.get("portfolio_id")
+    
+    if not portfolio_id:
+        raise HTTPException(status_code=400, detail="Trust profile has no associated portfolio")
+    
+    migration_results = {
+        "governance_records": {"migrated": 0, "failed": 0, "errors": []},
+        "documents": {"migrated": 0, "failed": 0, "errors": []},
+        "assets": {"migrated": 0, "failed": 0, "errors": []},
+        "ledger_entries": {"migrated": 0, "failed": 0, "errors": []}
+    }
+    
+    # Helper to generate new RM-ID maintaining the group.sub structure
+    async def generate_new_rm_id(old_rm_id: str, record_type: str) -> str:
+        """Generate new RM-ID using proper base but preserving group.sub if possible"""
+        if not old_rm_id or not old_rm_id.startswith("TEMP"):
+            return old_rm_id
+        
+        # Try to parse existing group.sub from TEMP ID (e.g., TEMP1234ABCD-20.001 -> 20.001)
+        match = re.match(r'^TEMP[A-F0-9]+-(\d+)\.(\d+)$', old_rm_id)
+        if match:
+            group = int(match.group(1))
+            sub = int(match.group(2))
+            # Create new RM-ID with proper base
+            return f"{rm_base}-{group}.{sub:03d}"
+        
+        # If can't parse, use the V2 allocator to generate new ID
+        if rmid_allocator:
+            try:
+                result = await rmid_allocator.allocate(
+                    portfolio_id=portfolio_id,
+                    user_id=user.user_id,
+                    module_type=record_type
+                )
+                return result["rm_id"]
+            except Exception as e:
+                print(f"Warning: Could not allocate new RM-ID: {e}")
+        
+        # Fallback: just replace TEMP prefix with proper base
+        # e.g., TEMP1234ABCD -> RF123456789US (with a simple suffix)
+        return f"{rm_base}-99.999"
+    
+    # 1. Migrate governance records
+    temp_gov_records = await db.governance_records.find(
+        {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}},
+        {"_id": 0, "id": 1, "rm_id": 1, "module_type": 1}
+    ).to_list(1000)
+    
+    for record in temp_gov_records:
+        try:
+            old_rm_id = record.get("rm_id", "")
+            new_rm_id = await generate_new_rm_id(old_rm_id, record.get("module_type", "governance"))
+            
+            if new_rm_id != old_rm_id:
+                await db.governance_records.update_one(
+                    {"id": record["id"]},
+                    {"$set": {
+                        "rm_id": new_rm_id,
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }}
+                )
+                migration_results["governance_records"]["migrated"] += 1
+        except Exception as e:
+            migration_results["governance_records"]["failed"] += 1
+            migration_results["governance_records"]["errors"].append(f"{record.get('id')}: {str(e)}")
+    
+    # 2. Migrate documents
+    temp_docs = await db.documents.find(
+        {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}},
+        {"_id": 0, "document_id": 1, "rm_id": 1}
+    ).to_list(1000)
+    
+    for doc in temp_docs:
+        try:
+            old_rm_id = doc.get("rm_id", "")
+            new_rm_id = await generate_new_rm_id(old_rm_id, "document")
+            
+            if new_rm_id != old_rm_id:
+                await db.documents.update_one(
+                    {"document_id": doc["document_id"]},
+                    {"$set": {
+                        "rm_id": new_rm_id,
+                        "sub_record_id": new_rm_id,  # Also update sub_record_id
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }}
+                )
+                migration_results["documents"]["migrated"] += 1
+        except Exception as e:
+            migration_results["documents"]["failed"] += 1
+            migration_results["documents"]["errors"].append(f"{doc.get('document_id')}: {str(e)}")
+    
+    # 3. Migrate assets
+    temp_assets = await db.assets.find(
+        {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}},
+        {"_id": 0, "asset_id": 1, "rm_id": 1}
+    ).to_list(1000)
+    
+    for asset in temp_assets:
+        try:
+            old_rm_id = asset.get("rm_id", "")
+            new_rm_id = await generate_new_rm_id(old_rm_id, "asset")
+            
+            if new_rm_id != old_rm_id:
+                await db.assets.update_one(
+                    {"asset_id": asset["asset_id"]},
+                    {"$set": {
+                        "rm_id": new_rm_id,
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }}
+                )
+                migration_results["assets"]["migrated"] += 1
+        except Exception as e:
+            migration_results["assets"]["failed"] += 1
+            migration_results["assets"]["errors"].append(f"{asset.get('asset_id')}: {str(e)}")
+    
+    # 4. Migrate ledger entries
+    temp_ledger = await db.ledger_entries.find(
+        {"portfolio_id": portfolio_id, "rm_id": {"$regex": "^TEMP"}},
+        {"_id": 0, "entry_id": 1, "rm_id": 1}
+    ).to_list(1000)
+    
+    for entry in temp_ledger:
+        try:
+            old_rm_id = entry.get("rm_id", "")
+            new_rm_id = await generate_new_rm_id(old_rm_id, "ledger")
+            
+            if new_rm_id != old_rm_id:
+                await db.ledger_entries.update_one(
+                    {"entry_id": entry["entry_id"]},
+                    {"$set": {
+                        "rm_id": new_rm_id,
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }}
+                )
+                migration_results["ledger_entries"]["migrated"] += 1
+        except Exception as e:
+            migration_results["ledger_entries"]["failed"] += 1
+            migration_results["ledger_entries"]["errors"].append(f"{entry.get('entry_id')}: {str(e)}")
+    
+    total_migrated = sum(r["migrated"] for r in migration_results.values())
+    total_failed = sum(r["failed"] for r in migration_results.values())
+    
+    return {
+        "ok": True,
+        "message": f"RM-ID migration complete. Migrated {total_migrated} records, {total_failed} failed.",
+        "rm_base": rm_base,
+        "results": migration_results
+    }
+
+
 # ============ ASSET ENDPOINTS ============
 
 
