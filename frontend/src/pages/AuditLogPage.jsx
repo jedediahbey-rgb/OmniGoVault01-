@@ -472,6 +472,61 @@ export default function AuditLogPage() {
           )}
         </div>
       </div>
+
+      {/* Export Modal */}
+      <AnimatePresence>
+        {showExportModal && exportData && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowExportModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#0A0F1A] rounded-lg border border-vault-gold/20 max-w-4xl w-full max-h-[80vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between p-4 border-b border-vault-gold/10">
+                <div>
+                  <h2 className="text-lg font-bold text-white">Audit Log Export</h2>
+                  <p className="text-vault-muted text-sm">
+                    {exportData.total} entries • Exported {new Date(exportData.exported_at).toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleExport('json', true)}
+                    className="border-vault-gold/30 text-vault-muted hover:text-white"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download JSON
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowExportModal(false)}
+                    className="text-vault-muted hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="p-4 overflow-auto max-h-[calc(80vh-80px)]">
+                <pre className="text-xs text-vault-muted bg-black/30 p-4 rounded-lg overflow-x-auto whitespace-pre-wrap font-mono">
+                  {JSON.stringify(exportData, null, 2)}
+                </pre>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
