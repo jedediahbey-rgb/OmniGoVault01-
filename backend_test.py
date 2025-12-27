@@ -62,6 +62,271 @@ class EquityTrustAPITester:
             "timestamp": datetime.now().isoformat()
         })
 
+    # ============ RM-ID MIGRATION TESTS ============
+
+    def test_get_trust_profiles(self):
+        """Test GET /api/trust-profiles - Check existing trust profiles"""
+        try:
+            response = self.session.get(f"{self.base_url}/trust-profiles", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if isinstance(data, list):
+                    self.trust_profiles = data
+                    details += f", Found {len(data)} trust profiles"
+                    
+                    # Categorize profiles by RM-ID type
+                    proper_profiles = [p for p in data if not p.get('rm_id_is_placeholder', True)]
+                    placeholder_profiles = [p for p in data if p.get('rm_id_is_placeholder', True)]
+                    
+                    details += f", Proper RM-ID profiles: {len(proper_profiles)}, Placeholder profiles: {len(placeholder_profiles)}"
+                    
+                    # Store profiles for later tests
+                    if proper_profiles:
+                        self.proper_rm_id_profile = proper_profiles[0]
+                        details += f", Found proper RM-ID profile: {self.proper_rm_id_profile.get('profile_id')}"
+                    
+                    if placeholder_profiles:
+                        self.placeholder_rm_id_profile = placeholder_profiles[0]
+                        details += f", Found placeholder RM-ID profile: {self.placeholder_rm_id_profile.get('profile_id')}"
+                    
+                    # Show RM-ID details for verification
+                    for profile in data[:3]:  # Show first 3 profiles
+                        rm_id = profile.get('rm_id_normalized') or profile.get('rm_id_raw', 'None')
+                        is_placeholder = profile.get('rm_id_is_placeholder', True)
+                        details += f"\n    Profile {profile.get('profile_id')}: RM-ID={rm_id}, Placeholder={is_placeholder}"
+                        
+                else:
+                    success = False
+                    details += f", Unexpected response format"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/trust-profiles", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/trust-profiles", False, f"Error: {str(e)}")
+            return False
+
+    def test_governance_records_rm_id_migration(self):
+        """Test GET /api/governance/v2/records?portfolio_id=port_d92308e007f1 - Verify RM-ID migration"""
+        try:
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/governance/v2/records", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    records = data['data'].get('records', [])
+                    total = data['data'].get('total', 0)
+                    details += f", Found {len(records)} records (total: {total})"
+                    
+                    # Analyze RM-ID patterns
+                    temp_ids = []
+                    proper_ids = []
+                    rf_ids = []
+                    
+                    for record in records:
+                        rm_id = record.get('rm_id', '')
+                        if rm_id.startswith('TEMP'):
+                            temp_ids.append(rm_id)
+                        elif rm_id.startswith('RF743916765US'):
+                            rf_ids.append(rm_id)
+                            proper_ids.append(rm_id)
+                        elif rm_id and not rm_id.startswith('TEMP'):
+                            proper_ids.append(rm_id)
+                    
+                    details += f"\n    TEMP IDs remaining: {len(temp_ids)}"
+                    details += f"\n    Proper IDs (RF743916765US): {len(rf_ids)}"
+                    details += f"\n    Other proper IDs: {len(proper_ids) - len(rf_ids)}"
+                    
+                    # Show sample RM-IDs
+                    if rf_ids:
+                        details += f"\n    Sample RF IDs: {rf_ids[:3]}"
+                    if temp_ids:
+                        details += f"\n    Sample TEMP IDs: {temp_ids[:3]}"
+                    
+                    # Verify migration success - most should be proper IDs
+                    migration_success_rate = len(proper_ids) / len(records) if records else 0
+                    details += f"\n    Migration success rate: {migration_success_rate:.1%}"
+                    
+                    if migration_success_rate < 0.5:  # Less than 50% migrated
+                        details += f"\n    WARNING: Low migration success rate"
+                        
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/governance/v2/records (RM-ID Migration Check)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/governance/v2/records (RM-ID Migration Check)", False, f"Error: {str(e)}")
+            return False
+
+    def test_migrate_rm_ids_with_proper_profile(self):
+        """Test POST /api/trust-profiles/{profile_id}/migrate-rm-ids with proper RM-ID"""
+        if not self.proper_rm_id_profile:
+            self.log_test("POST /api/trust-profiles/{profile_id}/migrate-rm-ids (Proper)", False, "No proper RM-ID profile available")
+            return False
+        
+        try:
+            profile_id = self.proper_rm_id_profile.get('profile_id')
+            response = self.session.post(f"{self.base_url}/trust-profiles/{profile_id}/migrate-rm-ids", timeout=30)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok'):
+                    rm_base = data.get('rm_base', '')
+                    groups_allocated = data.get('groups_allocated', 0)
+                    results = data.get('results', {})
+                    message = data.get('message', '')
+                    
+                    details += f", RM Base: {rm_base}, Groups allocated: {groups_allocated}"
+                    details += f", Message: {message}"
+                    
+                    # Show migration results by category
+                    total_migrated = 0
+                    total_failed = 0
+                    for category, result in results.items():
+                        migrated = result.get('migrated', 0)
+                        failed = result.get('failed', 0)
+                        total_migrated += migrated
+                        total_failed += failed
+                        if migrated > 0 or failed > 0:
+                            details += f"\n    {category}: {migrated} migrated, {failed} failed"
+                    
+                    details += f"\n    Total: {total_migrated} migrated, {total_failed} failed"
+                    
+                else:
+                    success = False
+                    details += f", Migration failed: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/trust-profiles/{profile_id}/migrate-rm-ids (Proper)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/trust-profiles/{profile_id}/migrate-rm-ids (Proper)", False, f"Error: {str(e)}")
+            return False
+
+    def test_migrate_rm_ids_with_placeholder_profile(self):
+        """Test POST /api/trust-profiles/{profile_id}/migrate-rm-ids with placeholder RM-ID (should fail)"""
+        if not self.placeholder_rm_id_profile:
+            self.log_test("POST /api/trust-profiles/{profile_id}/migrate-rm-ids (Placeholder)", True, "No placeholder RM-ID profile available - test skipped")
+            return True
+        
+        try:
+            profile_id = self.placeholder_rm_id_profile.get('profile_id')
+            response = self.session.post(f"{self.base_url}/trust-profiles/{profile_id}/migrate-rm-ids", timeout=10)
+            
+            # This should return 400 error for placeholder RM-ID
+            expected_failure = response.status_code == 400
+            details = f"Status: {response.status_code}"
+            
+            if expected_failure:
+                data = response.json()
+                error_detail = data.get('detail', '')
+                details += f", Expected 400 error: {error_detail}"
+                success = "placeholder" in error_detail.lower() or "cannot migrate" in error_detail.lower()
+                if not success:
+                    details += f", Unexpected error message"
+            else:
+                success = False
+                details += f", Expected 400 error but got different status"
+                if response.status_code == 200:
+                    details += f", Migration unexpectedly succeeded"
+            
+            self.log_test("POST /api/trust-profiles/{profile_id}/migrate-rm-ids (Placeholder)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/trust-profiles/{profile_id}/migrate-rm-ids (Placeholder)", False, f"Error: {str(e)}")
+            return False
+
+    def test_verify_rm_id_format_in_records(self):
+        """Verify governance records display proper RM-ID format like RF743916765US-XX.XXX"""
+        try:
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/governance/v2/records", params=params, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get('ok') and 'data' in data:
+                    records = data['data'].get('records', [])
+                    details += f", Found {len(records)} records"
+                    
+                    # Verify RM-ID format patterns
+                    proper_format_count = 0
+                    invalid_format_count = 0
+                    temp_count = 0
+                    sample_proper_ids = []
+                    sample_invalid_ids = []
+                    
+                    # Expected format: RF743916765US-XX.XXX
+                    import re
+                    proper_pattern = re.compile(r'^RF743916765US-\d{1,2}\.\d{3}$')
+                    
+                    for record in records:
+                        rm_id = record.get('rm_id', '')
+                        if not rm_id:
+                            continue
+                            
+                        if rm_id.startswith('TEMP'):
+                            temp_count += 1
+                        elif proper_pattern.match(rm_id):
+                            proper_format_count += 1
+                            if len(sample_proper_ids) < 5:
+                                sample_proper_ids.append(rm_id)
+                        else:
+                            invalid_format_count += 1
+                            if len(sample_invalid_ids) < 3:
+                                sample_invalid_ids.append(rm_id)
+                    
+                    details += f"\n    Proper format (RF743916765US-XX.XXX): {proper_format_count}"
+                    details += f"\n    TEMP IDs: {temp_count}"
+                    details += f"\n    Invalid format: {invalid_format_count}"
+                    
+                    if sample_proper_ids:
+                        details += f"\n    Sample proper IDs: {sample_proper_ids}"
+                    if sample_invalid_ids:
+                        details += f"\n    Sample invalid IDs: {sample_invalid_ids}"
+                    
+                    # Success if most records have proper format
+                    total_with_rm_id = proper_format_count + invalid_format_count + temp_count
+                    if total_with_rm_id > 0:
+                        proper_rate = proper_format_count / total_with_rm_id
+                        details += f"\n    Proper format rate: {proper_rate:.1%}"
+                        success = proper_rate > 0.7  # At least 70% should have proper format
+                    else:
+                        success = False
+                        details += f"\n    No records with RM-IDs found"
+                        
+                else:
+                    success = False
+                    details += f", Unexpected response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("Verify RM-ID Format in Records", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Verify RM-ID Format in Records", False, f"Error: {str(e)}")
+            return False
+
     # ============ CORE SYSTEM HEALTH TESTS ============
 
     def test_system_health(self):
