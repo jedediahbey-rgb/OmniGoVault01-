@@ -1137,14 +1137,31 @@ export default function CyberHomePage() {
             >
               Ready to Transform Your Trust Governance?
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-sm sm:text-base text-slate-400 mb-5">
+            <motion.p 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="text-sm sm:text-base text-slate-400 mb-5"
+            >
               Start with our demo or create your secure vault today.
             </motion.p>
-            <motion.div variants={fadeInUp}>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
               <Link to="/login">
-                <Button size="lg" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-8">
-                  Enter the Vault
-                </Button>
+                <motion.div 
+                  whileHover={{ scale: 1.08 }} 
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <Button size="lg" className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-8">
+                    Enter the Vault
+                  </Button>
+                </motion.div>
               </Link>
             </motion.div>
           </motion.div>
