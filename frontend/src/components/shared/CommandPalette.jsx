@@ -335,31 +335,59 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
   const displayResults = query ? results : null;
   let globalIndex = 0;
 
-  return (
-    <AnimatePresence>
+  return createPortal(
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 99999,
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        paddingTop: '15vh',
+        paddingLeft: '1rem',
+        paddingRight: '1rem',
+      }}
+    >
+      {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] px-4"
-      >
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          onClick={onClose}
-        />
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          backdropFilter: 'blur(4px)',
+        }}
+        onClick={onClose}
+      />
 
-        {/* Command Palette */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: -20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: -20 }}
-          transition={{ duration: 0.15 }}
-          className="relative w-full max-w-2xl bg-[#0B1221] border border-vault-gold/20 rounded-xl shadow-2xl overflow-hidden"
-        >
+      {/* Command Palette */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+        transition={{ duration: 0.15 }}
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '42rem',
+          backgroundColor: '#0B1221',
+          border: '1px solid rgba(198, 168, 124, 0.2)',
+          borderRadius: '0.75rem',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          overflow: 'hidden',
+        }}
+      >
           {/* Search Input */}
           <div className="flex items-center gap-3 px-4 py-4 border-b border-white/10">
             <MagnifyingGlass className="w-5 h-5 text-vault-muted" weight="duotone" />
