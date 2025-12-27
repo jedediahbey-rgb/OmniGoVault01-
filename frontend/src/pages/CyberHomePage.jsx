@@ -637,7 +637,6 @@ const GovernanceMatrixSection = () => {
 // Main Homepage Component
 export default function CyberHomePage() {
   const navigate = useNavigate();
-  const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [demoMode, setDemoMode] = useState(true);
   const [liveSignals, setLiveSignals] = useState([]);
   const [signalsLoading, setSignalsLoading] = useState(false);
