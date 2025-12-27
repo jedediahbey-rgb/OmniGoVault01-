@@ -759,6 +759,7 @@ export default function PortfolioOverviewPage({ user }) {
           }
           icon={CurrencyDollar}
           subtitle="Total res value"
+          hideProgress={true}
         />
         <StatCard
           title="Parties"
