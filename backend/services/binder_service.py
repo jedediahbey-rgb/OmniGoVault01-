@@ -1802,15 +1802,31 @@ class BinderService:
             redaction_log = None
             
             if redaction_mode != RedactionMode.STANDARD.value:
-                # Get persistent redactions
-                persistent_redactions = await self.get_persistent_redactions(portfolio_id, user_id)
-                adhoc_redactions = rules.get("adhoc_redactions", [])
-                
-                # Apply redactions to content
-                content, redaction_log = self.process_content_redactions(
-                    content, persistent_redactions, adhoc_redactions, redaction_mode
-                )
-                content["_redaction_log"] = redaction_log
+                try:
+                    # Get persistent redactions
+                    persistent_redactions = await self.get_persistent_redactions(portfolio_id, user_id)
+                    adhoc_redactions = rules.get("adhoc_redactions", [])
+                    
+                    # Ensure redactions are lists
+                    if not isinstance(persistent_redactions, list):
+                        persistent_redactions = []
+                    if not isinstance(adhoc_redactions, list):
+                        adhoc_redactions = []
+                    
+                    # Apply redactions to content
+                    content, redaction_log = self.process_content_redactions(
+                        content, persistent_redactions, adhoc_redactions, redaction_mode
+                    )
+                    content["_redaction_log"] = redaction_log
+                except Exception as e:
+                    # If redaction processing fails, continue without redactions
+                    redaction_log = {
+                        "entries": [],
+                        "total_persistent": 0,
+                        "total_adhoc": 0,
+                        "error": f"Redaction processing failed: {str(e)}"
+                    }
+                    content["_redaction_log"] = redaction_log
             
             # Generate manifest
             manifest = self.generate_manifest(content)
