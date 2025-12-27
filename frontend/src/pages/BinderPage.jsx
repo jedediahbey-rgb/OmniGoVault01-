@@ -26,7 +26,13 @@ import {
   CalendarBlank,
   Trash,
   Play,
-  Pause
+  Pause,
+  NumberSquareOne,
+  Lock,
+  LockOpen,
+  Stamp,
+  EyeSlash,
+  Info
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
