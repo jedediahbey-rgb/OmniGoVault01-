@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Toaster } from './components/ui/sonner';
+import { AnimatePresence, motion } from 'framer-motion';
 import axios from 'axios';
 import MainLayout from './components/layout/MainLayout';
 // Disclaimer component available but not used globally
