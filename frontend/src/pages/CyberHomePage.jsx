@@ -776,7 +776,7 @@ export default function CyberHomePage() {
               {/* OMNIGOVAULT Logo - Centered, fully visible */}
               <motion.div 
                 variants={fadeInUp}
-                className="mb-2 lg:mb-1 lg:mt-8"
+                className="mb-0 lg:-mb-2 lg:mt-8"
               >
                 <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[480px] mx-auto">
                   <img 
