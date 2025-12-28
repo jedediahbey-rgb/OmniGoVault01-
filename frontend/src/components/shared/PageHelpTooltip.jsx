@@ -74,7 +74,7 @@ export const PAGE_HELP_CONTENT = {
   },
   settings: {
     title: 'Settings',
-    description: 'Configure your account preferences, notification settings, and platform customizations.'
+    description: 'Change your account preferences, notification settings, and platform customizations.'
   }
 };
 
