@@ -321,7 +321,7 @@ const AdminConsolePage = () => {
               value="users"
               className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold"
             >
-              <Users className="w-4 h-4 mr-2" />
+              <UsersIcon className="w-4 h-4 mr-2" />
               Users
             </TabsTrigger>
             {adminStatus?.is_omnicompetent && (
