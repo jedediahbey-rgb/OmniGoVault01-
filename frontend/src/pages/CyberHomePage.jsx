@@ -165,18 +165,26 @@ const Scanline = () => (
 );
 
 // Holographic Card component - clean, no animations
-const HoloCard = ({ children, className = '', hover = true, onClick, delay = 0 }) => (
-  <div
-    className={`relative bg-[#0B1221]/70 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#C6A87C]/40 hover:shadow-[0_0_30px_rgba(198,168,124,0.1)] ${className}`}
-    onClick={onClick}
-    role={onClick ? "button" : undefined}
-    tabIndex={onClick ? 0 : undefined}
-    onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(e); } : undefined}
-  >
-    <Scanline />
-    <div className="relative z-20 pointer-events-none">{children}</div>
-  </div>
-);
+const HoloCard = ({ children, className = '', hover = true, onClick, delay = 0 }) => {
+  const handleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onClick) onClick(e);
+  };
+  
+  return (
+    <div
+      className={`relative bg-[#0B1221]/70 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#C6A87C]/40 hover:shadow-[0_0_30px_rgba(198,168,124,0.1)] ${className}`}
+      onClick={handleClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') handleClick(e); } : undefined}
+    >
+      <Scanline />
+      <div className="relative z-20">{children}</div>
+    </div>
+  );
+};
 
 // Icon Chip component
 const IconChip = ({ icon: Icon, label, variant = 'default' }) => {
