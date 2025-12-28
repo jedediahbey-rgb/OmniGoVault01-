@@ -248,13 +248,17 @@ const AppLoader = ({
 
           {/* Content */}
           <div className="relative z-10 flex flex-col items-center gap-6 px-8 py-10 rounded-2xl bg-vault-navy/60 backdrop-blur-sm border border-vault-gold/10">
-            {/* Logo / Wordmark with Matrix Jack Icon */}
+            {/* Logo / Wordmark */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="flex items-center gap-4"
+              className="flex flex-col items-center gap-3"
             >
+              <span className="text-xl font-heading text-vault-gold tracking-[0.3em] font-bold">
+                OMNIGOVAULT
+              </span>
+              {/* Jack In Icon - positioned under OMNIGOVAULT */}
               <div className="w-12 h-12 rounded-lg bg-vault-gold/10 border border-vault-gold/40 flex items-center justify-center relative">
                 {/* Matrix Jack/Plug Icon */}
                 <svg 
@@ -294,9 +298,6 @@ const AppLoader = ({
                   />
                 )}
               </div>
-              <span className="text-xl font-heading text-vault-gold tracking-[0.3em] font-bold">
-                OMNIGOVAULT
-              </span>
             </motion.div>
 
             {/* Status Text - Larger and more prominent */}
