@@ -1511,24 +1511,31 @@ export default function CyberHomePage() {
       <AnimatePresence>
         {showLabyrinthPopup && (
           <>
-            {/* Backdrop */}
+            {/* Backdrop - prevents background scrolling */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100]"
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
               onClick={closeLabyrinthPopup}
+              style={{ touchAction: 'none' }}
             />
             
-            {/* Popup Modal */}
+            {/* Popup Container - centered on all devices */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
               transition={{ type: "spring", duration: 0.4, bounce: 0.2 }}
-              className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-[101] max-w-lg w-full max-h-[90vh] overflow-y-auto"
+              className="fixed inset-0 z-[101] flex items-center justify-center p-4 sm:p-6 overflow-hidden"
+              style={{ touchAction: 'none' }}
+              onClick={closeLabyrinthPopup}
             >
-              <div className="bg-[#0B1221] border border-[#C6A87C]/30 rounded-2xl overflow-hidden shadow-2xl">
+              {/* Modal Content */}
+              <div 
+                className="relative bg-[#0B1221] border border-[#C6A87C]/30 rounded-2xl overflow-hidden shadow-2xl w-full max-w-md sm:max-w-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
                 {/* Close button */}
                 <button
                   onClick={closeLabyrinthPopup}
@@ -1538,32 +1545,37 @@ export default function CyberHomePage() {
                   <X className="w-4 h-4" weight="bold" />
                 </button>
                 
-                {/* Labyrinth Image */}
-                <div className="relative w-full aspect-square sm:aspect-video overflow-hidden bg-[#05080F]">
-                  <img
-                    src={LABYRINTH_IMAGE}
-                    alt="Cretan Labyrinth Design"
-                    className="w-full h-full object-contain p-4 sm:p-6"
-                  />
-                  {/* Subtle golden glow overlay */}
-                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#C6A87C]/5 to-transparent" />
-                </div>
-                
-                {/* Content */}
-                <div className="p-5 sm:p-6">
-                  <h3 className="text-lg sm:text-xl font-semibold text-[#C6A87C] mb-3 flex items-center gap-2">
-                    <span className="text-2xl">🌀</span>
-                    What is a Labyrinth?
-                  </h3>
-                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                    {LABYRINTH_DEFINITION}
-                  </p>
+                {/* Scrollable content area */}
+                <div className="max-h-[80vh] overflow-y-auto">
+                  {/* Labyrinth Image */}
+                  <div className="relative w-full bg-[#05080F]">
+                    <div className="aspect-square sm:aspect-[4/3] flex items-center justify-center p-6 sm:p-8">
+                      <img
+                        src={LABYRINTH_IMAGE}
+                        alt="Cretan Labyrinth Design"
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                    {/* Subtle golden glow overlay */}
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#C6A87C]/5 to-transparent" />
+                  </div>
                   
-                  {/* Visual divider */}
-                  <div className="mt-5 pt-4 border-t border-white/10">
-                    <p className="text-xs text-slate-500 italic text-center">
-                      Like navigating a labyrinth, trust governance requires a clear path to the center.
+                  {/* Content */}
+                  <div className="p-5 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#C6A87C] mb-3 flex items-center gap-2">
+                      <span className="text-2xl">🌀</span>
+                      What is a Labyrinth?
+                    </h3>
+                    <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                      {LABYRINTH_DEFINITION}
                     </p>
+                    
+                    {/* Visual divider */}
+                    <div className="mt-5 pt-4 border-t border-white/10">
+                      <p className="text-xs text-slate-500 italic text-center">
+                        Like navigating a labyrinth, trust governance requires a clear path to the center.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
