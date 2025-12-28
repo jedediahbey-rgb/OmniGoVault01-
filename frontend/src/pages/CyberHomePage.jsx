@@ -1551,6 +1551,11 @@ export default function CyberHomePage() {
       </AnimatePresence>
       
       {/* Labyrinth Definition Popup */}
+      {showLabyrinthPopup && (
+        <div className="fixed inset-0 z-[9999] bg-red-500/50 flex items-center justify-center">
+          <div className="bg-white p-8 text-black">POPUP IS SHOWING - Click anywhere to close</div>
+        </div>
+      )}
       <AnimatePresence>
         {showLabyrinthPopup && (
           <>
