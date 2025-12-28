@@ -1711,13 +1711,7 @@ export default function CyberHomePage() {
                           : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
                       }`}
                       onClick={() => {
-                        const newMode = !demoMode;
-                        console.log('Toggle clicked! Switching from', demoMode, 'to', newMode);
-                        setDemoMode(newMode);
-                        if (!newMode) {
-                          // Switching to Live mode - fetch live data
-                          fetchLiveSignals();
-                        }
+                        setDemoMode(prev => !prev);
                       }}
                     >
                       <Pulse className="w-3 h-3" weight="fill" />
