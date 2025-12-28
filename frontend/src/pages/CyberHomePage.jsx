@@ -735,6 +735,11 @@ export default function CyberHomePage() {
   const [demoMode, setDemoMode] = useState(true);
   const [liveSignals, setLiveSignals] = useState([]);
   const [signalsLoading, setSignalsLoading] = useState(false);
+  
+  // Debug: Log when demoMode changes
+  useEffect(() => {
+    console.log('demoMode state changed to:', demoMode);
+  }, [demoMode]);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [vaultOpening, setVaultOpening] = useState(false);
   const [showAccessComplete, setShowAccessComplete] = useState(false);
