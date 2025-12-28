@@ -944,20 +944,6 @@ export default function CyberHomePage() {
         />
       </div>
       
-      {/* Gold Scroll Indicator - Right side (vertical) - Mobile only */}
-      <motion.div
-        className="fixed right-1 top-20 bottom-4 w-1.5 bg-[#0B1221]/60 rounded-full z-[55] md:hidden"
-        style={{ opacity: useTransform(scrollYProgress, [0, 0.02], [0, 1]) }}
-      >
-        <motion.div
-          className="w-full bg-gradient-to-b from-[#C6A87C] to-[#D4B896] rounded-full"
-          style={{ 
-            height: useTransform(scrollYProgress, [0, 1], ['5%', '100%']),
-            boxShadow: '0 0 8px rgba(198, 168, 124, 0.5)'
-          }}
-        />
-      </motion.div>
-      
       {/* Scanline overlay */}
       <div 
         className="fixed inset-0 pointer-events-none z-40 opacity-[0.02]"
