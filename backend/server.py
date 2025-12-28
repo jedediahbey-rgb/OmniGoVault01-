@@ -4605,13 +4605,22 @@ async def seed_dev_test_accounts():
             "created_at": datetime.now(timezone.utc).isoformat(),
             "is_dev_admin": True
         })
-        # Grant Omnicompetent role to dev admin
-        await db.global_roles.update_one(
-            {"user_id": DEV_ADMIN_USER_ID},
-            {"$set": {"user_id": DEV_ADMIN_USER_ID, "roles": ["OMNICOMPETENT"]}},
-            upsert=True
-        )
         logger.info(f"✅ Created Dev Admin user: {DEV_ADMIN_EMAIL}")
+    
+    # Grant Omnicompetent role to dev admin (in user_global_roles collection)
+    dev_admin_role = await db.user_global_roles.find_one({
+        "user_id": DEV_ADMIN_USER_ID,
+        "role": "OMNICOMPETENT"
+    })
+    if not dev_admin_role:
+        await db.user_global_roles.insert_one({
+            "user_id": DEV_ADMIN_USER_ID,
+            "role": "OMNICOMPETENT",
+            "granted_by": "system",
+            "granted_at": datetime.now(timezone.utc).isoformat(),
+            "reason": "Dev Admin auto-grant"
+        })
+        logger.info(f"✅ Granted OMNICOMPETENT role to Dev Admin")
     
     for test_acct in TEST_ACCOUNTS:
         # Check if account already exists
