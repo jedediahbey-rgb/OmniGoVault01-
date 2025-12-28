@@ -201,14 +201,14 @@ const AppLoader = ({
 
       if (planTier === 1) { // Starter
         return {
-          primary: 'Matrix Systems Online',
+          primary: 'Network Systems Online',
           secondary: `${vaultsMax} vaults · ${membersMax} operators connected`
         };
       }
 
       // Free tier
       return {
-        primary: 'Matrix Systems Online',
+        primary: 'Network Systems Online',
         secondary: `${vaultsMax} vault · Solo operator mode`
       };
     }
