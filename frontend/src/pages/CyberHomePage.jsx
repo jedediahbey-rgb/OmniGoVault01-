@@ -1076,11 +1076,11 @@ export default function CyberHomePage() {
                   />
                 </div>
                 {/* Jack In Icon - positioned under OMNIGOVAULT */}
-                <div className="flex justify-center mt-2 sm:mt-1">
-                  <div className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg bg-vault-gold/10 border border-vault-gold/40 flex items-center justify-center">
+                <div className="flex justify-center mt-3 sm:mt-2 lg:mt-4">
+                  <div className="w-12 h-12 sm:w-10 sm:h-10 rounded-lg bg-[#C6A87C]/10 border border-[#C6A87C]/40 flex items-center justify-center">
                     <svg 
                       viewBox="0 0 24 24" 
-                      className="w-6 h-6 sm:w-5 sm:h-5 text-vault-gold"
+                      className="w-7 h-7 sm:w-6 sm:h-6 text-[#C6A87C]"
                       fill="none" 
                       stroke="currentColor" 
                       strokeWidth="1.5"
@@ -1105,7 +1105,7 @@ export default function CyberHomePage() {
               
               <motion.h2
                 variants={fadeInUp}
-                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light mt-4 sm:mt-2 lg:-mt-4"
+                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light mt-5 sm:mt-4 lg:mt-3"
               >
                 A{' '}
                 <span 
