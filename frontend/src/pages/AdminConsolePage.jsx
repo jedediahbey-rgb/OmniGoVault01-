@@ -303,9 +303,11 @@ const AdminConsolePage = () => {
               <Badge
                 key={role}
                 variant="outline"
-                className={`${roleBadgeColors[role] || 'bg-gray-500/20 text-gray-400'} text-xs`}
+                className={`${roleBadgeColors[role] || 'bg-gray-500/20 text-gray-400'} text-xs animate-pulse`}
               >
-                {role === 'OMNICOMPETENT' && <Crown className="w-3 h-3 mr-1" />}
+                {role === 'OMNICOMPETENT_OWNER' && <Gem className="w-3 h-3 mr-1" />}
+                {role === 'OMNICOMPETENT' && <Sparkles className="w-3 h-3 mr-1" />}
+                {role === 'SUPPORT_ADMIN' && <Crown className="w-3 h-3 mr-1" />}
                 {role}
               </Badge>
             ))}
