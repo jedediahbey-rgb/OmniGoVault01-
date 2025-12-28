@@ -96,6 +96,9 @@ class DocumentService:
         
         await self.db.document_versions.insert_one(version)
         
+        # Remove MongoDB _id
+        version.pop("_id", None)
+        
         # Log event
         await self._log_event(
             document["document_id"],
