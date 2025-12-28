@@ -10,14 +10,16 @@ import uuid
 
 class GlobalRole(str, Enum):
     """Platform-level roles that sit ABOVE subscription plans"""
-    OMNICOMPETENT = "OMNICOMPETENT"  # Full unrestricted access
-    SUPPORT_ADMIN = "SUPPORT_ADMIN"  # Can view accounts, impersonate for support
+    OMNICOMPETENT_OWNER = "OMNICOMPETENT_OWNER"  # Full admin + all features (owner only)
+    OMNICOMPETENT = "OMNICOMPETENT"  # All features free, no admin access
+    SUPPORT_ADMIN = "SUPPORT_ADMIN"  # Limited admin for support
     BILLING_ADMIN = "BILLING_ADMIN"  # Can manage billing, plans, pricing
 
 
 GLOBAL_ROLE_DESCRIPTIONS = {
-    GlobalRole.OMNICOMPETENT: "Full, unrestricted admin access to all accounts and features",
-    GlobalRole.SUPPORT_ADMIN: "View accounts and impersonate users for support purposes",
+    GlobalRole.OMNICOMPETENT_OWNER: "Full platform control and all features (Owner)",
+    GlobalRole.OMNICOMPETENT: "All platform features without billing requirements",
+    GlobalRole.SUPPORT_ADMIN: "View accounts and assist users for support purposes",
     GlobalRole.BILLING_ADMIN: "Manage billing, plans, and pricing configurations"
 }
 
