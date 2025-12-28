@@ -466,9 +466,9 @@ const TrustHealthCard = () => {
       {/* Next Actions */}
       {!loading && nextActions.length > 0 && (
         <div className="space-y-2 mb-4">
-          <p className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">Next Actions</p>
+          <p className="text-[10px] text-slate-500 uppercase tracking-wider">Next Actions</p>
           {nextActions.map((action, i) => (
-            <div key={i} className="flex items-center gap-2 text-xs sm:text-sm">
+            <div key={i} className="flex items-center gap-2 text-xs">
               <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                 action.priority === 'high' ? 'bg-red-400' :
                 action.priority === 'medium' ? 'bg-amber-400' : 'bg-slate-400'
@@ -495,7 +495,7 @@ const TrustHealthCard = () => {
           variant="outline" 
           size="sm" 
           onClick={() => navigate('/health')}
-          className="flex-1 border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 text-xs sm:text-sm"
+          className="flex-1 border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 text-xs"
         >
           Dashboard
         </Button>
@@ -503,7 +503,7 @@ const TrustHealthCard = () => {
           variant="outline" 
           size="sm" 
           onClick={() => navigate('/diagnostics')}
-          className="border-white/10 text-slate-400 hover:bg-white/5 text-xs sm:text-sm"
+          className="border-white/10 text-slate-400 hover:bg-white/5 text-xs"
         >
           Details
         </Button>
