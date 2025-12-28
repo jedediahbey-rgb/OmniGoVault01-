@@ -640,7 +640,7 @@ async def get_current_user(request: Request) -> User:
     """
     Get current user from session cookie or Authorization header.
     
-    Dev Bypass Mode: Returns dev admin user for development/maintenance.
+    Dev Bypass Mode: Returns owner user for development/maintenance.
     Production Mode: Validates session tokens from Google OAuth.
     
     REMINDER: This auth flow integrates with Emergent Google Auth.
@@ -654,28 +654,13 @@ async def get_current_user(request: Request) -> User:
         if auth_header and auth_header.startswith("Bearer "):
             session_token = auth_header.split(" ")[1]
     
-    # Check for dev account switching header (dev mode only)
-    if DEV_BYPASS_ENABLED:
-        switch_account = request.headers.get("X-Dev-Account")
-        if switch_account:
-            # Find the test account
-            for test_acct in TEST_ACCOUNTS:
-                if test_acct["account_id"] == switch_account or test_acct["plan_name"].lower() == switch_account.lower():
-                    return User(
-                        user_id=test_acct["user_id"],
-                        email=test_acct["user_email"],
-                        name=test_acct["user_name"],
-                        picture="",
-                        created_at=datetime.now(timezone.utc)
-                    )
-    
-    # If no session token and dev bypass enabled, return dev admin
+    # If no session token and dev bypass enabled, return owner
     if not session_token:
         if DEV_BYPASS_ENABLED:
             return User(
-                user_id=DEV_ADMIN_USER_ID,
-                email=DEV_ADMIN_EMAIL,
-                name=DEV_ADMIN_NAME,
+                user_id=OWNER_USER_ID,
+                email=OWNER_EMAIL,
+                name=OWNER_NAME,
                 picture="",
                 created_at=datetime.now(timezone.utc)
             )
@@ -691,9 +676,9 @@ async def get_current_user(request: Request) -> User:
     if not session_doc:
         if DEV_BYPASS_ENABLED:
             return User(
-                user_id=DEV_ADMIN_USER_ID,
-                email=DEV_ADMIN_EMAIL,
-                name=DEV_ADMIN_NAME,
+                user_id=OWNER_USER_ID,
+                email=OWNER_EMAIL,
+                name=OWNER_NAME,
                 picture="",
                 created_at=datetime.now(timezone.utc)
             )
@@ -710,9 +695,9 @@ async def get_current_user(request: Request) -> User:
         if expires_at < datetime.now(timezone.utc):
             if DEV_BYPASS_ENABLED:
                 return User(
-                    user_id=DEV_ADMIN_USER_ID,
-                    email=DEV_ADMIN_EMAIL,
-                    name=DEV_ADMIN_NAME,
+                    user_id=OWNER_USER_ID,
+                    email=OWNER_EMAIL,
+                    name=OWNER_NAME,
                     picture="",
                     created_at=datetime.now(timezone.utc)
                 )
@@ -728,9 +713,9 @@ async def get_current_user(request: Request) -> User:
     if not user_doc:
         if DEV_BYPASS_ENABLED:
             return User(
-                user_id=DEV_ADMIN_USER_ID,
-                email=DEV_ADMIN_EMAIL,
-                name=DEV_ADMIN_NAME,
+                user_id=OWNER_USER_ID,
+                email=OWNER_EMAIL,
+                name=OWNER_NAME,
                 picture="",
                 created_at=datetime.now(timezone.utc)
             )
