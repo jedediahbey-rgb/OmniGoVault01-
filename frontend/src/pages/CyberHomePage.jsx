@@ -1704,16 +1704,13 @@ export default function CyberHomePage() {
                         color: demoMode ? '#fbbf24' : '#34d399',
                         borderColor: demoMode ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)',
                       }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium rounded-md border outline-none focus:outline-none active:outline-none touch-manipulation select-none"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium rounded-md border outline-none focus:outline-none active:outline-none touch-manipulation select-none cursor-pointer"
+                      onClick={() => {
                         setDemoMode(prev => !prev);
-                      }}
-                      onTouchEnd={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setDemoMode(prev => !prev);
+                        if (demoMode) {
+                          // Switching to Live mode
+                          fetchLiveSignals();
+                        }
                       }}
                     >
                       <Pulse className="w-3 h-3" weight="fill" />
