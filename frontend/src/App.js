@@ -42,6 +42,7 @@ import LedgerThreadsPage from './pages/LedgerThreadsPage';
 import BinderPage from './pages/BinderPage';
 import AuditLogPage from './pages/AuditLogPage';
 import BillingPage from './pages/BillingPage';
+import AdminConsolePage from './pages/AdminConsolePage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
