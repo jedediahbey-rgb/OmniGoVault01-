@@ -11,6 +11,7 @@ import {
   FlowArrow,
   Gavel,
   Gear,
+  GearSix,
   Graph,
   Heartbeat,
   House,
@@ -27,6 +28,7 @@ import {
   TreeView,
   Users,
   Vault,
+  Wrench,
   X
 } from '@phosphor-icons/react';
 import { cn } from '../../lib/utils';
