@@ -142,13 +142,25 @@ const AppLoader = ({
     return () => clearTimeout(timer);
   }, [minDisplayTime]);
 
-  // Complete loading
+  // Complete loading - phase becomes 'ready' when data loaded and min time passed
   useEffect(() => {
-    if (!isLoading && canDismiss) {
+    if (!isLoading && canDismiss && phase === 'entitled') {
       setProgress(100);
-      setPhase('ready');
+      // Small delay to show 100% progress before dismissing
+      const timer = setTimeout(() => {
+        setPhase('ready');
+      }, 200);
+      return () => clearTimeout(timer);
     }
-  }, [isLoading, canDismiss]);
+  }, [isLoading, canDismiss, phase]);
+
+  // Handle case where entitlements haven't loaded yet but we're past min time
+  useEffect(() => {
+    if (!isLoading && canDismiss && phase === 'booting') {
+      // If we're still booting but loading is done, force transition
+      setPhase('entitled');
+    }
+  }, [isLoading, canDismiss, phase]);
 
   // Generate entitlement-aware copy with Matrix theme
   const statusCopy = useMemo(() => {
