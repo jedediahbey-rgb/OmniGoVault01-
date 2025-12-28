@@ -741,14 +741,9 @@ const GovernanceMatrixSection = () => {
 // Main Homepage Component
 export default function CyberHomePage() {
   const navigate = useNavigate();
-  const [demoMode, setDemoMode] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [liveSignals, setLiveSignals] = useState([]);
   const [signalsLoading, setSignalsLoading] = useState(false);
-  
-  // Debug: Log when demoMode changes
-  useEffect(() => {
-    console.log('demoMode state changed to:', demoMode);
-  }, [demoMode]);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [vaultOpening, setVaultOpening] = useState(false);
   const [showAccessComplete, setShowAccessComplete] = useState(false);
@@ -757,6 +752,25 @@ export default function CyberHomePage() {
   const [isLabyrinthHovered, setIsLabyrinthHovered] = useState(false);
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
+  
+  // Check if user is logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get(`${API}/auth/me`, { withCredentials: true });
+        if (response.data && response.data.user_id && response.data.email !== 'dev.admin@system.local') {
+          setIsLoggedIn(true);
+          // Fetch live signals for logged in users
+          fetchLiveSignals();
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        setIsLoggedIn(false);
+      }
+    };
+    checkAuth();
+  }, []);
   
   // Scroll progress for animated progress bar
   const { scrollYProgress } = useScroll();
