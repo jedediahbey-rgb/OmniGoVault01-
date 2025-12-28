@@ -4558,143 +4558,52 @@ async def startup_init():
 
 async def seed_dev_test_accounts():
     """
-    Seed test accounts for dev/preview environments (idempotent).
-    Creates Free, Starter, and Pro test accounts with proper entitlements.
+    Seed owner account for dev/preview environments (idempotent).
+    Creates the owner user with full access.
     """
-    plans = {p["name"]: p async for p in db.plans.find({}, {"_id": 0})}
-    
-    # Create Dev Admin user with Omnicompetent access
-    dev_admin_exists = await db.users.find_one({"user_id": DEV_ADMIN_USER_ID})
-    if not dev_admin_exists:
+    # Create Owner user
+    owner_exists = await db.users.find_one({"user_id": OWNER_USER_ID})
+    if not owner_exists:
         await db.users.insert_one({
-            "user_id": DEV_ADMIN_USER_ID,
-            "email": DEV_ADMIN_EMAIL,
-            "name": DEV_ADMIN_NAME,
+            "user_id": OWNER_USER_ID,
+            "email": OWNER_EMAIL,
+            "name": OWNER_NAME,
             "picture": "",
             "created_at": datetime.now(timezone.utc).isoformat(),
             "is_dev_admin": True
         })
-        logger.info(f"✅ Created Dev Admin user: {DEV_ADMIN_EMAIL}")
+        logger.info(f"✅ Created Owner user: {OWNER_EMAIL}")
+    else:
+        # Update existing owner with correct email/name
+        await db.users.update_one(
+            {"user_id": OWNER_USER_ID},
+            {"$set": {
+                "email": OWNER_EMAIL,
+                "name": OWNER_NAME,
+                "is_dev_admin": True
+            }}
+        )
     
-    # Grant Omnicompetent role to dev admin (in user_global_roles collection)
-    dev_admin_role = await db.user_global_roles.find_one({
-        "user_id": DEV_ADMIN_USER_ID,
-        "role": "OMNICOMPETENT"
+    # Grant OMNICOMPETENT_OWNER role
+    owner_role = await db.user_global_roles.find_one({
+        "user_id": OWNER_USER_ID,
+        "role": ROLE_OMNICOMPETENT_OWNER
     })
-    if not dev_admin_role:
+    if not owner_role:
+        # First delete any old OMNICOMPETENT role
+        await db.user_global_roles.delete_many({"user_id": OWNER_USER_ID})
+        
+        # Then grant OMNICOMPETENT_OWNER
         await db.user_global_roles.insert_one({
-            "user_id": DEV_ADMIN_USER_ID,
-            "role": "OMNICOMPETENT",
+            "user_id": OWNER_USER_ID,
+            "role": ROLE_OMNICOMPETENT_OWNER,
             "granted_by": "system",
             "granted_at": datetime.now(timezone.utc).isoformat(),
-            "reason": "Dev Admin auto-grant"
+            "reason": "Platform Owner"
         })
-        logger.info(f"✅ Granted OMNICOMPETENT role to Dev Admin")
+        logger.info(f"✅ Granted OMNICOMPETENT_OWNER role to Owner")
     
-    for test_acct in TEST_ACCOUNTS:
-        # Check if account already exists
-        existing_acct = await db.accounts.find_one({"account_id": test_acct["account_id"]})
-        if existing_acct:
-            continue
-        
-        # Get the plan
-        plan_name = test_acct["plan_name"]
-        plan = plans.get(plan_name)
-        if not plan:
-            logger.warning(f"Plan {plan_name} not found, skipping test account")
-            continue
-        
-        now = datetime.now(timezone.utc).isoformat()
-        
-        # Create test user
-        user_doc = {
-            "user_id": test_acct["user_id"],
-            "email": test_acct["user_email"],
-            "name": test_acct["user_name"],
-            "picture": "",
-            "created_at": now,
-            "is_test_account": True
-        }
-        await db.users.update_one(
-            {"user_id": test_acct["user_id"]},
-            {"$set": user_doc},
-            upsert=True
-        )
-        
-        # Create account
-        account_doc = {
-            "account_id": test_acct["account_id"],
-            "name": test_acct["name"],
-            "owner_user_id": test_acct["user_id"],
-            "created_at": now,
-            "plan_id": plan["plan_id"],
-            "is_suspended": False,
-            "is_test_account": True
-        }
-        await db.accounts.insert_one(account_doc)
-        
-        # Link user to account
-        await db.account_members.update_one(
-            {"account_id": test_acct["account_id"], "user_id": test_acct["user_id"]},
-            {"$set": {
-                "account_id": test_acct["account_id"],
-                "user_id": test_acct["user_id"],
-                "role": "owner",
-                "joined_at": now
-            }},
-            upsert=True
-        )
-        
-        # Create subscription
-        subscription_doc = {
-            "subscription_id": f"sub_{test_acct['account_id']}",
-            "account_id": test_acct["account_id"],
-            "plan_id": plan["plan_id"],
-            "status": "active",
-            "current_period_start": now,
-            "current_period_end": None,
-            "created_at": now,
-            "is_test": True
-        }
-        await db.subscriptions.update_one(
-            {"account_id": test_acct["account_id"]},
-            {"$set": subscription_doc},
-            upsert=True
-        )
-        
-        # Seed entitlements - create individual entitlement documents
-        plan_entitlements = plan.get("entitlements", [])
-        for ent in plan_entitlements:
-            await db.entitlements.update_one(
-                {"account_id": test_acct["account_id"], "key": ent["key"]},
-                {"$set": {
-                    "account_id": test_acct["account_id"],
-                    "key": ent["key"],
-                    "value": ent["value"],
-                    "description": ent.get("description", ""),
-                    "updated_at": now
-                }},
-                upsert=True
-            )
-        
-        # Initialize usage
-        await db.usage.update_one(
-            {"account_id": test_acct["account_id"]},
-            {"$set": {
-                "account_id": test_acct["account_id"],
-                "usage_metrics": {
-                    "vaults.count": 0,
-                    "teamMembers.count": 1,
-                    "storage.usedMB": 0,
-                    "documents.count": 0,
-                    "portfolios.count": 0
-                },
-                "updated_at": now
-            }},
-            upsert=True
-        )
-        
-        logger.info(f"✅ Created test account: {test_acct['name']} ({plan_name})")
+    logger.info("✅ Dev account seeding complete")
 
 
 @app.on_event("shutdown")
