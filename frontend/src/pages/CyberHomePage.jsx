@@ -528,12 +528,9 @@ const GovernanceMatrixSection = () => {
                       {/* Mobile: Centered layout, Desktop: Row layout */}
                       <div className="flex flex-col items-center text-center sm:text-left sm:items-start">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between w-full gap-2 mb-2">
-                          <motion.div 
-                            className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center"
-                            whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
-                          >
+                          <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center">
                             <Icon className="w-5 h-5 sm:w-4 sm:h-4 text-[#C6A87C]" weight="duotone" />
-                          </motion.div>
+                          </div>
                           <Badge className={`text-[8px] sm:text-[9px] border ${module.chipColor}`}>
                             {module.chip}
                           </Badge>
