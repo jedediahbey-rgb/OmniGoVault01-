@@ -724,6 +724,38 @@ class OmniGoVaultOnboardingTester:
         
         return self.print_summary()
 
+    def run_ui_fixes_tests(self):
+        """Run UI Fixes and Admin Console tests"""
+        self.log("🚀 Starting UI Fixes and Admin Console Backend API Tests")
+        self.log(f"Testing against: {self.base_url}")
+        self.log("=" * 80)
+        
+        # Test sequence for UI fixes backend APIs
+        test_sequence = [
+            # Backend API Tests for UI fixes
+            self.test_user_profile_get,
+            self.test_user_profile_update,
+            self.test_billing_plans,
+            
+            # Basic system health
+            self.test_basic_system_health,
+        ]
+        
+        for test_func in test_sequence:
+            try:
+                test_func()
+                time.sleep(0.5)  # Brief pause between tests
+            except Exception as e:
+                self.log(f"❌ Test {test_func.__name__} crashed: {str(e)}")
+                self.tests_run += 1
+                self.failed_tests.append({
+                    'test': test_func.__name__,
+                    'details': f"Test crashed: {str(e)}",
+                    'timestamp': datetime.now().isoformat()
+                })
+        
+        return self.print_summary()
+
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
