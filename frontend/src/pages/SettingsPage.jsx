@@ -240,7 +240,18 @@ export default function SettingsPage() {
         />
 
         {/* Tabs */}
-        <div className="flex items-center gap-2 p-1 bg-vault-dark/50 rounded-lg w-fit">
+        <div className="flex items-center gap-2 p-1 bg-vault-dark/50 rounded-lg w-fit flex-wrap">
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+              activeTab === 'profile'
+                ? 'bg-vault-gold text-vault-dark font-medium'
+                : 'text-vault-muted hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <User className="w-4 h-4" />
+            Profile
+          </button>
           <button
             onClick={() => setActiveTab('health-rules')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
@@ -264,6 +275,94 @@ export default function SettingsPage() {
             Governance Checklists
           </button>
         </div>
+
+        {/* Profile Tab */}
+        {activeTab === 'profile' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <GlassCard>
+              <div className="flex items-center gap-3 mb-6">
+                <User className="w-5 h-5 text-vault-gold" />
+                <div>
+                  <h3 className="text-lg font-semibold text-white">User Profile</h3>
+                  <p className="text-sm text-vault-muted">Customize how you appear in the app</p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {/* Display Name */}
+                <div className="space-y-2">
+                  <Label className="text-white">Display Name / Title</Label>
+                  <p className="text-xs text-vault-muted mb-2">
+                    This name will appear in "Welcome back" messages and throughout the app
+                  </p>
+                  <div className="flex gap-3">
+                    <Input
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder={userProfile?.name || "Enter your preferred name or title"}
+                      className="bg-vault-dark border-vault-gold/20 text-white flex-1"
+                      maxLength={50}
+                    />
+                    <Button
+                      onClick={saveDisplayName}
+                      disabled={profileSaving}
+                      className="bg-vault-gold hover:bg-vault-gold/80 text-vault-dark"
+                    >
+                      {profileSaving ? (
+                        <ArrowClockwise className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <FloppyDisk className="w-4 h-4 mr-2" />
+                          Save
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-vault-muted">
+                    {displayName ? `Current: "${displayName}"` : `Using default: "${userProfile?.name || 'User'}"`}
+                  </p>
+                </div>
+
+                {/* User Info (Read-only) */}
+                <div className="pt-4 border-t border-white/10 space-y-3">
+                  <div>
+                    <Label className="text-vault-muted text-xs">Email</Label>
+                    <p className="text-white">{userProfile?.email || 'Not available'}</p>
+                  </div>
+                  <div>
+                    <Label className="text-vault-muted text-xs">Account Name</Label>
+                    <p className="text-white">{userProfile?.name || 'Not available'}</p>
+                  </div>
+                  {userProfile?.global_roles && userProfile.global_roles.length > 0 && (
+                    <div>
+                      <Label className="text-vault-muted text-xs">Roles</Label>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {userProfile.global_roles.map((role) => (
+                          <span 
+                            key={role} 
+                            className={`px-2 py-1 text-xs rounded ${
+                              role === 'OMNICOMPETENT_OWNER' 
+                                ? 'bg-purple-600/30 text-purple-300 border border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]' 
+                                : role === 'OMNICOMPETENT'
+                                  ? 'bg-purple-500/20 text-purple-300'
+                                  : 'bg-blue-500/20 text-blue-300'
+                            }`}
+                          >
+                            {role}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+        )}
 
         {/* Health Rules Tab */}
         {activeTab === 'health-rules' && healthConfig && (
