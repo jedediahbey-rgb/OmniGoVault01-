@@ -336,24 +336,24 @@ const AdminConsolePage = () => {
           </TabsList>
 
           {/* Accounts Tab */}
-          <TabsContent value="accounts" className="mt-6">
+          <TabsContent value="accounts" className="mt-4 sm:mt-6">
             <Card className="bg-vault-dark border-vault-gold/20">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-vault-light">All Accounts</CardTitle>
-                  <div className="flex items-center gap-2">
+              <CardHeader className="p-3 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <CardTitle className="text-vault-light text-base sm:text-lg">All Accounts</CardTitle>
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
                     <Input
                       placeholder="Search accounts..."
                       value={accountSearch}
                       onChange={(e) => setAccountSearch(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAccountSearch()}
-                      className="w-64 bg-vault-navy border-vault-gold/20"
+                      className="flex-1 sm:w-64 bg-vault-navy border-vault-gold/20 text-sm"
                     />
                     <Button
                       onClick={handleAccountSearch}
                       variant="outline"
                       size="icon"
-                      className="border-vault-gold/30"
+                      className="border-vault-gold/30 flex-shrink-0"
                     >
                       <Search className="w-4 h-4" />
                     </Button>
