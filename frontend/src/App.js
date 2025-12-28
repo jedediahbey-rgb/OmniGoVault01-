@@ -260,7 +260,7 @@ const AppRouter = ({ auth }) => {
       } />
       
       {/* Audit Log */}
-      <Route path="/audit-log" element={
+      <Route path="/vault/audit-log" element={
         <AuthLayout auth={auth}>
           <AuditLogPage />
         </AuthLayout>
