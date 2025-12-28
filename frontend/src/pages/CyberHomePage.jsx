@@ -1075,37 +1075,11 @@ export default function CyberHomePage() {
                     style={{ imageRendering: 'crisp-edges' }}
                   />
                 </div>
-                {/* Jack In Icon - positioned under OMNIGOVAULT */}
-                <div className="flex justify-center mt-3 sm:mt-2 lg:mt-4">
-                  <div className="w-12 h-12 sm:w-10 sm:h-10 rounded-lg bg-[#C6A87C]/10 border border-[#C6A87C]/40 flex items-center justify-center">
-                    <svg 
-                      viewBox="0 0 24 24" 
-                      className="w-7 h-7 sm:w-6 sm:h-6 text-[#C6A87C]"
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      {/* Main connector body */}
-                      <rect x="7" y="2" width="10" height="8" rx="1" />
-                      {/* Prongs */}
-                      <line x1="10" y1="10" x2="10" y2="14" />
-                      <line x1="14" y1="10" x2="14" y2="14" />
-                      {/* Base plate */}
-                      <rect x="6" y="14" width="12" height="3" rx="0.5" />
-                      {/* Connection lines going down */}
-                      <line x1="9" y1="17" x2="9" y2="22" />
-                      <line x1="12" y1="17" x2="12" y2="20" />
-                      <line x1="15" y1="17" x2="15" y2="22" />
-                    </svg>
-                  </div>
-                </div>
               </motion.div>
               
               <motion.h2
                 variants={fadeInUp}
-                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light mt-5 sm:mt-4 lg:mt-3"
+                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light mt-4 sm:mt-2 lg:-mt-4"
               >
                 A{' '}
                 <span 
@@ -1117,11 +1091,17 @@ export default function CyberHomePage() {
                   <span className="text-[#C6A87C] border-b-2 border-[#C6A87C]/50 border-dashed hover:border-solid hover:border-[#C6A87C] transition-all duration-200">
                     labyrinth
                   </span>
-                  <span className="absolute -top-1 -right-3 opacity-50 group-hover:opacity-100 transition-opacity">
-                    <Info className="w-3 h-3 text-[#C6A87C]" weight="fill" />
-                  </span>
                 </span>
-                {' '}system for trust governance.
+                {' '}
+                <span className="text-[#C6A87C] border-b-2 border-[#C6A87C]/50 border-dashed">
+                  system
+                </span>
+                {' '}for trust governance.
+                <span className="inline-block ml-2 opacity-50 hover:opacity-100 transition-opacity cursor-pointer align-middle"
+                  onClick={handleLabyrinthClick}
+                >
+                  <Info className="w-3.5 h-3.5 text-[#C6A87C]" weight="fill" />
+                </span>
               </motion.h2>
               
               <motion.p 
@@ -1585,13 +1565,13 @@ export default function CyberHomePage() {
                 
                 {/* Scrollable content area */}
                 <div className="max-h-[80vh] overflow-y-auto">
-                  {/* Labyrinth Image - Transparent/faded */}
-                  <div className="relative w-full bg-[#05080F]">
-                    <div className="aspect-square sm:aspect-[4/3] flex items-center justify-center p-6 sm:p-8">
+                  {/* Labyrinth Image - dark background to remove white */}
+                  <div className="relative w-full bg-[#0B1221]">
+                    <div className="aspect-square sm:aspect-[4/3] flex items-center justify-center p-6 sm:p-8 bg-[#0B1221]">
                       <img
                         src={LABYRINTH_IMAGE}
                         alt="Cretan Labyrinth Design"
-                        className="max-w-full max-h-full object-contain opacity-40"
+                        className="max-w-full max-h-full object-contain mix-blend-luminosity"
                       />
                     </div>
                     {/* Subtle golden glow overlay */}
