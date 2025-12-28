@@ -97,9 +97,17 @@ class EntitlementService:
             if "value" in ent:
                 result[ent["key"]] = ent["value"]
             elif "entitlements" in ent:
-                # Old format where entitlements were stored as a nested object
-                for key, value in ent["entitlements"].items():
-                    result[key] = value
+                # Old format where entitlements were stored as a nested list or object
+                entitlements_data = ent["entitlements"]
+                if isinstance(entitlements_data, list):
+                    # List format: [{"key": "vaults.max", "value": 1}, ...]
+                    for item in entitlements_data:
+                        if "key" in item and "value" in item:
+                            result[item["key"]] = item["value"]
+                elif isinstance(entitlements_data, dict):
+                    # Dict format: {"vaults.max": 1, ...}
+                    for key, value in entitlements_data.items():
+                        result[key] = value
         
         return result
     
