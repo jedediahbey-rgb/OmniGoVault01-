@@ -2416,8 +2416,8 @@ class EquityTrustAPITester:
         self.test_billing_check_feature_analytics()
         self.test_billing_upgrade_options()
         
-        # 3. Plan Upgrade/Downgrade Flow Tests
-        self.log("\n🔄 Test 3: Plan Upgrade/Downgrade Flow")
+        # 4. Plan Upgrade/Downgrade Flow Tests
+        self.log("\n🔄 Test 4: Plan Upgrade/Downgrade Flow")
         self.log("-" * 50)
         self.test_billing_admin_set_plan_downgrade()
         self.test_billing_verify_free_subscription()
@@ -2425,8 +2425,8 @@ class EquityTrustAPITester:
         self.test_billing_admin_set_plan_upgrade()
         self.test_billing_verify_starter_subscription()
         
-        # 4. RM-ID Migration Tests (Secondary)
-        self.log("\n🔄 Test 4: RM-ID Migration Functionality")
+        # 5. RM-ID Migration Tests (Secondary)
+        self.log("\n🔄 Test 5: RM-ID Migration Functionality")
         self.log("-" * 50)
         self.test_get_trust_profiles()
         self.test_governance_records_rm_id_migration()
@@ -2434,24 +2434,24 @@ class EquityTrustAPITester:
         self.test_migrate_rm_ids_with_placeholder_profile()
         self.test_verify_rm_id_format_in_records()
         
-        # 5. Core Binder System
-        self.log("\n📁 Test 5: Core Binder System")
+        # 6. Core Binder System
+        self.log("\n📁 Test 6: Core Binder System")
         self.log("-" * 40)
         self.test_binder_profiles()
         self.test_binder_generate()
         self.test_binder_runs()
         self.test_binder_download()
         
-        # 6. Audit Log System
-        self.log("\n📊 Test 6: Audit Log System")
+        # 7. Audit Log System
+        self.log("\n📊 Test 7: Audit Log System")
         self.log("-" * 40)
         self.test_audit_log_list()
         self.test_audit_log_categories()
         self.test_audit_log_summary()
         self.test_audit_log_export()
         
-        # 7. Governance Module
-        self.log("\n⚖️ Test 7: Governance Module")
+        # 8. Governance Module
+        self.log("\n⚖️ Test 8: Governance Module")
         self.log("-" * 40)
         self.test_governance_records()
         self.test_governance_subjects()
