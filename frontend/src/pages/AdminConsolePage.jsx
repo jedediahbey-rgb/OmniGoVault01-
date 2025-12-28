@@ -602,17 +602,17 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
           </Badge>
         ))}
         
-        <div className="flex gap-2 ml-2">
-          <Button variant="ghost" size="sm" onClick={onViewDetails || (() => {})}>
+        <div className="flex gap-1 sm:gap-2 ml-auto">
+          <Button variant="ghost" size="sm" onClick={onViewDetails || (() => {})} className="h-7 w-7 sm:h-8 sm:w-8 p-0">
             <Eye className="w-4 h-4" />
           </Button>
           {isOmnicompetent && (
-            <Button variant="ghost" size="sm" onClick={onGrantRole || (() => {})}>
+            <Button variant="ghost" size="sm" onClick={onGrantRole || (() => {})} className="h-7 w-7 sm:h-8 sm:w-8 p-0">
               <ShieldCheck className="w-4 h-4" />
             </Button>
           )}
           {user.user_id !== currentUserId && (
-            <Button variant="ghost" size="sm" onClick={onImpersonate || (() => {})}>
+            <Button variant="ghost" size="sm" onClick={onImpersonate || (() => {})} className="h-7 w-7 sm:h-8 sm:w-8 p-0">
               <Replace className="w-4 h-4" />
             </Button>
           )}
@@ -631,31 +631,35 @@ const AuditLogRow = ({ log }) => {
     IMPERSONATION_END: 'text-yellow-400',
     CHANGE_PLAN: 'text-blue-400',
     UPDATE_ENTITLEMENT: 'text-purple-400',
-    SUSPEND_ACCOUNT: 'text-red-400'
+    SUSPEND_ACCOUNT: 'text-red-400',
+    VIEW_AUDIT_LOGS: 'text-cyan-400'
   };
 
   return (
-    <div className="flex items-center gap-4 p-3 bg-vault-navy/30 rounded-lg text-sm">
-      <Clock className="w-4 h-4 text-vault-muted flex-shrink-0" />
-      <span className="text-vault-muted w-36 flex-shrink-0">
-        {new Date(log.timestamp).toLocaleString()}
-      </span>
-      <Badge 
-        variant="outline" 
-        className={`${actionColors[log.action_type] || 'text-vault-light'} border-current/30 text-xs`}
-      >
-        {log.action_type}
-      </Badge>
-      <span className="text-vault-light flex-1 truncate">
-        Admin: {log.admin_user_id?.substring(0, 12)}...
-        {log.target_user_id && ` → User: ${log.target_user_id.substring(0, 12)}...`}
-        {log.account_id && ` → Account: ${log.account_id.substring(0, 12)}...`}
-      </span>
-      {!log.success && (
-        <Badge variant="outline" className="border-red-500/30 text-red-400">
-          Failed
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 bg-vault-navy/30 rounded-lg text-sm">
+      <div className="flex items-center gap-2 sm:gap-4">
+        <Clock className="w-4 h-4 text-vault-muted flex-shrink-0" />
+        <span className="text-vault-muted text-xs sm:text-sm">
+          {new Date(log.timestamp).toLocaleString()}
+        </span>
+      </div>
+      <div className="flex items-center gap-2 flex-wrap ml-6 sm:ml-0">
+        <Badge 
+          variant="outline" 
+          className={`${actionColors[log.action_type] || 'text-vault-light'} border-current/30 text-xs`}
+        >
+          {log.action_type}
         </Badge>
-      )}
+        {!log.success && (
+          <Badge variant="outline" className="border-red-500/30 text-red-400 text-xs">
+            Failed
+          </Badge>
+        )}
+      </div>
+      <span className="text-vault-light text-xs ml-6 sm:ml-0 sm:flex-1 truncate">
+        {log.target_user_id && `User: ${log.target_user_id.substring(0, 12)}...`}
+        {log.account_id && ` Account: ${log.account_id.substring(0, 12)}...`}
+      </span>
     </div>
   );
 };
