@@ -94,9 +94,9 @@ export default function MainLayout({ children, user, onLogout }) {
             </div>
             
             {/* Logo - Centered - Links to landing page */}
-            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80">
               <Key className="w-5 h-5 text-vault-gold" weight="fill" />
-              <span className="text-base font-medium text-white">OmniGoVault</span>
+              <span className="text-base font-medium text-white">Private Equity & Trusts</span>
             </Link>
           </div>
         </div>
