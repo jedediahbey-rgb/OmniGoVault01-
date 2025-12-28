@@ -982,8 +982,10 @@ export default function CyberHomePage() {
     compensation: UserCircleGear,
   };
   
-  // Fetch live activity feed from V2 governance records
+  // Fetch live activity feed from V2 governance records (only for logged-in users)
   const fetchLiveSignals = async () => {
+    if (!isLoggedIn) return; // Don't fetch if not logged in
+    
     setSignalsLoading(true);
     try {
       // Use V2 records endpoint to get recent governance activity
@@ -1009,24 +1011,23 @@ export default function CyberHomePage() {
           icon: moduleTypeIcons[item.module_type] || Notebook
         }));
         setLiveSignals(signals);
-        // Only switch to live mode automatically if we have live data
-        // Don't override user's manual toggle
       } else {
         // No data available
         console.log('No live activity data available');
       }
     } catch (error) {
-      console.log('Activity feed requires auth, using demo data');
-      // Don't override user's demoMode choice here
+      console.log('Activity feed requires auth, using fallback data');
     } finally {
       setSignalsLoading(false);
     }
   };
   
-  // Try to fetch live signals on mount
+  // Fetch live signals only when logged in
   useEffect(() => {
-    fetchLiveSignals();
-  }, []);
+    if (isLoggedIn) {
+      fetchLiveSignals();
+    }
+  }, [isLoggedIn]);
   
   // Initial loading phase management
   const [loadingPhase, setLoadingPhase] = useState('booting');
