@@ -2400,8 +2400,13 @@ class EquityTrustAPITester:
         self.log("-" * 40)
         self.test_system_health()
         
-        # 2. Billing System Tests (Primary Focus)
-        self.log("\n💳 Test 2: Subscription & Entitlement System")
+        # 2. Vault System Tests (Primary Focus)
+        self.log("\n🏛️ Test 2: Shared Trust Workspace (Vault) System")
+        self.log("-" * 60)
+        self.run_vault_tests()
+        
+        # 3. Billing System Tests
+        self.log("\n💳 Test 3: Subscription & Entitlement System")
         self.log("-" * 50)
         self.test_billing_plans()
         self.test_billing_subscription()
