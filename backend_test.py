@@ -560,6 +560,7 @@ class OmniGoVaultOnboardingTester:
                 })
         
         self.print_summary()
+        return self.print_summary()
 
     def print_summary(self):
         """Print test summary"""
