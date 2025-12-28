@@ -293,10 +293,14 @@ const AppRouter = ({ auth }) => {
   // This must be synchronous to prevent race conditions
   // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
   if (location.hash && location.hash.includes('session_id=')) {
+    // Trigger welcome modal via callback when auth completes for first-time users
+    const handleFirstLogin = () => {
+      // The auth response will set showWelcome via checkAuth after redirect
+    };
     return <AuthCallback 
       setUser={setUser} 
       setLoading={setLoading} 
-      onFirstLogin={() => auth.showWelcome = true}
+      onFirstLogin={handleFirstLogin}
     />;
   }
 
