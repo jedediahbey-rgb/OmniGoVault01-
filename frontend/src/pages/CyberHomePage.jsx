@@ -693,6 +693,15 @@ export default function CyberHomePage() {
     }, 2500);
   };
   
+  // Handle Google Auth - Create Account
+  // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+  const handleCreateAccount = (e) => {
+    e.preventDefault();
+    // Use window.location.origin to dynamically get the current domain
+    const redirectUrl = window.location.origin + '/vault';
+    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  };
+  
   // Simple navigation for other buttons - no vault animation, just navigate
   const handleSimpleNavigation = (path) => (e) => {
     e.preventDefault();
