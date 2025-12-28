@@ -584,7 +584,7 @@ export default function InsuranceEditorPage({ user }) {
         className="min-h-screen p-4 md:p-6 lg:p-8"
       >
         <GlassCard className="p-12 text-center">
-          <ShieldCheck className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
+          <ShieldPlus className="w-16 h-16 mx-auto text-vault-gold/50 mb-4" />
           <h3 className="text-xl font-heading text-white mb-2">Policy Not Found</h3>
           <p className="text-vault-muted mb-6">The insurance policy you are looking for does not exist.</p>
           <Link to="/vault/governance?tab=insurance">
@@ -628,7 +628,7 @@ export default function InsuranceEditorPage({ user }) {
         <PageHeader 
           title="Insurance Policy Details"
           subtitle="View and manage life insurance policy"
-          icon={ShieldCheck}
+          icon={ShieldPlus}
         />
       </motion.div>
 
@@ -832,7 +832,7 @@ export default function InsuranceEditorPage({ user }) {
         <motion.div variants={fadeInUp}>
           <GlassCard className="p-6">
             <h3 className="text-lg font-heading text-white mb-4 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-vault-gold" />
+              <ShieldPlus className="w-5 h-5 text-vault-gold" />
               Coverage Details
             </h3>
             <div className="space-y-4">
