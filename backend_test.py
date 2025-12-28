@@ -1308,9 +1308,493 @@ class EquityTrustAPITester:
             self.log_test("DELETE /api/evidence-binder/links/{link_id} (cleanup)", False, f"Error: {str(e)}")
             return False
 
+    # ============ BILLING SYSTEM TESTS ============
+
+    def test_billing_plans(self):
+        """Test GET /api/billing/plans - Should return 4 plans with entitlements"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/plans", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if "plans" in data and isinstance(data["plans"], list):
+                    plans = data["plans"]
+                    details += f", Found {len(plans)} plans"
+                    
+                    # Verify we have 4 plans (Free, Starter, Pro, Enterprise)
+                    expected_plans = ["Free", "Starter", "Pro", "Enterprise"]
+                    plan_names = [p.get("name") for p in plans]
+                    
+                    if len(plans) == 4:
+                        details += f", Plan names: {plan_names}"
+                        
+                        # Verify each plan has required fields
+                        for plan in plans:
+                            required_fields = ["plan_id", "name", "tier", "price_monthly", "price_yearly", "entitlements"]
+                            missing_fields = [field for field in required_fields if field not in plan]
+                            
+                            if missing_fields:
+                                success = False
+                                details += f", Missing fields in plan {plan.get('name')}: {missing_fields}"
+                                break
+                            
+                            # Verify entitlements structure
+                            entitlements = plan.get("entitlements", {})
+                            if not isinstance(entitlements, dict):
+                                success = False
+                                details += f", Invalid entitlements format in plan {plan.get('name')}"
+                                break
+                        
+                        if success:
+                            details += f", All plans have correct structure"
+                    else:
+                        success = False
+                        details += f", Expected 4 plans but found {len(plans)}"
+                else:
+                    success = False
+                    details += f", Invalid response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/billing/plans", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/plans", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_subscription(self):
+        """Test GET /api/billing/subscription - Should return current subscription info"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                required_fields = ["account_id", "plan_name", "plan_tier", "status", "entitlements", "usage"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    success = False
+                    details += f", Missing fields: {missing_fields}"
+                else:
+                    details += f", Account: {data.get('account_id')}, Plan: {data.get('plan_name')}, Status: {data.get('status')}"
+                    
+                    # Verify entitlements structure
+                    entitlements = data.get("entitlements", {})
+                    if isinstance(entitlements, dict):
+                        details += f", Entitlements: {len(entitlements)} keys"
+                    else:
+                        success = False
+                        details += f", Invalid entitlements format"
+                    
+                    # Verify usage structure
+                    usage = data.get("usage", {})
+                    if isinstance(usage, dict):
+                        details += f", Usage tracking available"
+                    else:
+                        success = False
+                        details += f", Invalid usage format"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/billing/subscription", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/subscription", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_usage(self):
+        """Test GET /api/billing/usage - Should return usage stats"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/usage", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                required_fields = ["vaults", "teamMembers", "storage"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    success = False
+                    details += f", Missing fields: {missing_fields}"
+                else:
+                    # Verify vaults structure
+                    vaults = data.get("vaults", {})
+                    if "allowed" in vaults and "current" in vaults and "limit" in vaults:
+                        details += f", Vaults: {vaults['current']}/{vaults['limit']}"
+                    else:
+                        success = False
+                        details += f", Invalid vaults structure"
+                    
+                    # Verify teamMembers structure
+                    members = data.get("teamMembers", {})
+                    if "allowed" in members and "current" in members and "limit" in members:
+                        details += f", Members: {members['current']}/{members['limit']}"
+                    else:
+                        success = False
+                        details += f", Invalid teamMembers structure"
+                    
+                    # Verify storage structure
+                    storage = data.get("storage", {})
+                    if "usedMB" in storage:
+                        details += f", Storage: {storage.get('usedMB', 0)} MB used"
+                    else:
+                        success = False
+                        details += f", Invalid storage structure"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/billing/usage", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/usage", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_check_vaults(self):
+        """Test GET /api/billing/check/vaults - Should check if can create more vaults"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/check/vaults", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                required_fields = ["allowed", "current", "limit", "remaining", "unlimited"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    success = False
+                    details += f", Missing fields: {missing_fields}"
+                else:
+                    allowed = data.get("allowed")
+                    current = data.get("current")
+                    limit = data.get("limit")
+                    remaining = data.get("remaining")
+                    unlimited = data.get("unlimited")
+                    
+                    details += f", Allowed: {allowed}, Current: {current}, Limit: {limit}, Remaining: {remaining}, Unlimited: {unlimited}"
+                    
+                    # Verify logic consistency
+                    if not unlimited and limit > 0:
+                        expected_remaining = max(0, limit - current)
+                        if remaining != expected_remaining:
+                            success = False
+                            details += f", Logic error: expected remaining {expected_remaining} but got {remaining}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/billing/check/vaults", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/check/vaults", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_check_members(self):
+        """Test GET /api/billing/check/members - Should check if can invite more members"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/check/members", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                required_fields = ["allowed", "current", "limit", "remaining", "unlimited"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    success = False
+                    details += f", Missing fields: {missing_fields}"
+                else:
+                    allowed = data.get("allowed")
+                    current = data.get("current")
+                    limit = data.get("limit")
+                    remaining = data.get("remaining")
+                    unlimited = data.get("unlimited")
+                    
+                    details += f", Allowed: {allowed}, Current: {current}, Limit: {limit}, Remaining: {remaining}, Unlimited: {unlimited}"
+                    
+                    # Verify logic consistency
+                    if not unlimited and limit > 0:
+                        expected_remaining = max(0, limit - current)
+                        if remaining != expected_remaining:
+                            success = False
+                            details += f", Logic error: expected remaining {expected_remaining} but got {remaining}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/billing/check/members", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/check/members", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_check_feature_analytics(self):
+        """Test GET /api/billing/check/feature/analytics - Should check if analytics feature is enabled"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/check/feature/analytics", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                required_fields = ["feature", "enabled"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    success = False
+                    details += f", Missing fields: {missing_fields}"
+                else:
+                    feature = data.get("feature")
+                    enabled = data.get("enabled")
+                    
+                    if feature == "analytics" and isinstance(enabled, bool):
+                        details += f", Feature: {feature}, Enabled: {enabled}"
+                    else:
+                        success = False
+                        details += f", Invalid response: feature={feature}, enabled={enabled}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/billing/check/feature/analytics", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/check/feature/analytics", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_upgrade_options(self):
+        """Test GET /api/billing/upgrade-options - Should return upgrade options for current plan"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/upgrade-options", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if "upgrade_options" in data and isinstance(data["upgrade_options"], list):
+                    options = data["upgrade_options"]
+                    details += f", Found {len(options)} upgrade options"
+                    
+                    # Verify each option has required fields
+                    for option in options:
+                        required_fields = ["plan_id", "name", "tier"]
+                        missing_fields = [field for field in required_fields if field not in option]
+                        
+                        if missing_fields:
+                            success = False
+                            details += f", Missing fields in option {option.get('name')}: {missing_fields}"
+                            break
+                    
+                    if success and options:
+                        option_names = [o.get("name") for o in options]
+                        details += f", Options: {option_names}"
+                else:
+                    success = False
+                    details += f", Invalid response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/billing/upgrade-options", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/upgrade-options", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_admin_set_plan_downgrade(self):
+        """Test POST /api/billing/admin/set-plan/{account_id}/plan_free - Downgrade to Free"""
+        account_id = "acct_7d45447b632b"
+        try:
+            response = self.session.post(f"{self.base_url}/billing/admin/set-plan/{account_id}/plan_free", timeout=15)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("ok") and "message" in data:
+                    message = data.get("message")
+                    details += f", Message: {message}"
+                    
+                    # Verify the message mentions the correct plan
+                    if "Free" in message:
+                        details += f", Successfully downgraded to Free plan"
+                    else:
+                        success = False
+                        details += f", Unexpected message content"
+                else:
+                    success = False
+                    details += f", Invalid response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/billing/admin/set-plan (Downgrade to Free)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/billing/admin/set-plan (Downgrade to Free)", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_verify_free_subscription(self):
+        """Verify subscription shows Free tier after downgrade"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                plan_name = data.get("plan_name")
+                plan_tier = data.get("plan_tier")
+                entitlements = data.get("entitlements", {})
+                
+                if plan_name == "Free" and plan_tier == 0:
+                    details += f", Plan: {plan_name} (tier {plan_tier})"
+                    
+                    # Verify Free plan entitlements
+                    vaults_max = entitlements.get("vaults.max")
+                    if vaults_max == 1:
+                        details += f", Vaults limit: {vaults_max} (correct for Free)"
+                    else:
+                        success = False
+                        details += f", Vaults limit: {vaults_max} (expected 1 for Free)"
+                else:
+                    success = False
+                    details += f", Plan: {plan_name} (tier {plan_tier}), expected Free (tier 0)"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("Verify Free Subscription After Downgrade", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Verify Free Subscription After Downgrade", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_check_vaults_after_downgrade(self):
+        """Test vault check after downgrade - should show allowed=false if user has more than 1 vault"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/check/vaults", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                allowed = data.get("allowed")
+                current = data.get("current")
+                limit = data.get("limit")
+                
+                details += f", Allowed: {allowed}, Current: {current}, Limit: {limit}"
+                
+                # If user has more vaults than the Free limit (1), allowed should be False
+                if current > 1 and limit == 1:
+                    if allowed == False:
+                        details += f", Correctly blocked: user has {current} vaults but limit is {limit}"
+                    else:
+                        success = False
+                        details += f", Logic error: should be blocked but allowed={allowed}"
+                elif current <= 1:
+                    details += f", User within limit, allowed={allowed}"
+                else:
+                    details += f", Unexpected state: current={current}, limit={limit}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("Check Vaults After Downgrade", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Check Vaults After Downgrade", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_admin_set_plan_upgrade(self):
+        """Test POST /api/billing/admin/set-plan/{account_id}/plan_starter - Upgrade to Starter"""
+        account_id = "acct_7d45447b632b"
+        try:
+            response = self.session.post(f"{self.base_url}/billing/admin/set-plan/{account_id}/plan_starter", timeout=15)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("ok") and "message" in data:
+                    message = data.get("message")
+                    details += f", Message: {message}"
+                    
+                    # Verify the message mentions the correct plan
+                    if "Starter" in message:
+                        details += f", Successfully upgraded to Starter plan"
+                    else:
+                        success = False
+                        details += f", Unexpected message content"
+                else:
+                    success = False
+                    details += f", Invalid response format: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/billing/admin/set-plan (Upgrade to Starter)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/billing/admin/set-plan (Upgrade to Starter)", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_verify_starter_subscription(self):
+        """Verify subscription shows Starter tier after upgrade"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                plan_name = data.get("plan_name")
+                plan_tier = data.get("plan_tier")
+                entitlements = data.get("entitlements", {})
+                
+                if plan_name == "Starter" and plan_tier == 1:
+                    details += f", Plan: {plan_name} (tier {plan_tier})"
+                    
+                    # Verify Starter plan entitlements
+                    vaults_max = entitlements.get("vaults.max")
+                    templates_enabled = entitlements.get("features.templates.enabled")
+                    
+                    if vaults_max == 5:
+                        details += f", Vaults limit: {vaults_max} (correct for Starter)"
+                    else:
+                        success = False
+                        details += f", Vaults limit: {vaults_max} (expected 5 for Starter)"
+                    
+                    if templates_enabled == True:
+                        details += f", Templates enabled: {templates_enabled} (correct for Starter)"
+                    else:
+                        success = False
+                        details += f", Templates enabled: {templates_enabled} (expected True for Starter)"
+                else:
+                    success = False
+                    details += f", Plan: {plan_name} (tier {plan_tier}), expected Starter (tier 1)"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("Verify Starter Subscription After Upgrade", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Verify Starter Subscription After Upgrade", False, f"Error: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run comprehensive regression tests for Equity Trust Portfolio application"""
-        self.log("🧪 Starting RM-ID Migration Testing for OmniGovault")
+        self.log("🧪 Starting Subscription & Entitlement System Testing for OmniGovault")
         self.log("=" * 70)
         self.log(f"Using Portfolio ID: {self.test_portfolio_id}")
         
@@ -1319,8 +1803,28 @@ class EquityTrustAPITester:
         self.log("-" * 40)
         self.test_system_health()
         
-        # 2. RM-ID Migration Tests (Primary Focus)
-        self.log("\n🔄 Test 2: RM-ID Migration Functionality")
+        # 2. Billing System Tests (Primary Focus)
+        self.log("\n💳 Test 2: Subscription & Entitlement System")
+        self.log("-" * 50)
+        self.test_billing_plans()
+        self.test_billing_subscription()
+        self.test_billing_usage()
+        self.test_billing_check_vaults()
+        self.test_billing_check_members()
+        self.test_billing_check_feature_analytics()
+        self.test_billing_upgrade_options()
+        
+        # 3. Plan Upgrade/Downgrade Flow Tests
+        self.log("\n🔄 Test 3: Plan Upgrade/Downgrade Flow")
+        self.log("-" * 50)
+        self.test_billing_admin_set_plan_downgrade()
+        self.test_billing_verify_free_subscription()
+        self.test_billing_check_vaults_after_downgrade()
+        self.test_billing_admin_set_plan_upgrade()
+        self.test_billing_verify_starter_subscription()
+        
+        # 4. RM-ID Migration Tests (Secondary)
+        self.log("\n🔄 Test 4: RM-ID Migration Functionality")
         self.log("-" * 50)
         self.test_get_trust_profiles()
         self.test_governance_records_rm_id_migration()
@@ -1328,60 +1832,60 @@ class EquityTrustAPITester:
         self.test_migrate_rm_ids_with_placeholder_profile()
         self.test_verify_rm_id_format_in_records()
         
-        # 3. Core Binder System
-        self.log("\n📁 Test 3: Core Binder System")
+        # 5. Core Binder System
+        self.log("\n📁 Test 5: Core Binder System")
         self.log("-" * 40)
         self.test_binder_profiles()
         self.test_binder_generate()
         self.test_binder_runs()
         self.test_binder_download()
         
-        # 4. Audit Log System
-        self.log("\n📊 Test 4: Audit Log System")
+        # 6. Audit Log System
+        self.log("\n📊 Test 6: Audit Log System")
         self.log("-" * 40)
         self.test_audit_log_list()
         self.test_audit_log_categories()
         self.test_audit_log_summary()
         self.test_audit_log_export()
         
-        # 5. Governance Module
-        self.log("\n⚖️ Test 5: Governance Module")
+        # 7. Governance Module
+        self.log("\n⚖️ Test 7: Governance Module")
         self.log("-" * 40)
         self.test_governance_records()
         self.test_governance_subjects()
         
-        # 6. Evidence Binder (P5 Feature)
-        self.log("\n📋 Test 6: Evidence Binder Configuration")
+        # 8. Evidence Binder (P5 Feature)
+        self.log("\n📋 Test 8: Evidence Binder Configuration")
         self.log("-" * 50)
         self.test_evidence_config()
         
-        self.log(f"\n📊 Test 7: Evidence Binder Disputes")
+        self.log(f"\n📊 Test 9: Evidence Binder Disputes")
         self.log("-" * 40)
         self.test_get_disputes()
         self.test_create_test_dispute_if_needed()
         
-        self.log(f"\n🔗 Test 8: Evidence Binder Links Management")
+        self.log(f"\n🔗 Test 10: Evidence Binder Links Management")
         self.log("-" * 50)
         self.test_add_dispute_link()
         self.test_get_dispute_links()
         self.test_auto_link_dispute_items()
         
-        self.log(f"\n👁️ Test 9: Evidence Binder Preview")
+        self.log(f"\n👁️ Test 11: Evidence Binder Preview")
         self.log("-" * 40)
         self.test_evidence_preview()
         
-        self.log(f"\n📄 Test 10: Evidence Binder Generation")
+        self.log(f"\n📄 Test 12: Evidence Binder Generation")
         self.log("-" * 50)
         self.test_generate_evidence_binder()
         
-        self.log(f"\n📚 Test 11: Evidence Binder Runs")
+        self.log(f"\n📚 Test 13: Evidence Binder Runs")
         self.log("-" * 40)
         self.test_get_evidence_runs()
         self.test_get_evidence_run_details()
         self.test_get_evidence_manifest()
         self.test_download_evidence_binder()
         
-        self.log(f"\n🧹 Test 12: Cleanup")
+        self.log(f"\n🧹 Test 14: Cleanup")
         self.log("-" * 25)
         self.test_cleanup_test_link()
         
