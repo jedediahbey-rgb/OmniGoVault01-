@@ -1563,13 +1563,13 @@ export default function CyberHomePage() {
               {/* OMNIGOVAULT Logo - Centered, fully visible */}
               <motion.div 
                 variants={fadeInUp}
-                className="mb-4 lg:mb-6"
+                className="mb-2 lg:mb-3"
               >
-                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[420px] mx-auto">
+                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[480px] mx-auto">
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
-                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[200px] object-contain mx-auto"
+                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[240px] object-contain mx-auto"
                     style={{ imageRendering: 'crisp-edges' }}
                   />
                 </div>
