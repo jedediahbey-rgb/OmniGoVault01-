@@ -1699,17 +1699,21 @@ export default function CyberHomePage() {
                     )}
                     <button 
                       type="button"
+                      data-testid="demo-toggle"
                       style={{
                         backgroundColor: demoMode ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
                         color: demoMode ? '#fbbf24' : '#34d399',
                         borderColor: demoMode ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)',
+                        pointerEvents: 'auto',
+                        position: 'relative',
+                        zIndex: 50,
                       }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium rounded-md border outline-none focus:outline-none active:outline-none select-none cursor-pointer z-10"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log('Demo toggle clicked, current:', demoMode);
-                        setDemoMode(!demoMode);
-                        if (demoMode) {
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium rounded-md border cursor-pointer"
+                      onClick={() => {
+                        console.log('Demo toggle clicked! Current demoMode:', demoMode);
+                        const newMode = !demoMode;
+                        setDemoMode(newMode);
+                        if (newMode === false) {
                           fetchLiveSignals();
                         }
                       }}
