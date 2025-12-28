@@ -231,7 +231,7 @@ export default function SettingsPage() {
         {/* Header */}
         <PageHeader
           title="Settings"
-          subtitle="Configure trust health rules and governance checklists"
+          subtitle={<span className="text-xs sm:text-sm md:text-base">Configure trust health rules and governance checklists</span>}
           subtitleAction={<PageHelpTooltip pageKey="settings" />}
           breadcrumbs={[
             { label: 'Dashboard', href: '/vault' },
@@ -239,41 +239,45 @@ export default function SettingsPage() {
           ]}
         />
 
-        {/* Tabs */}
-        <div className="flex items-center gap-2 p-1 bg-vault-dark/50 rounded-lg w-fit flex-wrap">
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-              activeTab === 'profile'
-                ? 'bg-vault-gold text-vault-dark font-medium'
-                : 'text-vault-muted hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <User className="w-4 h-4" />
-            Profile
-          </button>
-          <button
-            onClick={() => setActiveTab('health-rules')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-              activeTab === 'health-rules'
-                ? 'bg-vault-gold text-vault-dark font-medium'
-                : 'text-vault-muted hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Sliders className="w-4 h-4" />
-            Health Score Rules
-          </button>
-          <button
-            onClick={() => setActiveTab('checklists')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-              activeTab === 'checklists'
-                ? 'bg-vault-gold text-vault-dark font-medium'
-                : 'text-vault-muted hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <CheckCircle className="w-4 h-4" />
-            Governance Checklists
-          </button>
+        {/* Tabs - Enhanced visibility */}
+        <div className="border border-vault-gold/20 rounded-xl bg-vault-dark/80 p-1.5 w-fit">
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+            <button
+              onClick={() => setActiveTab('profile')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg transition-all text-sm sm:text-base font-medium ${
+                activeTab === 'profile'
+                  ? 'bg-vault-gold text-vault-dark shadow-lg shadow-vault-gold/20'
+                  : 'text-vault-muted hover:text-white hover:bg-white/10 border border-transparent hover:border-vault-gold/20'
+              }`}
+            >
+              <User className="w-4 h-4" />
+              <span>Profile</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('health-rules')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg transition-all text-sm sm:text-base font-medium ${
+                activeTab === 'health-rules'
+                  ? 'bg-vault-gold text-vault-dark shadow-lg shadow-vault-gold/20'
+                  : 'text-vault-muted hover:text-white hover:bg-white/10 border border-transparent hover:border-vault-gold/20'
+              }`}
+            >
+              <Sliders className="w-4 h-4" />
+              <span className="hidden xs:inline">Health Score</span>
+              <span className="xs:hidden">Health</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('checklists')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg transition-all text-sm sm:text-base font-medium ${
+                activeTab === 'checklists'
+                  ? 'bg-vault-gold text-vault-dark shadow-lg shadow-vault-gold/20'
+                  : 'text-vault-muted hover:text-white hover:bg-white/10 border border-transparent hover:border-vault-gold/20'
+              }`}
+            >
+              <CheckCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Governance Checklists</span>
+              <span className="sm:hidden">Checklists</span>
+            </button>
+          </div>
         </div>
 
         {/* Profile Tab */}
