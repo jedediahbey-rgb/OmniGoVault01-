@@ -680,23 +680,38 @@ const GrantRoleDialog = ({ open, onClose, user, onGrant }) => {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="bg-vault-dark border-vault-gold/30">
         <DialogHeader>
-          <DialogTitle className="text-vault-light">Grant Global Role</DialogTitle>
+          <DialogTitle className="text-vault-light">Grant Access to User</DialogTitle>
           <DialogDescription className="text-vault-muted">
-            Assign a global platform role to {user?.email}
+            Assign access permissions to {user?.email}
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label className="text-vault-light">Role</Label>
+            <Label className="text-vault-light">Access Level</Label>
             <Select value={selectedRole} onValueChange={setSelectedRole}>
               <SelectTrigger className="bg-vault-navy border-vault-gold/20">
-                <SelectValue placeholder="Select role" />
+                <SelectValue placeholder="Select access level" />
               </SelectTrigger>
               <SelectContent className="bg-vault-dark border-vault-gold/20">
-                <SelectItem value="OMNICOMPETENT">OMNICOMPETENT - Full admin access</SelectItem>
-                <SelectItem value="SUPPORT_ADMIN">SUPPORT_ADMIN - View & impersonate</SelectItem>
-                <SelectItem value="BILLING_ADMIN">BILLING_ADMIN - Billing management</SelectItem>
+                <SelectItem value="OMNICOMPETENT">
+                  <div className="flex flex-col">
+                    <span className="font-medium">OMNICOMPETENT - All Features Free</span>
+                    <span className="text-xs text-vault-muted">Access all platform features without billing</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="SUPPORT_ADMIN">
+                  <div className="flex flex-col">
+                    <span className="font-medium">SUPPORT_ADMIN - Limited Admin</span>
+                    <span className="text-xs text-vault-muted">View accounts and assist users (no control)</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="BILLING_ADMIN">
+                  <div className="flex flex-col">
+                    <span className="font-medium">BILLING_ADMIN - Billing Only</span>
+                    <span className="text-xs text-vault-muted">Manage billing and pricing</span>
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -706,7 +721,7 @@ const GrantRoleDialog = ({ open, onClose, user, onGrant }) => {
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Reason for granting this role..."
+              placeholder="Reason for granting this access..."
               className="bg-vault-navy border-vault-gold/20"
             />
           </div>
