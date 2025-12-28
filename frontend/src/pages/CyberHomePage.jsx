@@ -1734,7 +1734,7 @@ export default function CyberHomePage() {
                     <div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" />
                   </div>
                 ) : (
-                  <SignalFeed signals={demoMode ? DEMO_SIGNALS : (liveSignals.length > 0 ? liveSignals : DEMO_SIGNALS)} />
+                  <SignalFeed signals={demoMode ? DEMO_SIGNALS : (liveSignals.length > 0 ? liveSignals : LIVE_DEMO_SIGNALS)} />
                 )}
               </HoloCard>
             </motion.div>
