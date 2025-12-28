@@ -50,16 +50,16 @@ const navItems = [
   { name: 'Governance', href: '/vault/governance', icon: Gavel, section: 'workspace' },
   { name: 'Shared Workspaces', href: '/vault/workspaces', icon: Users, section: 'workspace' },
   
-  // tools - Billing before Binder
+  // tools - Billing before Binder, Settings at bottom
   { name: 'Billing', href: '/billing', icon: CreditCard, section: 'tools' },
   { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
-  { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
   { name: 'Audit Log', href: '/vault/audit-log', icon: ClipboardText, section: 'tools' },
   { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
   { name: 'Diagnostics', href: '/diagnostics', icon: Stethoscope, section: 'tools' },
   { name: 'Trust Health', href: '/health', icon: Heartbeat, section: 'tools' },
-  { name: 'Admin Console', href: '/admin', icon: ShieldCheck, section: 'admin', adminOnly: true },
   { name: 'Thread Manager', href: '/ledger-threads', icon: FlowArrow, section: 'tools' },
+  { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
+  { name: 'Admin Console', href: '/admin', icon: ShieldCheck, section: 'tools', adminOnly: true },
 ];
 
 // Sidebar nav item - clean, no transitions
