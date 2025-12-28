@@ -200,12 +200,12 @@ class OmniGoVaultOnboardingTester:
                 account = data.get("account", {})
                 
                 if ("Starter" in message and 
-                    user.get("user_email") == "starter.tester@test.local" and
+                    user.get("email") == "starter.tester@test.local" and
                     account.get("plan_name") == "Starter"):
-                    details += f", Successfully switched to Starter account: {user.get('user_email')}"
+                    details += f", Successfully switched to Starter account: {user.get('email')}"
                 else:
                     success = False
-                    details += f", Unexpected response: {message}, user: {user.get('user_email')}, plan: {account.get('plan_name')}"
+                    details += f", Unexpected response: {message}, user: {user.get('email')}, plan: {account.get('plan_name')}"
             else:
                 details += f", Response: {response.text[:200]}"
             
