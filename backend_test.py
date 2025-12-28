@@ -53,16 +53,67 @@ class OmniGoVaultOnboardingTester:
             "timestamp": datetime.now().isoformat()
         })
 
-    # ============ GOOGLE AUTH & DEV BYPASS TESTS ============
+    # ============ DEV ENVIRONMENT STATUS TESTS ============
 
-    def test_dev_bypass_auth_me(self):
-        """Test GET /api/auth/me with no cookies/headers (dev bypass mode)"""
+    def test_dev_environment_status(self):
+        """Test GET /api/dev/status - should return dev_bypass_enabled: true and test accounts"""
         try:
-            # Create a clean session without any auth headers or cookies
+            response = self.session.get(f"{self.base_url}/dev/status", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                # Check dev_bypass_enabled
+                dev_bypass = data.get("dev_bypass_enabled")
+                if dev_bypass is True:
+                    details += ", dev_bypass_enabled: true"
+                else:
+                    success = False
+                    details += f", dev_bypass_enabled: {dev_bypass} (expected true)"
+                
+                # Check test accounts
+                test_accounts = data.get("test_accounts", [])
+                if len(test_accounts) == 3:
+                    account_plans = [acc.get("plan_name") for acc in test_accounts]
+                    expected_plans = ["Free", "Starter", "Pro"]
+                    if all(plan in account_plans for plan in expected_plans):
+                        details += f", Found 3 test accounts: {account_plans}"
+                    else:
+                        success = False
+                        details += f", Test accounts missing expected plans: {account_plans}"
+                else:
+                    success = False
+                    details += f", Expected 3 test accounts, found {len(test_accounts)}"
+                
+                # Check dev_admin info
+                dev_admin = data.get("dev_admin", {})
+                if dev_admin.get("user_id") and dev_admin.get("email"):
+                    details += f", dev_admin: {dev_admin.get('email')}"
+                else:
+                    success = False
+                    details += f", dev_admin info incomplete: {dev_admin}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/dev/status", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/dev/status", False, f"Error: {str(e)}")
+            return False
+
+    # ============ AUTH/ME WITH DEV BYPASS TESTS ============
+
+    def test_auth_me_dev_bypass(self):
+        """Test GET /api/auth/me with no credentials - should return dev admin user"""
+        try:
+            # Create clean session without auth
             clean_session = requests.Session()
             clean_session.headers.update({
                 'Content-Type': 'application/json',
-                'User-Agent': 'OmniGoVault-Auth-Tester/1.0'
+                'User-Agent': 'OmniGoVault-Onboarding-Tester/1.0'
             })
             
             response = clean_session.get(f"{self.base_url}/auth/me", timeout=10)
@@ -71,229 +122,374 @@ class OmniGoVaultOnboardingTester:
             
             if success:
                 data = response.json()
-                expected_user_id = "default_user"
-                expected_email = "user@omnigovault.com"
-                expected_name = "Default User"
+                
+                # Check for dev admin user
+                expected_email = "dev.admin@system.local"
+                expected_user_id = "dev_admin_user"
                 
                 user_id = data.get("user_id")
                 email = data.get("email")
                 name = data.get("name")
+                dev_bypass_enabled = data.get("dev_bypass_enabled")
                 
                 if (user_id == expected_user_id and 
                     email == expected_email and 
-                    name == expected_name):
-                    details += f", Dev bypass user returned correctly: {email}"
+                    dev_bypass_enabled is True):
+                    details += f", Dev admin user returned: {email}, dev_bypass_enabled: true"
                 else:
                     success = False
-                    details += f", Unexpected user data: user_id={user_id}, email={email}, name={name}"
+                    details += f", Unexpected user: user_id={user_id}, email={email}, dev_bypass={dev_bypass_enabled}"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/auth/me (Dev Bypass Mode)", success, details)
+            self.log_test("GET /api/auth/me (Dev Bypass)", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/auth/me (Dev Bypass Mode)", False, f"Error: {str(e)}")
+            self.log_test("GET /api/auth/me (Dev Bypass)", False, f"Error: {str(e)}")
             return False
 
-    def test_session_endpoint_with_invalid_session(self):
-        """Test POST /api/auth/session with mock session_id (should fail gracefully)"""
+    # ============ TEST ACCOUNT SWITCHING TESTS ============
+
+    def test_switch_to_free_account(self):
+        """Test POST /api/dev/switch-account with {"account": "free"}"""
         try:
-            # Test with invalid session_id
-            payload = {
-                "session_id": "mock_invalid_session_12345"
-            }
+            payload = {"account": "free"}
+            response = self.session.post(f"{self.base_url}/dev/switch-account", json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
             
+            if success:
+                data = response.json()
+                message = data.get("message", "")
+                user = data.get("user", {})
+                account = data.get("account", {})
+                
+                if ("Free" in message and 
+                    user.get("user_email") == "free.tester@test.local" and
+                    account.get("plan_name") == "Free"):
+                    details += f", Successfully switched to Free account: {user.get('user_email')}"
+                    # Store session token if provided
+                    if 'session_token' in data:
+                        self.current_session_token = data['session_token']
+                else:
+                    success = False
+                    details += f", Unexpected response: {message}, user: {user.get('user_email')}, plan: {account.get('plan_name')}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/dev/switch-account (Free)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/dev/switch-account (Free)", False, f"Error: {str(e)}")
+            return False
+
+    def test_switch_to_starter_account(self):
+        """Test POST /api/dev/switch-account with {"account": "starter"}"""
+        try:
+            payload = {"account": "starter"}
+            response = self.session.post(f"{self.base_url}/dev/switch-account", json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                message = data.get("message", "")
+                user = data.get("user", {})
+                account = data.get("account", {})
+                
+                if ("Starter" in message and 
+                    user.get("user_email") == "starter.tester@test.local" and
+                    account.get("plan_name") == "Starter"):
+                    details += f", Successfully switched to Starter account: {user.get('user_email')}"
+                else:
+                    success = False
+                    details += f", Unexpected response: {message}, user: {user.get('user_email')}, plan: {account.get('plan_name')}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/dev/switch-account (Starter)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/dev/switch-account (Starter)", False, f"Error: {str(e)}")
+            return False
+
+    def test_switch_to_pro_account(self):
+        """Test POST /api/dev/switch-account with {"account": "pro"}"""
+        try:
+            payload = {"account": "pro"}
+            response = self.session.post(f"{self.base_url}/dev/switch-account", json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                message = data.get("message", "")
+                user = data.get("user", {})
+                account = data.get("account", {})
+                
+                if ("Pro" in message and 
+                    user.get("user_email") == "pro.tester@test.local" and
+                    account.get("plan_name") == "Pro"):
+                    details += f", Successfully switched to Pro account: {user.get('user_email')}"
+                else:
+                    success = False
+                    details += f", Unexpected response: {message}, user: {user.get('user_email')}, plan: {account.get('plan_name')}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/dev/switch-account (Pro)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/dev/switch-account (Pro)", False, f"Error: {str(e)}")
+            return False
+
+    # ============ TEST ACCOUNT ENTITLEMENTS TESTS ============
+
+    def test_free_account_entitlements(self):
+        """Test entitlements for Free account after switching"""
+        try:
+            # First switch to Free account
+            switch_payload = {"account": "free"}
+            switch_response = self.session.post(f"{self.base_url}/dev/switch-account", json=switch_payload, timeout=10)
+            
+            if switch_response.status_code != 200:
+                self.log_test("Free Account Entitlements", False, "Failed to switch to Free account")
+                return False
+            
+            # Test subscription endpoint
+            sub_response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
+            ent_response = self.session.get(f"{self.base_url}/billing/entitlements", timeout=10)
+            
+            success = sub_response.status_code == 200 and ent_response.status_code == 200
+            details = f"Subscription: {sub_response.status_code}, Entitlements: {ent_response.status_code}"
+            
+            if success:
+                sub_data = sub_response.json()
+                ent_data = ent_response.json()
+                
+                plan_name = sub_data.get("plan_name")
+                plan_tier = sub_data.get("plan_tier")
+                
+                if plan_name == "Free" and plan_tier == 0:
+                    details += f", Plan: {plan_name} (tier {plan_tier})"
+                    
+                    # Check entitlements structure
+                    if isinstance(ent_data, dict) and "entitlements" in ent_data:
+                        entitlements = ent_data["entitlements"]
+                        vault_limit = entitlements.get("vaults.max", 0)
+                        details += f", Vault limit: {vault_limit}"
+                    else:
+                        success = False
+                        details += f", Invalid entitlements structure: {type(ent_data)}"
+                else:
+                    success = False
+                    details += f", Unexpected plan: {plan_name} (tier {plan_tier})"
+            else:
+                details += f", Sub response: {sub_response.text[:100]}, Ent response: {ent_response.text[:100]}"
+            
+            self.log_test("Free Account Entitlements", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Free Account Entitlements", False, f"Error: {str(e)}")
+            return False
+
+    def test_starter_account_entitlements(self):
+        """Test entitlements for Starter account after switching"""
+        try:
+            # First switch to Starter account
+            switch_payload = {"account": "starter"}
+            switch_response = self.session.post(f"{self.base_url}/dev/switch-account", json=switch_payload, timeout=10)
+            
+            if switch_response.status_code != 200:
+                self.log_test("Starter Account Entitlements", False, "Failed to switch to Starter account")
+                return False
+            
+            # Test subscription endpoint
+            sub_response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
+            ent_response = self.session.get(f"{self.base_url}/billing/entitlements", timeout=10)
+            
+            success = sub_response.status_code == 200 and ent_response.status_code == 200
+            details = f"Subscription: {sub_response.status_code}, Entitlements: {ent_response.status_code}"
+            
+            if success:
+                sub_data = sub_response.json()
+                ent_data = ent_response.json()
+                
+                plan_name = sub_data.get("plan_name")
+                plan_tier = sub_data.get("plan_tier")
+                
+                if plan_name == "Starter" and plan_tier == 1:
+                    details += f", Plan: {plan_name} (tier {plan_tier})"
+                    
+                    # Check entitlements structure
+                    if isinstance(ent_data, dict) and "entitlements" in ent_data:
+                        entitlements = ent_data["entitlements"]
+                        vault_limit = entitlements.get("vaults.max", 0)
+                        details += f", Vault limit: {vault_limit}"
+                    else:
+                        success = False
+                        details += f", Invalid entitlements structure: {type(ent_data)}"
+                else:
+                    success = False
+                    details += f", Unexpected plan: {plan_name} (tier {plan_tier})"
+            else:
+                details += f", Sub response: {sub_response.text[:100]}, Ent response: {ent_response.text[:100]}"
+            
+            self.log_test("Starter Account Entitlements", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Starter Account Entitlements", False, f"Error: {str(e)}")
+            return False
+
+    def test_pro_account_entitlements(self):
+        """Test entitlements for Pro account after switching"""
+        try:
+            # First switch to Pro account
+            switch_payload = {"account": "pro"}
+            switch_response = self.session.post(f"{self.base_url}/dev/switch-account", json=switch_payload, timeout=10)
+            
+            if switch_response.status_code != 200:
+                self.log_test("Pro Account Entitlements", False, "Failed to switch to Pro account")
+                return False
+            
+            # Test subscription endpoint
+            sub_response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
+            ent_response = self.session.get(f"{self.base_url}/billing/entitlements", timeout=10)
+            
+            success = sub_response.status_code == 200 and ent_response.status_code == 200
+            details = f"Subscription: {sub_response.status_code}, Entitlements: {ent_response.status_code}"
+            
+            if success:
+                sub_data = sub_response.json()
+                ent_data = ent_response.json()
+                
+                plan_name = sub_data.get("plan_name")
+                plan_tier = sub_data.get("plan_tier")
+                
+                if plan_name == "Pro" and plan_tier == 2:
+                    details += f", Plan: {plan_name} (tier {plan_tier})"
+                    
+                    # Check entitlements structure
+                    if isinstance(ent_data, dict) and "entitlements" in ent_data:
+                        entitlements = ent_data["entitlements"]
+                        vault_limit = entitlements.get("vaults.max", 0)
+                        details += f", Vault limit: {vault_limit}"
+                    else:
+                        success = False
+                        details += f", Invalid entitlements structure: {type(ent_data)}"
+                else:
+                    success = False
+                    details += f", Unexpected plan: {plan_name} (tier {plan_tier})"
+            else:
+                details += f", Sub response: {sub_response.text[:100]}, Ent response: {ent_response.text[:100]}"
+            
+            self.log_test("Pro Account Entitlements", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Pro Account Entitlements", False, f"Error: {str(e)}")
+            return False
+
+    # ============ FIRST LOGIN FLAG TESTS ============
+
+    def test_first_login_flag(self):
+        """Test GET /api/auth/me includes is_first_login field"""
+        try:
+            response = self.session.get(f"{self.base_url}/auth/me", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                # Check if is_first_login field exists
+                if "is_first_login" in data:
+                    is_first_login = data.get("is_first_login")
+                    details += f", is_first_login: {is_first_login}"
+                    
+                    # Also check other expected fields
+                    user_id = data.get("user_id")
+                    email = data.get("email")
+                    details += f", user: {email}"
+                else:
+                    success = False
+                    details += f", is_first_login field missing from response"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/auth/me (First Login Flag)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/auth/me (First Login Flag)", False, f"Error: {str(e)}")
+            return False
+
+    def test_clear_first_login(self):
+        """Test POST /api/auth/clear-first-login"""
+        try:
+            response = self.session.post(f"{self.base_url}/auth/clear-first-login", json={}, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("success") is True:
+                    details += ", Successfully cleared first_login flag"
+                else:
+                    success = False
+                    details += f", Unexpected response: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/auth/clear-first-login", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/auth/clear-first-login", False, f"Error: {str(e)}")
+            return False
+
+    # ============ SESSION ENDPOINT VALIDATION TESTS ============
+
+    def test_session_endpoint_invalid_session(self):
+        """Test POST /api/auth/session with invalid session_id - should return 401"""
+        try:
+            payload = {"session_id": "invalid_session_12345"}
             response = self.session.post(f"{self.base_url}/auth/session", json=payload, timeout=10)
             
-            # This should fail since we can't actually complete Google Auth
-            # But we want to verify the endpoint exists and handles errors properly
+            # Should return 401 or 500 (service unavailable)
+            success = response.status_code in [401, 500]
             details = f"Status: {response.status_code}"
             
             if response.status_code == 401:
-                # Expected failure for invalid session
                 data = response.json()
                 error_detail = data.get('detail', '')
-                details += f", Expected 401 error: {error_detail}"
-                success = "Authentication failed" in error_detail or "failed" in error_detail.lower()
+                if "Authentication failed" in error_detail or "failed" in error_detail.lower():
+                    details += f", Correctly returned 401: {error_detail}"
+                else:
+                    success = False
+                    details += f", Unexpected 401 error: {error_detail}"
             elif response.status_code == 500:
-                # Also acceptable - service unavailable
                 data = response.json()
                 error_detail = data.get('detail', '')
-                details += f", Service unavailable (expected): {error_detail}"
-                success = "unavailable" in error_detail.lower() or "service" in error_detail.lower()
+                if "unavailable" in error_detail.lower() or "service" in error_detail.lower():
+                    details += f", Service unavailable (expected): {error_detail}"
+                else:
+                    success = False
+                    details += f", Unexpected 500 error: {error_detail}"
             else:
-                success = False
-                details += f", Unexpected status code, Response: {response.text[:200]}"
+                details += f", Expected 401/500, got {response.status_code}: {response.text[:200]}"
             
             self.log_test("POST /api/auth/session (Invalid Session)", success, details)
             return success
             
         except Exception as e:
             self.log_test("POST /api/auth/session (Invalid Session)", False, f"Error: {str(e)}")
-            return False
-
-    def test_protected_endpoints_with_dev_bypass(self):
-        """Test protected endpoints work with dev bypass user"""
-        endpoints_to_test = [
-            ("/portfolios", "GET", "Portfolios"),
-            ("/vaults", "GET", "Vaults"),
-            ("/billing/subscription", "GET", "Billing Subscription")
-        ]
-        
-        all_success = True
-        details_list = []
-        
-        for endpoint, method, name in endpoints_to_test:
-            try:
-                # Create clean session without auth
-                clean_session = requests.Session()
-                clean_session.headers.update({
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'OmniGoVault-Auth-Tester/1.0'
-                })
-                
-                if method == "GET":
-                    response = clean_session.get(f"{self.base_url}{endpoint}", timeout=10)
-                else:
-                    response = clean_session.post(f"{self.base_url}{endpoint}", timeout=10)
-                
-                success = response.status_code == 200
-                endpoint_details = f"{name}: {response.status_code}"
-                
-                if success:
-                    data = response.json()
-                    if isinstance(data, list):
-                        endpoint_details += f" (list with {len(data)} items)"
-                    elif isinstance(data, dict):
-                        if 'ok' in data:
-                            endpoint_details += f" (ok: {data.get('ok')})"
-                        else:
-                            endpoint_details += f" (dict response)"
-                    else:
-                        endpoint_details += f" (response type: {type(data)})"
-                else:
-                    endpoint_details += f" - {response.text[:100]}"
-                    all_success = False
-                
-                details_list.append(endpoint_details)
-                
-            except Exception as e:
-                details_list.append(f"{name}: Error - {str(e)}")
-                all_success = False
-        
-        combined_details = "; ".join(details_list)
-        self.log_test("Protected Endpoints with Dev Bypass", all_success, combined_details)
-        return all_success
-
-    def test_admin_console_restriction(self):
-        """Test admin console restriction for dev bypass user"""
-        try:
-            # Create clean session without auth (will use dev bypass)
-            clean_session = requests.Session()
-            clean_session.headers.update({
-                'Content-Type': 'application/json',
-                'User-Agent': 'OmniGoVault-Auth-Tester/1.0'
-            })
-            
-            response = clean_session.get(f"{self.base_url}/admin/status", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                # The dev user should have limited access
-                # Check if response indicates limited access or proper admin structure
-                if isinstance(data, dict):
-                    # Look for indicators of limited access
-                    if 'limited_access' in str(data).lower() or 'restricted' in str(data).lower():
-                        details += f", Limited access confirmed for dev user"
-                    elif 'admin' in data or 'status' in data:
-                        details += f", Admin endpoint accessible but may show limited data"
-                    else:
-                        details += f", Admin response: {str(data)[:100]}"
-                else:
-                    details += f", Admin response type: {type(data)}"
-            elif response.status_code == 403:
-                # Also acceptable - forbidden access
-                details += f", Access forbidden (expected for non-admin user)"
-                success = True
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/admin/status (Dev User Restriction)", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/admin/status (Dev User Restriction)", False, f"Error: {str(e)}")
-            return False
-
-    def test_auth_me_with_invalid_token(self):
-        """Test GET /api/auth/me with invalid Authorization header (should fallback to dev bypass)"""
-        try:
-            # Create session with invalid auth token
-            auth_session = requests.Session()
-            auth_session.headers.update({
-                'Content-Type': 'application/json',
-                'User-Agent': 'OmniGoVault-Auth-Tester/1.0',
-                'Authorization': 'Bearer invalid_token_12345'
-            })
-            
-            response = auth_session.get(f"{self.base_url}/auth/me", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                expected_user_id = "default_user"
-                expected_email = "user@omnigovault.com"
-                
-                user_id = data.get("user_id")
-                email = data.get("email")
-                
-                if user_id == expected_user_id and email == expected_email:
-                    details += f", Gracefully fell back to dev bypass user: {email}"
-                else:
-                    success = False
-                    details += f", Unexpected fallback behavior: user_id={user_id}, email={email}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/auth/me (Invalid Token Fallback)", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/auth/me (Invalid Token Fallback)", False, f"Error: {str(e)}")
-            return False
-
-    def test_session_endpoint_exists(self):
-        """Test that POST /api/auth/session endpoint exists and is properly configured"""
-        try:
-            # Test with missing session_id
-            payload = {}
-            
-            response = self.session.post(f"{self.base_url}/auth/session", json=payload, timeout=10)
-            details = f"Status: {response.status_code}"
-            
-            # Should return 400 for missing session_id
-            if response.status_code == 400:
-                data = response.json()
-                error_detail = data.get('detail', '')
-                if 'session_id required' in error_detail:
-                    details += f", Correctly validates session_id requirement: {error_detail}"
-                    success = True
-                else:
-                    success = False
-                    details += f", Unexpected 400 error: {error_detail}"
-            else:
-                success = False
-                details += f", Expected 400 for missing session_id, Response: {response.text[:200]}"
-            
-            self.log_test("POST /api/auth/session (Endpoint Validation)", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/auth/session (Endpoint Validation)", False, f"Error: {str(e)}")
             return False
 
     # ============ SYSTEM HEALTH VERIFICATION ============
