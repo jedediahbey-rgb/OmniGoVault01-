@@ -94,7 +94,7 @@ const sections = {
 };
 
 // Allowed admin emails - only these users can see Admin Console
-const ADMIN_EMAILS = ['jedediah.bey@gmail.com'];
+const ADMIN_EMAILS = ['jedediah.bey@gmail.com', 'dev.admin@system.local'];
 
 export default function Sidebar({ user, onLogout, isOpen, onClose }) {
   const navigate = useNavigate();
