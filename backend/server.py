@@ -1049,7 +1049,7 @@ async def get_me(user: User = Depends(get_current_user)):
     is_first_login = user_doc.get("first_login", False) if user_doc else False
     
     # Check if user is dev admin
-    is_dev_admin = user.user_id == DEV_ADMIN_USER_ID
+    is_dev_admin = user.user_id == OWNER_USER_ID
     
     return {
         "user_id": user.user_id, 
