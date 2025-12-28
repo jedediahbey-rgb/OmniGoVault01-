@@ -730,6 +730,8 @@ export default function CyberHomePage() {
   const handleLabyrinthClick = (e) => {
     e.preventDefault();
     setShowLabyrinthPopup(true);
+    // Prevent background scroll on mobile
+    document.body.style.overflow = 'hidden';
   };
   
   const handleLabyrinthHover = (isHovering) => {
@@ -738,6 +740,7 @@ export default function CyberHomePage() {
       setIsLabyrinthHovered(isHovering);
       if (isHovering) {
         setShowLabyrinthPopup(true);
+        document.body.style.overflow = 'hidden';
       }
     }
   };
@@ -745,7 +748,16 @@ export default function CyberHomePage() {
   const closeLabyrinthPopup = () => {
     setShowLabyrinthPopup(false);
     setIsLabyrinthHovered(false);
+    // Restore background scroll
+    document.body.style.overflow = '';
   };
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
   
   // Simple navigation for other buttons - no vault animation, just navigate
   const handleSimpleNavigation = (path) => (e) => {
