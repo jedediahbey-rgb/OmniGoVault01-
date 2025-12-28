@@ -763,7 +763,7 @@ const GrantRoleDialog = ({ open, onClose, user, onGrant }) => {
             disabled={!selectedRole}
             className="bg-purple-600 hover:bg-purple-700"
           >
-            <ShieldCheck className="w-4 h-4 mr-2" />
+            <UserPlus className="w-4 h-4 mr-2" />
             Grant Access
           </Button>
         </DialogFooter>
