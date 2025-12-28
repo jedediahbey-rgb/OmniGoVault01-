@@ -729,20 +729,19 @@ export default function CyberHomePage() {
   // Handle labyrinth click (mobile) or hover (desktop)
   const handleLabyrinthClick = (e) => {
     e.preventDefault();
-    // Only handle click on mobile/touch devices
-    if (!window.matchMedia('(hover: hover)').matches) {
-      setShowLabyrinthPopup(true);
-      // Prevent background scroll
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.top = `-${window.scrollY}px`;
-    }
+    // Show popup on click for both mobile and desktop
+    setShowLabyrinthPopup(true);
+    // Prevent background scroll
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.top = `-${window.scrollY}px`;
   };
   
   const handleLabyrinthHover = (isHovering) => {
-    // Only show on hover for desktop (non-touch devices)
-    if (window.matchMedia('(hover: hover)').matches) {
+    // Desktop hover behavior - check if device supports hover
+    const isDesktop = window.innerWidth >= 640; // sm breakpoint
+    if (isDesktop) {
       setIsLabyrinthHovered(isHovering);
       setShowLabyrinthPopup(isHovering);
       if (isHovering) {
