@@ -12,7 +12,7 @@ import json
 from datetime import datetime
 
 class EquityTrustBugFixTester:
-    def __init__(self, base_url="https://vaultshare-2.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://docshare-26.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0

@@ -378,7 +378,7 @@ class GovernanceV2APITester:
 def main():
     # Get backend URL from environment
     import os
-    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://vaultshare-2.preview.emergentagent.com')
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://docshare-26.preview.emergentagent.com')
     
     print(f"Testing Governance V2 API Structure at: {backend_url}")
     
