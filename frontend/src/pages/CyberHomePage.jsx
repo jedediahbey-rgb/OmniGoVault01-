@@ -1705,20 +1705,17 @@ export default function CyberHomePage() {
                     <button 
                       type="button"
                       data-testid="demo-toggle"
-                      style={{
-                        backgroundColor: demoMode ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
-                        color: demoMode ? '#fbbf24' : '#34d399',
-                        borderColor: demoMode ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)',
-                        pointerEvents: 'auto',
-                        position: 'relative',
-                        zIndex: 50,
-                      }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium rounded-md border cursor-pointer"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium rounded-md border cursor-pointer ${
+                        demoMode 
+                          ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' 
+                          : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                      }`}
                       onClick={() => {
-                        console.log('Demo toggle clicked! Current demoMode:', demoMode);
                         const newMode = !demoMode;
+                        console.log('Toggle clicked! Switching from', demoMode, 'to', newMode);
                         setDemoMode(newMode);
-                        if (newMode === false) {
+                        if (!newMode) {
+                          // Switching to Live mode - fetch live data
                           fetchLiveSignals();
                         }
                       }}
