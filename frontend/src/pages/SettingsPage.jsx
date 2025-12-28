@@ -24,7 +24,9 @@ import {
   CurrencyDollar,
   Shield,
   Users,
-  Gavel
+  Gavel,
+  User,
+  PencilSimple
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import PageHeader from '../components/shared/PageHeader';
@@ -33,6 +35,7 @@ import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Switch } from '../components/ui/switch';
+import { Label } from '../components/ui/label';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
