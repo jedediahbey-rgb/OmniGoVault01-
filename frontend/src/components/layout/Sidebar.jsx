@@ -38,21 +38,21 @@ const navItems = [
   // knowledge - sorted by length: Learn (5), Maxims (6), Glossary (8), Diagrams (8)
   { name: 'Learn', href: '/learn', icon: BookOpen, section: 'knowledge' },
   { name: 'Maxims', href: '/maxims', icon: Sparkle, section: 'knowledge' },
-  { name: 'Diagrams', href: '/diagrams', icon: Graph, section: 'knowledge' },
   { name: 'Glossary', href: '/glossary', icon: Book, section: 'knowledge' },
+  { name: 'Diagrams', href: '/diagrams', icon: Graph, section: 'knowledge' },
   
-  // workspace - sorted by length: Vault (5), Ledger (6), Node Map (8), Scenarios (9), Templates (9), Governance (10), Shared Workspaces (17)
+  // workspace - sorted by length: Vault (5), Ledger (6), Scenarios (9), Templates (9), Node Map (8), Governance (10), Shared Workspaces (17)
   { name: 'Vault', href: '/vault/documents', icon: Vault, section: 'workspace' },
   { name: 'Ledger', href: '/ledger', icon: Scroll, section: 'workspace' },
-  { name: 'Node Map', href: '/node-map', icon: MapTrifold, section: 'workspace' },
   { name: 'Scenarios', href: '/scenarios', icon: ChartLine, section: 'workspace' },
   { name: 'Templates', href: '/templates', icon: StackSimple, section: 'workspace' },
+  { name: 'Node Map', href: '/node-map', icon: MapTrifold, section: 'workspace' },
   { name: 'Governance', href: '/vault/governance', icon: Gavel, section: 'workspace' },
   { name: 'Shared Workspaces', href: '/vault/workspaces', icon: Users, section: 'workspace' },
   
-  // tools - sorted by length: Binder (6), Billing (7), Settings (8), Audit Log (9), Assistant (9), Diagnostics (11), Trust Health (12), Admin Console (13), Thread Manager (14)
-  { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
+  // tools - Billing before Binder
   { name: 'Billing', href: '/billing', icon: CreditCard, section: 'tools' },
+  { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
   { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
   { name: 'Audit Log', href: '/vault/audit-log', icon: ClipboardText, section: 'tools' },
   { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
