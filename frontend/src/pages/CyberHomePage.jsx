@@ -1554,6 +1554,12 @@ export default function CyberHomePage() {
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
               onClick={closeLabyrinthPopup}
+              onMouseEnter={() => {
+                // Close popup when mouse moves to backdrop on desktop
+                if (window.matchMedia('(hover: hover)').matches) {
+                  handleLabyrinthHover(false);
+                }
+              }}
               style={{ touchAction: 'none' }}
             />
             
@@ -1563,16 +1569,23 @@ export default function CyberHomePage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ type: "spring", duration: 0.4, bounce: 0.2 }}
-              className="fixed inset-0 z-[101] flex items-center justify-center p-4 sm:p-6 overflow-hidden"
+              className="fixed inset-0 z-[101] flex items-center justify-center p-4 sm:p-6 overflow-hidden pointer-events-none"
               style={{ touchAction: 'none' }}
-              onClick={closeLabyrinthPopup}
             >
               {/* Modal wrapper with close button outside */}
-              <div className="relative">
-                {/* Close button - positioned outside and above the box */}
+              <div 
+                className="relative pointer-events-auto"
+                onMouseLeave={() => {
+                  // Close popup when mouse leaves the modal on desktop
+                  if (window.matchMedia('(hover: hover)').matches) {
+                    handleLabyrinthHover(false);
+                  }
+                }}
+              >
+                {/* Close button - positioned outside and above the box (mobile only) */}
                 <button
                   onClick={closeLabyrinthPopup}
-                  className="absolute -top-12 right-0 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-[#0B1221]/90 border border-[#C6A87C]/40 hover:border-[#C6A87C] hover:bg-[#0B1221] text-[#C6A87C]/70 hover:text-[#C6A87C] transition-all duration-200"
+                  className="sm:hidden absolute -top-12 right-0 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-[#0B1221]/90 border border-[#C6A87C]/40 hover:border-[#C6A87C] hover:bg-[#0B1221] text-[#C6A87C]/70 hover:text-[#C6A87C] transition-all duration-200"
                   aria-label="Close"
                 >
                   <X className="w-5 h-5" weight="bold" />
@@ -1584,8 +1597,8 @@ export default function CyberHomePage() {
                   onClick={(e) => e.stopPropagation()}
                 >
                 
-                {/* Scrollable content area */}
-                <div className="max-h-[80vh] overflow-y-auto">
+                {/* Content area - scrollable on mobile only */}
+                <div className="max-h-[80vh] sm:max-h-none overflow-y-auto sm:overflow-visible">
                   {/* Labyrinth Image - hedge maze photo */}
                   <div className="relative w-full">
                     <div className="aspect-[4/3] sm:aspect-[16/10] flex items-center justify-center overflow-hidden">
