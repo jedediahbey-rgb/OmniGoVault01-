@@ -123,11 +123,14 @@ const AppLoader = ({
     runProgress();
   }, [isLoading]);
 
-  // Phase management
+  // Phase management with delay for readability
   useEffect(() => {
     if (entitlements && phase === 'booting') {
-      setPhase('entitled');
-      setProgress(90);
+      // Delay transition to let "Jacking In" text be read
+      setTimeout(() => {
+        setPhase('entitled');
+        setProgress(95);
+      }, 800);
     }
   }, [entitlements, phase]);
 
