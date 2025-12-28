@@ -866,188 +866,260 @@ export default function CyberHomePage() {
   
   return (
     <div className="min-h-screen bg-[#05080F] text-white overflow-x-hidden">
-      {/* Vault Opening Animation Overlay */}
+      {/* Premium Vault Door Opening Animation */}
       <AnimatePresence>
         {vaultOpening && (
           <motion.div
-            className="fixed inset-0 z-[9999] bg-[#05080F]"
+            className="fixed inset-0 z-[9999] bg-[#040810]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {/* Vault door background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-[#05080F] to-black">
-              {/* Horizontal lines texture */}
-              <div className="absolute inset-0 opacity-30">
-                {[...Array(40)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute h-px bg-gradient-to-r from-transparent via-[#C6A87C]/50 to-transparent"
-                    style={{ top: `${(i + 1) * 2.5}%`, left: 0, right: 0 }}
-                    initial={{ opacity: 0, scaleX: 0 }}
-                    animate={{ opacity: 1, scaleX: 1 }}
-                    transition={{ delay: i * 0.02, duration: 0.3 }}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Subtle vignette background */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(ellipse at center, #0a0f18 0%, #040810 60%, #020408 100%)',
+              }}
+            />
             
-            {/* Center vault emblem */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                className="relative"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ 
-                  scale: [0.8, 1, 1.1, 1.3],
-                  opacity: 1,
+            {/* Golden glow that intensifies as vault opens (appears after 1.2s) */}
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0, 0.4, 0.8, 1] }}
+              transition={{ duration: 2.5, times: [0, 0.4, 0.55, 0.7, 1] }}
+            >
+              <div 
+                className="w-[700px] h-[700px] rounded-full"
+                style={{
+                  background: 'radial-gradient(ellipse at center, rgba(198,168,124,0.25) 0%, rgba(198,168,124,0.08) 40%, transparent 65%)',
                 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
-              >
-                {/* Outer pulsing ring */}
-                <motion.div
-                  className="absolute -inset-8 rounded-full border-2 border-[#C6A87C]/20"
-                  animate={{ 
-                    scale: [1, 1.5, 1],
-                    opacity: [0.5, 0, 0.5],
-                  }}
-                  transition={{ duration: 1.5, repeat: 1 }}
-                />
-                
-                {/* Main ring */}
-                <motion.div
-                  className="w-44 h-44 sm:w-52 sm:h-52 rounded-full border-4 border-[#C6A87C]/50 flex items-center justify-center relative"
-                  initial={{ boxShadow: '0 0 20px rgba(198, 168, 124, 0.2)' }}
-                  animate={{ 
-                    boxShadow: [
-                      '0 0 20px rgba(198, 168, 124, 0.2)',
-                      '0 0 60px rgba(198, 168, 124, 0.6)',
-                      '0 0 100px rgba(198, 168, 124, 0.9)',
-                    ],
-                    borderColor: ['rgba(198, 168, 124, 0.5)', 'rgba(198, 168, 124, 0.8)', 'rgba(198, 168, 124, 1)']
-                  }}
-                  transition={{ duration: 1.2 }}
-                >
-                  {/* Inner gradient circle */}
-                  <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br from-[#C6A87C]/30 to-[#C6A87C]/5 flex items-center justify-center border border-[#C6A87C]/30">
-                    {/* Lock icon - fades out */}
-                    <motion.div
-                      initial={{ opacity: 1, scale: 1, rotate: 0 }}
-                      animate={{ 
-                        opacity: [1, 1, 0],
-                        scale: [1, 1.1, 0.8],
-                        rotate: [0, -15, 0],
-                      }}
-                      transition={{ duration: 0.8 }}
-                      className="absolute"
-                    >
-                      <Lock className="w-16 h-16 sm:w-20 sm:h-20 text-[#C6A87C]" weight="duotone" />
-                    </motion.div>
-                    
-                    {/* Unlock icon - fades in */}
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ 
-                        opacity: [0, 0, 1],
-                        scale: [0.5, 0.5, 1],
-                      }}
-                      transition={{ duration: 0.8 }}
-                      className="absolute"
-                    >
-                      <LockOpen className="w-16 h-16 sm:w-20 sm:h-20 text-[#C6A87C]" weight="duotone" />
-                    </motion.div>
-                  </div>
-                </motion.div>
-                
-                {/* Rotating dashed ring */}
-                <motion.div
-                  className="absolute inset-0 rounded-full border-2 border-dashed border-[#C6A87C]/40"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, ease: "linear" }}
-                />
-                
-                {/* Second rotating ring */}
-                <motion.div
-                  className="absolute -inset-4 rounded-full border border-[#C6A87C]/20"
-                  animate={{ rotate: -180 }}
-                  transition={{ duration: 1.5, ease: "easeInOut" }}
-                />
-              </motion.div>
-            </div>
+              />
+            </motion.div>
             
-            {/* Gold particles - more visible */}
+            {/* Document and folder silhouettes (appear as vault opens) */}
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0, 0, 0.5, 0.3] }}
+              transition={{ duration: 2.5, times: [0, 0.5, 0.6, 0.75, 1] }}
+            >
+              {/* Document 1 */}
+              <motion.svg 
+                className="absolute" 
+                style={{ left: '35%', top: '35%' }}
+                width="45" height="55" viewBox="0 0 45 55" fill="none"
+                initial={{ y: 40, opacity: 0, rotate: -8 }}
+                animate={{ y: [40, 0, -10], opacity: [0, 0.6, 0.4], rotate: -8 }}
+                transition={{ duration: 1.2, delay: 1.4 }}
+              >
+                <rect x="2" y="2" width="41" height="51" rx="2" stroke="rgba(198,168,124,0.5)" strokeWidth="1.5" fill="rgba(198,168,124,0.1)" />
+                <line x1="8" y1="14" x2="35" y2="14" stroke="rgba(198,168,124,0.3)" strokeWidth="2" />
+                <line x1="8" y1="22" x2="30" y2="22" stroke="rgba(198,168,124,0.25)" strokeWidth="2" />
+                <line x1="8" y1="30" x2="32" y2="30" stroke="rgba(198,168,124,0.25)" strokeWidth="2" />
+                <circle cx="30" cy="42" r="6" fill="rgba(198,168,124,0.3)" />
+              </motion.svg>
+              
+              {/* Document 2 */}
+              <motion.svg 
+                className="absolute" 
+                style={{ left: '55%', top: '38%' }}
+                width="40" height="50" viewBox="0 0 40 50" fill="none"
+                initial={{ y: 30, opacity: 0, rotate: 5 }}
+                animate={{ y: [30, 0, -5], opacity: [0, 0.5, 0.35], rotate: 5 }}
+                transition={{ duration: 1.1, delay: 1.5 }}
+              >
+                <rect x="2" y="2" width="36" height="46" rx="2" stroke="rgba(198,168,124,0.4)" strokeWidth="1.5" fill="rgba(198,168,124,0.08)" />
+                <line x1="7" y1="12" x2="30" y2="12" stroke="rgba(198,168,124,0.25)" strokeWidth="2" />
+                <line x1="7" y1="20" x2="26" y2="20" stroke="rgba(198,168,124,0.2)" strokeWidth="2" />
+                <line x1="7" y1="28" x2="28" y2="28" stroke="rgba(198,168,124,0.2)" strokeWidth="2" />
+              </motion.svg>
+              
+              {/* Folder */}
+              <motion.svg 
+                className="absolute" 
+                style={{ left: '43%', top: '50%' }}
+                width="55" height="42" viewBox="0 0 55 42" fill="none"
+                initial={{ y: 25, opacity: 0 }}
+                animate={{ y: [25, 0, -3], opacity: [0, 0.45, 0.3] }}
+                transition={{ duration: 1, delay: 1.55 }}
+              >
+                <path 
+                  d="M2 8C2 6.34 3.34 5 5 5H18L23 0H50C51.66 0 53 1.34 53 3V37C53 38.66 51.66 40 50 40H5C3.34 40 2 38.66 2 37V8Z" 
+                  stroke="rgba(198,168,124,0.45)" 
+                  strokeWidth="1.5" 
+                  fill="rgba(198,168,124,0.08)" 
+                />
+              </motion.svg>
+            </motion.div>
+            
+            {/* Fine golden sparkles */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {[...Array(30)].map((_, i) => (
+              {[...Array(25)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-[#C6A87C]"
-                  initial={{
-                    x: `${Math.random() * 100}%`,
-                    y: '110%',
-                    opacity: 0,
+                  className="absolute w-1 h-1 rounded-full bg-[#C6A87C]"
+                  style={{
+                    left: `${30 + Math.random() * 40}%`,
+                    top: `${30 + Math.random() * 40}%`,
                   }}
+                  initial={{ opacity: 0, scale: 0 }}
                   animate={{
-                    y: '-10%',
-                    opacity: [0, 0.8, 0.8, 0],
-                    scale: [0.5, 1.2, 0.5],
+                    opacity: [0, 0.8, 0],
+                    scale: [0, 1.5, 0],
                   }}
                   transition={{
-                    duration: 2,
-                    delay: 0.3 + Math.random() * 0.8,
-                    ease: 'easeOut',
+                    duration: 1.8,
+                    delay: 1.3 + Math.random() * 0.8,
+                    repeat: 1,
+                    repeatDelay: 0.3,
                   }}
                 />
               ))}
             </div>
             
-            {/* Text */}
-            <motion.div
-              className="absolute bottom-24 sm:bottom-32 left-0 right-0 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
-              <motion.p 
-                className="text-[#C6A87C] font-heading text-lg sm:text-xl tracking-wider"
-                animate={{ opacity: [1, 0.5, 1] }}
-                transition={{ duration: 1, repeat: 2 }}
+            {/* Main Vault Door */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                className="relative"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ 
+                  scale: [0.9, 1, 1, 1, 3],
+                  opacity: [0, 1, 1, 1, 0],
+                }}
+                transition={{ 
+                  duration: 2.5, 
+                  times: [0, 0.15, 0.5, 0.85, 1],
+                  ease: [0.4, 0, 0.2, 1]
+                }}
               >
-                Accessing Secure Vault...
+                {/* Vault Frame */}
+                <div className="relative w-[280px] h-[280px] sm:w-[340px] sm:h-[340px]">
+                  {/* Outer decorative ring */}
+                  <div className="absolute inset-0 rounded-full border-2 border-[#C6A87C]/20" />
+                  <div className="absolute inset-2 rounded-full border border-[#C6A87C]/15" />
+                  
+                  {/* Main vault door */}
+                  <motion.div
+                    className="absolute inset-6 rounded-full overflow-hidden"
+                    style={{
+                      background: 'linear-gradient(145deg, #1a2235 0%, #0f1520 50%, #0a0e16 100%)',
+                      boxShadow: 'inset 0 2px 30px rgba(0,0,0,0.8), 0 0 40px rgba(198,168,124,0.15)',
+                    }}
+                    initial={{ rotateY: 0 }}
+                    animate={{ rotateY: [0, 0, -100] }}
+                    transition={{ 
+                      duration: 2.5, 
+                      times: [0, 0.45, 0.85],
+                      ease: [0.4, 0, 0.2, 1]
+                    }}
+                  >
+                    {/* Door surface texture rings */}
+                    <div className="absolute inset-4 rounded-full border border-[#C6A87C]/10" />
+                    <div className="absolute inset-8 rounded-full border border-[#C6A87C]/08" />
+                    
+                    {/* Center wheel mechanism */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <motion.div
+                        className="relative w-24 h-24 sm:w-28 sm:h-28"
+                        initial={{ rotate: 0 }}
+                        animate={{ rotate: [0, 0, 180] }}
+                        transition={{ 
+                          duration: 2.5, 
+                          times: [0, 0.2, 0.5],
+                          ease: [0.4, 0, 0.6, 1]
+                        }}
+                      >
+                        {/* Wheel outer ring */}
+                        <div className="absolute inset-0 rounded-full border-[3px] border-[#C6A87C]/50" />
+                        
+                        {/* Wheel spokes */}
+                        {[0, 45, 90, 135].map((angle) => (
+                          <div
+                            key={angle}
+                            className="absolute top-1/2 left-1/2 w-full h-[3px] bg-[#C6A87C]/40 -translate-x-1/2 -translate-y-1/2 origin-center"
+                            style={{ transform: `translate(-50%, -50%) rotate(${angle}deg)` }}
+                          />
+                        ))}
+                        
+                        {/* Center hub */}
+                        <div className="absolute inset-[30%] rounded-full bg-gradient-to-br from-[#C6A87C]/25 to-[#C6A87C]/10 border-2 border-[#C6A87C]/40 flex items-center justify-center">
+                          <div className="w-2 h-4 bg-[#0a0e16] border border-[#C6A87C]/30 rounded-sm" />
+                        </div>
+                      </motion.div>
+                    </div>
+                    
+                    {/* Bolt indicators around edge */}
+                    {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+                      <motion.div
+                        key={angle}
+                        className="absolute w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#C6A87C]/25 border border-[#C6A87C]/40"
+                        style={{
+                          top: `${50 + 40 * Math.sin((angle * Math.PI) / 180)}%`,
+                          left: `${50 + 40 * Math.cos((angle * Math.PI) / 180)}%`,
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                        animate={{
+                          backgroundColor: ['rgba(198,168,124,0.25)', 'rgba(198,168,124,0.6)', 'rgba(198,168,124,0.25)'],
+                          boxShadow: ['0 0 0px rgba(198,168,124,0)', '0 0 8px rgba(198,168,124,0.5)', '0 0 0px rgba(198,168,124,0)'],
+                        }}
+                        transition={{ duration: 0.4, delay: 0.5 + i * 0.04 }}
+                      />
+                    ))}
+                    
+                    {/* Engraved text */}
+                    <motion.div
+                      className="absolute bottom-8 sm:bottom-10 left-0 right-0 text-center"
+                      initial={{ opacity: 0.5 }}
+                      animate={{ opacity: [0.5, 0.5, 0] }}
+                      transition={{ duration: 2.5, times: [0, 0.4, 0.6] }}
+                    >
+                      <span className="text-[#C6A87C]/30 text-[10px] tracking-[0.25em] font-light uppercase">
+                        Private Vault
+                      </span>
+                    </motion.div>
+                  </motion.div>
+                  
+                  {/* Outer notched ring (decorative) */}
+                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 340 340">
+                    <circle
+                      cx="170"
+                      cy="170"
+                      r="167"
+                      fill="none"
+                      stroke="rgba(198,168,124,0.12)"
+                      strokeWidth="1"
+                      strokeDasharray="8 4"
+                    />
+                  </svg>
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Status text */}
+            <motion.div
+              className="absolute bottom-20 sm:bottom-28 left-0 right-0 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: [0, 1, 1, 0], y: [20, 0, 0, 0] }}
+              transition={{ duration: 2.5, times: [0, 0.15, 0.8, 1] }}
+            >
+              <motion.p
+                className="text-[#C6A87C]/80 text-sm sm:text-base tracking-wider font-light"
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 1.5, repeat: 1 }}
+              >
+                Unlocking your private vault...
               </motion.p>
             </motion.div>
             
-            {/* Gold shimmer sweep - slower */}
+            {/* Bottom accent line */}
             <motion.div
-              className="absolute inset-0"
-              style={{
-                background: 'linear-gradient(90deg, transparent 0%, rgba(198, 168, 124, 0) 30%, rgba(198, 168, 124, 0.4) 50%, rgba(198, 168, 124, 0) 70%, transparent 100%)',
-                backgroundSize: '200% 100%',
-              }}
-              initial={{ backgroundPosition: '-100% 0' }}
-              animate={{ backgroundPosition: '200% 0' }}
-              transition={{ delay: 0.8, duration: 1 }}
-            />
-            
-            {/* Door split animation - slower and more dramatic */}
-            <motion.div
-              className="absolute top-0 left-0 bottom-0 w-1/2 bg-gradient-to-r from-[#0B1221] to-[#0D1526]"
-              style={{ 
-                borderRight: '3px solid #C6A87C',
-                boxShadow: '5px 0 30px rgba(198, 168, 124, 0.5)'
-              }}
-              initial={{ x: 0 }}
-              animate={{ x: '-105%' }}
-              transition={{ delay: 1.3, duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-            />
-            <motion.div
-              className="absolute top-0 right-0 bottom-0 w-1/2 bg-gradient-to-l from-[#0B1221] to-[#0D1526]"
-              style={{ 
-                borderLeft: '3px solid #C6A87C',
-                boxShadow: '-5px 0 30px rgba(198, 168, 124, 0.5)'
-              }}
-              initial={{ x: 0 }}
-              animate={{ x: '105%' }}
-              transition={{ delay: 1.3, duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+              className="absolute bottom-10 left-1/2 -translate-x-1/2 h-px bg-gradient-to-r from-transparent via-[#C6A87C]/30 to-transparent"
+              initial={{ width: 0 }}
+              animate={{ width: [0, 150, 200] }}
+              transition={{ duration: 1.5, delay: 0.3 }}
             />
           </motion.div>
         )}
