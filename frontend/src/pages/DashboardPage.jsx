@@ -69,6 +69,7 @@ export default function DashboardPage({ user }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState(null);
   const [showQuickActionSettings, setShowQuickActionSettings] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
   
   // Entitlement/Upgrade state
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
