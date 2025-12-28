@@ -130,7 +130,7 @@ export const useAuth = () => {
 
 // Auth Callback Component - Handles Emergent Google Auth redirect
 // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-const AuthCallback = ({ setUser, setLoading }) => {
+const AuthCallback = ({ setUser, setLoading, onFirstLogin }) => {
   const hasProcessed = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -159,6 +159,12 @@ const AuthCallback = ({ setUser, setLoading }) => {
         if (response.data.user) {
           setUser(response.data.user);
           setLoading(false);
+          
+          // Check if this is a first-time user
+          if (response.data.is_first_login && onFirstLogin) {
+            onFirstLogin();
+          }
+          
           // Navigate to vault dashboard after successful auth
           navigate('/vault', { state: { user: response.data.user }, replace: true });
         } else {
@@ -171,14 +177,14 @@ const AuthCallback = ({ setUser, setLoading }) => {
     };
 
     processAuth();
-  }, [location, navigate, setUser, setLoading]);
+  }, [location, navigate, setUser, setLoading, onFirstLogin]);
 
   return (
     <div className="min-h-screen bg-vault-navy flex items-center justify-center">
       <div className="text-center">
         <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
         <p className="text-vault-gold font-heading text-lg">Authenticating...</p>
-        <p className="text-vault-muted text-sm mt-2">Verifying your identity...</p>
+        <p className="text-vault-muted text-sm mt-2">Setting up your vault...</p>
       </div>
     </div>
   );
