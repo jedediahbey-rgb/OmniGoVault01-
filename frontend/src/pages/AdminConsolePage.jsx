@@ -562,55 +562,59 @@ const AccountRow = ({ account, onViewDetails, onChangePlan, isOmnicompetent }) =
 );
 
 // User Row Component
-const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate, isOmnicompetent, currentUserId }) => (
-  <div className="flex items-center justify-between p-4 bg-vault-navy/50 rounded-lg border border-vault-gold/10 hover:border-vault-gold/20 transition-colors">
-    <div className="flex items-center gap-4">
-      <div className="w-10 h-10 rounded-full bg-vault-gold/10 flex items-center justify-center">
-        {user.is_omnicompetent ? (
-          <Crown className="w-5 h-5 text-purple-400" />
-        ) : (
-          <Users className="w-5 h-5 text-vault-gold" />
-        )}
-      </div>
-      <div>
-        <p className="font-medium text-vault-light">{user.email}</p>
-        <p className="text-xs text-vault-muted">{user.user_id}</p>
-      </div>
-    </div>
-    
-    <div className="flex items-center gap-3">
-      {user.global_roles?.map((role) => (
-        <Badge
-          key={role}
-          variant="outline"
-          className={`${roleBadgeColors[role]} cursor-pointer hover:opacity-80`}
-          onClick={() => isOmnicompetent && user.user_id !== currentUserId && onRevokeRole(role)}
-        >
-          {role}
-          {isOmnicompetent && user.user_id !== currentUserId && (
-            <span className="ml-1 text-xs">×</span>
+const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate, isOmnicompetent, currentUserId }) => {
+  if (!user) return null;
+  
+  return (
+    <div className="flex items-center justify-between p-4 bg-vault-navy/50 rounded-lg border border-vault-gold/10 hover:border-vault-gold/20 transition-colors">
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 rounded-full bg-vault-gold/10 flex items-center justify-center">
+          {user.is_omnicompetent ? (
+            <Crown className="w-5 h-5 text-purple-400" />
+          ) : (
+            <Users className="w-5 h-5 text-vault-gold" />
           )}
-        </Badge>
-      ))}
+        </div>
+        <div>
+          <p className="font-medium text-vault-light">{user.email || user.name || 'Unknown'}</p>
+          <p className="text-xs text-vault-muted">{user.user_id}</p>
+        </div>
+      </div>
       
-      <div className="flex gap-2 ml-2">
-        <Button variant="ghost" size="sm" onClick={onViewDetails}>
-          <Eye className="w-4 h-4" />
-        </Button>
-        {isOmnicompetent && (
-          <Button variant="ghost" size="sm" onClick={onGrantRole}>
-            <ShieldCheck className="w-4 h-4" />
+      <div className="flex items-center gap-3">
+        {(user.global_roles || []).map((role) => (
+          <Badge
+            key={role}
+            variant="outline"
+            className={`${roleBadgeColors[role] || 'bg-gray-500/20 text-gray-400'} cursor-pointer hover:opacity-80`}
+            onClick={() => isOmnicompetent && user.user_id !== currentUserId && onRevokeRole && onRevokeRole(role)}
+          >
+            {role}
+            {isOmnicompetent && user.user_id !== currentUserId && (
+              <span className="ml-1 text-xs">×</span>
+            )}
+          </Badge>
+        ))}
+        
+        <div className="flex gap-2 ml-2">
+          <Button variant="ghost" size="sm" onClick={onViewDetails}>
+            <Eye className="w-4 h-4" />
           </Button>
-        )}
-        {user.user_id !== currentUserId && (
-          <Button variant="ghost" size="sm" onClick={onImpersonate}>
-            <UserSwitch className="w-4 h-4" />
-          </Button>
-        )}
+          {isOmnicompetent && (
+            <Button variant="ghost" size="sm" onClick={onGrantRole}>
+              <ShieldCheck className="w-4 h-4" />
+            </Button>
+          )}
+          {user.user_id !== currentUserId && (
+            <Button variant="ghost" size="sm" onClick={onImpersonate}>
+              <UserSwitch className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Audit Log Row Component
 const AuditLogRow = ({ log }) => {
