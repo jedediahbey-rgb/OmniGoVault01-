@@ -369,6 +369,9 @@ class DocumentService:
         
         await self.db.document_comments.insert_one(comment)
         
+        # Remove MongoDB _id
+        comment.pop("_id", None)
+        
         # Log event
         await self._log_event(
             document_id,
