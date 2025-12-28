@@ -220,8 +220,11 @@ export default function AuditLogPage() {
             <h1 className="text-lg sm:text-2xl font-bold text-white flex items-center gap-2 sm:gap-3">
               <ClipboardText className="w-5 h-5 sm:w-7 sm:h-7 text-vault-gold" weight="fill" />
               Audit Log
-              <PageHelpTooltip pageKey="auditLog" />
             </h1>
+            <p className="text-white/60 text-xs sm:text-sm mt-1 flex items-center gap-1.5">
+              <span>Track all trust activities and maintain compliance records</span>
+              <PageHelpTooltip pageKey="auditLog" />
+            </p>
           </div>
           
           {/* Action buttons - all on one line */}
