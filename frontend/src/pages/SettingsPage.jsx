@@ -301,7 +301,7 @@ export default function SettingsPage() {
                 <div className="space-y-2">
                   <Label className="text-white">Display Name / Title</Label>
                   <p className="text-xs text-vault-muted mb-2">
-                    This name will appear in "Welcome back" messages and throughout the app
+                    This name will appear in &quot;Welcome back&quot; messages and throughout the app
                   </p>
                   <div className="flex gap-3">
                     <Input
