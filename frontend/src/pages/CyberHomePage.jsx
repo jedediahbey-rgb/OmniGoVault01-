@@ -892,6 +892,10 @@ export default function CyberHomePage() {
       document.body.style.position = '';
       document.body.style.width = '';
       document.body.style.top = '';
+      // Clear labyrinth hover timeout
+      if (labyrinthHoverTimeoutRef.current) {
+        clearTimeout(labyrinthHoverTimeoutRef.current);
+      }
     };
   }, []);
   
