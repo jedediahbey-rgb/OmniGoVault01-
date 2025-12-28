@@ -17,7 +17,7 @@ import time
 import uuid
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://animation-cleanup.preview.emergentagent.com/api"
+BASE_URL = "https://vaultshare-2.preview.emergentagent.com/api"
 
 class CourtModeAPITester:
     def __init__(self):
