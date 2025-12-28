@@ -1565,17 +1565,17 @@ export default function CyberHomePage() {
                 
                 {/* Scrollable content area */}
                 <div className="max-h-[80vh] overflow-y-auto">
-                  {/* Labyrinth Image - dark background to remove white */}
+                  {/* Labyrinth Image - inverted to remove white background */}
                   <div className="relative w-full bg-[#0B1221]">
                     <div className="aspect-square sm:aspect-[4/3] flex items-center justify-center p-6 sm:p-8 bg-[#0B1221]">
                       <img
                         src={LABYRINTH_IMAGE}
                         alt="Cretan Labyrinth Design"
-                        className="max-w-full max-h-full object-contain mix-blend-luminosity"
+                        className="max-w-full max-h-full object-contain invert brightness-75"
                       />
                     </div>
                     {/* Subtle golden glow overlay */}
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#C6A87C]/5 to-transparent" />
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#C6A87C]/10 to-transparent" />
                   </div>
                   
                   {/* Content */}
