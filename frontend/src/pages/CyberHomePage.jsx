@@ -1727,7 +1727,7 @@ export default function CyberHomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Two cards side by side - aligned at top */}
           <div className="grid lg:grid-cols-2 gap-6 items-start">
-            {/* Signal Feed Card */}
+            {/* Signal Feed Card - Automatic Demo/Live based on login status */}
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -1741,7 +1741,8 @@ export default function CyberHomePage() {
                     <p className="text-xs text-slate-400">Real-time governance activity</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    {!demoMode && (
+                    {/* Refresh button - only show for logged in users */}
+                    {isLoggedIn && (
                       <Button 
                         variant="ghost" 
                         size="sm" 
@@ -1752,21 +1753,18 @@ export default function CyberHomePage() {
                         <ClockCounterClockwise className={`w-4 h-4 ${signalsLoading ? 'animate-spin' : ''}`} />
                       </Button>
                     )}
-                    <button 
-                      type="button"
-                      data-testid="demo-toggle"
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium rounded-md border cursor-pointer ${
-                        demoMode 
-                          ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' 
-                          : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                    {/* Automatic Demo/Live badge based on login status */}
+                    <span 
+                      data-testid="demo-live-badge"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium rounded-md border ${
+                        isLoggedIn 
+                          ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
+                          : 'bg-amber-500/20 text-amber-400 border-amber-500/40'
                       }`}
-                      onClick={() => {
-                        setDemoMode(prev => !prev);
-                      }}
                     >
                       <Pulse className="w-3 h-3" weight="fill" />
-                      {demoMode ? 'Demo' : 'Live'}
-                    </button>
+                      {isLoggedIn ? 'Live' : 'Demo'}
+                    </span>
                   </div>
                 </div>
                 {signalsLoading ? (
@@ -1774,7 +1772,7 @@ export default function CyberHomePage() {
                     <div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" />
                   </div>
                 ) : (
-                  <SignalFeed signals={demoMode ? DEMO_SIGNALS : (liveSignals.length > 0 ? liveSignals : LIVE_DEMO_SIGNALS)} />
+                  <SignalFeed signals={isLoggedIn ? (liveSignals.length > 0 ? liveSignals : LIVE_DEMO_SIGNALS) : DEMO_SIGNALS} />
                 )}
               </HoloCard>
             </motion.div>
