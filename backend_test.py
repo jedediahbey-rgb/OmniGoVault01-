@@ -559,7 +559,6 @@ class OmniGoVaultOnboardingTester:
                     'timestamp': datetime.now().isoformat()
                 })
         
-        self.print_summary()
         return self.print_summary()
 
     def print_summary(self):
