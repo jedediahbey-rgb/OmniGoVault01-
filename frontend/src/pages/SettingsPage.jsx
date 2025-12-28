@@ -58,9 +58,14 @@ const moduleIcons = {
 };
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('health-rules');
+  const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  
+  // Profile state
+  const [userProfile, setUserProfile] = useState(null);
+  const [displayName, setDisplayName] = useState('');
+  const [profileSaving, setProfileSaving] = useState(false);
   
   // Health rules state
   const [healthConfig, setHealthConfig] = useState(null);
@@ -72,9 +77,34 @@ export default function SettingsPage() {
   const [selectedModule, setSelectedModule] = useState('minutes');
 
   useEffect(() => {
+    fetchUserProfile();
     fetchHealthRules();
     fetchChecklists();
   }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const res = await axios.get(`${API}/user/profile`);
+      setUserProfile(res.data);
+      setDisplayName(res.data?.display_name || '');
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+    }
+  };
+
+  const saveDisplayName = async () => {
+    setProfileSaving(true);
+    try {
+      const res = await axios.put(`${API}/user/profile`, { display_name: displayName.trim() || null });
+      setUserProfile(res.data);
+      toast.success('Display name updated');
+    } catch (error) {
+      console.error('Failed to save display name:', error);
+      toast.error(error.response?.data?.detail || 'Failed to save display name');
+    } finally {
+      setProfileSaving(false);
+    }
+  };
 
   const fetchHealthRules = async () => {
     try {
