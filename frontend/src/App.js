@@ -629,25 +629,6 @@ function App() {
   // App loader with entitlements
   const { isLoading, entitlements, planName, planTier } = useAppLoader();
 
-  // Set 75% zoom on desktop by default
-  useEffect(() => {
-    const setDesktopZoom = () => {
-      // Only apply zoom on desktop (width > 1024px)
-      if (window.innerWidth > 1024) {
-        document.body.style.zoom = '0.75';
-      } else {
-        document.body.style.zoom = '1';
-      }
-    };
-    
-    // Set initial zoom
-    setDesktopZoom();
-    
-    // Update on resize
-    window.addEventListener('resize', setDesktopZoom);
-    return () => window.removeEventListener('resize', setDesktopZoom);
-  }, []);
-
   // Keyboard shortcut for command palette
   useEffect(() => {
     const handleKeyDown = (e) => {
