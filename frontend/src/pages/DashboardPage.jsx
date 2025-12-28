@@ -389,7 +389,8 @@ export default function DashboardPage({ user }) {
 
   // Get the default portfolio name
   const defaultPortfolio = portfolios.find(p => p.portfolio_id === defaultPortfolioId);
-  const welcomeName = defaultPortfolio?.name || user?.name?.split(' ')[0] || 'User';
+  // Priority: 1. User's custom display_name, 2. Default portfolio name, 3. User's first name, 4. "User"
+  const welcomeName = userProfile?.display_name || defaultPortfolio?.name || user?.name?.split(' ')[0] || 'User';
 
   return (
     <div className="p-8">
