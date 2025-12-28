@@ -840,7 +840,7 @@ const ImpersonateDialog = ({ open, onClose, user, onImpersonate }) => {
             disabled={!reason.trim()}
             className="bg-yellow-600 hover:bg-yellow-700 text-white"
           >
-            <UserSwitch className="w-4 h-4 mr-2" />
+            <Replace className="w-4 h-4 mr-2" />
             Start Impersonation
           </Button>
         </DialogFooter>
