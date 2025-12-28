@@ -523,36 +523,36 @@ const AdminConsolePage = () => {
 
 // Account Row Component
 const AccountRow = ({ account, onViewDetails, onChangePlan, isOmnicompetent }) => (
-  <div className="flex items-center justify-between p-4 bg-vault-navy/50 rounded-lg border border-vault-gold/10 hover:border-vault-gold/20 transition-colors">
-    <div className="flex items-center gap-4">
-      <div className="w-10 h-10 rounded-lg bg-vault-gold/10 flex items-center justify-center">
-        <Building2 className="w-5 h-5 text-vault-gold" />
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-vault-navy/50 rounded-lg border border-vault-gold/10 hover:border-vault-gold/20 transition-colors gap-3">
+    <div className="flex items-center gap-3 sm:gap-4">
+      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-vault-gold/10 flex items-center justify-center flex-shrink-0">
+        <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-vault-gold" />
       </div>
-      <div>
-        <p className="font-medium text-vault-light">{account.name}</p>
-        <p className="text-xs text-vault-muted">{account.account_id}</p>
+      <div className="min-w-0 flex-1">
+        <p className="font-medium text-vault-light text-sm sm:text-base truncate">{account.name}</p>
+        <p className="text-xs text-vault-muted truncate">{account.account_id}</p>
       </div>
     </div>
     
-    <div className="flex items-center gap-4">
-      <Badge variant="outline" className="border-vault-gold/30 text-vault-gold">
+    <div className="flex items-center gap-2 sm:gap-4 ml-11 sm:ml-0 flex-wrap">
+      <Badge variant="outline" className="border-vault-gold/30 text-vault-gold text-xs">
         {account.plan_name}
       </Badge>
-      <span className="text-sm text-vault-muted">
+      <span className="text-xs sm:text-sm text-vault-muted">
         {account.member_count} member{account.member_count !== 1 ? 's' : ''}
       </span>
       {account.is_suspended && (
-        <Badge variant="outline" className="border-red-500/30 text-red-400">
+        <Badge variant="outline" className="border-red-500/30 text-red-400 text-xs">
           <Lock className="w-3 h-3 mr-1" />
           Suspended
         </Badge>
       )}
-      <div className="flex gap-2">
-        <Button variant="ghost" size="sm" onClick={onViewDetails}>
+      <div className="flex gap-1 sm:gap-2 ml-auto">
+        <Button variant="ghost" size="sm" onClick={onViewDetails} className="h-7 w-7 sm:h-8 sm:w-8 p-0">
           <Eye className="w-4 h-4" />
         </Button>
         {isOmnicompetent && (
-          <Button variant="ghost" size="sm" onClick={onChangePlan}>
+          <Button variant="ghost" size="sm" onClick={onChangePlan} className="h-7 w-7 sm:h-8 sm:w-8 p-0">
             <Settings className="w-4 h-4" />
           </Button>
         )}
