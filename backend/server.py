@@ -4014,6 +4014,19 @@ from routes.audit_log import router as audit_log_router, init_audit_log_routes
 init_audit_log_routes(db, get_current_user)
 app.include_router(audit_log_router)
 
+# Initialize and include Billing routes
+from routes.billing import router as billing_router, seed_default_plans
+from services.entitlement_service import init_entitlement_service
+from services.subscription_service import init_subscription_service
+from services.billing_service import init_billing_service
+
+# Initialize billing services
+entitlement_svc = init_entitlement_service(db)
+subscription_svc = init_subscription_service(db, entitlement_svc)
+billing_svc = init_billing_service(db, subscription_svc, entitlement_svc)
+
+app.include_router(billing_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
