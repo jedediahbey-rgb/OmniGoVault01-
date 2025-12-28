@@ -1607,6 +1607,7 @@ export default function CyberHomePage() {
                   </div>
                 </div>
               </div>
+              </div>
             </motion.div>
           </>
         )}
