@@ -4069,6 +4069,13 @@ async def startup_init():
         logger.info("✅ Ledger Thread unique indexes initialized")
     except Exception as e:
         logger.warning(f"Ledger Thread index may already exist: {e}")
+    
+    # Seed default subscription plans
+    try:
+        await seed_default_plans(db)
+        logger.info("✅ Default subscription plans seeded")
+    except Exception as e:
+        logger.error(f"❌ Failed to seed subscription plans: {e}")
 
 
 @app.on_event("shutdown")
