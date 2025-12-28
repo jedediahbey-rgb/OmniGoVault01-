@@ -572,22 +572,22 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
   };
   
   return (
-    <div className="flex items-center justify-between p-4 bg-vault-navy/50 rounded-lg border border-vault-gold/10 hover:border-vault-gold/20 transition-colors">
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-full bg-vault-gold/10 flex items-center justify-center">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-vault-navy/50 rounded-lg border border-vault-gold/10 hover:border-vault-gold/20 transition-colors gap-3">
+      <div className="flex items-center gap-3 sm:gap-4">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-vault-gold/10 flex items-center justify-center flex-shrink-0">
           {user.is_omnicompetent ? (
-            <Crown className="w-5 h-5 text-purple-400" />
+            <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
           ) : (
-            <UsersIcon className="w-5 h-5 text-vault-gold" />
+            <UsersIcon className="w-4 h-4 sm:w-5 sm:h-5 text-vault-gold" />
           )}
         </div>
-        <div>
-          <p className="font-medium text-vault-light">{user.email || user.name || 'Unknown'}</p>
-          <p className="text-xs text-vault-muted">{user.user_id}</p>
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-vault-light text-sm sm:text-base truncate">{user.email || user.name || 'Unknown'}</p>
+          <p className="text-xs text-vault-muted truncate">{user.user_id}</p>
         </div>
       </div>
       
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 ml-11 sm:ml-0 flex-wrap">
         {(user.global_roles || []).map((role) => (
           <Badge
             key={role}
