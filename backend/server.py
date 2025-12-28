@@ -4684,16 +4684,20 @@ async def seed_dev_test_accounts():
             upsert=True
         )
         
-        # Seed entitlements
-        await db.entitlements.update_one(
-            {"account_id": test_acct["account_id"]},
-            {"$set": {
-                "account_id": test_acct["account_id"],
-                "entitlements": plan.get("entitlements", {}),
-                "updated_at": now
-            }},
-            upsert=True
-        )
+        # Seed entitlements - create individual entitlement documents
+        plan_entitlements = plan.get("entitlements", [])
+        for ent in plan_entitlements:
+            await db.entitlements.update_one(
+                {"account_id": test_acct["account_id"], "key": ent["key"]},
+                {"$set": {
+                    "account_id": test_acct["account_id"],
+                    "key": ent["key"],
+                    "value": ent["value"],
+                    "description": ent.get("description", ""),
+                    "updated_at": now
+                }},
+                upsert=True
+            )
         
         # Initialize usage
         await db.usage.update_one(
