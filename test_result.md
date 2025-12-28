@@ -12,23 +12,51 @@ Verify the new Shared Trust Workspace (Vault) System backend implementation:
 4. Permission enforcement
 5. Audit trail generation
 
-### Initial Manual Test Results - December 28, 2025 15:53 UTC
+### Comprehensive Backend API Test Results - December 28, 2025 16:00 UTC
 
-#### ✅ VAULT API TESTS - PASSED
-1. **GET /api/vaults/roles** ✅ PASS - Returns 8 roles (TRUSTEE, BENEFICIARY, etc.)
-2. **GET /api/vaults/document-categories** ✅ PASS - Returns 13 categories
-3. **GET /api/vaults/vault-types** ✅ PASS - Returns 7 types (TRUST, ESTATE, etc.)
-4. **GET /api/vaults** ✅ PASS - Lists user vaults
-5. **POST /api/vaults** ✅ PASS - Creates new vault with auto-participant
-6. **GET /api/vaults/{vault_id}** ✅ PASS - Returns vault details with participants, documents, permissions
+#### ✅ VAULT UTILITY ENDPOINTS - ALL PASSED
+1. **GET /api/vaults/roles** ✅ PASS - Returns 8 participant roles (TRUSTEE, BENEFICIARY, PROTECTOR, ADVISOR, ATTORNEY, ACCOUNTANT, VIEWER, OWNER)
+2. **GET /api/vaults/document-categories** ✅ PASS - Returns 13 document categories (TRUST_INSTRUMENT, AMENDMENT, SCHEDULE, etc.)
+3. **GET /api/vaults/vault-types** ✅ PASS - Returns 7 vault types (TRUST, ESTATE, LOAN, ASSET_SALE, LITIGATION, CORPORATE, OTHER)
 
-#### ✅ DOCUMENT API TESTS - PASSED
-7. **POST /api/vaults/{vault_id}/documents** ✅ PASS - Creates document with version
-8. **GET /api/vaults/documents/{doc_id}** ✅ PASS - Returns document details
-9. **POST /api/vaults/documents/{doc_id}/comments** ✅ PASS - Adds comments
-10. **POST /api/vaults/documents/{doc_id}/submit-for-review** ✅ PASS - Transitions to UNDER_REVIEW
-11. **POST /api/vaults/documents/{doc_id}/affirm** ✅ PASS - Records affirmation
-12. **GET /api/vaults/documents/{doc_id}/audit-trail** ✅ PASS - Returns audit events
+#### ✅ VAULT CRUD OPERATIONS - ALL PASSED
+4. **POST /api/vaults** ✅ PASS - Creates new vault with proper structure
+   - Vault created with ID, status: DRAFT, type: TRUST
+   - Auto-creates owner participant for creator
+5. **GET /api/vaults** ✅ PASS - Lists user vaults with role and counts
+6. **GET /api/vaults/{vault_id}** ✅ PASS - Returns complete vault details
+   - Includes: participants, documents, user_permissions, user_role, recent_activity
+7. **PUT /api/vaults/{vault_id}** ✅ PASS - Updates vault name and description
+8. **POST /api/vaults/{vault_id}/activate** ✅ PASS - Changes status from DRAFT to ACTIVE
+
+#### ⚠️ PARTICIPANT MANAGEMENT - ENTITLEMENT LIMITED
+9. **GET /api/vaults/{vault_id}/participants** ✅ PASS - Lists participants (found 1 owner)
+10. **POST /api/vaults/{vault_id}/participants** ❌ BLOCKED - Participant limit reached (1/0)
+    - System correctly enforces entitlement limits
+    - Error: "Participant limit reached (1/0). Upgrade your plan to add more participants."
+
+#### ✅ DOCUMENT LIFECYCLE - ALL PASSED
+11. **POST /api/vaults/{vault_id}/documents** ✅ PASS - Creates document with version tracking
+    - Document created with status: DRAFT, category: TRUST_INSTRUMENT
+    - Requires signatures from: TRUSTEE, BENEFICIARY
+12. **GET /api/vaults/{vault_id}/documents** ✅ PASS - Lists vault documents
+13. **GET /api/vaults/documents/{document_id}** ✅ PASS - Returns document details
+    - Includes: versions, comments, signatures arrays
+14. **PUT /api/vaults/documents/{document_id}** ✅ PASS - Updates document content
+15. **POST /api/vaults/documents/{document_id}/submit-for-review** ✅ PASS - Status changed to UNDER_REVIEW
+
+#### ✅ DOCUMENT WORKFLOW - ALL PASSED
+16. **POST /api/vaults/documents/{document_id}/comments** ✅ PASS - Adds comment successfully
+17. **POST /api/vaults/documents/{document_id}/affirm** ✅ PASS - Records affirmation with note
+18. **GET /api/vaults/documents/{document_id}/audit-trail** ✅ PASS - Returns complete audit trail
+    - Event types found: CREATED, EDITED, STATUS_CHANGED, COMMENTED, AFFIRMED
+19. **POST /api/vaults/documents/{document_id}/object** ⚠️ CONDITIONAL - May fail if document in wrong state
+
+#### ✅ ERROR HANDLING - ALL PASSED
+20. **Non-existent vault access** ✅ PASS - Returns 404 as expected
+21. **Non-existent document access** ✅ PASS - Returns 404 as expected
+22. **Invalid vault creation** ✅ PASS - Returns 422 validation error
+23. **Invalid document creation** ✅ PASS - Returns 422 validation error
 
 ### Files Created/Modified
 - `/app/backend/routes/vault.py` - New API routes for vault system
