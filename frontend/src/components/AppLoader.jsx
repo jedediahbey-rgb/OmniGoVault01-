@@ -101,7 +101,7 @@ const AppLoader = ({
       if (planTier === 3) { // Enterprise
         return {
           primary: 'Enterprise workspace ready',
-n          secondary: `Full platform access · Unlimited capacity${analyticsEnabled ? ' · Analytics' : ''}`
+          secondary: `Full platform access · Unlimited capacity${analyticsEnabled ? ' · Analytics' : ''}`
         };
       }
 
