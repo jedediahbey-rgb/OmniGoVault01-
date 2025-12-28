@@ -936,15 +936,196 @@ export default function CyberHomePage() {
     fetchLiveSignals();
   }, []);
   
+  // Initial loading phase management
+  const [loadingPhase, setLoadingPhase] = useState('booting');
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  
+  useEffect(() => {
+    if (!showInitialLoading) return;
+    
+    // Progress simulation
+    const intervals = [
+      { target: 15, duration: 400 },
+      { target: 30, duration: 500 },
+      { target: 45, duration: 400 },
+      { target: 60, duration: 500 },
+      { target: 75, duration: 400 },
+      { target: 85, duration: 300 },
+    ];
+    
+    let currentIndex = 0;
+    const runProgress = () => {
+      if (currentIndex >= intervals.length) return;
+      const { target, duration } = intervals[currentIndex];
+      setTimeout(() => {
+        setLoadingProgress(target);
+        currentIndex++;
+        runProgress();
+      }, duration);
+    };
+    runProgress();
+    
+    // Phase transitions
+    const phaseTimer1 = setTimeout(() => {
+      setLoadingPhase('entitled');
+      setLoadingProgress(90);
+    }, 1500);
+    
+    const phaseTimer2 = setTimeout(() => {
+      setLoadingProgress(100);
+    }, 2500);
+    
+    const completeTimer = setTimeout(() => {
+      setShowInitialLoading(false);
+    }, 3200);
+    
+    return () => {
+      clearTimeout(phaseTimer1);
+      clearTimeout(phaseTimer2);
+      clearTimeout(completeTimer);
+    };
+  }, [showInitialLoading]);
+  
   return (
     <div className="min-h-screen bg-[#05080F] text-white overflow-x-hidden">
-      {/* Initial Loading Screen - shown when first visiting the site */}
-      {showInitialLoading && (
-        <InitialLoadingScreen 
-          onComplete={() => setShowInitialLoading(false)} 
-          planName="DYNASTY"
-        />
-      )}
+      {/* Initial Loading Screen - EXACT design from AppLoader */}
+      <AnimatePresence>
+        {showInitialLoading && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.0, ease: 'easeInOut' }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0a1128]"
+          >
+            {/* Matrix Rain Background */}
+            <MatrixRain />
+            
+            {/* Gradient overlay */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(ellipse at center, rgba(10, 17, 40, 0.3) 0%, rgba(10, 17, 40, 0.75) 60%, rgba(10, 17, 40, 0.9) 100%)'
+              }}
+            />
+
+            {/* Scanline effect */}
+            <div 
+              className="absolute inset-0 pointer-events-none opacity-[0.04]"
+              style={{
+                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(198, 168, 124, 0.15) 2px, rgba(198, 168, 124, 0.15) 4px)'
+              }}
+            />
+
+            {/* Content */}
+            <div className="relative z-10 flex flex-col items-center gap-6 px-8 py-10 rounded-2xl bg-[#0a1128]/60 backdrop-blur-sm border border-[#C6A87C]/10">
+              {/* Logo / Wordmark */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="flex flex-col items-center gap-3"
+              >
+                <span className="text-xl font-heading text-[#C6A87C] tracking-[0.3em] font-bold">
+                  OMNIGOVAULT
+                </span>
+                {/* Jack In Icon - positioned under OMNIGOVAULT */}
+                <div className="w-12 h-12 rounded-lg bg-[#C6A87C]/10 border border-[#C6A87C]/40 flex items-center justify-center relative">
+                  {/* Matrix Jack/Plug Icon */}
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    className="w-7 h-7 text-[#C6A87C]"
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {/* Main connector body */}
+                    <rect x="7" y="2" width="10" height="8" rx="1" />
+                    {/* Prongs */}
+                    <line x1="10" y1="10" x2="10" y2="14" />
+                    <line x1="14" y1="10" x2="14" y2="14" />
+                    {/* Base plate */}
+                    <rect x="6" y="14" width="12" height="3" rx="0.5" />
+                    {/* Connection lines going down */}
+                    <line x1="9" y1="17" x2="9" y2="22" />
+                    <line x1="12" y1="17" x2="12" y2="20" />
+                    <line x1="15" y1="17" x2="15" y2="22" />
+                  </svg>
+                  {/* Pulse effect when loading */}
+                  {loadingPhase === 'booting' && (
+                    <motion.div
+                      className="absolute inset-0 rounded-lg border-2 border-[#C6A87C]/50"
+                      animate={{ 
+                        scale: [1, 1.3, 1],
+                        opacity: [0.6, 0, 0.6]
+                      }}
+                      transition={{ 
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  )}
+                </div>
+              </motion.div>
+
+              {/* Status Text */}
+              <div className="flex flex-col items-center gap-3 min-h-[80px] mt-2">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={loadingPhase}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.4 }}
+                    className="text-center"
+                  >
+                    <p className="text-white/90 text-lg font-medium tracking-wider">
+                      {loadingPhase === 'booting' ? 'Jacking into the Network' : 'Matrix System Online'}
+                    </p>
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.4, delay: 0.2 }}
+                      className="text-white/50 text-sm mt-2 tracking-wide"
+                    >
+                      {loadingPhase === 'booting' 
+                        ? 'Establishing secure connection...' 
+                        : '1 vault · Solo operator mode'}
+                    </motion.p>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-64 h-[3px] bg-[#C6A87C]/10 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-[#C6A87C]/40 via-[#C6A87C] to-[#C6A87C]/40 rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: `${loadingProgress}%` }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                />
+              </div>
+
+              {/* Plan Badge */}
+              <AnimatePresence>
+                {loadingPhase !== 'booting' && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4 }}
+                    className="px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                  >
+                    DYNASTY
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       {/* ACCESS DOWNLOAD COMPLETE Screen - shown after vault animation */}
       <AnimatePresence>
