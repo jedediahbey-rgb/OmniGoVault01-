@@ -4526,7 +4526,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
-        "https://role-manager-21.preview.emergentagent.com",
+        "https://trustdashboard-1.preview.emergentagent.com",
         "http://localhost:3000",
         "http://127.0.0.1:3000"
     ],
