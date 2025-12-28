@@ -527,38 +527,3 @@ async def get_document_audit_trail(request: Request, document_id: str):
         raise HTTPException(status_code=404, detail=str(e))
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
-
-
-# ============ UTILITY ENDPOINTS ============
-
-@router.get("/roles")
-async def get_roles():
-    """Get available participant roles"""
-    return {
-        "roles": [
-            {"value": role.value, "label": role.value.replace("_", " ").title()}
-            for role in ParticipantRole
-        ]
-    }
-
-
-@router.get("/document-categories")
-async def get_document_categories():
-    """Get available document categories"""
-    return {
-        "categories": [
-            {"value": cat.value, "label": cat.value.replace("_", " ").title()}
-            for cat in DocumentCategory
-        ]
-    }
-
-
-@router.get("/vault-types")
-async def get_vault_types():
-    """Get available vault types"""
-    return {
-        "types": [
-            {"value": vt.value, "label": vt.value.replace("_", " ").title()}
-            for vt in VaultType
-        ]
-    }
