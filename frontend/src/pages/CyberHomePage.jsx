@@ -1596,12 +1596,12 @@ export default function CyberHomePage() {
               
               <motion.p 
                 variants={fadeInUp}
-                className="mt-4 sm:mt-3 lg:mt-4 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed italic"
+                className="mt-3 sm:mt-3 lg:mt-2 text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed italic"
               >
                 &ldquo;In whom also we have obtained an inheritance, being predestinated according to the purpose of him who worketh all things after the counsel of his own will.&rdquo;&nbsp;&nbsp;<span className="text-[10px] text-white/30 not-italic">— Ephesians 1:11</span>
               </motion.p>
               
-              <motion.div variants={fadeInUp} className="mt-5 sm:mt-4 lg:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <motion.div variants={fadeInUp} className="mt-4 sm:mt-4 lg:mt-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
                 <Button 
                   size="default" 
                   className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-6"
@@ -1626,13 +1626,13 @@ export default function CyberHomePage() {
               </motion.div>
               
               {/* Microcopy */}
-              <motion.p variants={fadeInUp} className="mt-4 sm:mt-3 lg:mt-4 text-[10px] text-slate-500 flex items-center gap-1.5 justify-center">
+              <motion.p variants={fadeInUp} className="mt-3 sm:mt-2 lg:mt-3 text-[10px] text-slate-500 flex items-center gap-1.5 justify-center">
                 <ClockCounterClockwise className="w-3 h-3" />
                 Draft → Finalize → Amend (with traceable history).
               </motion.p>
               
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="mt-5 sm:mt-4 lg:mt-5 flex flex-wrap gap-8 sm:gap-6 lg:gap-10 justify-center">
+              <motion.div variants={fadeInUp} className="mt-4 sm:mt-3 lg:mt-4 flex flex-wrap gap-8 sm:gap-6 lg:gap-10 justify-center">
                 {[
                   { value: '500+', label: 'Trusts Managed' },
                   { value: '10k+', label: 'Documents Filed' },
