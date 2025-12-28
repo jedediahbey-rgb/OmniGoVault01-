@@ -50,7 +50,7 @@ import { Badge } from '../components/ui/badge';
 const API = process.env.REACT_APP_BACKEND_URL + '/api';
 
 // Labyrinth definition image and text
-const LABYRINTH_IMAGE = "https://customer-assets.emergentagent.com/job_vaultshare-2/artifacts/4fihvhen_cretan_labyrinth_design_shutterstock_2070606107.webp";
+const LABYRINTH_IMAGE = "https://customer-assets.emergentagent.com/job_19182e55-503a-460d-b3b9-a6c0d9af1a20/artifacts/mnjuuw0n_f8001dbee95798fb1001b83e3bde66f6.jpg";
 const LABYRINTH_DEFINITION = "A labyrinth is a complex path leading inwards, often a single, winding route to a center, used for walking meditation, reflection, and stress relief, distinct from a maze which has choices and dead ends. Figuratively, it means any confusing, intricate situation or structure, like a \"labyrinth of rules\" or \"labyrinth of love,\" while anatomically, it refers to the inner ear.";
 
 // Demo Data (fallback)
@@ -1088,20 +1088,11 @@ export default function CyberHomePage() {
                   onMouseEnter={() => handleLabyrinthHover(true)}
                   onMouseLeave={() => handleLabyrinthHover(false)}
                 >
-                  <span className="text-[#C6A87C] border-b-2 border-[#C6A87C]/50 border-dashed hover:border-solid hover:border-[#C6A87C] transition-all duration-200">
-                    labyrinth
+                  <span className="text-[#C6A87C] hover:text-[#E8D5B5] transition-colors duration-200">
+                    labyrinth system
                   </span>
                 </span>
-                {' '}
-                <span className="text-[#C6A87C] border-b-2 border-[#C6A87C]/50 border-dashed">
-                  system
-                </span>
                 {' '}for trust governance.
-                <span className="inline-block ml-2 opacity-50 hover:opacity-100 transition-opacity cursor-pointer align-middle"
-                  onClick={handleLabyrinthClick}
-                >
-                  <Info className="w-3.5 h-3.5 text-[#C6A87C]" weight="fill" />
-                </span>
               </motion.h2>
               
               <motion.p 
@@ -1565,26 +1556,17 @@ export default function CyberHomePage() {
                 
                 {/* Scrollable content area */}
                 <div className="max-h-[80vh] overflow-y-auto">
-                  {/* Labyrinth Image - blend with dark background */}
-                  <div className="relative w-full" style={{ backgroundColor: '#0B1221' }}>
-                    <div 
-                      className="aspect-square sm:aspect-[4/3] flex items-center justify-center p-6 sm:p-8"
-                      style={{ backgroundColor: '#0B1221' }}
-                    >
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <img
-                          src={LABYRINTH_IMAGE}
-                          alt="Cretan Labyrinth Design"
-                          className="max-w-full max-h-full object-contain"
-                          style={{ 
-                            filter: 'invert(1) brightness(0.6) contrast(1.2)',
-                            mixBlendMode: 'screen'
-                          }}
-                        />
-                      </div>
+                  {/* Labyrinth Image - hedge maze photo */}
+                  <div className="relative w-full">
+                    <div className="aspect-[4/3] sm:aspect-[16/10] flex items-center justify-center overflow-hidden">
+                      <img
+                        src={LABYRINTH_IMAGE}
+                        alt="Hedge Maze Labyrinth"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                    {/* Subtle golden glow overlay */}
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#C6A87C]/10 to-transparent" />
+                    {/* Subtle gradient overlay for text readability */}
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0B1221]/60 via-transparent to-transparent" />
                   </div>
                   
                   {/* Content */}
