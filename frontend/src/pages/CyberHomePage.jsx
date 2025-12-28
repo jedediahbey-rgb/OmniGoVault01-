@@ -2026,7 +2026,7 @@ export default function CyberHomePage() {
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
               onClick={closeLabyrinthPopup}
-              onMouseEnter={() => window.innerWidth >= 640 && handleLabyrinthHover(false)}
+              onMouseEnter={handlePopupMouseLeave}
               style={{ touchAction: 'none' }}
             />
             
