@@ -265,12 +265,14 @@ export default function DashboardPage({ user }) {
 
   const fetchDashboardData = async () => {
     try {
-      const [statsRes, portfoliosRes] = await Promise.all([
+      const [statsRes, portfoliosRes, profileRes] = await Promise.all([
         axios.get(`${API}/dashboard/stats`),
-        axios.get(`${API}/portfolios`)
+        axios.get(`${API}/portfolios`),
+        axios.get(`${API}/user/profile`).catch(() => ({ data: null }))
       ]);
       setStats(statsRes.data);
       setPortfolios(portfoliosRes.data || []);
+      setUserProfile(profileRes.data);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
       toast.error('Failed to load dashboard data');
