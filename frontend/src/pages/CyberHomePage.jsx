@@ -126,6 +126,15 @@ const DEMO_SIGNALS = [
   { id: 5, type: 'compensation', message: 'Compensation Approved', detail: 'Q4 trustee payment logged', time: '2h ago', icon: UserCircleGear },
 ];
 
+// Live Mode Demo Data (different signals to show toggle is working)
+const LIVE_DEMO_SIGNALS = [
+  { id: 1, type: 'meeting', message: 'Board Resolution Passed', detail: 'RM-ID RF743916766US-21.003', time: 'Just now', icon: Notebook },
+  { id: 2, type: 'insurance', message: 'Policy Updated', detail: 'Death benefit increased', time: '1m ago', icon: ShieldPlus },
+  { id: 3, type: 'distribution', message: 'Quarterly Distribution', detail: '$125,000 allocated', time: '3m ago', icon: CurrencyDollar },
+  { id: 4, type: 'dispute', message: 'Mediation Scheduled', detail: 'Case #2024-0891', time: '8m ago', icon: Gavel },
+  { id: 5, type: 'compensation', message: 'Trustee Hours Logged', detail: '12.5 hours this month', time: '15m ago', icon: UserCircleGear },
+];
+
 // Governance Matrix Modules
 const MATRIX_MODULES = [
   { 
