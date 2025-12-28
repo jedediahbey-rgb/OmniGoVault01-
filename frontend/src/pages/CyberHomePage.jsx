@@ -1220,14 +1220,14 @@ export default function CyberHomePage() {
                   <Lightning className="w-4 h-4 text-emerald-400" />
                   <span className="text-sm text-emerald-400">3-day streak</span>
                 </div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <div>
                   <Button 
                     className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F]"
                     onClick={handleSimpleNavigation('/learn')}
                   >
                     Start Learning
                   </Button>
-                </motion.div>
+                </div>
               </motion.div>
             </motion.div>
             
@@ -1322,7 +1322,7 @@ export default function CyberHomePage() {
               transition={{ delay: 0.5, duration: 0.5 }}
               className="mt-5 text-center"
             >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <div>
                 <Button 
                   variant="outline" 
                   className="border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10"
@@ -1330,7 +1330,7 @@ export default function CyberHomePage() {
                 >
                   Browse All Templates <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
-              </motion.div>
+              </div>
             </motion.div>
           </motion.div>
         </div>
