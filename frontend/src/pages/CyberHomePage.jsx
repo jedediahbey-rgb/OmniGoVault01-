@@ -1069,7 +1069,21 @@ export default function CyberHomePage() {
                 variants={fadeInUp}
                 className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light mt-4 sm:mt-2 lg:-mt-4"
               >
-                A matrix system for trust governance.
+                A{' '}
+                <span 
+                  className="relative inline-block cursor-pointer group"
+                  onClick={handleLabyrinthClick}
+                  onMouseEnter={() => handleLabyrinthHover(true)}
+                  onMouseLeave={() => handleLabyrinthHover(false)}
+                >
+                  <span className="text-[#C6A87C] border-b-2 border-[#C6A87C]/50 border-dashed hover:border-solid hover:border-[#C6A87C] transition-all duration-200">
+                    labyrinth
+                  </span>
+                  <span className="absolute -top-1 -right-3 opacity-50 group-hover:opacity-100 transition-opacity">
+                    <Info className="w-3 h-3 text-[#C6A87C]" weight="fill" />
+                  </span>
+                </span>
+                {' '}system for trust governance.
               </motion.h2>
               
               <motion.p 
