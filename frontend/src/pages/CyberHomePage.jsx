@@ -673,6 +673,8 @@ export default function CyberHomePage() {
   const [signalsLoading, setSignalsLoading] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [vaultOpening, setVaultOpening] = useState(false);
+  const [showLabyrinthPopup, setShowLabyrinthPopup] = useState(false);
+  const [isLabyrinthHovered, setIsLabyrinthHovered] = useState(false);
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
   
@@ -689,10 +691,27 @@ export default function CyberHomePage() {
   }, []);
   
   // Handle vault entry animation - for main "Enter the Vault" button ONLY
-  const handleEnterVault = (e) => {
+  // If user has an existing session, this will auto-login them
+  const handleEnterVault = async (e) => {
     e.preventDefault();
+    
+    // Check if user already has a session/account
+    try {
+      const response = await axios.get(`${API}/auth/me`, { withCredentials: true });
+      if (response.data && response.data.user_id && response.data.email !== 'dev.admin@system.local') {
+        // User has an account - start vault animation and go to vault
+        setVaultOpening(true);
+        setTimeout(() => {
+          navigate('/vault');
+        }, 2500);
+        return;
+      }
+    } catch (error) {
+      // No session or error - continue with normal flow
+    }
+    
+    // Start vault animation for dev/new users
     setVaultOpening(true);
-    // Navigate after animation completes - extended to 2.5 seconds for better visibility
     setTimeout(() => {
       navigate('/vault');
     }, 2500);
@@ -705,6 +724,27 @@ export default function CyberHomePage() {
     // Use window.location.origin to dynamically get the current domain
     const redirectUrl = window.location.origin + '/vault';
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  };
+  
+  // Handle labyrinth click (mobile) or hover (desktop)
+  const handleLabyrinthClick = (e) => {
+    e.preventDefault();
+    setShowLabyrinthPopup(true);
+  };
+  
+  const handleLabyrinthHover = (isHovering) => {
+    // Only show on hover for desktop (non-touch devices)
+    if (window.matchMedia('(hover: hover)').matches) {
+      setIsLabyrinthHovered(isHovering);
+      if (isHovering) {
+        setShowLabyrinthPopup(true);
+      }
+    }
+  };
+  
+  const closeLabyrinthPopup = () => {
+    setShowLabyrinthPopup(false);
+    setIsLabyrinthHovered(false);
   };
   
   // Simple navigation for other buttons - no vault animation, just navigate
