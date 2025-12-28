@@ -93,7 +93,7 @@ const AppLoader = ({
   const [canDismiss, setCanDismiss] = useState(false);
   const [phase, setPhase] = useState('booting'); // booting | entitled | ready
 
-  // Progress simulation
+  // Progress simulation - slower for readability
   useEffect(() => {
     if (!isLoading) {
       setProgress(100);
@@ -101,9 +101,11 @@ const AppLoader = ({
     }
 
     const intervals = [
-      { target: 30, duration: 200 },
-      { target: 60, duration: 400 },
-      { target: 85, duration: 600 },
+      { target: 20, duration: 400 },
+      { target: 40, duration: 600 },
+      { target: 60, duration: 500 },
+      { target: 80, duration: 400 },
+      { target: 90, duration: 300 },
     ];
 
     let currentIndex = 0;
