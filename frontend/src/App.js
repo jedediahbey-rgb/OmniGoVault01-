@@ -244,26 +244,11 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
   return children;
 };
 
-// AppLoader wrapper - only shows loading on protected routes, not landing page
+// AppLoader wrapper - DISABLED since vault transition handles loading animation
+// The initial loading screen is now shown on the landing page in CyberHomePage
 const AppLoaderWrapper = ({ isLoading, entitlements, planName, planTier }) => {
-  const location = useLocation();
-  
-  // Don't show loading screen on landing page (root path)
-  const isLandingPage = location.pathname === '/' || location.pathname === '/home';
-  
-  if (isLandingPage) {
-    return null;
-  }
-  
-  return (
-    <AppLoader 
-      isLoading={isLoading}
-      entitlements={entitlements}
-      planName={planName}
-      planTier={planTier}
-      minDisplayTime={800}
-    />
-  );
+  // AppLoader is disabled - vault transition on landing page handles loading
+  return null;
 };
 
 // Layout wrapper for authenticated routes - clean transitions without shimmer
