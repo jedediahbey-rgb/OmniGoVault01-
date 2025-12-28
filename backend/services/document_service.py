@@ -621,6 +621,9 @@ class DocumentService:
         
         await self.db.document_signatures.insert_one(signature)
         
+        # Remove MongoDB _id
+        signature.pop("_id", None)
+        
         # Log event
         await self._log_event(
             document_id,
