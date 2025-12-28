@@ -50,8 +50,9 @@ const API = `${BACKEND_URL}/api`;
 axios.defaults.withCredentials = true;
 
 // Auth Hook
-// Default user - NO AUTH REQUIRED
-const DEFAULT_USER = {
+// Dev bypass mode - allows unrestricted access for development/maintenance
+// In production, real authenticated users will be used
+const DEV_BYPASS_USER = {
   user_id: "default_user",
   email: "user@omnigovault.com",
   name: "Default User",
@@ -59,20 +60,56 @@ const DEFAULT_USER = {
 };
 
 export const useAuth = () => {
-  // Always return default user - no authentication
-  const [user, setUser] = useState(DEFAULT_USER);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isDevMode, setIsDevMode] = useState(false);
 
-  const checkAuth = async () => {
-    // Always return default user
-    return DEFAULT_USER;
-  };
+  const checkAuth = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API}/auth/me`, {
+        withCredentials: true
+      });
+      
+      if (response.data && response.data.user_id) {
+        const userData = response.data;
+        setUser(userData);
+        // Check if this is dev bypass user
+        setIsDevMode(userData.user_id === DEV_BYPASS_USER.user_id);
+        return userData;
+      } else {
+        // No authenticated user - use dev bypass
+        setUser(DEV_BYPASS_USER);
+        setIsDevMode(true);
+        return DEV_BYPASS_USER;
+      }
+    } catch (error) {
+      // Auth check failed - use dev bypass for maintenance access
+      console.log('Auth check using dev bypass mode');
+      setUser(DEV_BYPASS_USER);
+      setIsDevMode(true);
+      return DEV_BYPASS_USER;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const logout = async () => {
-    // No-op - no logout needed
+    try {
+      await axios.post(`${API}/auth/logout`, {}, { withCredentials: true });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    // After logout, revert to dev bypass
+    setUser(DEV_BYPASS_USER);
+    setIsDevMode(true);
   };
 
-  return { user, setUser, loading, setLoading, checkAuth, logout };
+  // Check auth on mount
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  return { user, setUser, loading, setLoading, checkAuth, logout, isDevMode };
 };
 
 // Auth Callback Component
