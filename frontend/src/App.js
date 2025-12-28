@@ -64,6 +64,7 @@ export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isDevMode, setIsDevMode] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   const checkAuth = useCallback(async () => {
     try {
@@ -75,7 +76,11 @@ export const useAuth = () => {
         const userData = response.data;
         setUser(userData);
         // Check if this is dev bypass user
-        setIsDevMode(userData.user_id === DEV_BYPASS_USER.user_id);
+        setIsDevMode(userData.dev_bypass_enabled || userData.user_id === DEV_BYPASS_USER.user_id);
+        // Check if first login - show welcome modal
+        if (userData.is_first_login) {
+          setShowWelcome(true);
+        }
         return userData;
       } else {
         // No authenticated user - use dev bypass
@@ -104,13 +109,23 @@ export const useAuth = () => {
     setUser(DEV_BYPASS_USER);
     setIsDevMode(true);
   };
+  
+  const clearWelcome = async () => {
+    setShowWelcome(false);
+    // Clear first_login flag on server
+    try {
+      await axios.post(`${API}/auth/clear-first-login`, {}, { withCredentials: true });
+    } catch (error) {
+      console.error('Failed to clear first login flag:', error);
+    }
+  };
 
   // Check auth on mount
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  return { user, setUser, loading, setLoading, checkAuth, logout, isDevMode };
+  return { user, setUser, loading, setLoading, checkAuth, logout, isDevMode, showWelcome, clearWelcome };
 };
 
 // Auth Callback Component - Handles Emergent Google Auth redirect
