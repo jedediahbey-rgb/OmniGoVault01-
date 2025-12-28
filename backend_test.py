@@ -15,18 +15,19 @@ import hashlib
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://vaultshare-2.preview.emergentagent.com/api"
 
-class OmniGoVaultAuthTester:
+class OmniGoVaultOnboardingTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'OmniGoVault-Auth-Tester/1.0'
+            'User-Agent': 'OmniGoVault-Onboarding-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_results = []
+        self.current_session_token = None
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
