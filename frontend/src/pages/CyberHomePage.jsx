@@ -737,21 +737,23 @@ export default function CyberHomePage() {
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
-  // Handle labyrinth click (mobile only)
+  // Handle labyrinth click (works on both mobile and desktop)
   const handleLabyrinthClick = (e) => {
     e.preventDefault();
-    // On mobile (< 640px), open popup on click
+    setShowLabyrinthPopup(true);
+    // On mobile, prevent background scroll
     if (window.innerWidth < 640) {
-      setShowLabyrinthPopup(true);
-      // Prevent background scroll on mobile
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.top = `-${window.scrollY}px`;
+    } else {
+      // Desktop - just lock scroll
+      document.body.style.overflow = 'hidden';
     }
   };
   
-  // Handle labyrinth hover (desktop only)
+  // Handle labyrinth hover (desktop only - shows on hover, hides on leave)
   const handleLabyrinthHover = (isHovering) => {
     // On desktop (>= 640px), show/hide popup on hover
     if (window.innerWidth >= 640) {
