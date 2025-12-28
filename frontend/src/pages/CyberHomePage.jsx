@@ -779,15 +779,15 @@ export default function CyberHomePage() {
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
   
-  // Check if user is logged in
+  // Check if user is logged in (not dev bypass user)
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await axios.get(`${API}/auth/me`, { withCredentials: true });
-        if (response.data && response.data.user_id && response.data.email !== 'dev.admin@system.local') {
+        // User is "logged in" if they have a valid user_id AND they are not using dev bypass
+        // The dev bypass user should see "Demo" mode since they haven't actually authenticated
+        if (response.data && response.data.user_id && !response.data.dev_bypass_enabled) {
           setIsLoggedIn(true);
-          // Fetch live signals for logged in users
-          fetchLiveSignals();
         } else {
           setIsLoggedIn(false);
         }
