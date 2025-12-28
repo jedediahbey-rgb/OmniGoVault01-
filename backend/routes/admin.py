@@ -62,18 +62,25 @@ def get_client_ip(request: Request) -> str:
 @router.get("/status")
 async def get_admin_status(request: Request):
     """Get current user's admin status and roles"""
-    from server import get_current_user
+    from server import get_current_user, OWNER_USER_ID
     
     user = await get_current_user(request)
     admin_service = get_admin_service()
     
     roles = await admin_service.get_user_global_roles(user.user_id)
     is_omni = await admin_service.is_omnicompetent(user.user_id)
+    is_owner = await admin_service.is_owner(user.user_id)
     impersonation = await admin_service.get_active_impersonation(user.user_id)
+    
+    # Check if this is the platform owner
+    is_platform_owner = user.user_id == OWNER_USER_ID
     
     return {
         "user_id": user.user_id,
-        "is_admin": len(roles) > 0,
+        "email": user.email,
+        "name": user.name,
+        "is_admin": is_owner or len([r for r in roles if r in ["SUPPORT_ADMIN", "BILLING_ADMIN"]]) > 0,
+        "is_owner": is_owner or is_platform_owner,
         "is_omnicompetent": is_omni,
         "global_roles": roles,
         "role_descriptions": {r: GLOBAL_ROLE_DESCRIPTIONS.get(GlobalRole(r), "") for r in roles},
