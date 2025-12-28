@@ -4575,7 +4575,7 @@ async def seed_dev_test_accounts():
             "granted_at": datetime.now(timezone.utc).isoformat(),
             "reason": "Platform Owner"
         })
-        logger.info(f"✅ Granted OMNICOMPETENT_OWNER role to Owner")
+        logger.info("✅ Granted OMNICOMPETENT_OWNER role to Owner")
     
     logger.info("✅ Dev account seeding complete")
 
