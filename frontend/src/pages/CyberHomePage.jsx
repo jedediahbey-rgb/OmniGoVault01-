@@ -727,11 +727,11 @@ export default function CyberHomePage() {
   };
   
   // State for labyrinth popup - desktop uses hover, mobile uses click
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktopState, setIsDesktopState] = useState(typeof window !== 'undefined' && window.innerWidth >= 640);
   
   // Check if desktop on mount and resize
   useEffect(() => {
-    const checkDesktop = () => setIsDesktop(window.innerWidth >= 640);
+    const checkDesktop = () => setIsDesktopState(window.innerWidth >= 640);
     checkDesktop();
     window.addEventListener('resize', checkDesktop);
     return () => window.removeEventListener('resize', checkDesktop);
@@ -740,7 +740,8 @@ export default function CyberHomePage() {
   // Handle labyrinth click (mobile only)
   const handleLabyrinthClick = (e) => {
     e.preventDefault();
-    if (!isDesktop) {
+    // On mobile (< 640px), open popup on click
+    if (window.innerWidth < 640) {
       setShowLabyrinthPopup(true);
       // Prevent background scroll on mobile
       document.body.style.overflow = 'hidden';
@@ -752,14 +753,13 @@ export default function CyberHomePage() {
   
   // Handle labyrinth hover (desktop only)
   const handleLabyrinthHover = (isHovering) => {
-    if (isDesktop) {
+    // On desktop (>= 640px), show/hide popup on hover
+    if (window.innerWidth >= 640) {
       setIsLabyrinthHovered(isHovering);
       setShowLabyrinthPopup(isHovering);
       if (isHovering) {
-        // Lock scroll on desktop hover
         document.body.style.overflow = 'hidden';
       } else {
-        // Restore scroll when hover ends
         document.body.style.overflow = '';
       }
     }
@@ -769,7 +769,7 @@ export default function CyberHomePage() {
     setShowLabyrinthPopup(false);
     setIsLabyrinthHovered(false);
     // Restore background scroll
-    if (!isDesktop) {
+    if (window.innerWidth < 640) {
       const scrollY = document.body.style.top;
       document.body.style.position = '';
       document.body.style.width = '';
