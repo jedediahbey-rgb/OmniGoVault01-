@@ -578,7 +578,7 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
           {user.is_omnicompetent ? (
             <Crown className="w-5 h-5 text-purple-400" />
           ) : (
-            <Users className="w-5 h-5 text-vault-gold" />
+            <UsersIcon className="w-5 h-5 text-vault-gold" />
           )}
         </div>
         <div>
