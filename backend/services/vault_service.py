@@ -139,6 +139,9 @@ class VaultService:
         
         await self.db.vaults.insert_one(vault)
         
+        # Remove MongoDB _id before returning
+        vault.pop("_id", None)
+        
         # Add creator as owner/trustee
         participant = {
             "id": f"vp_{uuid.uuid4().hex[:12]}",
