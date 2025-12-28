@@ -613,7 +613,7 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
           )}
           {user.user_id !== currentUserId && (
             <Button variant="ghost" size="sm" onClick={onImpersonate || (() => {})}>
-              <UserSwitch className="w-4 h-4" />
+              <Replace className="w-4 h-4" />
             </Button>
           )}
         </div>
