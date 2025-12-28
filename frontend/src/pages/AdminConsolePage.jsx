@@ -81,6 +81,8 @@ const AdminConsolePage = () => {
   const [showGrantRoleDialog, setShowGrantRoleDialog] = useState(false);
   const [showChangePlanDialog, setShowChangePlanDialog] = useState(false);
   const [showImpersonateDialog, setShowImpersonateDialog] = useState(false);
+  const [showAccountDetails, setShowAccountDetails] = useState(false);
+  const [showUserDetails, setShowUserDetails] = useState(false);
   
   // Plans
   const [plans, setPlans] = useState([]);
