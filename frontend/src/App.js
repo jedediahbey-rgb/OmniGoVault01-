@@ -268,6 +268,13 @@ const AppRouter = ({ auth }) => {
         </AuthLayout>
       } />
       
+      {/* Billing & Subscription */}
+      <Route path="/billing" element={
+        <AuthLayout auth={auth}>
+          <BillingPage />
+        </AuthLayout>
+      } />
+      
       {/* Protected Vault Routes */}
       <Route
         path="/vault"
