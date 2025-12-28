@@ -168,7 +168,7 @@ class OmniGoVaultOnboardingTester:
                 if ("Free" in message and 
                     user.get("email") == "free.tester@test.local" and
                     account.get("plan_name") == "Free"):
-                    details += f", Successfully switched to Free account: {user.get('user_email')}"
+                    details += f", Successfully switched to Free account: {user.get('email')}"
                     # Store session token if provided
                     if 'session_token' in data:
                         self.current_session_token = data['session_token']
