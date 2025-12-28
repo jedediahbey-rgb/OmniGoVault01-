@@ -802,6 +802,7 @@ export default function CyberHomePage() {
   
   // State for labyrinth popup - desktop uses hover, mobile uses click
   const [isDesktopState, setIsDesktopState] = useState(typeof window !== 'undefined' && window.innerWidth >= 640);
+  const labyrinthHoverTimeoutRef = useRef(null);
   
   // Check if desktop on mount and resize
   useEffect(() => {
@@ -811,18 +812,48 @@ export default function CyberHomePage() {
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
-  // Handle labyrinth hover (desktop only - shows on hover, hides on leave)
+  // Handle labyrinth hover (desktop only - shows on hover, hides on leave with delay)
   const handleLabyrinthHover = (isHovering) => {
     // On desktop (>= 640px), show/hide popup on hover
     if (window.innerWidth >= 640) {
-      console.log('Hover:', isHovering);
-      setIsLabyrinthHovered(isHovering);
-      setShowLabyrinthPopup(isHovering);
+      // Clear any pending timeout
+      if (labyrinthHoverTimeoutRef.current) {
+        clearTimeout(labyrinthHoverTimeoutRef.current);
+        labyrinthHoverTimeoutRef.current = null;
+      }
+      
       if (isHovering) {
+        // Show immediately on hover
+        setIsLabyrinthHovered(true);
+        setShowLabyrinthPopup(true);
         document.body.style.overflow = 'hidden';
       } else {
-        document.body.style.overflow = '';
+        // Delay hiding to allow mouse to move to popup
+        labyrinthHoverTimeoutRef.current = setTimeout(() => {
+          setIsLabyrinthHovered(false);
+          setShowLabyrinthPopup(false);
+          document.body.style.overflow = '';
+        }, 150);
       }
+    }
+  };
+  
+  // Keep popup open when mouse is over it (desktop)
+  const handlePopupMouseEnter = () => {
+    if (window.innerWidth >= 640 && labyrinthHoverTimeoutRef.current) {
+      clearTimeout(labyrinthHoverTimeoutRef.current);
+      labyrinthHoverTimeoutRef.current = null;
+    }
+  };
+  
+  // Close popup when mouse leaves it (desktop)
+  const handlePopupMouseLeave = () => {
+    if (window.innerWidth >= 640) {
+      labyrinthHoverTimeoutRef.current = setTimeout(() => {
+        setIsLabyrinthHovered(false);
+        setShowLabyrinthPopup(false);
+        document.body.style.overflow = '';
+      }, 150);
     }
   };
   
