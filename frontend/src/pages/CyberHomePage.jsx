@@ -2038,7 +2038,8 @@ export default function CyberHomePage() {
               {/* Modal wrapper */}
               <div 
                 className="relative pointer-events-auto"
-                onMouseLeave={() => window.innerWidth >= 640 && handleLabyrinthHover(false)}
+                onMouseEnter={handlePopupMouseEnter}
+                onMouseLeave={handlePopupMouseLeave}
               >
                 {/* Close button - mobile only */}
                 <button
