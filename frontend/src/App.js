@@ -7,6 +7,7 @@ import MainLayout from './components/layout/MainLayout';
 // Disclaimer component available but not used globally
 import CommandPalette from './components/shared/CommandPalette';
 import AssistantDrawer from './components/shared/AssistantDrawer';
+import { BillingProvider } from './contexts/BillingContext';
 
 // Pages
 import CyberHomePage from './pages/CyberHomePage';
@@ -38,6 +39,7 @@ import SettingsPage from './pages/SettingsPage';
 import LedgerThreadsPage from './pages/LedgerThreadsPage';
 import BinderPage from './pages/BinderPage';
 import AuditLogPage from './pages/AuditLogPage';
+import BillingPage from './pages/BillingPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
