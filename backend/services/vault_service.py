@@ -334,6 +334,9 @@ class VaultService:
         
         await self.db.vault_participants.insert_one(participant)
         
+        # Remove MongoDB _id
+        participant.pop("_id", None)
+        
         # Log event
         await self._log_document_event(
             document_id=None,
