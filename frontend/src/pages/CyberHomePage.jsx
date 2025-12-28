@@ -624,14 +624,14 @@ const GovernanceMatrixSection = () => {
             </div>
           </div>
           
-          {/* CTA Row - Centered with animation */}
+          {/* CTA Row - Centered */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.8, duration: 0.6 }}
             className="mt-6 flex flex-wrap items-center justify-center gap-4"
           >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <div>
               <Button 
                 className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold"
                 onClick={handleNavigation('/vault/governance')}
@@ -639,15 +639,13 @@ const GovernanceMatrixSection = () => {
                 Open Governance Console
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-            </motion.div>
-            <motion.button 
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }}
+            </div>
+            <button 
               onClick={handleNavigation('/ledger')}
               className="text-sm text-[#C6A87C] hover:text-[#C6A87C]/80 flex items-center gap-1"
             >
               View a sample ledger <CaretRight className="w-4 h-4" />
-            </motion.button>
+            </button>
           </motion.div>
         </motion.div>
       </div>
