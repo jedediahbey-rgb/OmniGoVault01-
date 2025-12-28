@@ -655,6 +655,14 @@ export default function CyberHomePage() {
   const { scrollYProgress } = useScroll();
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
   
+  // Set theme color on mount to match app background
+  useEffect(() => {
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', '#05080F');
+    }
+  }, []);
+  
   // Handle vault entry animation - for main "Enter the Vault" button ONLY
   const handleEnterVault = (e) => {
     e.preventDefault();
