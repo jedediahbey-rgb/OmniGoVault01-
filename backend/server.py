@@ -1074,7 +1074,132 @@ async def create_session(request: Request, response: Response):
 
 @api_router.get("/auth/me")
 async def get_me(user: User = Depends(get_current_user)):
-    return {"user_id": user.user_id, "email": user.email, "name": user.name, "picture": user.picture}
+    """Get current user info including first_login status"""
+    # Check if this is a first login that needs welcome flow
+    user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
+    is_first_login = user_doc.get("first_login", False) if user_doc else False
+    
+    # Check if user is dev admin
+    is_dev_admin = user.user_id == DEV_ADMIN_USER_ID
+    
+    return {
+        "user_id": user.user_id, 
+        "email": user.email, 
+        "name": user.name, 
+        "picture": user.picture,
+        "is_first_login": is_first_login,
+        "is_dev_admin": is_dev_admin,
+        "dev_bypass_enabled": DEV_BYPASS_ENABLED
+    }
+
+
+@api_router.post("/auth/clear-first-login")
+async def clear_first_login(user: User = Depends(get_current_user)):
+    """Clear first_login flag after user sees welcome screen"""
+    await db.users.update_one(
+        {"user_id": user.user_id},
+        {"$set": {"first_login": False}}
+    )
+    return {"success": True}
+
+
+# ============ DEV MODE ENDPOINTS ============
+
+@api_router.get("/dev/status")
+async def get_dev_status():
+    """Get dev environment status"""
+    return {
+        "dev_bypass_enabled": DEV_BYPASS_ENABLED,
+        "test_accounts": [
+            {
+                "account_id": acct["account_id"],
+                "plan_name": acct["plan_name"],
+                "user_email": acct["user_email"]
+            }
+            for acct in TEST_ACCOUNTS
+        ],
+        "dev_admin": {
+            "user_id": DEV_ADMIN_USER_ID,
+            "email": DEV_ADMIN_EMAIL
+        }
+    }
+
+
+@api_router.post("/dev/switch-account")
+async def switch_dev_account(request: Request, response: Response):
+    """
+    Switch to a test account for testing different tier entitlements.
+    Only works in dev bypass mode.
+    
+    Body: {"account": "free" | "starter" | "pro" | account_id}
+    """
+    if not DEV_BYPASS_ENABLED:
+        raise HTTPException(status_code=403, detail="Dev mode not enabled")
+    
+    body = await request.json()
+    target = body.get("account", "").lower()
+    
+    # Find matching test account
+    matched_acct = None
+    for acct in TEST_ACCOUNTS:
+        if acct["plan_name"].lower() == target or acct["account_id"] == target:
+            matched_acct = acct
+            break
+    
+    if not matched_acct:
+        raise HTTPException(status_code=400, detail=f"Unknown account: {target}. Use 'free', 'starter', or 'pro'")
+    
+    # Create a session for the test user
+    session_token = f"dev_sess_{uuid.uuid4().hex}"
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    
+    session_doc = {
+        "session_token": session_token,
+        "user_id": matched_acct["user_id"],
+        "expires_at": expires_at.isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "is_dev_session": True
+    }
+    await db.user_sessions.insert_one(session_doc)
+    
+    response.set_cookie(
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+        max_age=7 * 24 * 60 * 60
+    )
+    
+    return {
+        "message": f"Switched to {matched_acct['plan_name']} test account",
+        "user": {
+            "user_id": matched_acct["user_id"],
+            "email": matched_acct["user_email"],
+            "name": matched_acct["user_name"]
+        },
+        "account": {
+            "account_id": matched_acct["account_id"],
+            "plan_name": matched_acct["plan_name"]
+        }
+    }
+
+
+@api_router.post("/dev/seed")
+async def seed_dev_data():
+    """
+    Manually trigger dev data seeding. 
+    Useful as backup if startup seeding failed.
+    """
+    if not DEV_BYPASS_ENABLED:
+        raise HTTPException(status_code=403, detail="Dev mode not enabled")
+    
+    try:
+        await seed_dev_test_accounts()
+        return {"success": True, "message": "Dev test accounts seeded successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Seeding failed: {str(e)}")
 
 
 @api_router.post("/auth/logout")
