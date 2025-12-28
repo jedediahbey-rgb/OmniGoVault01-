@@ -519,6 +519,9 @@ const GovernanceMatrixSection = () => {
             <div className="flex justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
               {MATRIX_MODULES.slice(0, 2).map((module, idx) => {
                 const Icon = module.icon;
+                const handleCardClick = () => {
+                  navigate(module.id === 'compensation' ? '/vault/audit-log' : `/vault/governance?tab=${module.id}`);
+                };
                 return (
                   <motion.div
                     key={module.id}
@@ -526,19 +529,19 @@ const GovernanceMatrixSection = () => {
                     variants={cardVariants}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
-                    className="w-full max-w-[160px] sm:max-w-[280px]"
+                    className="w-full max-w-[160px] sm:max-w-[280px] cursor-pointer"
+                    onClick={handleCardClick}
                   >
                     <HoloCard 
-                      className="p-3 sm:p-4 cursor-pointer h-full"
-                      onClick={() => navigate(module.id === 'compensation' ? '/vault/audit-log' : `/vault/governance?tab=${module.id}`)}
+                      className="p-3 sm:p-4 h-full"
                     >
                       {/* Mobile: Centered layout, Desktop: Row layout */}
-                      <div className="flex flex-col items-center text-center sm:text-left sm:items-start">
+                      <div className="flex flex-col items-center text-center sm:text-left sm:items-start pointer-events-none">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between w-full gap-2 mb-2">
                           <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center">
                             <Icon className="w-5 h-5 sm:w-4 sm:h-4 text-[#C6A87C]" weight="duotone" />
                           </div>
-                          <Badge className={`text-[8px] sm:text-[9px] border ${module.chipColor}`}>
+                          <Badge className={`text-[8px] sm:text-[9px] border ${module.chipColor} pointer-events-none`}>
                             {module.chip}
                           </Badge>
                         </div>
