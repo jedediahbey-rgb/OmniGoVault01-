@@ -965,7 +965,7 @@ const UserDetailsDialog = ({ open, onClose, user }) => {
   
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-vault-dark border-vault-gold/30 max-w-lg">
+      <DialogContent className="bg-vault-dark border-vault-gold/30 max-w-md sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-vault-light flex items-center gap-2">
             <UsersIcon className="w-5 h-5 text-vault-gold" />
@@ -974,18 +974,22 @@ const UserDetailsDialog = ({ open, onClose, user }) => {
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
+          {/* Two-column responsive grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-vault-muted mb-1">Name</p>
-              <p className="text-vault-light font-medium">{user.name || 'N/A'}</p>
+              <p className="text-vault-light font-medium break-words">{user.name || 'N/A'}</p>
             </div>
             <div>
               <p className="text-xs text-vault-muted mb-1">Email</p>
-              <p className="text-vault-light">{user.email}</p>
+              <p className="text-vault-light break-all text-sm">{user.email}</p>
             </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-vault-muted mb-1">User ID</p>
-              <p className="text-vault-light font-mono text-sm">{user.user_id}</p>
+              <p className="text-vault-light font-mono text-xs break-all">{user.user_id}</p>
             </div>
             <div>
               <p className="text-xs text-vault-muted mb-1">Status</p>
@@ -1000,7 +1004,14 @@ const UserDetailsDialog = ({ open, onClose, user }) => {
               <p className="text-xs text-vault-muted mb-2">Roles</p>
               <div className="flex flex-wrap gap-2">
                 {user.global_roles.map((role) => (
-                  <span key={role} className="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded">
+                  <span 
+                    key={role} 
+                    className={`px-2 py-1 text-xs rounded ${
+                      role === 'OMNICOMPETENT_OWNER' 
+                        ? 'bg-purple-600/30 text-purple-300 border border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]' 
+                        : 'bg-purple-500/20 text-purple-300'
+                    }`}
+                  >
                     {role}
                   </span>
                 ))}
