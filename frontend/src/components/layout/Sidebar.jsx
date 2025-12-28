@@ -25,6 +25,7 @@ import {
   StackSimple,
   Stethoscope,
   TreeView,
+  Users,
   Vault,
   X
 } from '@phosphor-icons/react';
@@ -36,6 +37,7 @@ const navItems = [
   { name: 'Maxims', href: '/maxims', icon: Sparkle, section: 'knowledge' },
   { name: 'Glossary', href: '/glossary', icon: Book, section: 'knowledge' },
   { name: 'Diagrams', href: '/diagrams', icon: Graph, section: 'knowledge' },
+  { name: 'Shared Workspaces', href: '/vault/workspaces', icon: Users, section: 'workspace' },
   { name: 'Node Map', href: '/node-map', icon: MapTrifold, section: 'workspace' },
   { name: 'Scenarios', href: '/scenarios', icon: ChartLine, section: 'workspace' },
   { name: 'Ledger', href: '/ledger', icon: Scroll, section: 'workspace' },
