@@ -1172,13 +1172,9 @@ export default function CyberHomePage() {
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                   >
                     <HoloCard className="p-5 cursor-pointer text-center h-full">
-                      <motion.div 
-                        className="flex justify-center"
-                        whileHover={{ scale: 1.2, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      >
+                      <div className="flex justify-center">
                         <Icon className="w-8 h-8 text-[#C6A87C] mb-3" weight="duotone" />
-                      </motion.div>
+                      </div>
                       <h3 className="text-white font-semibold mb-2">{scenario.title}</h3>
                       <p className="text-sm text-slate-400">{scenario.desc}</p>
                     </HoloCard>
@@ -1242,17 +1238,14 @@ export default function CyberHomePage() {
                 >
                   <HoloCard className="p-5 cursor-pointer group text-center h-full">
                     <div className="flex justify-center mb-3">
-                      <motion.div
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                      >
+                      <div>
                         <IconChip label={maxim.category} variant="default" />
-                      </motion.div>
+                      </div>
                     </div>
-                    <p className="text-lg font-semibold text-white group-hover:text-[#C6A87C] transition-colors mb-2">
+                    <p className="text-lg font-semibold text-white group-hover:text-[#C6A87C] mb-2">
                       {maxim.front}
                     </p>
-                    <p className="text-sm text-slate-500 group-hover:text-slate-300 transition-colors">
+                    <p className="text-sm text-slate-500 group-hover:text-slate-300">
                       {maxim.back}
                     </p>
                   </HoloCard>
@@ -1297,13 +1290,9 @@ export default function CyberHomePage() {
                   >
                     <HoloCard className="p-4 cursor-pointer h-full">
                       <div className="flex items-center gap-3">
-                        <motion.div 
-                          className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0"
-                          whileHover={{ scale: 1.15, rotate: 5 }}
-                          transition={{ type: "spring", stiffness: 400 }}
-                        >
+                        <div className="w-9 h-9 rounded-lg bg-[#C6A87C]/10 flex items-center justify-center flex-shrink-0">
                           <Icon className="w-4 h-4 text-[#C6A87C]" weight="duotone" />
-                        </motion.div>
+                        </div>
                         <div className="min-w-0 flex-1">
                           <h3 className="text-white font-medium text-sm">{template.title}</h3>
                           <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{template.desc}</p>
