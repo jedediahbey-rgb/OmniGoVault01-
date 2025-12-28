@@ -1552,42 +1552,32 @@ export default function CyberHomePage() {
       <AnimatePresence>
         {showLabyrinthPopup && (
           <>
-            {/* Backdrop - prevents background scrolling */}
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
               onClick={closeLabyrinthPopup}
-              onMouseEnter={() => {
-                // Close popup when mouse moves to backdrop on desktop
-                if (window.matchMedia('(hover: hover)').matches) {
-                  handleLabyrinthHover(false);
-                }
-              }}
+              onMouseEnter={() => isDesktop && handleLabyrinthHover(false)}
               style={{ touchAction: 'none' }}
             />
             
-            {/* Popup Container - centered on all devices */}
+            {/* Popup Container */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ type: "spring", duration: 0.4, bounce: 0.2 }}
-              className="fixed inset-0 z-[101] flex items-center justify-center p-4 sm:p-6 overflow-hidden pointer-events-none"
+              className="fixed inset-0 z-[101] flex items-center justify-center p-4 sm:p-6 pointer-events-none"
               style={{ touchAction: 'none' }}
             >
-              {/* Modal wrapper with close button outside */}
+              {/* Modal wrapper */}
               <div 
                 className="relative pointer-events-auto"
-                onMouseLeave={() => {
-                  // Close popup when mouse leaves the modal on desktop
-                  if (window.matchMedia('(hover: hover)').matches) {
-                    handleLabyrinthHover(false);
-                  }
-                }}
+                onMouseLeave={() => isDesktop && handleLabyrinthHover(false)}
               >
-                {/* Close button - positioned outside and above the box (mobile only) */}
+                {/* Close button - mobile only */}
                 <button
                   onClick={closeLabyrinthPopup}
                   className="sm:hidden absolute -top-12 right-0 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-[#0B1221]/90 border border-[#C6A87C]/40 hover:border-[#C6A87C] hover:bg-[#0B1221] text-[#C6A87C]/70 hover:text-[#C6A87C] transition-all duration-200"
@@ -1596,15 +1586,15 @@ export default function CyberHomePage() {
                   <X className="w-5 h-5" weight="bold" />
                 </button>
                 
-                {/* Modal Content */}
+                {/* Modal Content - no scroll on desktop */}
                 <div 
                   className="relative bg-[#0B1221] border border-[#C6A87C]/30 rounded-2xl overflow-hidden shadow-2xl w-full max-w-md sm:max-w-lg"
                   onClick={(e) => e.stopPropagation()}
                 >
                 
                 {/* Content area - scrollable on mobile only */}
-                <div className="max-h-[80vh] sm:max-h-none overflow-y-auto sm:overflow-visible">
-                  {/* Labyrinth Image - hedge maze photo */}
+                <div className="max-h-[80vh] sm:max-h-none overflow-y-auto sm:overflow-hidden">
+                  {/* Labyrinth Image */}
                   <div className="relative w-full">
                     <div className="aspect-[4/3] sm:aspect-[16/10] flex items-center justify-center overflow-hidden">
                       <img
@@ -1613,7 +1603,6 @@ export default function CyberHomePage() {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    {/* Subtle gradient overlay for text readability */}
                     <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0B1221]/60 via-transparent to-transparent" />
                   </div>
                   
