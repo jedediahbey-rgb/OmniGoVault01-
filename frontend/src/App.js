@@ -168,9 +168,55 @@ const AuthCallback = ({ setUser, setLoading }) => {
   );
 };
 
-// Protected Route Component - NO AUTH REQUIRED, always allow access
+// Protected Route Component - allows dev bypass mode for maintenance
 const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
-  // Always render children - no authentication check
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    const verifyAuth = async () => {
+      // If user is passed from state (e.g., from AuthCallback), skip check
+      if (location.state?.user) {
+        setIsChecking(false);
+        return;
+      }
+
+      // If we already have a user (including dev bypass), we're good
+      if (user) {
+        setIsChecking(false);
+        return;
+      }
+
+      // Otherwise, verify with server
+      if (checkAuth) {
+        await checkAuth();
+      }
+      setIsChecking(false);
+    };
+
+    verifyAuth();
+  }, [user, location.state, checkAuth]);
+
+  // While checking auth, show loading
+  if (loading || isChecking) {
+    return (
+      <div className="min-h-screen bg-vault-navy flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-2 border-vault-gold border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-vault-muted text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Dev bypass mode OR authenticated user - allow access
+  // The backend will return a dev bypass user if no valid session exists
+  if (user) {
+    return children;
+  }
+
+  // Fallback - shouldn't normally reach here due to dev bypass
   return children;
 };
 
