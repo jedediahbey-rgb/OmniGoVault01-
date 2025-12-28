@@ -112,7 +112,8 @@ export const useAuth = () => {
   return { user, setUser, loading, setLoading, checkAuth, logout, isDevMode };
 };
 
-// Auth Callback Component
+// Auth Callback Component - Handles Emergent Google Auth redirect
+// REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
 const AuthCallback = ({ setUser, setLoading }) => {
   const hasProcessed = useRef(false);
   const navigate = useNavigate();
@@ -134,11 +135,16 @@ const AuthCallback = ({ setUser, setLoading }) => {
       const sessionId = sessionIdMatch[1];
 
       try {
-        const response = await axios.post(`${API}/auth/session`, { session_id: sessionId });
+        setLoading(true);
+        const response = await axios.post(`${API}/auth/session`, { session_id: sessionId }, {
+          withCredentials: true
+        });
+        
         if (response.data.user) {
           setUser(response.data.user);
           setLoading(false);
-          navigate('/vault', { state: { user: response.data.user } });
+          // Navigate to vault dashboard after successful auth
+          navigate('/vault', { state: { user: response.data.user }, replace: true });
         } else {
           navigate('/login');
         }
@@ -156,6 +162,7 @@ const AuthCallback = ({ setUser, setLoading }) => {
       <div className="text-center">
         <div className="w-12 h-12 border-2 border-vault-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
         <p className="text-vault-gold font-heading text-lg">Authenticating...</p>
+        <p className="text-vault-muted text-sm mt-2">Verifying your identity...</p>
       </div>
     </div>
   );
