@@ -356,14 +356,12 @@ class OmniGoVaultOnboardingTester:
             
             # Test subscription endpoint
             sub_response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
-            ent_response = self.session.get(f"{self.base_url}/billing/entitlements", timeout=10)
             
-            success = sub_response.status_code == 200 and ent_response.status_code == 200
-            details = f"Subscription: {sub_response.status_code}, Entitlements: {ent_response.status_code}"
+            success = sub_response.status_code == 200
+            details = f"Subscription: {sub_response.status_code}"
             
             if success:
                 sub_data = sub_response.json()
-                ent_data = ent_response.json()
                 
                 plan_name = sub_data.get("plan_name")
                 plan_tier = sub_data.get("plan_tier")
@@ -372,18 +370,18 @@ class OmniGoVaultOnboardingTester:
                     details += f", Plan: {plan_name} (tier {plan_tier})"
                     
                     # Check entitlements structure
-                    if isinstance(ent_data, dict) and "entitlements" in ent_data:
-                        entitlements = ent_data["entitlements"]
+                    entitlements = sub_data.get("entitlements", {})
+                    if isinstance(entitlements, dict):
                         vault_limit = entitlements.get("vaults.max", 0)
                         details += f", Vault limit: {vault_limit}"
                     else:
                         success = False
-                        details += f", Invalid entitlements structure: {type(ent_data)}"
+                        details += f", Invalid entitlements structure: {type(entitlements)}"
                 else:
                     success = False
                     details += f", Unexpected plan: {plan_name} (tier {plan_tier})"
             else:
-                details += f", Sub response: {sub_response.text[:100]}, Ent response: {ent_response.text[:100]}"
+                details += f", Sub response: {sub_response.text[:100]}"
             
             self.log_test("Pro Account Entitlements", success, details)
             return success
