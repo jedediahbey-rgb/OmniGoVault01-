@@ -1593,40 +1593,39 @@ export default function CyberHomePage() {
                   className="relative bg-[#0B1221] border border-[#C6A87C]/30 rounded-2xl overflow-hidden shadow-2xl w-full max-w-md sm:max-w-lg"
                   onClick={(e) => e.stopPropagation()}
                 >
-                
-                {/* Content area - scrollable on mobile only */}
-                <div className="max-h-[80vh] sm:max-h-none overflow-y-auto sm:overflow-hidden">
-                  {/* Labyrinth Image */}
-                  <div className="relative w-full">
-                    <div className="aspect-[4/3] sm:aspect-[16/10] flex items-center justify-center overflow-hidden">
-                      <img
-                        src={LABYRINTH_IMAGE}
-                        alt="Hedge Maze Labyrinth"
-                        className="w-full h-full object-cover"
-                      />
+                  {/* Content area - scrollable on mobile only */}
+                  <div className="max-h-[80vh] sm:max-h-none overflow-y-auto sm:overflow-hidden">
+                    {/* Labyrinth Image */}
+                    <div className="relative w-full">
+                      <div className="aspect-[4/3] sm:aspect-[16/10] flex items-center justify-center overflow-hidden">
+                        <img
+                          src={LABYRINTH_IMAGE}
+                          alt="Hedge Maze Labyrinth"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0B1221]/60 via-transparent to-transparent" />
                     </div>
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0B1221]/60 via-transparent to-transparent" />
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="p-5 sm:p-6 text-center">
-                    <h3 className="text-lg sm:text-xl font-semibold text-[#C6A87C] mb-3 flex items-center justify-center gap-2">
-                      <span className="text-2xl">🌀</span>
-                      What is a Labyrinth?
-                    </h3>
-                    <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                      {LABYRINTH_DEFINITION}
-                    </p>
                     
-                    {/* Visual divider */}
-                    <div className="mt-5 pt-4 border-t border-white/10">
-                      <p className="text-xs text-slate-500 italic">
-                        Like navigating a labyrinth, trust governance requires a clear path to the center.
+                    {/* Content */}
+                    <div className="p-5 sm:p-6 text-center">
+                      <h3 className="text-lg sm:text-xl font-semibold text-[#C6A87C] mb-3 flex items-center justify-center gap-2">
+                        <span className="text-2xl">🌀</span>
+                        What is a Labyrinth?
+                      </h3>
+                      <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                        {LABYRINTH_DEFINITION}
                       </p>
+                      
+                      {/* Visual divider */}
+                      <div className="mt-5 pt-4 border-t border-white/10">
+                        <p className="text-xs text-slate-500 italic">
+                          Like navigating a labyrinth, trust governance requires a clear path to the center.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
               </div>
             </motion.div>
           </>
