@@ -14,6 +14,7 @@ Testing the following fixes:
 7. OMNICOMPETENT badge display in Billing tab
 8. Display name customization in Settings Profile tab
 9. Welcome back message uses custom display name
+10. **NEW: Automatic Demo/Live mode for homepage cards based on login status**
 
 ## Incorporate User Feedback
 - User reported loading screen was removed - VERIFIED: loading screen was NOT removed, it appears when entering vault
@@ -21,6 +22,41 @@ Testing the following fixes:
 - User requested trust-relevant plan names - DONE: Testamentary, Revocable, Irrevocable, Dynasty
 - User requested proper pricing - DONE: $0, $29, $79, Custom ($199)
 - User requested display name input - DONE: Added Profile tab in Settings
+- **NEW: User requested automatic Demo/Live mode for homepage cards - DONE: Cards now show Demo mode when logged out and Live mode when authenticated**
+
+## New Feature: Automatic Demo/Live Mode
+
+### Implementation Details
+1. **Signal Console Card:**
+   - Shows "Demo" badge (amber) when user is logged out/dev bypass
+   - Shows "Live" badge (green) when user is authenticated
+   - Uses DEMO_SIGNALS array for demo mode
+   - Fetches real governance records for live mode
+   - Refresh button only visible in live mode
+
+2. **Trust Health Card:**
+   - Shows "Demo" badge (amber) when user is logged out/dev bypass  
+   - Shows "Live" badge (green) when user is authenticated
+   - Uses DEMO_HEALTH_DATA for demo mode (score: 78, sample next actions)
+   - Fetches real health summary for live mode
+
+3. **Authentication Logic:**
+   - `isLoggedIn` state is set based on `/api/auth/me` response
+   - Dev bypass users (`dev_bypass_enabled: true`) are treated as logged OUT for demo purposes
+   - Real authenticated users (Google Auth) are treated as logged IN for live data
+
+## Test Cases for Automatic Demo/Live Mode
+
+### Frontend Tests
+1. Homepage - Signal Console shows "Demo" badge when logged out
+2. Homepage - Trust Health shows "Demo" badge when logged out
+3. Homepage - Demo data displays in Signal Console (Meeting Finalized, Distribution Logged, etc.)
+4. Homepage - Demo health score (78) displays in Trust Health card
+5. Homepage - Demo next actions display in Trust Health card
+6. Homepage - No refresh button visible on Signal Console in demo mode
+7. Vault (logged in) - Signal Console shows "Live" badge
+8. Vault (logged in) - Trust Health shows "Live" badge
+9. Vault (logged in) - Refresh button visible on Signal Console
 
 ## Test Cases
 
