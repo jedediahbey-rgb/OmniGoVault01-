@@ -6,6 +6,7 @@ import {
   CaretRight,
   ChartLine,
   ClipboardText,
+  CreditCard,
   FilePdf,
   FlowArrow,
   Gavel,
@@ -47,6 +48,7 @@ const navItems = [
   { name: 'Thread Manager', href: '/ledger-threads', icon: FlowArrow, section: 'tools' },
   { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
   { name: 'Audit Log', href: '/audit-log', icon: ClipboardText, section: 'tools' },
+  { name: 'Billing', href: '/billing', icon: CreditCard, section: 'tools' },
   { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
 ];
 
