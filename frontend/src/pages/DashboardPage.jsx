@@ -49,6 +49,7 @@ import {
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from '../components/ui/dropdown-menu';
+import { UpgradePrompt } from '../components/UpgradePrompt';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import { toast } from 'sonner';
 
