@@ -309,28 +309,28 @@ const AdminConsolePage = () => {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="bg-vault-dark border border-vault-gold/20">
+          <TabsList className="bg-vault-dark border border-vault-gold/20 w-full sm:w-auto flex">
             <TabsTrigger 
               value="accounts" 
-              className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold"
+              className="flex-1 sm:flex-none data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold text-xs sm:text-sm"
             >
-              <Building2 className="w-4 h-4 mr-2" />
-              Accounts
+              <Building2 className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Accounts</span>
             </TabsTrigger>
             <TabsTrigger 
               value="users"
-              className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold"
+              className="flex-1 sm:flex-none data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold text-xs sm:text-sm"
             >
-              <UsersIcon className="w-4 h-4 mr-2" />
-              Users
+              <UsersIcon className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Users</span>
             </TabsTrigger>
             {adminStatus?.is_omnicompetent && (
               <TabsTrigger 
                 value="audit"
-                className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold"
+                className="flex-1 sm:flex-none data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold text-xs sm:text-sm"
               >
-                <FileText className="w-4 h-4 mr-2" />
-                Audit Logs
+                <FileText className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Audit Logs</span>
               </TabsTrigger>
             )}
           </TabsList>
