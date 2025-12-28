@@ -434,6 +434,9 @@ function App() {
   const auth = useAuth();
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
+  
+  // App loader with entitlements
+  const { isLoading, entitlements, planName, planTier } = useAppLoader();
 
   // Keyboard shortcut for command palette
   useEffect(() => {
@@ -454,6 +457,15 @@ function App() {
   return (
     <BrowserRouter>
       <BillingProvider>
+        {/* Entitlement-aware loading screen */}
+        <AppLoader 
+          isLoading={isLoading}
+          entitlements={entitlements}
+          planName={planName}
+          planTier={planTier}
+          minDisplayTime={800}
+        />
+        
         <Toaster position="top-center" richColors toastOptions={{ duration: 2000, style: { marginTop: '120px' } }} />
         <CommandPalette 
           isOpen={commandPaletteOpen} 
