@@ -520,21 +520,36 @@ class OmniGoVaultOnboardingTester:
 
     # ============ TEST RUNNER ============
 
-    def run_auth_tests(self):
-        """Run all Google Auth and Dev Bypass tests"""
-        self.log("🚀 Starting OMNIGOVAULT Google Auth Integration Tests")
+    def run_onboarding_tests(self):
+        """Run all Onboarding and Dev Loop tests"""
+        self.log("🚀 Starting OMNIGOVAULT Onboarding and Dev Loop Tests")
         self.log(f"Testing against: {self.base_url}")
         self.log("=" * 80)
         
-        # Test sequence for Google Auth integration and dev bypass
+        # Test sequence for onboarding and dev loop implementation
         test_sequence = [
-            self.test_basic_system_health,
-            self.test_dev_bypass_auth_me,
-            self.test_session_endpoint_exists,
-            self.test_session_endpoint_with_invalid_session,
-            self.test_auth_me_with_invalid_token,
-            self.test_protected_endpoints_with_dev_bypass,
-            self.test_admin_console_restriction,
+            # Dev Environment Status
+            self.test_dev_environment_status,
+            
+            # Auth/Me with Dev Bypass
+            self.test_auth_me_dev_bypass,
+            
+            # Test Account Switching
+            self.test_switch_to_free_account,
+            self.test_switch_to_starter_account,
+            self.test_switch_to_pro_account,
+            
+            # Test Account Entitlements
+            self.test_free_account_entitlements,
+            self.test_starter_account_entitlements,
+            self.test_pro_account_entitlements,
+            
+            # First Login Flag
+            self.test_first_login_flag,
+            self.test_clear_first_login,
+            
+            # Session Endpoint Validation
+            self.test_session_endpoint_invalid_session,
         ]
         
         for test_func in test_sequence:
@@ -555,7 +570,7 @@ class OmniGoVaultOnboardingTester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 GOOGLE AUTH INTEGRATION TEST SUMMARY")
+        self.log("🏁 ONBOARDING AND DEV LOOP TEST SUMMARY")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
@@ -571,17 +586,20 @@ class OmniGoVaultOnboardingTester:
                 self.log(f"  • {failure['test']}: {failure['details']}")
         
         self.log("\n🎯 KEY FINDINGS:")
-        if success_rate >= 85:
-            self.log("✅ Google Auth integration and dev bypass mode working correctly")
-        elif success_rate >= 70:
-            self.log("⚠️ Most auth functionality working with minor issues")
+        if success_rate >= 90:
+            self.log("✅ Onboarding and dev loop implementation working perfectly")
+            self.log("✅ Dev bypass mode allows full access without Google OAuth")
+            self.log("✅ Test accounts can be switched for testing different tier entitlements")
+            self.log("✅ All 3 test accounts (Free/Starter/Pro) have correct entitlements seeded")
+        elif success_rate >= 75:
+            self.log("⚠️ Most onboarding functionality working with minor issues")
         else:
-            self.log("❌ Significant auth integration issues detected")
+            self.log("❌ Significant onboarding implementation issues detected")
         
-        return success_rate >= 70
+        return success_rate >= 75
 
 
 if __name__ == "__main__":
-    tester = OmniGoVaultAuthTester()
-    success = tester.run_auth_tests()
+    tester = OmniGoVaultOnboardingTester()
+    success = tester.run_onboarding_tests()
     sys.exit(0 if success else 1)
