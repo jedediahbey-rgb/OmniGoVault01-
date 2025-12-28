@@ -93,6 +93,9 @@ const sections = {
   tools: 'TOOLS'
 };
 
+// Allowed admin emails - only these users can see Admin Console
+const ADMIN_EMAILS = ['jedediah.bey@gmail.com'];
+
 export default function Sidebar({ user, onLogout, isOpen, onClose }) {
   const navigate = useNavigate();
   
@@ -106,7 +109,15 @@ export default function Sidebar({ user, onLogout, isOpen, onClose }) {
     if (onClose) onClose();
   };
 
-  const groupedItems = navItems.reduce((acc, item) => {
+  // Filter nav items - hide admin items unless user is in ADMIN_EMAILS
+  const filteredNavItems = navItems.filter(item => {
+    if (item.adminOnly) {
+      return user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
+    }
+    return true;
+  });
+
+  const groupedItems = filteredNavItems.reduce((acc, item) => {
     if (!acc[item.section]) acc[item.section] = [];
     acc[item.section].push(item);
     return acc;
