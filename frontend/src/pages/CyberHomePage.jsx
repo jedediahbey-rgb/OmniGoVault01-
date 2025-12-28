@@ -1507,6 +1507,71 @@ export default function CyberHomePage() {
         )}
       </AnimatePresence>
       
+      {/* Labyrinth Definition Popup */}
+      <AnimatePresence>
+        {showLabyrinthPopup && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100]"
+              onClick={closeLabyrinthPopup}
+            />
+            
+            {/* Popup Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", duration: 0.4, bounce: 0.2 }}
+              className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-[101] max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="bg-[#0B1221] border border-[#C6A87C]/30 rounded-2xl overflow-hidden shadow-2xl">
+                {/* Close button */}
+                <button
+                  onClick={closeLabyrinthPopup}
+                  className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white/70 hover:text-white transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4" weight="bold" />
+                </button>
+                
+                {/* Labyrinth Image */}
+                <div className="relative w-full aspect-square sm:aspect-video overflow-hidden bg-[#05080F]">
+                  <img
+                    src={LABYRINTH_IMAGE}
+                    alt="Cretan Labyrinth Design"
+                    className="w-full h-full object-contain p-4 sm:p-6"
+                  />
+                  {/* Subtle golden glow overlay */}
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#C6A87C]/5 to-transparent" />
+                </div>
+                
+                {/* Content */}
+                <div className="p-5 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-semibold text-[#C6A87C] mb-3 flex items-center gap-2">
+                    <span className="text-2xl">🌀</span>
+                    What is a Labyrinth?
+                  </h3>
+                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                    {LABYRINTH_DEFINITION}
+                  </p>
+                  
+                  {/* Visual divider */}
+                  <div className="mt-5 pt-4 border-t border-white/10">
+                    <p className="text-xs text-slate-500 italic text-center">
+                      Like navigating a labyrinth, trust governance requires a clear path to the center.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+      
       {/* ===== FOOTER ===== */}
       <footer className="py-8 bg-[#05080F] border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
