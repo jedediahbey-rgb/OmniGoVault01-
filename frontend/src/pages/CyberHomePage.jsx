@@ -1559,7 +1559,7 @@ export default function CyberHomePage() {
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
               onClick={closeLabyrinthPopup}
-              onMouseEnter={() => isDesktop && handleLabyrinthHover(false)}
+              onMouseEnter={() => window.innerWidth >= 640 && handleLabyrinthHover(false)}
               style={{ touchAction: 'none' }}
             />
             
@@ -1575,7 +1575,7 @@ export default function CyberHomePage() {
               {/* Modal wrapper */}
               <div 
                 className="relative pointer-events-auto"
-                onMouseLeave={() => isDesktop && handleLabyrinthHover(false)}
+                onMouseLeave={() => window.innerWidth >= 640 && handleLabyrinthHover(false)}
               >
                 {/* Close button - mobile only */}
                 <button
