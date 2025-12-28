@@ -809,6 +809,15 @@ export default function DashboardPage({ user }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Upgrade Prompt for Vault Limits */}
+      <UpgradePrompt
+        open={showUpgradePrompt}
+        onClose={() => setShowUpgradePrompt(false)}
+        limitType="vaults"
+        current={vaultLimit.current}
+        limit={vaultLimit.limit}
+      />
     </div>
   );
 }
