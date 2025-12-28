@@ -626,13 +626,12 @@ function App() {
   return (
     <BrowserRouter>
       <BillingProvider>
-        {/* Entitlement-aware loading screen */}
-        <AppLoader 
+        {/* Entitlement-aware loading screen - only shows for protected routes */}
+        <AppLoaderWrapper 
           isLoading={isLoading}
           entitlements={entitlements}
           planName={planName}
           planTier={planTier}
-          minDisplayTime={800}
         />
         
         <Toaster position="top-center" richColors toastOptions={{ duration: 2000, style: { marginTop: '120px' } }} />
