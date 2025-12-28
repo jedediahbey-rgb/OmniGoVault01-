@@ -279,6 +279,23 @@ export default function DashboardPage({ user }) {
   };
 
   const createPortfolio = async () => {
+    // Check entitlement first
+    try {
+      const checkRes = await axios.get(`${API}/billing/check/vaults`);
+      if (!checkRes.data.allowed) {
+        setVaultLimit({
+          current: checkRes.data.current,
+          limit: checkRes.data.limit
+        });
+        setShowUpgradePrompt(true);
+        setShowNewPortfolio(false);
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking vault limit:', error);
+      // Continue with creation if check fails (graceful degradation)
+    }
+    
     if (!newPortfolioName.trim()) {
       toast.error('Portfolio name is required');
       return;
