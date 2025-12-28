@@ -42,10 +42,11 @@ class AdminService:
     # ============ GLOBAL ROLE CHECKS ============
     
     async def is_omnicompetent(self, user_id: str) -> bool:
-        """Check if user has the Omnicompetent global role"""
+        """Check if user has any Omnicompetent role (owner or regular)"""
+        # Check for OMNICOMPETENT_OWNER or OMNICOMPETENT role
         role = await self.db.user_global_roles.find_one({
             "user_id": user_id,
-            "role": GlobalRole.OMNICOMPETENT.value
+            "role": {"$in": [GlobalRole.OMNICOMPETENT_OWNER.value, GlobalRole.OMNICOMPETENT.value]}
         })
         
         if not role:
@@ -60,6 +61,38 @@ class AdminService:
                 return False
         
         return True
+    
+    async def is_owner(self, user_id: str) -> bool:
+        """Check if user has OMNICOMPETENT_OWNER role (full admin)"""
+        role = await self.db.user_global_roles.find_one({
+            "user_id": user_id,
+            "role": GlobalRole.OMNICOMPETENT_OWNER.value
+        })
+        
+        if not role:
+            return False
+        
+        # Check expiration
+        if role.get("expires_at"):
+            expires = role["expires_at"]
+            if isinstance(expires, str):
+                expires = datetime.fromisoformat(expires.replace("Z", "+00:00"))
+            if datetime.now(timezone.utc) > expires:
+                return False
+        
+        return True
+    
+    async def is_admin(self, user_id: str) -> bool:
+        """Check if user has any admin access (owner or support)"""
+        role = await self.db.user_global_roles.find_one({
+            "user_id": user_id,
+            "role": {"$in": [
+                GlobalRole.OMNICOMPETENT_OWNER.value, 
+                GlobalRole.SUPPORT_ADMIN.value,
+                GlobalRole.BILLING_ADMIN.value
+            ]}
+        })
+        return role is not None
     
     async def has_global_role(self, user_id: str, role: GlobalRole) -> bool:
         """Check if user has a specific global role"""
