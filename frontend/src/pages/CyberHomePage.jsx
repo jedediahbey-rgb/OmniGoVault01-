@@ -1777,14 +1777,14 @@ export default function CyberHomePage() {
               </HoloCard>
             </motion.div>
             
-            {/* Trust Health Card - Aligned with Signal Console card */}
+            {/* Trust Health Card - Aligned with Signal Console card, automatic Demo/Live */}
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: '-100px' }}
               variants={fadeInUp}
             >
-              <TrustHealthCard />
+              <TrustHealthCard isLoggedIn={isLoggedIn} />
             </motion.div>
           </div>
         </div>
