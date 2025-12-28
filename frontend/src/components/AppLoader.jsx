@@ -1,29 +1,93 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 
 /**
- * AppLoader - Full-screen loading overlay with entitlement-aware messaging
- * 
- * States:
- * 1. BOOTING - Initial state, no data yet
- * 2. ENTITLEMENTS_LOADED - We have user data, still initializing app
- * 3. READY - Fade out and transition to app
- * 
- * Props:
- * - isLoading: boolean - Whether to show the loader
- * - entitlements: object | null - User's entitlements from billing API
- * - planName: string | null - Current plan name
- * - planTier: number | null - Plan tier (0=Free, 1=Starter, 2=Pro, 3=Enterprise)
- * - onLoadComplete: function - Called when loader should dismiss
+ * AppLoader - Full-screen loading overlay with Matrix-style background
+ * and entitlement-aware messaging
  */
+
+// Matrix Rain Canvas Component
+const MatrixRain = () => {
+  const canvasRef = useRef(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas size
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Matrix characters - mix of numbers, letters, and symbols
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?~`αβγδεζηθικλμνξοπρστυφχψω';
+    const charArray = chars.split('');
+    
+    const fontSize = 14;
+    const columns = Math.floor(canvas.width / fontSize);
+    
+    // Array to track y position of each column
+    const drops = Array(columns).fill(1);
+    
+    // Gold/amber color for our vault theme
+    const matrixColor = 'rgba(198, 168, 124, '; // vault-gold base
+    
+    const draw = () => {
+      // Semi-transparent black to create fade effect
+      ctx.fillStyle = 'rgba(10, 17, 40, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.font = `${fontSize}px monospace`;
+      
+      for (let i = 0; i < drops.length; i++) {
+        // Random character
+        const char = charArray[Math.floor(Math.random() * charArray.length)];
+        
+        // Varying opacity for depth effect
+        const opacity = Math.random() * 0.5 + 0.1;
+        ctx.fillStyle = matrixColor + opacity + ')';
+        
+        // Draw character
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+        
+        // Reset drop to top randomly after reaching bottom
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        
+        drops[i]++;
+      }
+    };
+    
+    const interval = setInterval(draw, 50);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, []);
+  
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 opacity-40"
+      style={{ background: 'transparent' }}
+    />
+  );
+};
 
 const AppLoader = ({ 
   isLoading = true, 
   entitlements = null, 
   planName = null,
   planTier = null,
-  minDisplayTime = 800 // Minimum display time to prevent flash
+  minDisplayTime = 2000 // Increased to allow reading
 }) => {
   const [progress, setProgress] = useState(0);
   const [canDismiss, setCanDismiss] = useState(false);
