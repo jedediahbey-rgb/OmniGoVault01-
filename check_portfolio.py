@@ -5,7 +5,7 @@ Check portfolio structure
 
 import requests
 
-BASE_URL = "https://docshare-26.preview.emergentagent.com/api"
+BASE_URL = "https://role-manager-21.preview.emergentagent.com/api"
 PORTFOLIO_ID = "port_0e9a783c1a71"
 
 def check_portfolio():
