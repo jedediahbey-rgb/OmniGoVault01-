@@ -244,6 +244,28 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
   return children;
 };
 
+// AppLoader wrapper - only shows loading on protected routes, not landing page
+const AppLoaderWrapper = ({ isLoading, entitlements, planName, planTier }) => {
+  const location = useLocation();
+  
+  // Don't show loading screen on landing page (root path)
+  const isLandingPage = location.pathname === '/' || location.pathname === '/home';
+  
+  if (isLandingPage) {
+    return null;
+  }
+  
+  return (
+    <AppLoader 
+      isLoading={isLoading}
+      entitlements={entitlements}
+      planName={planName}
+      planTier={planTier}
+      minDisplayTime={800}
+    />
+  );
+};
+
 // Layout wrapper for authenticated routes with vault transition
 const AuthLayout = ({ children, auth }) => {
   const location = useLocation();
