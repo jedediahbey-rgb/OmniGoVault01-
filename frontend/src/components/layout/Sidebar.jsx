@@ -49,6 +49,7 @@ const navItems = [
   { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
   { name: 'Audit Log', href: '/vault/audit-log', icon: ClipboardText, section: 'tools' },
   { name: 'Billing', href: '/billing', icon: CreditCard, section: 'tools' },
+  { name: 'Admin Console', href: '/admin', icon: ShieldCheck, section: 'admin', adminOnly: true },
   { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
 ];
 
