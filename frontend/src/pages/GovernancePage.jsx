@@ -22,6 +22,7 @@ import {
   PencilSimple,
   Plus,
   Scales,
+  ShieldCheck,
   ShieldPlus,
   Sparkle,
   SquaresFour,
