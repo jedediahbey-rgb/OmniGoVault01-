@@ -1308,6 +1308,603 @@ class EquityTrustAPITester:
             self.log_test("DELETE /api/evidence-binder/links/{link_id} (cleanup)", False, f"Error: {str(e)}")
             return False
 
+    # ============ VAULT SYSTEM TESTS ============
+
+    def test_vault_utility_endpoints(self):
+        """Test utility endpoints: roles, document categories, vault types"""
+        try:
+            # Test roles endpoint
+            response = self.session.get(f"{self.base_url}/vaults/roles", timeout=10)
+            success = response.status_code == 200
+            details = f"Roles Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if "roles" in data and isinstance(data["roles"], list):
+                    roles = data["roles"]
+                    details += f", Found {len(roles)} roles"
+                    
+                    # Verify expected roles
+                    expected_roles = ["TRUSTEE", "BENEFICIARY", "PROTECTOR", "ADVISOR", "ATTORNEY", "ACCOUNTANT", "VIEWER", "OWNER"]
+                    role_values = [r.get("value") for r in roles]
+                    
+                    if len(roles) == 8 and all(role in role_values for role in expected_roles):
+                        details += f", All expected roles present"
+                    else:
+                        success = False
+                        details += f", Missing or incorrect roles: {role_values}"
+                else:
+                    success = False
+                    details += f", Invalid roles response format"
+            
+            # Test document categories endpoint
+            if success:
+                response = self.session.get(f"{self.base_url}/vaults/document-categories", timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    if "categories" in data and isinstance(data["categories"], list):
+                        categories = data["categories"]
+                        details += f", Found {len(categories)} document categories"
+                        
+                        if len(categories) == 13:
+                            details += f", Correct number of categories"
+                        else:
+                            success = False
+                            details += f", Expected 13 categories but found {len(categories)}"
+                    else:
+                        success = False
+                        details += f", Invalid categories response format"
+                else:
+                    success = False
+                    details += f", Categories Status: {response.status_code}"
+            
+            # Test vault types endpoint
+            if success:
+                response = self.session.get(f"{self.base_url}/vaults/vault-types", timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    if "types" in data and isinstance(data["types"], list):
+                        types = data["types"]
+                        details += f", Found {len(types)} vault types"
+                        
+                        expected_types = ["TRUST", "ESTATE", "LOAN", "ASSET_SALE", "LITIGATION", "CORPORATE", "OTHER"]
+                        type_values = [t.get("value") for t in types]
+                        
+                        if len(types) == 7 and all(vtype in type_values for vtype in expected_types):
+                            details += f", All expected vault types present"
+                        else:
+                            success = False
+                            details += f", Missing or incorrect vault types: {type_values}"
+                    else:
+                        success = False
+                        details += f", Invalid types response format"
+                else:
+                    success = False
+                    details += f", Types Status: {response.status_code}"
+            
+            self.log_test("GET /api/vaults/utility-endpoints", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/vaults/utility-endpoints", False, f"Error: {str(e)}")
+            return False
+
+    def test_vault_crud_operations(self):
+        """Test vault CRUD: create, read, update, activate"""
+        try:
+            # 1. Create a new vault
+            vault_payload = {
+                "name": "Test Vault for API Testing",
+                "description": "Test vault created for comprehensive API testing",
+                "vault_type": "TRUST"
+            }
+            
+            response = self.session.post(f"{self.base_url}/vaults", json=vault_payload, timeout=15)
+            success = response.status_code == 200
+            details = f"Create Status: {response.status_code}"
+            
+            test_vault_id = None
+            if success:
+                data = response.json()
+                if "vault_id" in data:
+                    test_vault_id = data["vault_id"]
+                    details += f", Created vault: {test_vault_id}"
+                    details += f", Status: {data.get('status')}, Type: {data.get('vault_type')}"
+                else:
+                    success = False
+                    details += f", No vault_id in response: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            # 2. List user vaults
+            if success and test_vault_id:
+                response = self.session.get(f"{self.base_url}/vaults", timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    if "vaults" in data and isinstance(data["vaults"], list):
+                        vaults = data["vaults"]
+                        details += f", Listed {len(vaults)} vaults"
+                        
+                        # Verify our test vault is in the list
+                        found_vault = next((v for v in vaults if v.get("vault_id") == test_vault_id), None)
+                        if found_vault:
+                            details += f", Test vault found in list"
+                        else:
+                            success = False
+                            details += f", Test vault not found in list"
+                    else:
+                        success = False
+                        details += f", Invalid vaults list response"
+                else:
+                    success = False
+                    details += f", List Status: {response.status_code}"
+            
+            # 3. Get vault details
+            if success and test_vault_id:
+                response = self.session.get(f"{self.base_url}/vaults/{test_vault_id}", timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    required_fields = ["vault_id", "name", "status", "participants", "documents", "user_permissions"]
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if not missing_fields:
+                        details += f", Vault details complete"
+                        details += f", Participants: {len(data.get('participants', []))}"
+                        details += f", Documents: {len(data.get('documents', []))}"
+                        details += f", Permissions: {len(data.get('user_permissions', []))}"
+                    else:
+                        success = False
+                        details += f", Missing fields: {missing_fields}"
+                else:
+                    success = False
+                    details += f", Details Status: {response.status_code}"
+            
+            # 4. Update vault
+            if success and test_vault_id:
+                update_payload = {
+                    "name": "Updated Test Vault Name",
+                    "description": "Updated description for testing"
+                }
+                
+                response = self.session.put(f"{self.base_url}/vaults/{test_vault_id}", json=update_payload, timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("name") == update_payload["name"]:
+                        details += f", Vault updated successfully"
+                    else:
+                        success = False
+                        details += f", Update failed: name not changed"
+                else:
+                    success = False
+                    details += f", Update Status: {response.status_code}"
+            
+            # 5. Activate vault
+            if success and test_vault_id:
+                response = self.session.post(f"{self.base_url}/vaults/{test_vault_id}/activate", timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("status") == "ACTIVE":
+                        details += f", Vault activated successfully"
+                    else:
+                        success = False
+                        details += f", Activation failed: status is {data.get('status')}"
+                else:
+                    success = False
+                    details += f", Activate Status: {response.status_code}"
+            
+            self.log_test("Vault CRUD Operations", success, details)
+            
+            # Store vault ID for other tests
+            if test_vault_id:
+                self.test_vault_id = test_vault_id
+            
+            return success
+            
+        except Exception as e:
+            self.log_test("Vault CRUD Operations", False, f"Error: {str(e)}")
+            return False
+
+    def test_vault_participant_management(self):
+        """Test participant invitation and management"""
+        if not hasattr(self, 'test_vault_id') or not self.test_vault_id:
+            self.log_test("Vault Participant Management", False, "No test vault available")
+            return False
+        
+        try:
+            # 1. List current participants
+            response = self.session.get(f"{self.base_url}/vaults/{self.test_vault_id}/participants", timeout=10)
+            success = response.status_code == 200
+            details = f"List Status: {response.status_code}"
+            
+            initial_count = 0
+            if success:
+                data = response.json()
+                if "participants" in data and isinstance(data["participants"], list):
+                    participants = data["participants"]
+                    initial_count = len(participants)
+                    details += f", Found {initial_count} initial participants"
+                    
+                    # Verify creator is owner
+                    owner_found = any(p.get("role") == "OWNER" for p in participants)
+                    if owner_found:
+                        details += f", Owner participant found"
+                    else:
+                        success = False
+                        details += f", No owner participant found"
+                else:
+                    success = False
+                    details += f", Invalid participants response"
+            
+            # 2. Invite a participant
+            if success:
+                invite_payload = {
+                    "email": "test@test.com",
+                    "role": "BENEFICIARY",
+                    "display_name": "Test Beneficiary"
+                }
+                
+                response = self.session.post(
+                    f"{self.base_url}/vaults/{self.test_vault_id}/participants", 
+                    json=invite_payload, 
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if "id" in data and data.get("email") == invite_payload["email"]:
+                        details += f", Participant invited successfully: {data.get('id')}"
+                        details += f", Role: {data.get('role')}, Status: {data.get('status')}"
+                    else:
+                        success = False
+                        details += f", Invalid invitation response: {data}"
+                else:
+                    success = False
+                    details += f", Invite Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            # 3. Verify participant was added
+            if success:
+                response = self.session.get(f"{self.base_url}/vaults/{self.test_vault_id}/participants", timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    participants = data.get("participants", [])
+                    new_count = len(participants)
+                    
+                    if new_count > initial_count:
+                        details += f", Participant count increased: {initial_count} -> {new_count}"
+                        
+                        # Find the invited participant
+                        invited_participant = next((p for p in participants if p.get("email") == "test@test.com"), None)
+                        if invited_participant:
+                            details += f", Invited participant found in list"
+                        else:
+                            success = False
+                            details += f", Invited participant not found in list"
+                    else:
+                        success = False
+                        details += f", Participant count did not increase"
+                else:
+                    success = False
+                    details += f", Verify Status: {response.status_code}"
+            
+            self.log_test("Vault Participant Management", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Vault Participant Management", False, f"Error: {str(e)}")
+            return False
+
+    def test_vault_document_lifecycle(self):
+        """Test document creation, reading, and workflow"""
+        if not hasattr(self, 'test_vault_id') or not self.test_vault_id:
+            self.log_test("Vault Document Lifecycle", False, "No test vault available")
+            return False
+        
+        try:
+            # 1. Create a document
+            doc_payload = {
+                "title": "Test Trust Document",
+                "description": "Test document for API testing",
+                "category": "TRUST_INSTRUMENT",
+                "content": "<p>This is a test trust document created for API testing purposes.</p>",
+                "requires_signatures_from": ["TRUSTEE", "BENEFICIARY"]
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/vaults/{self.test_vault_id}/documents", 
+                json=doc_payload, 
+                timeout=15
+            )
+            success = response.status_code == 200
+            details = f"Create Status: {response.status_code}"
+            
+            test_document_id = None
+            if success:
+                data = response.json()
+                if "document_id" in data:
+                    test_document_id = data["document_id"]
+                    details += f", Created document: {test_document_id}"
+                    details += f", Status: {data.get('status')}, Category: {data.get('category')}"
+                else:
+                    success = False
+                    details += f", No document_id in response: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            # 2. List documents in vault
+            if success and test_document_id:
+                response = self.session.get(f"{self.base_url}/vaults/{self.test_vault_id}/documents", timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    if "documents" in data and isinstance(data["documents"], list):
+                        documents = data["documents"]
+                        details += f", Listed {len(documents)} documents"
+                        
+                        # Verify our test document is in the list
+                        found_doc = next((d for d in documents if d.get("document_id") == test_document_id), None)
+                        if found_doc:
+                            details += f", Test document found in list"
+                        else:
+                            success = False
+                            details += f", Test document not found in list"
+                    else:
+                        success = False
+                        details += f", Invalid documents list response"
+                else:
+                    success = False
+                    details += f", List Status: {response.status_code}"
+            
+            # 3. Get document details
+            if success and test_document_id:
+                response = self.session.get(f"{self.base_url}/vaults/documents/{test_document_id}", timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    required_fields = ["document_id", "title", "status", "versions", "comments", "signatures"]
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if not missing_fields:
+                        details += f", Document details complete"
+                        details += f", Versions: {len(data.get('versions', []))}"
+                        details += f", Comments: {len(data.get('comments', []))}"
+                        details += f", Signatures: {len(data.get('signatures', []))}"
+                    else:
+                        success = False
+                        details += f", Missing fields: {missing_fields}"
+                else:
+                    success = False
+                    details += f", Details Status: {response.status_code}"
+            
+            # 4. Update document content
+            if success and test_document_id:
+                update_payload = {
+                    "title": "Updated Test Trust Document",
+                    "content": "<p>This is updated content for the test trust document.</p>"
+                }
+                
+                response = self.session.put(
+                    f"{self.base_url}/vaults/documents/{test_document_id}", 
+                    json=update_payload, 
+                    timeout=10
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("title") == update_payload["title"]:
+                        details += f", Document updated successfully"
+                    else:
+                        success = False
+                        details += f", Update failed: title not changed"
+                else:
+                    success = False
+                    details += f", Update Status: {response.status_code}"
+            
+            # 5. Submit for review
+            if success and test_document_id:
+                response = self.session.post(
+                    f"{self.base_url}/vaults/documents/{test_document_id}/submit-for-review", 
+                    timeout=10
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("status") == "UNDER_REVIEW":
+                        details += f", Document submitted for review successfully"
+                    else:
+                        success = False
+                        details += f", Submit failed: status is {data.get('status')}"
+                else:
+                    success = False
+                    details += f", Submit Status: {response.status_code}"
+            
+            self.log_test("Vault Document Lifecycle", success, details)
+            
+            # Store document ID for workflow tests
+            if test_document_id:
+                self.test_document_id = test_document_id
+            
+            return success
+            
+        except Exception as e:
+            self.log_test("Vault Document Lifecycle", False, f"Error: {str(e)}")
+            return False
+
+    def test_vault_document_workflow(self):
+        """Test document workflow: comments, affirm, object, audit trail"""
+        if not hasattr(self, 'test_document_id') or not self.test_document_id:
+            self.log_test("Vault Document Workflow", False, "No test document available")
+            return False
+        
+        try:
+            # 1. Add a comment
+            comment_payload = {
+                "content": "This is a test comment on the document for API testing."
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/vaults/documents/{self.test_document_id}/comments", 
+                json=comment_payload, 
+                timeout=10
+            )
+            success = response.status_code == 200
+            details = f"Comment Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if "id" in data and data.get("content") == comment_payload["content"]:
+                    details += f", Comment added successfully: {data.get('id')}"
+                else:
+                    success = False
+                    details += f", Invalid comment response: {data}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            # 2. Affirm the document
+            if success:
+                affirm_payload = {
+                    "note": "Document looks good and is approved for execution."
+                }
+                
+                response = self.session.post(
+                    f"{self.base_url}/vaults/documents/{self.test_document_id}/affirm", 
+                    json=affirm_payload, 
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if "id" in data and data.get("note") == affirm_payload["note"]:
+                        details += f", Document affirmed successfully: {data.get('id')}"
+                    else:
+                        success = False
+                        details += f", Invalid affirmation response: {data}"
+                else:
+                    success = False
+                    details += f", Affirm Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            # 3. Get audit trail
+            if success:
+                response = self.session.get(
+                    f"{self.base_url}/vaults/documents/{self.test_document_id}/audit-trail", 
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if "events" in data and isinstance(data["events"], list):
+                        events = data["events"]
+                        details += f", Audit trail: {len(events)} events"
+                        
+                        # Verify we have expected event types
+                        event_types = [e.get("event_type") for e in events]
+                        expected_events = ["CREATED", "EDITED", "STATUS_CHANGED", "COMMENTED", "AFFIRMED"]
+                        found_events = [et for et in expected_events if et in event_types]
+                        
+                        details += f", Event types found: {found_events}"
+                        
+                        if len(found_events) >= 3:  # At least created, commented, affirmed
+                            details += f", Audit trail complete"
+                        else:
+                            success = False
+                            details += f", Missing expected events"
+                    else:
+                        success = False
+                        details += f", Invalid audit trail response"
+                else:
+                    success = False
+                    details += f", Audit Status: {response.status_code}"
+            
+            # 4. Test objection (optional - might fail if document already affirmed)
+            if success:
+                objection_payload = {
+                    "reason": "Need to review clause 3.2 before approval."
+                }
+                
+                response = self.session.post(
+                    f"{self.base_url}/vaults/documents/{self.test_document_id}/object", 
+                    json=objection_payload, 
+                    timeout=10
+                )
+                
+                # Objection might fail if document is already in wrong state, that's OK
+                if response.status_code == 200:
+                    data = response.json()
+                    details += f", Objection recorded: {data.get('id')}"
+                elif response.status_code == 400:
+                    details += f", Objection failed (expected - document may be in wrong state)"
+                else:
+                    details += f", Objection Status: {response.status_code}"
+            
+            self.log_test("Vault Document Workflow", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Vault Document Workflow", False, f"Error: {str(e)}")
+            return False
+
+    def test_vault_error_cases(self):
+        """Test error cases: permission checks, limits, invalid operations"""
+        try:
+            success = True
+            details = ""
+            
+            # 1. Test accessing non-existent vault
+            response = self.session.get(f"{self.base_url}/vaults/vault_nonexistent123", timeout=10)
+            if response.status_code == 404:
+                details += "Non-existent vault returns 404 ✓"
+            else:
+                success = False
+                details += f"Non-existent vault returned {response.status_code} (expected 404)"
+            
+            # 2. Test accessing non-existent document
+            response = self.session.get(f"{self.base_url}/vaults/documents/doc_nonexistent123", timeout=10)
+            if response.status_code == 404:
+                details += ", Non-existent document returns 404 ✓"
+            else:
+                success = False
+                details += f", Non-existent document returned {response.status_code} (expected 404)"
+            
+            # 3. Test invalid vault creation (missing required fields)
+            invalid_payload = {"description": "Missing name field"}
+            response = self.session.post(f"{self.base_url}/vaults", json=invalid_payload, timeout=10)
+            if response.status_code == 422:  # Validation error
+                details += ", Invalid vault creation returns 422 ✓"
+            else:
+                success = False
+                details += f", Invalid vault creation returned {response.status_code} (expected 422)"
+            
+            # 4. Test invalid document creation (missing required fields)
+            if hasattr(self, 'test_vault_id') and self.test_vault_id:
+                invalid_doc_payload = {"description": "Missing title field"}
+                response = self.session.post(
+                    f"{self.base_url}/vaults/{self.test_vault_id}/documents", 
+                    json=invalid_doc_payload, 
+                    timeout=10
+                )
+                if response.status_code == 422:  # Validation error
+                    details += ", Invalid document creation returns 422 ✓"
+                else:
+                    success = False
+                    details += f", Invalid document creation returned {response.status_code} (expected 422)"
+            
+            self.log_test("Vault Error Cases", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Vault Error Cases", False, f"Error: {str(e)}")
+            return False
+
+    def run_vault_tests(self):
+        """Run all vault system tests"""
+        self.log("🏛️ Starting Vault System Testing")
+        self.log("=" * 60)
+        
+        # Test in logical order
+        self.test_vault_utility_endpoints()
+        self.test_vault_crud_operations()
+        self.test_vault_participant_management()
+        self.test_vault_document_lifecycle()
+        self.test_vault_document_workflow()
+        self.test_vault_error_cases()
+        
+        self.log("=" * 60)
+
     # ============ BILLING SYSTEM TESTS ============
 
     def test_billing_plans(self):
