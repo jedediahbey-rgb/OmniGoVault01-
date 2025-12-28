@@ -285,7 +285,7 @@ const AdminConsolePage = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-vault-light flex items-center gap-2 sm:gap-3">
-              <Shield className="w-5 h-5 sm:w-7 sm:h-7 text-purple-400 flex-shrink-0" />
+              <GearSix className="w-5 h-5 sm:w-7 sm:h-7 text-purple-400 flex-shrink-0" />
               Admin Console
             </h1>
             <p className="text-vault-muted mt-1 text-sm">Platform administration and oversight</p>
