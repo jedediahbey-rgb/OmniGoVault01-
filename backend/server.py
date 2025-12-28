@@ -1090,34 +1090,19 @@ async def get_dev_status():
 @api_router.post("/dev/switch-account")
 async def switch_dev_account(request: Request, response: Response):
     """
-    Switch to a test account for testing different tier entitlements.
+    Switch to the owner account for development.
     Only works in dev bypass mode.
-    
-    Body: {"account": "free" | "starter" | "pro" | account_id}
     """
     if not DEV_BYPASS_ENABLED:
         raise HTTPException(status_code=403, detail="Dev mode not enabled")
     
-    body = await request.json()
-    target = body.get("account", "").lower()
-    
-    # Find matching test account
-    matched_acct = None
-    for acct in TEST_ACCOUNTS:
-        if acct["plan_name"].lower() == target or acct["account_id"] == target:
-            matched_acct = acct
-            break
-    
-    if not matched_acct:
-        raise HTTPException(status_code=400, detail=f"Unknown account: {target}. Use 'free', 'starter', or 'pro'")
-    
-    # Create a session for the test user
+    # Create a session for the owner user
     session_token = f"dev_sess_{uuid.uuid4().hex}"
     expires_at = datetime.now(timezone.utc) + timedelta(days=7)
     
     session_doc = {
         "session_token": session_token,
-        "user_id": matched_acct["user_id"],
+        "user_id": OWNER_USER_ID,
         "expires_at": expires_at.isoformat(),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "is_dev_session": True
@@ -1135,15 +1120,11 @@ async def switch_dev_account(request: Request, response: Response):
     )
     
     return {
-        "message": f"Switched to {matched_acct['plan_name']} test account",
+        "message": "Switched to owner account",
         "user": {
-            "user_id": matched_acct["user_id"],
-            "email": matched_acct["user_email"],
-            "name": matched_acct["user_name"]
-        },
-        "account": {
-            "account_id": matched_acct["account_id"],
-            "plan_name": matched_acct["plan_name"]
+            "user_id": OWNER_USER_ID,
+            "email": OWNER_EMAIL,
+            "name": OWNER_NAME
         }
     }
 
