@@ -286,21 +286,33 @@ const AuthLayout = ({ children, auth }) => {
 
 // App Router Component - handles auth callback via session_id in hash
 const AppRouter = ({ auth }) => {
-  const { user, setUser, loading, setLoading, checkAuth, logout } = auth;
+  const { user, setUser, loading, setLoading, checkAuth, logout, showWelcome, clearWelcome } = auth;
   const location = useLocation();
 
   // Check for session_id in URL hash FIRST - before any other routing
   // This must be synchronous to prevent race conditions
   // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
   if (location.hash && location.hash.includes('session_id=')) {
-    return <AuthCallback setUser={setUser} setLoading={setLoading} />;
+    return <AuthCallback 
+      setUser={setUser} 
+      setLoading={setLoading} 
+      onFirstLogin={() => auth.showWelcome = true}
+    />;
   }
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<CyberHomePage />} />
-      <Route path="/login" element={<Navigate to="/vault" replace />} />
+    <>
+      {/* Welcome Modal for first-time users */}
+      <WelcomeModal 
+        isOpen={showWelcome} 
+        onClose={clearWelcome}
+        userName={user?.name}
+      />
+      
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<CyberHomePage />} />
+        <Route path="/login" element={<Navigate to="/vault" replace />} />
       
       {/* Public Educational Routes - No auth required for learning */}
       <Route path="/learn" element={
