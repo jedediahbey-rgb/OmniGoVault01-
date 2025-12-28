@@ -878,6 +878,111 @@ export default function CyberHomePage() {
   
   return (
     <div className="min-h-screen bg-[#05080F] text-white overflow-x-hidden">
+      {/* Initial Loading Screen - shown when first visiting the site */}
+      {showInitialLoading && (
+        <InitialLoadingScreen 
+          onComplete={() => setShowInitialLoading(false)} 
+          planName="DYNASTY"
+        />
+      )}
+      
+      {/* ACCESS DOWNLOAD COMPLETE Screen - shown after vault animation */}
+      <AnimatePresence>
+        {showAccessComplete && (
+          <motion.div
+            className="fixed inset-0 z-[9999] bg-[#040810] flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {/* Background glow */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(ellipse at center, rgba(198,168,124,0.15) 0%, transparent 50%)',
+              }}
+            />
+            
+            {/* Content */}
+            <motion.div
+              className="relative text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >
+              {/* Success Icon */}
+              <motion.div
+                className="w-24 h-24 mx-auto mb-6 rounded-full border-2 border-[#C6A87C]/50 flex items-center justify-center"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+                style={{
+                  boxShadow: '0 0 40px rgba(198,168,124,0.3)',
+                }}
+              >
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <DownloadSimple className="w-12 h-12 text-[#C6A87C]" weight="duotone" />
+                </motion.div>
+              </motion.div>
+              
+              {/* Title */}
+              <motion.h1
+                className="text-[#C6A87C] text-2xl sm:text-3xl font-bold tracking-widest mb-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                ACCESS DOWNLOAD
+              </motion.h1>
+              
+              <motion.h2
+                className="text-white text-3xl sm:text-4xl font-bold tracking-wide mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                COMPLETE
+              </motion.h2>
+              
+              {/* Progress bar complete */}
+              <motion.div
+                className="w-64 h-1.5 bg-[#C6A87C]/20 rounded-full mx-auto overflow-hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <motion.div
+                  className="h-full bg-gradient-to-r from-[#C6A87C] to-[#E8D5B5] rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: '100%' }}
+                  transition={{ delay: 0.7, duration: 0.5, ease: 'easeOut' }}
+                />
+              </motion.div>
+              
+              {/* Checkmark particles */}
+              {[...Array(8)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1.5 h-1.5 rounded-full bg-[#C6A87C]"
+                  style={{
+                    left: `calc(50% + ${Math.cos((i * Math.PI * 2) / 8) * 80}px)`,
+                    top: `calc(40% + ${Math.sin((i * Math.PI * 2) / 8) * 80}px)`,
+                  }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
+                  transition={{ delay: 0.6 + i * 0.05, duration: 0.8 }}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* Premium Vault Door Opening Animation */}
       <AnimatePresence>
         {vaultOpening && (
