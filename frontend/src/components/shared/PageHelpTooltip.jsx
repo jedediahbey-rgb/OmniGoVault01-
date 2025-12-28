@@ -70,7 +70,7 @@ export const PAGE_HELP_CONTENT = {
   },
   auditLog: {
     title: 'Audit Log',
-    description: 'Your complete diary of all system activities. Automatically tracks document changes, binder generation, record finalizations, and other important events. Use for compliance reporting and accountability.'
+    description: 'Tracks document changes, binder generation, record finalizations, and other important events. Use for compliance reporting and accountability.'
   },
   settings: {
     title: 'Settings',

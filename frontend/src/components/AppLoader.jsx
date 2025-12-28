@@ -87,25 +87,26 @@ const AppLoader = ({
   entitlements = null, 
   planName = null,
   planTier = null,
-  minDisplayTime = 2000 // Increased to allow reading
+  minDisplayTime = 3500 // Increased significantly to allow reading Matrix effects
 }) => {
   const [progress, setProgress] = useState(0);
   const [canDismiss, setCanDismiss] = useState(false);
   const [phase, setPhase] = useState('booting'); // booting | entitled | ready
 
-  // Progress simulation - slower for readability
+  // Progress simulation - much slower for Matrix effect visibility
   useEffect(() => {
     if (!isLoading) {
-      setProgress(100);
+      // Don't immediately jump to 100 - let the animation play
       return;
     }
 
     const intervals = [
-      { target: 20, duration: 400 },
-      { target: 40, duration: 600 },
-      { target: 60, duration: 500 },
-      { target: 80, duration: 400 },
-      { target: 90, duration: 300 },
+      { target: 15, duration: 600 },
+      { target: 30, duration: 700 },
+      { target: 45, duration: 600 },
+      { target: 60, duration: 700 },
+      { target: 75, duration: 600 },
+      { target: 85, duration: 500 },
     ];
 
     let currentIndex = 0;
@@ -123,14 +124,14 @@ const AppLoader = ({
     runProgress();
   }, [isLoading]);
 
-  // Phase management with delay for readability
+  // Phase management with longer delay for readability
   useEffect(() => {
     if (entitlements && phase === 'booting') {
-      // Delay transition to let "Jacking In" text be read
+      // Much longer delay to let Matrix effects be seen
       setTimeout(() => {
         setPhase('entitled');
-        setProgress(95);
-      }, 800);
+        setProgress(90);
+      }, 1500);
     }
   }, [entitlements, phase]);
 
@@ -146,10 +147,10 @@ const AppLoader = ({
   useEffect(() => {
     if (!isLoading && canDismiss && phase === 'entitled') {
       setProgress(100);
-      // Small delay to show 100% progress before dismissing
+      // Longer delay to show 100% progress and let user read the entitlement message
       const timer = setTimeout(() => {
         setPhase('ready');
-      }, 200);
+      }, 800);
       return () => clearTimeout(timer);
     }
   }, [isLoading, canDismiss, phase]);
@@ -157,8 +158,10 @@ const AppLoader = ({
   // Handle case where entitlements haven't loaded yet but we're past min time
   useEffect(() => {
     if (!isLoading && canDismiss && phase === 'booting') {
-      // If we're still booting but loading is done, force transition
-      setPhase('entitled');
+      // If we're still booting but loading is done, give more time
+      setTimeout(() => {
+        setPhase('entitled');
+      }, 500);
     }
   }, [isLoading, canDismiss, phase]);
 
