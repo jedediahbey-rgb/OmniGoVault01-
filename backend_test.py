@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Equity Trust Portfolio Application
-Comprehensive Regression Testing for Multiple Feature Updates
+Backend API Testing for OMNIGOVAULT Application
+Google Auth Integration and Dev Bypass Mode Testing
 """
 
 import requests
@@ -15,7 +15,7 @@ import hashlib
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://vaultshare-2.preview.emergentagent.com/api"
 
-class EquityTrustAPITester:
+class OmniGoVaultAuthTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
