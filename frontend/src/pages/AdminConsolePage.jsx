@@ -50,8 +50,9 @@ import { Label } from '../components/ui/label';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Role badge colors
+// Role badge colors - OMNICOMPETENT_OWNER gets special glowing purple style
 const roleBadgeColors = {
+  OMNICOMPETENT_OWNER: 'bg-purple-600/30 text-purple-300 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.4)]',
   OMNICOMPETENT: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   SUPPORT_ADMIN: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   BILLING_ADMIN: 'bg-green-500/20 text-green-400 border-green-500/30'
