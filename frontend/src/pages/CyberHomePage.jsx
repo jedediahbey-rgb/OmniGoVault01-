@@ -41,12 +41,17 @@ import {
   Eye,
   ClockCounterClockwise,
   Warning,
-  X
+  X,
+  Info
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 
 const API = process.env.REACT_APP_BACKEND_URL + '/api';
+
+// Labyrinth definition image and text
+const LABYRINTH_IMAGE = "https://customer-assets.emergentagent.com/job_vaultshare-2/artifacts/4fihvhen_cretan_labyrinth_design_shutterstock_2070606107.webp";
+const LABYRINTH_DEFINITION = "A labyrinth is a complex path leading inwards, often a single, winding route to a center, used for walking meditation, reflection, and stress relief, distinct from a maze which has choices and dead ends. Figuratively, it means any confusing, intricate situation or structure, like a \"labyrinth of rules\" or \"labyrinth of love,\" while anatomically, it refers to the inner ear.";
 
 // Demo Data (fallback)
 const DEMO_SIGNALS = [
