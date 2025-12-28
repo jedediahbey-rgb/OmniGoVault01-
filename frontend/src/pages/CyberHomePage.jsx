@@ -406,7 +406,7 @@ const TrustHealthCard = () => {
       
       {/* Score */}
       {loading ? (
-        <div className="flex items-end gap-3 sm:gap-4 mb-4 sm:mb-6 animate-pulse">
+        <div className="flex items-end gap-3 mb-4 animate-pulse">
           <div className="h-12 w-16 bg-white/10 rounded"></div>
         </div>
       ) : needsScan ? (
@@ -422,11 +422,11 @@ const TrustHealthCard = () => {
           </Button>
         </div>
       ) : (
-        <div className="flex items-end gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className={`text-4xl sm:text-5xl font-bold ${getScoreColor(score)}`}>
+        <div className="flex items-end gap-3 mb-4">
+          <div className={`text-4xl font-bold ${getScoreColor(score)}`}>
             {Math.round(score)}
           </div>
-          <div className="pb-1 sm:pb-2 flex items-center gap-1">
+          <div className="pb-1 flex items-center gap-1">
             {trend !== null && trend !== 0 && (
               <>
                 {trend > 0 ? (
@@ -434,10 +434,10 @@ const TrustHealthCard = () => {
                 ) : (
                   <ArrowDown className="w-4 h-4 text-red-400" weight="bold" />
                 )}
-                <span className={`text-xs sm:text-sm ${trend > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <span className={`text-xs ${trend > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {trend > 0 ? '+' : ''}{trend}
                 </span>
-                <span className="text-[10px] sm:text-xs text-slate-500 ml-1">this week</span>
+                <span className="text-[10px] text-slate-500 ml-1">this week</span>
               </>
             )}
           </div>
@@ -446,7 +446,7 @@ const TrustHealthCard = () => {
       
       {/* Mini trend */}
       {!loading && !needsScan && (
-        <div className="h-10 sm:h-12 mb-4 sm:mb-6 flex items-end gap-1">
+        <div className="h-10 mb-4 flex items-end gap-1">
           {trendBars.map((val, i) => (
             <motion.div
               key={i}
