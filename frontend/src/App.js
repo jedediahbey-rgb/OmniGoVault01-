@@ -566,7 +566,8 @@ const AppRouter = ({ auth }) => {
       />
       
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      </Routes>
+    </>
   );
 };
 
