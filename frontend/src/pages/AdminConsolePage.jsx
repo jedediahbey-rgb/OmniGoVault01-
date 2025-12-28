@@ -521,6 +521,20 @@ const AdminConsolePage = () => {
           user={selectedUser}
           onImpersonate={handleStartImpersonation}
         />
+        
+        {/* Account Details Dialog */}
+        <AccountDetailsDialog
+          open={showAccountDetails}
+          onClose={() => setShowAccountDetails(false)}
+          account={selectedAccount}
+        />
+        
+        {/* User Details Dialog */}
+        <UserDetailsDialog
+          open={showUserDetails}
+          onClose={() => setShowUserDetails(false)}
+          user={selectedUser}
+        />
       </div>
     </div>
   );
