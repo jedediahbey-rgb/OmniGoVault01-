@@ -224,25 +224,25 @@ const AppLoader = ({
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          transition={{ duration: 1.0, ease: 'easeInOut' }}
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-vault-navy"
         >
-          {/* Matrix Rain Background */}
+          {/* Matrix Rain Background - More visible */}
           <MatrixRain />
           
-          {/* Dark gradient overlay for text readability */}
+          {/* Lighter gradient overlay - allows more Matrix visibility */}
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(ellipse at center, rgba(10, 17, 40, 0.7) 0%, rgba(10, 17, 40, 0.95) 70%)'
+              background: 'radial-gradient(ellipse at center, rgba(10, 17, 40, 0.3) 0%, rgba(10, 17, 40, 0.75) 60%, rgba(10, 17, 40, 0.9) 100%)'
             }}
           />
 
           {/* Scanline effect */}
           <div 
-            className="absolute inset-0 pointer-events-none opacity-[0.03]"
+            className="absolute inset-0 pointer-events-none opacity-[0.04]"
             style={{
-              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(198, 168, 124, 0.1) 2px, rgba(198, 168, 124, 0.1) 4px)'
+              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(198, 168, 124, 0.15) 2px, rgba(198, 168, 124, 0.15) 4px)'
             }}
           />
 
