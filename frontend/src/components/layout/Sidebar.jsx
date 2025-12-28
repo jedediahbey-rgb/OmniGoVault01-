@@ -47,7 +47,7 @@ const navItems = [
   { name: 'Diagnostics', href: '/diagnostics', icon: Stethoscope, section: 'tools' },
   { name: 'Thread Manager', href: '/ledger-threads', icon: FlowArrow, section: 'tools' },
   { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
-  { name: 'Audit Log', href: '/audit-log', icon: ClipboardText, section: 'tools' },
+  { name: 'Audit Log', href: '/vault/audit-log', icon: ClipboardText, section: 'tools' },
   { name: 'Billing', href: '/billing', icon: CreditCard, section: 'tools' },
   { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
 ];
