@@ -587,20 +587,97 @@ def parse_currency_value(value) -> Optional[float]:
 
 # ============ AUTH HELPERS ============
 
+# Dev bypass email - allows unrestricted access for maintenance
+DEV_BYPASS_EMAIL = "user@omnigovault.com"
+DEV_USER_ID = "default_user"
+
 async def get_current_user(request: Request) -> User:
-    """Get current user - AUTH DISABLED, returns mock user"""
-    # Return a default user for all requests
+    """
+    Get current user from session cookie or Authorization header.
+    
+    Dev Bypass Mode: Returns a default user for development/maintenance.
+    Production Mode: Validates session tokens from Google OAuth.
+    
+    REMINDER: This auth flow integrates with Emergent Google Auth.
+    DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+    """
+    
+    # Try to get session token from cookie first, then Authorization header
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            session_token = auth_header.split(" ")[1]
+    
+    # If no session token, return dev bypass user
+    if not session_token:
+        return User(
+            user_id=DEV_USER_ID,
+            email=DEV_BYPASS_EMAIL,
+            name="Default User",
+            picture="",
+            created_at=datetime.now(timezone.utc)
+        )
+    
+    # Validate session token
+    session_doc = await db.user_sessions.find_one(
+        {"session_token": session_token},
+        {"_id": 0}
+    )
+    
+    if not session_doc:
+        # Session not found - return dev user for development
+        return User(
+            user_id=DEV_USER_ID,
+            email=DEV_BYPASS_EMAIL,
+            name="Default User",
+            picture="",
+            created_at=datetime.now(timezone.utc)
+        )
+    
+    # Check expiry
+    expires_at = session_doc.get("expires_at")
+    if expires_at:
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if expires_at < datetime.now(timezone.utc):
+            # Session expired - return dev user
+            return User(
+                user_id=DEV_USER_ID,
+                email=DEV_BYPASS_EMAIL,
+                name="Default User",
+                picture="",
+                created_at=datetime.now(timezone.utc)
+            )
+    
+    # Get user document
+    user_doc = await db.users.find_one(
+        {"user_id": session_doc["user_id"]},
+        {"_id": 0}
+    )
+    
+    if not user_doc:
+        return User(
+            user_id=DEV_USER_ID,
+            email=DEV_BYPASS_EMAIL,
+            name="Default User",
+            picture="",
+            created_at=datetime.now(timezone.utc)
+        )
+    
     return User(
-        user_id="default_user",
-        email="user@omnigovault.com",
-        name="Default User",
-        picture="",
+        user_id=user_doc["user_id"],
+        email=user_doc.get("email", ""),
+        name=user_doc.get("name", ""),
+        picture=user_doc.get("picture", ""),
         created_at=datetime.now(timezone.utc)
     )
 
 
 async def get_optional_user(request: Request) -> Optional[User]:
-    """Get user - always returns default user"""
+    """Get user - always returns a user (default or authenticated)"""
     return await get_current_user(request)
 
 
