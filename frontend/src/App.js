@@ -8,6 +8,8 @@ import MainLayout from './components/layout/MainLayout';
 import CommandPalette from './components/shared/CommandPalette';
 import AssistantDrawer from './components/shared/AssistantDrawer';
 import { BillingProvider } from './contexts/BillingContext';
+import AppLoader from './components/AppLoader';
+import { useAppLoader } from './hooks/useAppLoader';
 
 // Pages
 import CyberHomePage from './pages/CyberHomePage';
