@@ -1,53 +1,45 @@
-# Test Result - RM-ID Migration Functionality Testing
+# Test Result - Subscription & Entitlement System
 
-## Latest Testing Session - December 27, 2025 22:33 UTC
+## Latest Testing Session - December 28, 2025
 
 ### Testing Goal
-Verify RM-ID migration functionality for the OmniGovault application including:
-1. Trust profiles with proper vs placeholder RM-IDs
-2. RM-ID migration status for portfolio port_d92308e007f1
-3. Migration endpoint functionality
-4. Governance records RM-ID format verification
+Verify the new Subscription and Entitlement System implementation:
+1. Backend billing APIs (plans, subscription, usage, entitlement checks)
+2. Frontend BillingPage component
+3. Entitlement-gated portfolio creation
+4. Stripe checkout integration (basic setup)
 
-### Backend Testing Results - December 27, 2025 22:33 UTC
+### Previous Session - RM-ID Migration Testing (December 27, 2025)
+See archived results below.
 
-#### RM-ID Migration Test Summary
-**Portfolio Tested**: port_d92308e007f1
-**Backend URL**: https://animation-cleanup.preview.emergentagent.com/api
+---
 
-#### 1. Trust Profiles Check - ✅ PASS
-- **GET /api/trust-profiles**: ✅ Working correctly
-- **Found**: 1 trust profile
-- **Proper RM-ID profiles**: 1 (trust_5ffd0e387246)
-- **Placeholder profiles**: 0
-- **Profile RM-ID**: RF743916765US (proper format, not placeholder)
-- **Status**: rm_id_is_placeholder: false ✅
+## Current Test Session - Subscription System
 
-#### 2. Governance Records Migration Status - ✅ PASS  
-- **GET /api/governance/v2/records?portfolio_id=port_d92308e007f1**: ✅ Working correctly
-- **Total records found**: 5
-- **Migration Analysis**:
-  - 🟢 **Proper IDs (RF743916765US)**: 4 records (80% success rate)
-  - 🔴 **TEMP IDs remaining**: 1 record (20%)
-  - 🟡 **Other proper IDs**: 0
-- **Sample migrated records**:
-  - RF743916765US-2.001 - Smith v. Trust ~ Beneficiary Distributor (dispute)
-  - RF743916765US-4.001 - Ammitai Jedediah Bey Life Insurance (insurance)
-  - RF743916765US-16.001 - Q4 2025 Performance Mediation (minutes)
-  - RF743916765US-1.001 - Q4 2025 Trustee Fee (compensation)
-- **Remaining TEMP ID**:
-  - TEMPB00E3905-21.001 - Q1 2026 Beneficiary Distribution (distribution)
+### Backend API Tests Required:
+1. `GET /api/billing/plans` - List all subscription plans
+2. `GET /api/billing/subscription` - Get current subscription & entitlements
+3. `GET /api/billing/usage` - Get current usage stats
+4. `GET /api/billing/check/vaults` - Check vault limit
+5. `GET /api/billing/check/members` - Check team member limit
+6. `POST /api/billing/admin/set-plan/{account_id}/{plan_id}` - Admin upgrade
+7. `POST /api/billing/checkout` - Create checkout session (Stripe)
 
-#### 3. Migration Endpoint Test - ✅ PASS
-- **POST /api/trust-profiles/{profile_id}/migrate-rm-ids**: ✅ Working correctly
-- **Profile tested**: trust_5ffd0e387246 (proper RM-ID)
-- **Migration completed successfully**
-- **RM Base**: RF743916765US
-- **Groups allocated**: 8
-- **Result**: 0 migrated, 8 failed (expected - records already migrated)
+### Frontend Tests Required:
+1. Navigate to /billing page
+2. Verify plan cards display correctly
+3. Verify Monthly/Yearly toggle works
+4. Verify current plan badge shows
+5. Verify usage progress bars display
+6. Verify feature badges (Analytics, API, Templates, Support)
 
-#### 4. Migration Endpoint Error Handling - ✅ PASS
-- **Placeholder RM-ID test**: No placeholder profiles available (good state)
+### Entitlement Integration Tests:
+1. Test portfolio creation when at limit (should show upgrade prompt)
+2. Test portfolio creation when within limit (should succeed)
+
+---
+
+## Archived: RM-ID Migration Testing - December 27, 2025 22:33 UTC
 - **Expected behavior**: Should return 400 error for placeholder RM-IDs ✅
 
 #### 5. RM-ID Format Verification - ✅ PASS
