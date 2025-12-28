@@ -47,7 +47,67 @@ import {
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import InitialLoadingScreen from '../components/InitialLoadingScreen';
+
+// Matrix Rain Canvas Component for Initial Loading
+const MatrixRain = () => {
+  const canvasRef = useRef(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?~`αβγδεζηθικλμνξοπρστυφχψω';
+    const charArray = chars.split('');
+    
+    const fontSize = 14;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
+    const matrixColor = 'rgba(198, 168, 124, ';
+    
+    const draw = () => {
+      ctx.fillStyle = 'rgba(10, 17, 40, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.font = `${fontSize}px monospace`;
+      
+      for (let i = 0; i < drops.length; i++) {
+        const char = charArray[Math.floor(Math.random() * charArray.length)];
+        const opacity = Math.random() * 0.5 + 0.1;
+        ctx.fillStyle = matrixColor + opacity + ')';
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+        
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    };
+    
+    const interval = setInterval(draw, 50);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, []);
+  
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 opacity-70"
+      style={{ background: 'transparent' }}
+    />
+  );
+};
 
 const API = process.env.REACT_APP_BACKEND_URL + '/api';
 
