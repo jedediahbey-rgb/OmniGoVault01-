@@ -44,6 +44,8 @@ import BinderPage from './pages/BinderPage';
 import AuditLogPage from './pages/AuditLogPage';
 import BillingPage from './pages/BillingPage';
 import AdminConsolePage from './pages/AdminConsolePage';
+import WorkspacesPage from './pages/WorkspacesPage';
+import WorkspaceDetailPage from './pages/WorkspaceDetailPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
