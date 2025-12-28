@@ -213,18 +213,15 @@ export default function AuditLogPage() {
 
   return (
     <div className="min-h-screen bg-vault-dark">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex flex-col gap-4 mb-8">
+        <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-              <ClipboardText className="w-7 h-7 text-vault-gold" weight="fill" />
+            <h1 className="text-lg sm:text-2xl font-bold text-white flex items-center gap-2 sm:gap-3">
+              <ClipboardText className="w-5 h-5 sm:w-7 sm:h-7 text-vault-gold" weight="fill" />
               Audit Log
-            </h1>
-            <p className="text-vault-muted mt-1 text-sm flex items-center gap-2">
-              Your complete diary of all system activities
               <PageHelpTooltip pageKey="auditLog" />
-            </p>
+            </h1>
           </div>
           
           {/* Action buttons - all on one line */}
@@ -269,25 +266,25 @@ export default function AuditLogPage() {
 
         {/* Summary Cards */}
         {summary && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="p-4 rounded-lg bg-[#0A0F1A] border border-vault-gold/10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="p-3 sm:p-4 rounded-lg bg-[#0A0F1A] border border-vault-gold/10">
               <div className="flex items-center gap-2 mb-2">
                 <ChartBar className="w-4 h-4 text-vault-gold" />
-                <span className="text-vault-muted text-sm">Total Events</span>
+                <span className="text-vault-muted text-xs sm:text-sm">Total Events</span>
               </div>
-              <div className="text-2xl font-bold text-white">{summary.total_entries}</div>
+              <div className="text-xl sm:text-2xl font-bold text-white">{summary.total_entries}</div>
               <div className="text-xs text-vault-muted">Last 30 days</div>
             </div>
             
-            <div className="p-4 rounded-lg bg-[#0A0F1A] border border-vault-gold/10">
+            <div className="p-3 sm:p-4 rounded-lg bg-[#0A0F1A] border border-vault-gold/10">
               <div className="flex items-center gap-2 mb-2">
                 <FileText className="w-4 h-4 text-blue-400" />
-                <span className="text-vault-muted text-sm">Governance</span>
+                <span className="text-vault-muted text-xs sm:text-sm">Governance</span>
               </div>
-              <div className="text-2xl font-bold text-blue-400">{summary.by_category?.governance || 0}</div>
+              <div className="text-xl sm:text-2xl font-bold text-blue-400">{summary.by_category?.governance || 0}</div>
             </div>
             
-            <div className="p-4 rounded-lg bg-[#0A0F1A] border border-vault-gold/10">
+            <div className="p-3 sm:p-4 rounded-lg bg-[#0A0F1A] border border-vault-gold/10">
               <div className="flex items-center gap-2 mb-2">
                 <Folder className="w-4 h-4 text-purple-400" />
                 <span className="text-vault-muted text-sm">Binders</span>
