@@ -458,14 +458,14 @@ const AdminConsolePage = () => {
           {/* Audit Logs Tab */}
           <TabsContent value="audit" className="mt-6">
             <Card className="bg-vault-dark border-vault-gold/20">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-vault-light">Admin Audit Logs</CardTitle>
+              <CardHeader className="p-3 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <CardTitle className="text-vault-light text-base sm:text-lg">Admin Audit Logs</CardTitle>
                   <Button
                     onClick={fetchAuditLogs}
                     variant="outline"
                     size="sm"
-                    className="border-vault-gold/30"
+                    className="border-vault-gold/30 w-full sm:w-auto"
                   >
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Refresh
