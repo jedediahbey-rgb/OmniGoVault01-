@@ -92,7 +92,14 @@ class EntitlementService:
                     expires = datetime.fromisoformat(expires.replace("Z", "+00:00"))
                 if now > expires:
                     continue
-            result[ent["key"]] = ent["value"]
+            
+            # Handle both old and new entitlement formats
+            if "value" in ent:
+                result[ent["key"]] = ent["value"]
+            elif "entitlements" in ent:
+                # Old format where entitlements were stored as a nested object
+                for key, value in ent["entitlements"].items():
+                    result[key] = value
         
         return result
     
