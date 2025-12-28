@@ -37,14 +37,33 @@ async def require_admin(request: Request):
 
 
 async def require_omnicompetent(request: Request):
-    """Require Omnicompetent role"""
-    from server import get_current_user
+    """Require Omnicompetent role (owner only for admin actions)"""
+    from server import get_current_user, OWNER_USER_ID
     
     user = await get_current_user(request)
     admin_service = get_admin_service()
     
-    if not await admin_service.is_omnicompetent(user.user_id):
-        raise HTTPException(status_code=403, detail="Omnicompetent access required")
+    # Owner always has access
+    if user.user_id == OWNER_USER_ID:
+        return user
+    
+    # Check for OMNICOMPETENT_OWNER role
+    if not await admin_service.is_owner(user.user_id):
+        raise HTTPException(status_code=403, detail="Owner access required")
+    
+    return user
+
+
+async def require_owner(request: Request):
+    """Require platform owner access (for sensitive operations)"""
+    from server import get_current_user, OWNER_USER_ID
+    
+    user = await get_current_user(request)
+    
+    if user.user_id != OWNER_USER_ID:
+        admin_service = get_admin_service()
+        if not await admin_service.is_owner(user.user_id):
+            raise HTTPException(status_code=403, detail="Platform owner access required")
     
     return user
 
