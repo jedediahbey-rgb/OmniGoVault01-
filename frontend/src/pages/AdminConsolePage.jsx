@@ -635,7 +635,7 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
           </Button>
           {isOmnicompetent && (
             <Button variant="ghost" size="sm" onClick={onGrantRole || (() => {})} className="h-7 w-7 sm:h-8 sm:w-8 p-0">
-              <ShieldCheck className="w-4 h-4" />
+              <UserPlus className="w-4 h-4" />
             </Button>
           )}
           {user.user_id !== currentUserId && (
