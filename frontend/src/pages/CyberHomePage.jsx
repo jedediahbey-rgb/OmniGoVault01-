@@ -164,19 +164,15 @@ const Scanline = () => (
   />
 );
 
-// Holographic Card component with enhanced animations
+// Holographic Card component - clean, no animations
 const HoloCard = ({ children, className = '', hover = true, onClick, delay = 0 }) => (
-  <motion.div
-    initial="rest"
-    whileHover={hover ? "hover" : "rest"}
-    variants={cardHover}
-    whileTap={hover ? { scale: 0.98 } : {}}
-    className={`relative bg-[#0B1221]/70 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden transition-colors duration-500 hover:border-[#C6A87C]/40 hover:shadow-[0_0_30px_rgba(198,168,124,0.1)] ${className}`}
+  <div
+    className={`relative bg-[#0B1221]/70 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#C6A87C]/40 hover:shadow-[0_0_30px_rgba(198,168,124,0.1)] ${className}`}
     onClick={onClick}
   >
     <Scanline />
     <div className="relative z-20">{children}</div>
-  </motion.div>
+  </div>
 );
 
 // Icon Chip component
