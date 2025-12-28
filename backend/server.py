@@ -790,8 +790,112 @@ async def login(request: Request, response: Response):
 
 @api_router.post("/auth/session")
 async def create_session(request: Request, response: Response):
-    """Legacy endpoint - kept for compatibility but redirects to login"""
-    raise HTTPException(status_code=400, detail="Use /auth/login instead")
+    """
+    Process Emergent Google Auth session_id and create a session.
+    
+    This endpoint receives a session_id from the Emergent OAuth flow,
+    exchanges it for user data, and creates a persistent session.
+    
+    REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+    """
+    body = await request.json()
+    session_id = body.get("session_id")
+    
+    if not session_id:
+        raise HTTPException(status_code=400, detail="session_id required")
+    
+    try:
+        # Exchange session_id for user data via Emergent Auth API
+        async with httpx.AsyncClient() as client:
+            auth_response = await client.get(
+                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                headers={"X-Session-ID": session_id},
+                timeout=30.0
+            )
+            
+            if auth_response.status_code != 200:
+                logger.error(f"Emergent auth failed: {auth_response.status_code} - {auth_response.text}")
+                raise HTTPException(status_code=401, detail="Authentication failed")
+            
+            auth_data = auth_response.json()
+    except httpx.RequestError as e:
+        logger.error(f"Emergent auth request failed: {e}")
+        raise HTTPException(status_code=500, detail="Authentication service unavailable")
+    
+    # Extract user data from Emergent response
+    email = auth_data.get("email", "").lower()
+    name = auth_data.get("name", "")
+    picture = auth_data.get("picture", "")
+    emergent_session_token = auth_data.get("session_token")
+    
+    if not email:
+        raise HTTPException(status_code=400, detail="No email returned from auth provider")
+    
+    # Check if user exists, create or update
+    existing_user = await db.users.find_one({"email": email}, {"_id": 0})
+    
+    if existing_user:
+        user_id = existing_user["user_id"]
+        # Update user info if changed
+        await db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {
+                "name": name or existing_user.get("name", ""),
+                "picture": picture or existing_user.get("picture", ""),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+    else:
+        # Create new user
+        user_id = f"user_{uuid.uuid4().hex[:12]}"
+        user_doc = {
+            "user_id": user_id,
+            "email": email,
+            "name": name or email.split("@")[0],
+            "picture": picture,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.users.insert_one(user_doc)
+    
+    # Create session - use our own session token for consistency
+    session_token = emergent_session_token or f"sess_{uuid.uuid4().hex}"
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    
+    # Remove old sessions for this user
+    await db.user_sessions.delete_many({"user_id": user_id})
+    
+    session_doc = {
+        "session_token": session_token,
+        "user_id": user_id,
+        "expires_at": expires_at.isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.user_sessions.insert_one(session_doc)
+    
+    # Set httpOnly cookie
+    response.set_cookie(
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+        max_age=7 * 24 * 60 * 60  # 7 days
+    )
+    
+    # Get final user data
+    user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    
+    return {
+        "user": {
+            "user_id": user_id,
+            "email": email,
+            "name": user_doc.get("name", ""),
+            "picture": user_doc.get("picture", "")
+        },
+        "session_token": session_token
+    }
 
 
 @api_router.get("/auth/me")
