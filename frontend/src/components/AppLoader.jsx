@@ -232,19 +232,19 @@ const AppLoader = ({
           />
 
           {/* Content */}
-          <div className="relative z-10 flex flex-col items-center gap-8 px-6">
+          <div className="relative z-10 flex flex-col items-center gap-6 px-8 py-10 rounded-2xl bg-vault-navy/60 backdrop-blur-sm border border-vault-gold/10">
             {/* Logo / Wordmark with Matrix Jack Icon */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="flex items-center gap-3"
+              className="flex items-center gap-4"
             >
-              <div className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/30 flex items-center justify-center relative">
+              <div className="w-12 h-12 rounded-lg bg-vault-gold/10 border border-vault-gold/40 flex items-center justify-center relative">
                 {/* Matrix Jack/Plug Icon */}
                 <svg 
                   viewBox="0 0 24 24" 
-                  className="w-6 h-6 text-vault-gold"
+                  className="w-7 h-7 text-vault-gold"
                   fill="none" 
                   stroke="currentColor" 
                   strokeWidth="1.5"
@@ -266,44 +266,44 @@ const AppLoader = ({
                 {/* Pulse effect when loading */}
                 {phase === 'booting' && (
                   <motion.div
-                    className="absolute inset-0 rounded-lg border border-vault-gold/50"
+                    className="absolute inset-0 rounded-lg border-2 border-vault-gold/50"
                     animate={{ 
-                      scale: [1, 1.2, 1],
-                      opacity: [0.5, 0, 0.5]
+                      scale: [1, 1.3, 1],
+                      opacity: [0.6, 0, 0.6]
                     }}
                     transition={{ 
-                      duration: 2,
+                      duration: 1.5,
                       repeat: Infinity,
                       ease: "easeInOut"
                     }}
                   />
                 )}
               </div>
-              <span className="text-lg font-heading text-vault-light tracking-widest font-semibold">
+              <span className="text-xl font-heading text-vault-gold tracking-[0.3em] font-bold">
                 OMNIGOVAULT
               </span>
             </motion.div>
 
-            {/* Status Text */}
-            <div className="flex flex-col items-center gap-2 min-h-[60px]">
+            {/* Status Text - Larger and more prominent */}
+            <div className="flex flex-col items-center gap-3 min-h-[80px] mt-2">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={statusCopy.primary}
-                  initial={{ opacity: 0, y: 5 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.4 }}
                   className="text-center"
                 >
-                  <p className="text-vault-light text-sm font-medium tracking-wide">
+                  <p className="text-vault-light text-lg font-medium tracking-wider">
                     {statusCopy.primary}
                   </p>
                   {statusCopy.secondary && (
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3, delay: 0.15 }}
-                      className="text-vault-muted text-xs mt-1.5 tracking-wide"
+                      transition={{ duration: 0.4, delay: 0.2 }}
+                      className="text-vault-muted text-sm mt-2 tracking-wide"
                     >
                       {statusCopy.secondary}
                     </motion.p>
@@ -312,14 +312,14 @@ const AppLoader = ({
               </AnimatePresence>
             </div>
 
-            {/* Progress Bar */}
-            <div className="w-48 h-[2px] bg-vault-gold/10 rounded-full overflow-hidden">
+            {/* Progress Bar - Wider */}
+            <div className="w-64 h-[3px] bg-vault-gold/10 rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-vault-gold/60 rounded-full"
+                className="h-full bg-gradient-to-r from-vault-gold/40 via-vault-gold to-vault-gold/40 rounded-full"
                 initial={{ width: '0%' }}
                 animate={{ width: `${progress}%` }}
                 transition={{ 
-                  duration: 0.4, 
+                  duration: 0.5, 
                   ease: 'easeOut'
                 }}
               />
@@ -329,16 +329,16 @@ const AppLoader = ({
             <AnimatePresence>
               {planName && phase !== 'booting' && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4 }}
                   className={cn(
-                    'px-3 py-1 rounded-full text-[10px] font-medium tracking-wider uppercase',
-                    planTier === 3 && 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
-                    planTier === 2 && 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20',
-                    planTier === 1 && 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
-                    planTier === 0 && 'bg-white/5 text-vault-muted border border-white/10'
+                    'px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase',
+                    planTier === 3 && 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+                    planTier === 2 && 'bg-vault-gold/20 text-vault-gold border border-vault-gold/30',
+                    planTier === 1 && 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+                    planTier === 0 && 'bg-white/10 text-vault-muted border border-white/20'
                   )}
                 >
                   {planName}
