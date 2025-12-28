@@ -960,14 +960,15 @@ export default function CyberHomePage() {
           icon: moduleTypeIcons[item.module_type] || Notebook
         }));
         setLiveSignals(signals);
-        setDemoMode(false);
+        // Only switch to live mode automatically if we have live data
+        // Don't override user's manual toggle
       } else {
-        // No data, stay in demo mode
-        setDemoMode(true);
+        // No data available
+        console.log('No live activity data available');
       }
     } catch (error) {
       console.log('Activity feed requires auth, using demo data');
-      setDemoMode(true);
+      // Don't override user's demoMode choice here
     } finally {
       setSignalsLoading(false);
     }
