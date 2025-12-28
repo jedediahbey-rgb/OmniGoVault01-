@@ -545,7 +545,7 @@ const GovernanceMatrixSection = () => {
   };
   
   return (
-    <section id="matrix" ref={sectionRef} className="py-8 lg:py-12 bg-[#0B1221]">
+    <section id="matrix" ref={sectionRef} className="py-4 lg:py-6 bg-[#0B1221] lg:min-h-[40vh]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"
