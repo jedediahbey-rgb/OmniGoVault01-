@@ -565,6 +565,12 @@ const AccountRow = ({ account, onViewDetails, onChangePlan, isOmnicompetent }) =
 const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate, isOmnicompetent, currentUserId }) => {
   if (!user) return null;
   
+  const handleRevokeRole = (role) => {
+    if (isOmnicompetent && user.user_id !== currentUserId && onRevokeRole) {
+      onRevokeRole(role);
+    }
+  };
+  
   return (
     <div className="flex items-center justify-between p-4 bg-vault-navy/50 rounded-lg border border-vault-gold/10 hover:border-vault-gold/20 transition-colors">
       <div className="flex items-center gap-4">
@@ -587,7 +593,7 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
             key={role}
             variant="outline"
             className={`${roleBadgeColors[role] || 'bg-gray-500/20 text-gray-400'} cursor-pointer hover:opacity-80`}
-            onClick={() => isOmnicompetent && user.user_id !== currentUserId && onRevokeRole && onRevokeRole(role)}
+            onClick={() => handleRevokeRole(role)}
           >
             {role}
             {isOmnicompetent && user.user_id !== currentUserId && (
@@ -597,16 +603,16 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
         ))}
         
         <div className="flex gap-2 ml-2">
-          <Button variant="ghost" size="sm" onClick={onViewDetails}>
+          <Button variant="ghost" size="sm" onClick={onViewDetails || (() => {})}>
             <Eye className="w-4 h-4" />
           </Button>
           {isOmnicompetent && (
-            <Button variant="ghost" size="sm" onClick={onGrantRole}>
+            <Button variant="ghost" size="sm" onClick={onGrantRole || (() => {})}>
               <ShieldCheck className="w-4 h-4" />
             </Button>
           )}
           {user.user_id !== currentUserId && (
-            <Button variant="ghost" size="sm" onClick={onImpersonate}>
+            <Button variant="ghost" size="sm" onClick={onImpersonate || (() => {})}>
               <UserSwitch className="w-4 h-4" />
             </Button>
           )}
