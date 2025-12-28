@@ -1550,7 +1550,7 @@ export default function CyberHomePage() {
       </nav>
       
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center pb-16 sm:pb-20 lg:h-screen lg:pb-0 lg:pt-4">
+      <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-center pb-16 sm:pb-20 lg:min-h-0 lg:h-auto lg:pb-4 lg:pt-20">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1221] via-transparent to-[#05080F]" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -1563,13 +1563,13 @@ export default function CyberHomePage() {
               {/* OMNIGOVAULT Logo - Centered, fully visible */}
               <motion.div 
                 variants={fadeInUp}
-                className="mb-0 lg:-mb-2 lg:mt-8"
+                className="mb-0 lg:-mb-4"
               >
-                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[480px] mx-auto">
+                <div className="w-full max-w-[420px] sm:max-w-[320px] lg:max-w-[380px] mx-auto">
                   <img 
                     src="/omnigovault-logo-trimmed.png" 
                     alt="OMNIGOVAULT" 
-                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[260px] object-contain mx-auto"
+                    className="w-full h-auto max-h-[260px] sm:max-h-[180px] lg:max-h-[180px] object-contain mx-auto"
                     style={{ imageRendering: 'crisp-edges' }}
                   />
                 </div>
@@ -1577,7 +1577,7 @@ export default function CyberHomePage() {
               
               <motion.h2
                 variants={fadeInUp}
-                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light mt-4 sm:mt-2 lg:-mt-4"
+                className="text-lg sm:text-xl lg:text-xl text-slate-300 font-light mt-4 sm:mt-2 lg:-mt-2"
               >
                 A{' '}
                 <span 
