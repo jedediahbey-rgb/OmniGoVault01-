@@ -127,10 +127,24 @@ async def list_global_roles(request: Request):
 
 @router.post("/roles/grant")
 async def grant_global_role(request: Request, body: GrantGlobalRoleRequest):
-    """Grant a global role to a user (Omnicompetent only)"""
-    user = await require_omnicompetent(request)
+    """Grant a global role to a user (Owner only)
+    
+    Roles that can be granted:
+    - OMNICOMPETENT: All features free (no admin access)
+    - SUPPORT_ADMIN: Limited admin for support
+    - BILLING_ADMIN: Billing management only
+    
+    Note: OMNICOMPETENT_OWNER cannot be granted - it's reserved for the platform owner
+    """
+    from server import OWNER_USER_ID
+    
+    user = await require_owner(request)
     admin_service = get_admin_service()
     ip = get_client_ip(request)
+    
+    # Prevent granting OMNICOMPETENT_OWNER to anyone
+    if body.role == GlobalRole.OMNICOMPETENT_OWNER:
+        raise HTTPException(status_code=403, detail="OMNICOMPETENT_OWNER role cannot be granted. It's reserved for the platform owner.")
     
     try:
         result = await admin_service.grant_global_role(
