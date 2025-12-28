@@ -73,6 +73,9 @@ class DocumentService:
         
         await self.db.vault_documents.insert_one(document)
         
+        # Remove MongoDB _id
+        document.pop("_id", None)
+        
         # Create initial version
         content_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
         
