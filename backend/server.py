@@ -616,39 +616,23 @@ def is_dev_environment() -> bool:
     # In production, explicitly set AUTH_BYPASS=false
     return True
 
-# Dev bypass configuration
+# Dev bypass configuration - Owner account
 DEV_BYPASS_ENABLED = is_dev_environment()
-DEV_ADMIN_EMAIL = "dev.admin@system.local"
-DEV_ADMIN_USER_ID = "dev_admin_user"
-DEV_ADMIN_NAME = "Dev Admin"
+OWNER_EMAIL = "jedediah.bey@gmail.com"
+OWNER_USER_ID = "dev_admin_user"
+OWNER_NAME = "Jedediah Bey"
 
-# Test account configurations for seeding
-TEST_ACCOUNTS = [
-    {
-        "account_id": "test_acct_free",
-        "name": "Test Free Account",
-        "plan_name": "Free",
-        "user_email": "free.tester@test.local",
-        "user_id": "test_user_free",
-        "user_name": "Free Tester"
-    },
-    {
-        "account_id": "test_acct_starter",
-        "name": "Test Starter Account", 
-        "plan_name": "Starter",
-        "user_email": "starter.tester@test.local",
-        "user_id": "test_user_starter",
-        "user_name": "Starter Tester"
-    },
-    {
-        "account_id": "test_acct_pro",
-        "name": "Test Pro Account",
-        "plan_name": "Pro",
-        "user_email": "pro.tester@test.local",
-        "user_id": "test_user_pro",
-        "user_name": "Pro Tester"
-    }
-]
+# Role definitions
+ROLE_OMNICOMPETENT_OWNER = "OMNICOMPETENT_OWNER"  # Full admin + all features (owner only)
+ROLE_OMNICOMPETENT = "OMNICOMPETENT"  # All features free (no admin access)
+ROLE_SUPPORT_ADMIN = "SUPPORT_ADMIN"  # Limited admin access
+
+# Role descriptions
+ROLE_DESCRIPTIONS = {
+    ROLE_OMNICOMPETENT_OWNER: "Full platform control and all features",
+    ROLE_OMNICOMPETENT: "All platform features without billing",
+    ROLE_SUPPORT_ADMIN: "Limited administrative access for support"
+}
 
 logger.info(f"🔧 Dev Bypass Mode: {'ENABLED' if DEV_BYPASS_ENABLED else 'DISABLED'}")
 
