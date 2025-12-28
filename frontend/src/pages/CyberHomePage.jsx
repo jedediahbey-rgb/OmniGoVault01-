@@ -730,13 +730,11 @@ export default function CyberHomePage() {
   const handleLabyrinthClick = (e) => {
     e.preventDefault();
     setShowLabyrinthPopup(true);
-    // Prevent background scroll on mobile only
-    if (window.innerWidth < 768) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.top = `-${window.scrollY}px`;
-    }
+    // Prevent background scroll on both mobile and desktop
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.top = `-${window.scrollY}px`;
   };
   
   const handleLabyrinthHover = (isHovering) => {
@@ -745,7 +743,11 @@ export default function CyberHomePage() {
       setIsLabyrinthHovered(isHovering);
       if (isHovering) {
         setShowLabyrinthPopup(true);
-        // No scroll lock on desktop hover
+        // Lock scroll on desktop hover too
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.top = `-${window.scrollY}px`;
       }
     }
   };
@@ -753,15 +755,13 @@ export default function CyberHomePage() {
   const closeLabyrinthPopup = () => {
     setShowLabyrinthPopup(false);
     setIsLabyrinthHovered(false);
-    // Restore background scroll on mobile
-    if (window.innerWidth < 768) {
-      const scrollY = document.body.style.top;
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
-    }
+    // Restore background scroll
+    const scrollY = document.body.style.top;
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    document.body.style.top = '';
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
   };
   
   // Cleanup on unmount
@@ -1556,19 +1556,22 @@ export default function CyberHomePage() {
               style={{ touchAction: 'none' }}
               onClick={closeLabyrinthPopup}
             >
-              {/* Modal Content */}
-              <div 
-                className="relative bg-[#0B1221] border border-[#C6A87C]/30 rounded-2xl overflow-hidden shadow-2xl w-full max-w-md sm:max-w-lg"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Close button */}
+              {/* Modal wrapper with close button outside */}
+              <div className="relative">
+                {/* Close button - positioned outside and above the box */}
                 <button
                   onClick={closeLabyrinthPopup}
-                  className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white/70 hover:text-white transition-colors"
+                  className="absolute -top-12 right-0 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-[#0B1221]/90 border border-[#C6A87C]/40 hover:border-[#C6A87C] hover:bg-[#0B1221] text-[#C6A87C]/70 hover:text-[#C6A87C] transition-all duration-200"
                   aria-label="Close"
                 >
-                  <X className="w-4 h-4" weight="bold" />
+                  <X className="w-5 h-5" weight="bold" />
                 </button>
+                
+                {/* Modal Content */}
+                <div 
+                  className="relative bg-[#0B1221] border border-[#C6A87C]/30 rounded-2xl overflow-hidden shadow-2xl w-full max-w-md sm:max-w-lg"
+                  onClick={(e) => e.stopPropagation()}
+                >
                 
                 {/* Scrollable content area */}
                 <div className="max-h-[80vh] overflow-y-auto">
