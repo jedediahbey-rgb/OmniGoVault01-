@@ -3,8 +3,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import {
-  Shield,
-  ShieldCheck,
+  GearSix,
   Users as UsersIcon,
   Building2,
   Search,
