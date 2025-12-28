@@ -1079,17 +1079,10 @@ async def get_dev_status():
     """Get dev environment status"""
     return {
         "dev_bypass_enabled": DEV_BYPASS_ENABLED,
-        "test_accounts": [
-            {
-                "account_id": acct["account_id"],
-                "plan_name": acct["plan_name"],
-                "user_email": acct["user_email"]
-            }
-            for acct in TEST_ACCOUNTS
-        ],
-        "dev_admin": {
-            "user_id": DEV_ADMIN_USER_ID,
-            "email": DEV_ADMIN_EMAIL
+        "owner": {
+            "user_id": OWNER_USER_ID,
+            "email": OWNER_EMAIL,
+            "name": OWNER_NAME
         }
     }
 
