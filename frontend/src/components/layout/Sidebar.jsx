@@ -32,27 +32,34 @@ import {
 import { cn } from '../../lib/utils';
 
 const navItems = [
+  // main - sorted by length: Dashboard (9)
   { name: 'Dashboard', href: '/vault', icon: House, section: 'main' },
+  
+  // knowledge - sorted by length: Learn (5), Maxims (6), Glossary (8), Diagrams (8)
   { name: 'Learn', href: '/learn', icon: BookOpen, section: 'knowledge' },
   { name: 'Maxims', href: '/maxims', icon: Sparkle, section: 'knowledge' },
-  { name: 'Glossary', href: '/glossary', icon: Book, section: 'knowledge' },
   { name: 'Diagrams', href: '/diagrams', icon: Graph, section: 'knowledge' },
-  { name: 'Shared Workspaces', href: '/vault/workspaces', icon: Users, section: 'workspace' },
+  { name: 'Glossary', href: '/glossary', icon: Book, section: 'knowledge' },
+  
+  // workspace - sorted by length: Vault (5), Ledger (6), Node Map (8), Scenarios (9), Templates (9), Governance (10), Shared Workspaces (17)
+  { name: 'Vault', href: '/vault/documents', icon: Vault, section: 'workspace' },
+  { name: 'Ledger', href: '/ledger', icon: Scroll, section: 'workspace' },
   { name: 'Node Map', href: '/node-map', icon: MapTrifold, section: 'workspace' },
   { name: 'Scenarios', href: '/scenarios', icon: ChartLine, section: 'workspace' },
-  { name: 'Ledger', href: '/ledger', icon: Scroll, section: 'workspace' },
-  { name: 'Vault', href: '/vault/documents', icon: Vault, section: 'workspace' },
-  { name: 'Governance', href: '/vault/governance', icon: Gavel, section: 'workspace' },
   { name: 'Templates', href: '/templates', icon: StackSimple, section: 'workspace' },
-  { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
-  { name: 'Trust Health', href: '/health', icon: Heartbeat, section: 'tools' },
-  { name: 'Diagnostics', href: '/diagnostics', icon: Stethoscope, section: 'tools' },
-  { name: 'Thread Manager', href: '/ledger-threads', icon: FlowArrow, section: 'tools' },
+  { name: 'Governance', href: '/vault/governance', icon: Gavel, section: 'workspace' },
+  { name: 'Shared Workspaces', href: '/vault/workspaces', icon: Users, section: 'workspace' },
+  
+  // tools - sorted by length: Binder (6), Billing (7), Settings (8), Audit Log (9), Assistant (9), Diagnostics (11), Trust Health (12), Admin Console (13), Thread Manager (14)
   { name: 'Binder', href: '/binder', icon: FilePdf, section: 'tools' },
-  { name: 'Audit Log', href: '/vault/audit-log', icon: ClipboardText, section: 'tools' },
   { name: 'Billing', href: '/billing', icon: CreditCard, section: 'tools' },
-  { name: 'Admin Console', href: '/admin', icon: ShieldCheck, section: 'admin', adminOnly: true },
   { name: 'Settings', href: '/settings', icon: Gear, section: 'tools' },
+  { name: 'Audit Log', href: '/vault/audit-log', icon: ClipboardText, section: 'tools' },
+  { name: 'Assistant', href: '/assistant', icon: Robot, section: 'tools' },
+  { name: 'Diagnostics', href: '/diagnostics', icon: Stethoscope, section: 'tools' },
+  { name: 'Trust Health', href: '/health', icon: Heartbeat, section: 'tools' },
+  { name: 'Admin Console', href: '/admin', icon: ShieldCheck, section: 'admin', adminOnly: true },
+  { name: 'Thread Manager', href: '/ledger-threads', icon: FlowArrow, section: 'tools' },
 ];
 
 // Sidebar nav item - clean, no transitions
