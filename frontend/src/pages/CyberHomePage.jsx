@@ -739,6 +739,7 @@ export default function CyberHomePage() {
 
   // Handle labyrinth click (works on both mobile and desktop)
   const handleLabyrinthClick = () => {
+    console.log('Labyrinth clicked! Setting popup to true');
     setShowLabyrinthPopup(true);
     // On mobile, prevent background scroll
     if (window.innerWidth < 640) {
