@@ -437,7 +437,10 @@ const AdminConsolePage = () => {
                       <UserRow
                         key={user.user_id}
                         user={user}
-                        onViewDetails={() => setSelectedUser(user)}
+                        onViewDetails={() => {
+                          setSelectedUser(user);
+                          setShowUserDetails(true);
+                        }}
                         onGrantRole={() => {
                           setSelectedUser(user);
                           setShowGrantRoleDialog(true);
