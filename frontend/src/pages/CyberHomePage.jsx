@@ -1114,6 +1114,7 @@ export default function CyberHomePage() {
                   onClick={handleLabyrinthClick}
                   onMouseEnter={() => handleLabyrinthHover(true)}
                   onMouseLeave={() => handleLabyrinthHover(false)}
+                  data-testid="labyrinth-trigger"
                 >
                   <span className="text-[#C6A87C] hover:text-[#E8D5B5] transition-colors duration-200">
                     labyrinth system
