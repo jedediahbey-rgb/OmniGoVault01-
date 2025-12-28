@@ -607,10 +607,10 @@ const GovernanceMatrixSection = () => {
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
                     className="w-full max-w-[160px] sm:max-w-[280px] cursor-pointer"
-                    onClick={handleCardClick}
                   >
                     <HoloCard 
                       className="p-3 sm:p-4 h-full"
+                      onClick={handleCardClick}
                     >
                       <div className="flex flex-col items-center text-center sm:text-left sm:items-start pointer-events-none">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between w-full gap-2 mb-2">
