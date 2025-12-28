@@ -71,6 +71,7 @@ const MatrixRain = () => {
     const fontSize = 14;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
+    // Gold color - vault-gold RGB(198, 168, 124)
     const matrixColor = 'rgba(198, 168, 124, ';
     
     const draw = () => {
@@ -81,7 +82,8 @@ const MatrixRain = () => {
       
       for (let i = 0; i < drops.length; i++) {
         const char = charArray[Math.floor(Math.random() * charArray.length)];
-        const opacity = Math.random() * 0.5 + 0.1;
+        // Higher opacity for more visible gold characters (0.3 to 0.8)
+        const opacity = Math.random() * 0.5 + 0.3;
         ctx.fillStyle = matrixColor + opacity + ')';
         ctx.fillText(char, i * fontSize, drops[i] * fontSize);
         
