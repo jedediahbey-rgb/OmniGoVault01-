@@ -50,6 +50,7 @@ const BillingPage = () => {
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(null);
   const [billingCycle, setBillingCycle] = useState('monthly');
+  const [userProfile, setUserProfile] = useState(null);
 
   // Check for checkout success/cancel from URL
   useEffect(() => {
