@@ -10,6 +10,7 @@ import AssistantDrawer from './components/shared/AssistantDrawer';
 import { BillingProvider } from './contexts/BillingContext';
 import AppLoader from './components/AppLoader';
 import { useAppLoader } from './hooks/useAppLoader';
+import WelcomeModal from './components/WelcomeModal';
 
 // Pages
 import CyberHomePage from './pages/CyberHomePage';
@@ -53,9 +54,9 @@ axios.defaults.withCredentials = true;
 // Dev bypass mode - allows unrestricted access for development/maintenance
 // In production, real authenticated users will be used
 const DEV_BYPASS_USER = {
-  user_id: "default_user",
-  email: "user@omnigovault.com",
-  name: "Default User",
+  user_id: "dev_admin_user",
+  email: "dev.admin@system.local",
+  name: "Dev Admin",
   picture: ""
 };
 
