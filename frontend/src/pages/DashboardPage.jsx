@@ -69,6 +69,10 @@ export default function DashboardPage({ user }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState(null);
   const [showQuickActionSettings, setShowQuickActionSettings] = useState(false);
+  
+  // Entitlement/Upgrade state
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [vaultLimit, setVaultLimit] = useState({ current: 0, limit: 1 });
 
   // All available quick actions (matches sidebar tabs)
   const allQuickActions = [
