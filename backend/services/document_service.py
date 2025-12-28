@@ -428,6 +428,9 @@ class DocumentService:
         
         await self.db.document_affirmations.insert_one(affirmation)
         
+        # Remove MongoDB _id
+        affirmation.pop("_id", None)
+        
         # Log event
         await self._log_event(
             document_id,
