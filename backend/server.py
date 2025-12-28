@@ -1154,6 +1154,57 @@ async def logout(request: Request, response: Response):
     return {"message": "Logged out successfully"}
 
 
+# ============ USER PROFILE ENDPOINTS ============
+
+@api_router.get("/user/profile")
+async def get_user_profile(user: User = Depends(get_current_user)):
+    """Get user profile including display name and roles"""
+    # Get user document
+    user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
+    
+    # Get global roles
+    roles_doc = await db.user_global_roles.find(
+        {"user_id": user.user_id},
+        {"_id": 0, "role": 1}
+    ).to_list(10)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    
+    return {
+        "user_id": user.user_id,
+        "email": user.email,
+        "name": user.name,
+        "display_name": user_doc.get("display_name") if user_doc else None,
+        "picture": user.picture,
+        "global_roles": global_roles,
+        "is_omnicompetent": "OMNICOMPETENT" in global_roles or "OMNICOMPETENT_OWNER" in global_roles
+    }
+
+@api_router.put("/user/profile")
+async def update_user_profile(request: Request, user: User = Depends(get_current_user)):
+    """Update user profile including display name"""
+    body = await request.json()
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    update_data = {"updated_at": now}
+    
+    if "display_name" in body:
+        # Sanitize and validate display name
+        display_name = body["display_name"].strip() if body["display_name"] else None
+        if display_name and len(display_name) > 50:
+            raise HTTPException(status_code=400, detail="Display name must be 50 characters or less")
+        update_data["display_name"] = display_name
+    
+    await db.users.update_one(
+        {"user_id": user.user_id},
+        {"$set": update_data},
+        upsert=False
+    )
+    
+    # Return updated profile
+    return await get_user_profile(user)
+
+
 # ============ USER PREFERENCES ENDPOINTS ============
 
 @api_router.get("/user/preferences")
