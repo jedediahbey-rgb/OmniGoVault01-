@@ -2456,38 +2456,38 @@ class EquityTrustAPITester:
         self.test_governance_records()
         self.test_governance_subjects()
         
-        # 8. Evidence Binder (P5 Feature)
-        self.log("\n📋 Test 8: Evidence Binder Configuration")
+        # 9. Evidence Binder (P5 Feature)
+        self.log("\n📋 Test 9: Evidence Binder Configuration")
         self.log("-" * 50)
         self.test_evidence_config()
         
-        self.log(f"\n📊 Test 9: Evidence Binder Disputes")
+        self.log(f"\n📊 Test 10: Evidence Binder Disputes")
         self.log("-" * 40)
         self.test_get_disputes()
         self.test_create_test_dispute_if_needed()
         
-        self.log(f"\n🔗 Test 10: Evidence Binder Links Management")
+        self.log(f"\n🔗 Test 11: Evidence Binder Links Management")
         self.log("-" * 50)
         self.test_add_dispute_link()
         self.test_get_dispute_links()
         self.test_auto_link_dispute_items()
         
-        self.log(f"\n👁️ Test 11: Evidence Binder Preview")
+        self.log(f"\n👁️ Test 12: Evidence Binder Preview")
         self.log("-" * 40)
         self.test_evidence_preview()
         
-        self.log(f"\n📄 Test 12: Evidence Binder Generation")
+        self.log(f"\n📄 Test 13: Evidence Binder Generation")
         self.log("-" * 50)
         self.test_generate_evidence_binder()
         
-        self.log(f"\n📚 Test 13: Evidence Binder Runs")
+        self.log(f"\n📚 Test 14: Evidence Binder Runs")
         self.log("-" * 40)
         self.test_get_evidence_runs()
         self.test_get_evidence_run_details()
         self.test_get_evidence_manifest()
         self.test_download_evidence_binder()
         
-        self.log(f"\n🧹 Test 14: Cleanup")
+        self.log(f"\n🧹 Test 15: Cleanup")
         self.log("-" * 25)
         self.test_cleanup_test_link()
         
