@@ -767,7 +767,11 @@ export default function CyberHomePage() {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      // Restore scroll on unmount
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
     };
   }, []);
   
