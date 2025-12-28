@@ -386,11 +386,11 @@ const TrustHealthCard = () => {
     : [65, 70, 68, 75, 80, 85, score]; // Fallback trend
   
   return (
-    <HoloCard className="p-4 sm:p-6">
-      <div className="flex items-start justify-between gap-2 mb-4 sm:mb-6">
+    <HoloCard className="p-4">
+      <div className="flex items-start justify-between gap-2 mb-3">
         <div className="min-w-0 flex-1">
-          <h3 className="text-base sm:text-lg font-semibold text-white mb-1">Trust Health</h3>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <h3 className="text-lg font-bold text-white">Trust Health</h3>
+          <p className="text-xs text-slate-400">
             {loading ? 'Loading...' : getScoreLabel(score)}
           </p>
         </div>
