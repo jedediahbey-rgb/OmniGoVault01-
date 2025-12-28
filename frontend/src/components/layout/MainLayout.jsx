@@ -63,6 +63,11 @@ export default function MainLayout({ children, user, onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const scrollContainerRef = useRef(null);
 
+  // Set theme color on mount to match app background
+  useEffect(() => {
+    setThemeColor('#0B1221');
+  }, []);
+
   // Reset scroll to top on route change
   useEffect(() => {
     if (scrollContainerRef.current) {
