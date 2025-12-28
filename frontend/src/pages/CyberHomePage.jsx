@@ -42,10 +42,12 @@ import {
   ClockCounterClockwise,
   Warning,
   X,
-  Info
+  Info,
+  DownloadSimple
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import InitialLoadingScreen from '../components/InitialLoadingScreen';
 
 const API = process.env.REACT_APP_BACKEND_URL + '/api';
 
