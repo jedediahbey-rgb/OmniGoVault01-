@@ -203,9 +203,10 @@ class VaultService:
         # Get user's permissions
         permissions = await self.get_user_permissions(vault_id, user_id)
         
-        # Get recent activity
+        # Get recent activity (exclude _id)
         recent_events = await self.db.document_events.find(
-            {"document_id": {"$in": [d["document_id"] for d in documents]}}
+            {"document_id": {"$in": [d["document_id"] for d in documents]}},
+            {"_id": 0}
         ).sort("timestamp", -1).limit(20).to_list(20)
         
         return {
