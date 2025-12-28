@@ -160,6 +160,9 @@ class VaultService:
         
         await self.db.vault_participants.insert_one(participant)
         
+        # Remove MongoDB _id from participant
+        participant.pop("_id", None)
+        
         # Update usage
         await self.entitlement_service.recalculate_usage(account_id)
         
