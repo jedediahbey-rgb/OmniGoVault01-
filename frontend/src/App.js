@@ -423,6 +423,28 @@ const AppRouter = ({ auth }) => {
         </AuthLayout>
       } />
       
+      {/* Shared Workspaces Routes */}
+      <Route
+        path="/vault/workspaces"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <WorkspacesPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/vault/workspaces/:vaultId"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <WorkspaceDetailPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      
       {/* Protected Vault Routes */}
       <Route
         path="/vault"
