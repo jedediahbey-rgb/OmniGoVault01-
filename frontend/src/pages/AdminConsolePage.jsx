@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Shield,
   ShieldCheck,
-  Users,
+  Users as UsersIcon,
   Building2,
   Search,
   Eye,
