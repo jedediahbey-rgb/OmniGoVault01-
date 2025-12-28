@@ -585,17 +585,78 @@ def parse_currency_value(value) -> Optional[float]:
     return None
 
 
-# ============ AUTH HELPERS ============
+# ============ AUTH BYPASS & DEV MODE CONFIGURATION ============
 
-# Dev bypass email - allows unrestricted access for maintenance
-DEV_BYPASS_EMAIL = "user@omnigovault.com"
-DEV_USER_ID = "default_user"
+def is_dev_environment() -> bool:
+    """
+    Auto-detect if running in dev/preview environment.
+    Returns True for preview environments, False for production.
+    Can be overridden by AUTH_BYPASS env variable.
+    """
+    # Check for explicit override first
+    auth_bypass = os.environ.get("AUTH_BYPASS", "").lower()
+    if auth_bypass == "true":
+        return True
+    if auth_bypass == "false":
+        return False
+    
+    # Auto-detect preview environments
+    # Preview URLs typically contain 'preview', 'dev', 'staging', or 'localhost'
+    # In Kubernetes/container environments, check for specific markers
+    hostname = os.environ.get("HOSTNAME", "")
+    pod_namespace = os.environ.get("POD_NAMESPACE", "")
+    
+    # Check for preview markers
+    preview_markers = ["preview", "dev", "staging", "local", "test"]
+    for marker in preview_markers:
+        if marker in hostname.lower() or marker in pod_namespace.lower():
+            return True
+    
+    # Default to True for safety in development (this container is preview)
+    # In production, explicitly set AUTH_BYPASS=false
+    return True
+
+# Dev bypass configuration
+DEV_BYPASS_ENABLED = is_dev_environment()
+DEV_ADMIN_EMAIL = "dev.admin@system.local"
+DEV_ADMIN_USER_ID = "dev_admin_user"
+DEV_ADMIN_NAME = "Dev Admin"
+
+# Test account configurations for seeding
+TEST_ACCOUNTS = [
+    {
+        "account_id": "test_acct_free",
+        "name": "Test Free Account",
+        "plan_name": "Free",
+        "user_email": "free.tester@test.local",
+        "user_id": "test_user_free",
+        "user_name": "Free Tester"
+    },
+    {
+        "account_id": "test_acct_starter",
+        "name": "Test Starter Account", 
+        "plan_name": "Starter",
+        "user_email": "starter.tester@test.local",
+        "user_id": "test_user_starter",
+        "user_name": "Starter Tester"
+    },
+    {
+        "account_id": "test_acct_pro",
+        "name": "Test Pro Account",
+        "plan_name": "Pro",
+        "user_email": "pro.tester@test.local",
+        "user_id": "test_user_pro",
+        "user_name": "Pro Tester"
+    }
+]
+
+logger.info(f"🔧 Dev Bypass Mode: {'ENABLED' if DEV_BYPASS_ENABLED else 'DISABLED'}")
 
 async def get_current_user(request: Request) -> User:
     """
     Get current user from session cookie or Authorization header.
     
-    Dev Bypass Mode: Returns a default user for development/maintenance.
+    Dev Bypass Mode: Returns dev admin user for development/maintenance.
     Production Mode: Validates session tokens from Google OAuth.
     
     REMINDER: This auth flow integrates with Emergent Google Auth.
@@ -609,15 +670,33 @@ async def get_current_user(request: Request) -> User:
         if auth_header and auth_header.startswith("Bearer "):
             session_token = auth_header.split(" ")[1]
     
-    # If no session token, return dev bypass user
+    # Check for dev account switching header (dev mode only)
+    if DEV_BYPASS_ENABLED:
+        switch_account = request.headers.get("X-Dev-Account")
+        if switch_account:
+            # Find the test account
+            for test_acct in TEST_ACCOUNTS:
+                if test_acct["account_id"] == switch_account or test_acct["plan_name"].lower() == switch_account.lower():
+                    return User(
+                        user_id=test_acct["user_id"],
+                        email=test_acct["user_email"],
+                        name=test_acct["user_name"],
+                        picture="",
+                        created_at=datetime.now(timezone.utc)
+                    )
+    
+    # If no session token and dev bypass enabled, return dev admin
     if not session_token:
-        return User(
-            user_id=DEV_USER_ID,
-            email=DEV_BYPASS_EMAIL,
-            name="Default User",
-            picture="",
-            created_at=datetime.now(timezone.utc)
-        )
+        if DEV_BYPASS_ENABLED:
+            return User(
+                user_id=DEV_ADMIN_USER_ID,
+                email=DEV_ADMIN_EMAIL,
+                name=DEV_ADMIN_NAME,
+                picture="",
+                created_at=datetime.now(timezone.utc)
+            )
+        else:
+            raise HTTPException(status_code=401, detail="Authentication required")
     
     # Validate session token
     session_doc = await db.user_sessions.find_one(
@@ -626,14 +705,16 @@ async def get_current_user(request: Request) -> User:
     )
     
     if not session_doc:
-        # Session not found - return dev user for development
-        return User(
-            user_id=DEV_USER_ID,
-            email=DEV_BYPASS_EMAIL,
-            name="Default User",
-            picture="",
-            created_at=datetime.now(timezone.utc)
-        )
+        if DEV_BYPASS_ENABLED:
+            return User(
+                user_id=DEV_ADMIN_USER_ID,
+                email=DEV_ADMIN_EMAIL,
+                name=DEV_ADMIN_NAME,
+                picture="",
+                created_at=datetime.now(timezone.utc)
+            )
+        else:
+            raise HTTPException(status_code=401, detail="Invalid session")
     
     # Check expiry
     expires_at = session_doc.get("expires_at")
@@ -643,14 +724,16 @@ async def get_current_user(request: Request) -> User:
         if expires_at.tzinfo is None:
             expires_at = expires_at.replace(tzinfo=timezone.utc)
         if expires_at < datetime.now(timezone.utc):
-            # Session expired - return dev user
-            return User(
-                user_id=DEV_USER_ID,
-                email=DEV_BYPASS_EMAIL,
-                name="Default User",
-                picture="",
-                created_at=datetime.now(timezone.utc)
-            )
+            if DEV_BYPASS_ENABLED:
+                return User(
+                    user_id=DEV_ADMIN_USER_ID,
+                    email=DEV_ADMIN_EMAIL,
+                    name=DEV_ADMIN_NAME,
+                    picture="",
+                    created_at=datetime.now(timezone.utc)
+                )
+            else:
+                raise HTTPException(status_code=401, detail="Session expired")
     
     # Get user document
     user_doc = await db.users.find_one(
@@ -659,13 +742,16 @@ async def get_current_user(request: Request) -> User:
     )
     
     if not user_doc:
-        return User(
-            user_id=DEV_USER_ID,
-            email=DEV_BYPASS_EMAIL,
-            name="Default User",
-            picture="",
-            created_at=datetime.now(timezone.utc)
-        )
+        if DEV_BYPASS_ENABLED:
+            return User(
+                user_id=DEV_ADMIN_USER_ID,
+                email=DEV_ADMIN_EMAIL,
+                name=DEV_ADMIN_NAME,
+                picture="",
+                created_at=datetime.now(timezone.utc)
+            )
+        else:
+            raise HTTPException(status_code=401, detail="User not found")
     
     return User(
         user_id=user_doc["user_id"],
