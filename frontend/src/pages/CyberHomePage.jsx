@@ -737,26 +737,11 @@ export default function CyberHomePage() {
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
-  // Handle labyrinth click (works on both mobile and desktop)
-  const handleLabyrinthClick = () => {
-    console.log('Labyrinth clicked! Setting popup to true');
-    setShowLabyrinthPopup(true);
-    // On mobile, prevent background scroll
-    if (window.innerWidth < 640) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.top = `-${window.scrollY}px`;
-    } else {
-      // Desktop - just lock scroll
-      document.body.style.overflow = 'hidden';
-    }
-  };
-  
   // Handle labyrinth hover (desktop only - shows on hover, hides on leave)
   const handleLabyrinthHover = (isHovering) => {
     // On desktop (>= 640px), show/hide popup on hover
     if (window.innerWidth >= 640) {
+      console.log('Hover:', isHovering);
       setIsLabyrinthHovered(isHovering);
       setShowLabyrinthPopup(isHovering);
       if (isHovering) {
@@ -764,6 +749,19 @@ export default function CyberHomePage() {
       } else {
         document.body.style.overflow = '';
       }
+    }
+  };
+  
+  // Handle labyrinth click (mobile only)
+  const handleLabyrinthClick = () => {
+    // Only open on click for mobile
+    if (window.innerWidth < 640) {
+      console.log('Mobile click - opening popup');
+      setShowLabyrinthPopup(true);
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
     }
   };
   
@@ -1551,11 +1549,6 @@ export default function CyberHomePage() {
       </AnimatePresence>
       
       {/* Labyrinth Definition Popup */}
-      {showLabyrinthPopup && (
-        <div className="fixed inset-0 z-[9999] bg-red-500/50 flex items-center justify-center">
-          <div className="bg-white p-8 text-black">POPUP IS SHOWING - Click anywhere to close</div>
-        </div>
-      )}
       <AnimatePresence>
         {showLabyrinthPopup && (
           <>
