@@ -4036,6 +4036,18 @@ admin_svc = init_admin_service(db, entitlement_svc, subscription_svc)
 
 app.include_router(admin_router, prefix="/api")
 
+# Initialize and include Vault routes (Shared Trust Workspace System)
+from routes.vault import router as vault_router, init_vault_routes
+from services.vault_service import init_vault_service
+from services.document_service import init_document_service
+
+# Initialize vault services
+vault_svc = init_vault_service(db, entitlement_svc)
+doc_svc = init_document_service(db, vault_svc, entitlement_svc)
+init_vault_routes(db, get_current_user)
+
+app.include_router(vault_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
