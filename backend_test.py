@@ -790,5 +790,12 @@ class OmniGoVaultOnboardingTester:
 
 if __name__ == "__main__":
     tester = OmniGoVaultOnboardingTester()
-    success = tester.run_onboarding_tests()
+    
+    # Check if we should run UI fixes tests or onboarding tests
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "ui-fixes":
+        success = tester.run_ui_fixes_tests()
+    else:
+        success = tester.run_onboarding_tests()
+    
     sys.exit(0 if success else 1)
