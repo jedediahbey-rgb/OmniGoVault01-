@@ -1280,7 +1280,7 @@ export default function GovernancePage({ user }) {
                   value="insurance" 
                   className="data-[state=active]:bg-vault-gold data-[state=active]:text-vault-dark whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3"
                 >
-                  <ShieldCheck className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                  <ShieldPlus className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
                   Insurance
                 </TabsTrigger>
                 <TabsTrigger 
@@ -1741,7 +1741,7 @@ export default function GovernancePage({ user }) {
               <GlassCard className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
                   <div className="p-3 rounded-xl bg-purple-500/20 border border-purple-500/30">
-                    <ShieldCheck className="w-8 h-8 text-purple-400" weight="duotone" />
+                    <ShieldPlus className="w-8 h-8 text-purple-400" weight="duotone" />
                   </div>
                   <div className="flex-1">
                     <h3 className="text-lg font-heading text-white mb-2">Add Your First Insurance Policy</h3>
@@ -2489,7 +2489,7 @@ export default function GovernancePage({ user }) {
         <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5" />
+              <ShieldPlus className="w-5 h-5" />
               New Insurance Policy
             </DialogTitle>
             <DialogDescription className="text-vault-muted">
