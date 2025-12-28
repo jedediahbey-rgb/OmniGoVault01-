@@ -209,28 +209,25 @@ const AppLoader = ({
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-vault-navy"
         >
-          {/* Subtle grid pattern background */}
-          <div className="absolute inset-0 opacity-[0.03]">
-            <div 
-              className="w-full h-full"
-              style={{
-                backgroundImage: `
-                  linear-gradient(rgba(198, 168, 124, 0.3) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(198, 168, 124, 0.3) 1px, transparent 1px)
-                `,
-                backgroundSize: '60px 60px'
-              }}
-            />
-          </div>
-
-          {/* Radial gradient overlay */}
+          {/* Matrix Rain Background */}
+          <MatrixRain />
+          
+          {/* Dark gradient overlay for text readability */}
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(ellipse at center, transparent 0%, rgba(10, 17, 40, 0.8) 70%)'
+              background: 'radial-gradient(ellipse at center, rgba(10, 17, 40, 0.7) 0%, rgba(10, 17, 40, 0.95) 70%)'
+            }}
+          />
+
+          {/* Scanline effect */}
+          <div 
+            className="absolute inset-0 pointer-events-none opacity-[0.03]"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(198, 168, 124, 0.1) 2px, rgba(198, 168, 124, 0.1) 4px)'
             }}
           />
 
