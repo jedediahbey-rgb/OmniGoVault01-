@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for OMNIGOVAULT Application
-Google Auth Integration and Dev Bypass Mode Testing
+Onboarding and Dev Loop Implementation Testing
 """
 
 import requests
