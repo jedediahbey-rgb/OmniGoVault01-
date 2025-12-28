@@ -165,11 +165,11 @@ const AppLoader = ({
     }
   }, [isLoading, canDismiss, phase]);
 
-  // Generate entitlement-aware copy with Matrix theme
+  // Generate entitlement-aware copy with Network theme
   const statusCopy = useMemo(() => {
     if (phase === 'booting') {
       return {
-        primary: 'Jacking into the Matrix',
+        primary: 'Jacking into the Network',
         secondary: 'Establishing secure connection...'
       };
     }
@@ -181,10 +181,10 @@ const AppLoader = ({
       const apiEnabled = entitlements?.['features.api.enabled'] ?? false;
       const isUnlimited = vaultsMax === -1;
 
-      // Tier-specific messaging with Matrix theme
+      // Tier-specific messaging with Network theme
       if (planTier === 3) { // Enterprise
         return {
-          primary: 'Matrix Systems Online',
+          primary: 'Network Systems Online',
           secondary: `Full clearance granted · Unlimited trust capacity${analyticsEnabled ? ' · Analytics active' : ''}`
         };
       }
@@ -194,7 +194,7 @@ const AppLoader = ({
         if (analyticsEnabled) features.push('Analytics');
         if (apiEnabled) features.push('API');
         return {
-          primary: 'Matrix Systems Online',
+          primary: 'Network Systems Online',
           secondary: `${vaultsMax} vaults · ${membersMax} operators${features.length ? ' · ' + features.join(', ') + ' active' : ''}`
         };
       }
