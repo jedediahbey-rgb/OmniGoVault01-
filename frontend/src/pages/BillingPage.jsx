@@ -102,15 +102,17 @@ const BillingPage = () => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [subRes, plansRes, usageRes] = await Promise.all([
+      const [subRes, plansRes, usageRes, profileRes] = await Promise.all([
         axios.get(`${BACKEND_URL}/api/billing/subscription`),
         axios.get(`${BACKEND_URL}/api/billing/plans`),
-        axios.get(`${BACKEND_URL}/api/billing/usage`)
+        axios.get(`${BACKEND_URL}/api/billing/usage`),
+        axios.get(`${BACKEND_URL}/api/user/profile`).catch(() => ({ data: null }))
       ]);
 
       setSubscription(subRes.data);
       setPlans(plansRes.data.plans || []);
       setUsage(usageRes.data);
+      setUserProfile(profileRes.data);
     } catch (error) {
       console.error('Error fetching billing data:', error);
       toast.error('Failed to load billing information');
