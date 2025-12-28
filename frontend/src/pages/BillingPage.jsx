@@ -166,12 +166,36 @@ const BillingPage = () => {
     <div className="min-h-screen bg-vault-navy p-6">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-vault-gold flex items-center gap-2">
-            <CreditCard className="w-6 h-6" />
-            Billing & Subscription
-          </h1>
-          <p className="text-vault-muted mt-1">Manage your subscription and view usage</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-vault-gold flex items-center gap-2">
+              <CreditCard className="w-6 h-6" />
+              Billing & Subscription
+            </h1>
+            <p className="text-vault-muted mt-1">Manage your subscription and view usage</p>
+          </div>
+          
+          {/* OMNICOMPETENT Badge */}
+          {userProfile?.is_omnicompetent && (
+            <div className="flex items-center gap-2">
+              {userProfile.global_roles?.map((role) => (
+                (role === 'OMNICOMPETENT' || role === 'OMNICOMPETENT_OWNER') && (
+                  <Badge 
+                    key={role}
+                    variant="outline" 
+                    className={`${
+                      role === 'OMNICOMPETENT_OWNER' 
+                        ? 'bg-purple-600/30 text-purple-300 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.4)] animate-pulse' 
+                        : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                    } text-sm px-3 py-1`}
+                  >
+                    <Sparkles className="w-4 h-4 mr-1" />
+                    {role === 'OMNICOMPETENT_OWNER' ? 'Owner - All Features Free' : 'All Features Free'}
+                  </Badge>
+                )
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Current Plan Card */}
