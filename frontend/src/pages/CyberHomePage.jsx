@@ -730,8 +730,13 @@ export default function CyberHomePage() {
   const handleLabyrinthClick = (e) => {
     e.preventDefault();
     setShowLabyrinthPopup(true);
-    // Prevent background scroll on mobile
-    document.body.style.overflow = 'hidden';
+    // Prevent background scroll on mobile only
+    if (window.innerWidth < 768) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    }
   };
   
   const handleLabyrinthHover = (isHovering) => {
@@ -740,7 +745,7 @@ export default function CyberHomePage() {
       setIsLabyrinthHovered(isHovering);
       if (isHovering) {
         setShowLabyrinthPopup(true);
-        document.body.style.overflow = 'hidden';
+        // No scroll lock on desktop hover
       }
     }
   };
@@ -748,8 +753,15 @@ export default function CyberHomePage() {
   const closeLabyrinthPopup = () => {
     setShowLabyrinthPopup(false);
     setIsLabyrinthHovered(false);
-    // Restore background scroll
-    document.body.style.overflow = '';
+    // Restore background scroll on mobile
+    if (window.innerWidth < 768) {
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
   };
   
   // Cleanup on unmount
