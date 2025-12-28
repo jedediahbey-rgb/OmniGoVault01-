@@ -673,6 +673,8 @@ export default function CyberHomePage() {
   const [signalsLoading, setSignalsLoading] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [vaultOpening, setVaultOpening] = useState(false);
+  const [showAccessComplete, setShowAccessComplete] = useState(false);
+  const [showInitialLoading, setShowInitialLoading] = useState(true);
   const [showLabyrinthPopup, setShowLabyrinthPopup] = useState(false);
   const [isLabyrinthHovered, setIsLabyrinthHovered] = useState(false);
   const featuresRef = useRef(null);
@@ -702,8 +704,12 @@ export default function CyberHomePage() {
         // User has an account - start vault animation and go to vault
         setVaultOpening(true);
         setTimeout(() => {
-          navigate('/vault');
+          setVaultOpening(false);
+          setShowAccessComplete(true);
         }, 2500);
+        setTimeout(() => {
+          navigate('/vault');
+        }, 4000);
         return;
       }
     } catch (error) {
@@ -713,8 +719,12 @@ export default function CyberHomePage() {
     // Start vault animation for dev/new users
     setVaultOpening(true);
     setTimeout(() => {
-      navigate('/vault');
+      setVaultOpening(false);
+      setShowAccessComplete(true);
     }, 2500);
+    setTimeout(() => {
+      navigate('/vault');
+    }, 4000);
   };
   
   // Handle Google Auth - Create Account
