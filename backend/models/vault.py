@@ -349,7 +349,6 @@ class InviteParticipantRequest(BaseModel):
 
 
 class CreateDocumentRequest(BaseModel):
-    vault_id: str
     title: str
     description: str = ""
     category: DocumentCategory = DocumentCategory.OTHER
