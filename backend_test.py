@@ -512,6 +512,169 @@ class OmniGoVaultOnboardingTester:
             self.log_test("Basic System Health Check", False, f"Error: {str(e)}")
             return False
 
+    # ============ UI FIXES AND ADMIN CONSOLE TESTS ============
+
+    def test_user_profile_get(self):
+        """Test GET /api/user/profile - should return user profile with display_name and global_roles fields"""
+        try:
+            response = self.session.get(f"{self.base_url}/user/profile", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                # Check required fields
+                required_fields = ["user_id", "email", "name", "global_roles"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    details += f", All required fields present"
+                    
+                    # Check global_roles is a list
+                    global_roles = data.get("global_roles", [])
+                    if isinstance(global_roles, list):
+                        details += f", global_roles: {global_roles}"
+                        
+                        # Check if display_name field exists (can be null)
+                        if "display_name" in data:
+                            display_name = data.get("display_name")
+                            details += f", display_name: {display_name}"
+                        else:
+                            success = False
+                            details += f", display_name field missing"
+                            
+                        # Check is_omnicompetent field
+                        is_omnicompetent = data.get("is_omnicompetent", False)
+                        details += f", is_omnicompetent: {is_omnicompetent}"
+                    else:
+                        success = False
+                        details += f", global_roles is not a list: {type(global_roles)}"
+                else:
+                    success = False
+                    details += f", Missing fields: {missing_fields}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/user/profile", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/user/profile", False, f"Error: {str(e)}")
+            return False
+
+    def test_user_profile_update(self):
+        """Test PUT /api/user/profile - should update display_name field"""
+        try:
+            # Test data
+            test_display_name = "Jedediah Bey, Trustee"
+            payload = {"display_name": test_display_name}
+            
+            response = self.session.put(f"{self.base_url}/user/profile", json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                # Check if display_name was updated
+                returned_display_name = data.get("display_name")
+                if returned_display_name == test_display_name:
+                    details += f", display_name updated successfully: '{returned_display_name}'"
+                    
+                    # Verify other fields are still present
+                    required_fields = ["user_id", "email", "name", "global_roles"]
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if not missing_fields:
+                        details += f", All required fields preserved"
+                    else:
+                        success = False
+                        details += f", Missing fields after update: {missing_fields}"
+                else:
+                    success = False
+                    details += f", display_name not updated correctly. Expected: '{test_display_name}', Got: '{returned_display_name}'"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("PUT /api/user/profile", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("PUT /api/user/profile", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_plans(self):
+        """Test GET /api/billing/plans - verify plan names are now trust-relevant with correct pricing"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/plans", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                # Check if plans array exists
+                plans = data.get("plans", [])
+                if isinstance(plans, list) and len(plans) > 0:
+                    details += f", Found {len(plans)} plans"
+                    
+                    # Expected plan names and pricing
+                    expected_plans = {
+                        "Testamentary": {"price_monthly": 0.0},
+                        "Revocable": {"price_monthly": 29.0},
+                        "Irrevocable": {"price_monthly": 79.0},
+                        "Dynasty": {"price_monthly": 199.0}
+                    }
+                    
+                    found_plans = {}
+                    for plan in plans:
+                        plan_name = plan.get("name")
+                        price_monthly = plan.get("price_monthly")
+                        found_plans[plan_name] = {"price_monthly": price_monthly}
+                    
+                    # Check each expected plan
+                    all_correct = True
+                    plan_details = []
+                    
+                    for expected_name, expected_data in expected_plans.items():
+                        if expected_name in found_plans:
+                            found_price = found_plans[expected_name]["price_monthly"]
+                            expected_price = expected_data["price_monthly"]
+                            
+                            if found_price == expected_price:
+                                plan_details.append(f"{expected_name}: ${found_price}")
+                            else:
+                                all_correct = False
+                                plan_details.append(f"{expected_name}: ${found_price} (expected ${expected_price})")
+                        else:
+                            all_correct = False
+                            plan_details.append(f"{expected_name}: MISSING")
+                    
+                    if all_correct:
+                        details += f", All plans correct: {', '.join(plan_details)}"
+                    else:
+                        success = False
+                        details += f", Plan issues: {', '.join(plan_details)}"
+                        
+                    # Also check for unexpected plans
+                    unexpected_plans = [name for name in found_plans.keys() if name not in expected_plans]
+                    if unexpected_plans:
+                        details += f", Unexpected plans: {unexpected_plans}"
+                        
+                else:
+                    success = False
+                    details += f", No plans found or invalid format: {type(plans)}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/billing/plans", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/plans", False, f"Error: {str(e)}")
+            return False
+
     # ============ TEST RUNNER ============
 
     def run_onboarding_tests(self):
