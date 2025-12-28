@@ -381,7 +381,10 @@ const AdminConsolePage = () => {
                       <AccountRow
                         key={account.account_id}
                         account={account}
-                        onViewDetails={() => setSelectedAccount(account)}
+                        onViewDetails={() => {
+                          setSelectedAccount(account);
+                          setShowAccountDetails(true);
+                        }}
                         onChangePlan={() => {
                           setSelectedAccount(account);
                           setShowChangePlanDialog(true);
