@@ -167,28 +167,54 @@ const AppLoader = ({
 
           {/* Content */}
           <div className="relative z-10 flex flex-col items-center gap-8 px-6">
-            {/* Logo / Wordmark */}
+            {/* Logo / Wordmark with Matrix Jack Icon */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               className="flex items-center gap-3"
             >
-              <div className="w-8 h-8 rounded-lg bg-vault-gold/10 border border-vault-gold/30 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/30 flex items-center justify-center relative">
+                {/* Matrix Jack/Plug Icon */}
                 <svg 
                   viewBox="0 0 24 24" 
-                  className="w-5 h-5 text-vault-gold"
+                  className="w-6 h-6 text-vault-gold"
                   fill="none" 
                   stroke="currentColor" 
                   strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                  <path d="M2 17l10 5 10-5" />
-                  <path d="M2 12l10 5 10-5" />
+                  {/* Main connector body */}
+                  <rect x="7" y="2" width="10" height="8" rx="1" />
+                  {/* Prongs */}
+                  <line x1="10" y1="10" x2="10" y2="14" />
+                  <line x1="14" y1="10" x2="14" y2="14" />
+                  {/* Base plate */}
+                  <rect x="6" y="14" width="12" height="3" rx="0.5" />
+                  {/* Connection lines going down */}
+                  <line x1="9" y1="17" x2="9" y2="22" />
+                  <line x1="12" y1="17" x2="12" y2="20" />
+                  <line x1="15" y1="17" x2="15" y2="22" />
                 </svg>
+                {/* Pulse effect when loading */}
+                {phase === 'booting' && (
+                  <motion.div
+                    className="absolute inset-0 rounded-lg border border-vault-gold/50"
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      opacity: [0.5, 0, 0.5]
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                )}
               </div>
-              <span className="text-lg font-heading text-vault-light tracking-wide">
-                OmniGovault
+              <span className="text-lg font-heading text-vault-light tracking-widest font-semibold">
+                OMNIGOVAULT
               </span>
             </motion.div>
 
