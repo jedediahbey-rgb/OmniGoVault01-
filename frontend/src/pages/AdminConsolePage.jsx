@@ -260,14 +260,14 @@ const AdminConsolePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-vault-navy p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-vault-navy p-3 sm:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Impersonation Banner */}
         {adminStatus?.active_impersonation && (
-          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 flex items-center justify-between">
+          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <Replace className="w-5 h-5 text-yellow-400" />
-              <span className="text-yellow-400 font-medium">
+              <Replace className="w-5 h-5 text-yellow-400 flex-shrink-0" />
+              <span className="text-yellow-400 font-medium text-sm sm:text-base">
                 Viewing as user: {adminStatus.active_impersonation.target_user_id}
               </span>
             </div>
@@ -275,7 +275,7 @@ const AdminConsolePage = () => {
               onClick={handleStopImpersonation}
               variant="outline"
               size="sm"
-              className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10"
+              className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 w-full sm:w-auto"
             >
               Exit Impersonation
             </Button>
