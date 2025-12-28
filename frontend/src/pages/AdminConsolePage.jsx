@@ -887,4 +887,137 @@ const ImpersonateDialog = ({ open, onClose, user, onImpersonate }) => {
   );
 };
 
+// Account Details Dialog
+const AccountDetailsDialog = ({ open, onClose, account }) => {
+  if (!account) return null;
+  
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="bg-vault-dark border-vault-gold/30 max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-vault-light flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-vault-gold" />
+            Account Details
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4 py-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Account Name</p>
+              <p className="text-vault-light font-medium">{account.name}</p>
+            </div>
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Account ID</p>
+              <p className="text-vault-light font-mono text-sm">{account.account_id}</p>
+            </div>
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Plan</p>
+              <p className="text-vault-light">{account.plan_name || 'Free'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Members</p>
+              <p className="text-vault-light">{account.member_count || 0}</p>
+            </div>
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Status</p>
+              <p className={account.is_suspended ? 'text-red-400' : 'text-green-400'}>
+                {account.is_suspended ? 'Suspended' : 'Active'}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Owner ID</p>
+              <p className="text-vault-light font-mono text-sm">{account.owner_user_id}</p>
+            </div>
+          </div>
+          
+          {account.created_at && (
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Created</p>
+              <p className="text-vault-light text-sm">
+                {new Date(account.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+        </div>
+        
+        <DialogFooter>
+          <Button onClick={onClose} className="bg-vault-gold/20 hover:bg-vault-gold/30 text-vault-gold">
+            Close
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// User Details Dialog  
+const UserDetailsDialog = ({ open, onClose, user }) => {
+  if (!user) return null;
+  
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="bg-vault-dark border-vault-gold/30 max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-vault-light flex items-center gap-2">
+            <UsersIcon className="w-5 h-5 text-vault-gold" />
+            User Details
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4 py-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Name</p>
+              <p className="text-vault-light font-medium">{user.name || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Email</p>
+              <p className="text-vault-light">{user.email}</p>
+            </div>
+            <div>
+              <p className="text-xs text-vault-muted mb-1">User ID</p>
+              <p className="text-vault-light font-mono text-sm">{user.user_id}</p>
+            </div>
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Status</p>
+              <p className={user.is_active === false ? 'text-red-400' : 'text-green-400'}>
+                {user.is_active === false ? 'Inactive' : 'Active'}
+              </p>
+            </div>
+          </div>
+          
+          {user.global_roles && user.global_roles.length > 0 && (
+            <div>
+              <p className="text-xs text-vault-muted mb-2">Roles</p>
+              <div className="flex flex-wrap gap-2">
+                {user.global_roles.map((role) => (
+                  <span key={role} className="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded">
+                    {role}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {user.created_at && (
+            <div>
+              <p className="text-xs text-vault-muted mb-1">Joined</p>
+              <p className="text-vault-light text-sm">
+                {new Date(user.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+        </div>
+        
+        <DialogFooter>
+          <Button onClick={onClose} className="bg-vault-gold/20 hover:bg-vault-gold/30 text-vault-gold">
+            Close
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default AdminConsolePage;
