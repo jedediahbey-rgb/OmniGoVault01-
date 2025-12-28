@@ -9,6 +9,14 @@ import {
 import Sidebar from './Sidebar';
 import { pageTransition } from '../../lib/motion';
 
+// Set theme color for browser chrome
+const setThemeColor = (color) => {
+  const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+  if (metaThemeColor) {
+    metaThemeColor.setAttribute('content', color);
+  }
+};
+
 // Futuristic Vault Toggle Button
 const VaultToggle = ({ isOpen, onClick }) => (
   <button
