@@ -1589,8 +1589,8 @@ export default function CyberHomePage() {
                   </div>
                   
                   {/* Content */}
-                  <div className="p-5 sm:p-6">
-                    <h3 className="text-lg sm:text-xl font-semibold text-[#C6A87C] mb-3 flex items-center gap-2">
+                  <div className="p-5 sm:p-6 text-center">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#C6A87C] mb-3 flex items-center justify-center gap-2">
                       <span className="text-2xl">🌀</span>
                       What is a Labyrinth?
                     </h3>
@@ -1600,7 +1600,7 @@ export default function CyberHomePage() {
                     
                     {/* Visual divider */}
                     <div className="mt-5 pt-4 border-t border-white/10">
-                      <p className="text-xs text-slate-500 italic text-center">
+                      <p className="text-xs text-slate-500 italic">
                         Like navigating a labyrinth, trust governance requires a clear path to the center.
                       </p>
                     </div>
