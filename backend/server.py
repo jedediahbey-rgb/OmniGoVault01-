@@ -882,6 +882,12 @@ async def create_session(request: Request, response: Response):
     This endpoint receives a session_id from the Emergent OAuth flow,
     exchanges it for user data, and creates a persistent session.
     
+    For NEW users:
+    - Creates User record
+    - Creates Account/Organization
+    - Assigns Free tier with seeded entitlements
+    - Marks first_login=True for welcome flow
+    
     REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
     """
     body = await request.json()
@@ -917,8 +923,9 @@ async def create_session(request: Request, response: Response):
     if not email:
         raise HTTPException(status_code=400, detail="No email returned from auth provider")
     
-    # Check if user exists, create or update
+    # Check if user exists
     existing_user = await db.users.find_one({"email": email}, {"_id": 0})
+    is_first_login = existing_user is None
     
     if existing_user:
         user_id = existing_user["user_id"]
@@ -932,7 +939,7 @@ async def create_session(request: Request, response: Response):
             }}
         )
     else:
-        # Create new user
+        # Create NEW user
         user_id = f"user_{uuid.uuid4().hex[:12]}"
         user_doc = {
             "user_id": user_id,
@@ -940,11 +947,91 @@ async def create_session(request: Request, response: Response):
             "name": name or email.split("@")[0],
             "picture": picture,
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "first_login": True  # Track first login for welcome flow
         }
         await db.users.insert_one(user_doc)
+        
+        # Create Account/Organization for new user
+        account_id = f"acct_{uuid.uuid4().hex[:12]}"
+        account_name = f"{name or email.split('@')[0]}'s Vault"
+        
+        account_doc = {
+            "account_id": account_id,
+            "name": account_name,
+            "owner_user_id": user_id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "plan_id": "free",  # Default to Free tier
+            "is_suspended": False
+        }
+        await db.accounts.insert_one(account_doc)
+        
+        # Link user to account
+        await db.account_members.insert_one({
+            "account_id": account_id,
+            "user_id": user_id,
+            "role": "owner",
+            "joined_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        # Create subscription for Free tier
+        free_plan = await db.plans.find_one({"name": "Free"}, {"_id": 0})
+        if free_plan:
+            subscription_doc = {
+                "subscription_id": f"sub_{uuid.uuid4().hex[:12]}",
+                "account_id": account_id,
+                "plan_id": free_plan["plan_id"],
+                "status": "active",
+                "current_period_start": datetime.now(timezone.utc).isoformat(),
+                "current_period_end": None,  # Free tier has no end
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.subscriptions.insert_one(subscription_doc)
+            
+            # Seed Free tier entitlements
+            entitlements_doc = {
+                "account_id": account_id,
+                "entitlements": free_plan.get("entitlements", {
+                    "vaults.max": 1,
+                    "teamMembers.max": 1,
+                    "storage.maxMB": 100,
+                    "documents.max": 10,
+                    "portfolios.max": 3,
+                    "advancedExport": False,
+                    "prioritySupport": False,
+                    "customBranding": False,
+                    "eSignatures": False,
+                    "auditTrail": True
+                }),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.entitlements.update_one(
+                {"account_id": account_id},
+                {"$set": entitlements_doc},
+                upsert=True
+            )
+            
+            # Initialize usage tracking
+            usage_doc = {
+                "account_id": account_id,
+                "usage_metrics": {
+                    "vaults.count": 0,
+                    "teamMembers.count": 1,
+                    "storage.usedMB": 0,
+                    "documents.count": 0,
+                    "portfolios.count": 0
+                },
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.usage.update_one(
+                {"account_id": account_id},
+                {"$set": usage_doc},
+                upsert=True
+            )
+        
+        logger.info(f"✅ New user onboarded: {email} with account {account_id} on Free tier")
     
-    # Create session - use our own session token for consistency
+    # Create session
     session_token = emergent_session_token or f"sess_{uuid.uuid4().hex}"
     expires_at = datetime.now(timezone.utc) + timedelta(days=7)
     
@@ -980,7 +1067,8 @@ async def create_session(request: Request, response: Response):
             "name": user_doc.get("name", ""),
             "picture": user_doc.get("picture", "")
         },
-        "session_token": session_token
+        "session_token": session_token,
+        "is_first_login": is_first_login
     }
 
 
