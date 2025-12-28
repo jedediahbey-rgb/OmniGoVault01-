@@ -451,21 +451,23 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Toaster position="top-center" richColors toastOptions={{ duration: 2000, style: { marginTop: '120px' } }} />
-      <CommandPalette 
-        isOpen={commandPaletteOpen} 
-        onClose={() => setCommandPaletteOpen(false)}
-        onAction={(action) => {
-          if (action === 'new-portfolio') {
-            // Handle new portfolio action
-          }
-        }}
-      />
-      <AssistantDrawer 
-        isOpen={assistantOpen} 
-        onClose={() => setAssistantOpen(false)} 
-      />
-      <AppRouter auth={auth} />
+      <BillingProvider>
+        <Toaster position="top-center" richColors toastOptions={{ duration: 2000, style: { marginTop: '120px' } }} />
+        <CommandPalette 
+          isOpen={commandPaletteOpen} 
+          onClose={() => setCommandPaletteOpen(false)}
+          onAction={(action) => {
+            if (action === 'new-portfolio') {
+              // Handle new portfolio action
+            }
+          }}
+        />
+        <AssistantDrawer 
+          isOpen={assistantOpen} 
+          onClose={() => setAssistantOpen(false)} 
+        />
+        <AppRouter auth={auth} />
+      </BillingProvider>
     </BrowserRouter>
   );
 }
