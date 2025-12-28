@@ -81,12 +81,12 @@ const AppLoader = ({
     }
   }, [isLoading, canDismiss]);
 
-  // Generate entitlement-aware copy
+  // Generate entitlement-aware copy with Matrix theme
   const statusCopy = useMemo(() => {
     if (phase === 'booting') {
       return {
-        primary: 'Initializing workspace',
-        secondary: null
+        primary: 'Jacking into the Matrix',
+        secondary: 'Establishing secure connection...'
       };
     }
 
@@ -97,11 +97,11 @@ const AppLoader = ({
       const apiEnabled = entitlements?.['features.api.enabled'] ?? false;
       const isUnlimited = vaultsMax === -1;
 
-      // Tier-specific messaging
+      // Tier-specific messaging with Matrix theme
       if (planTier === 3) { // Enterprise
         return {
-          primary: 'Enterprise workspace ready',
-          secondary: `Full platform access · Unlimited capacity${analyticsEnabled ? ' · Analytics' : ''}`
+          primary: 'Matrix Systems Online',
+          secondary: `Full clearance granted · Unlimited trust capacity${analyticsEnabled ? ' · Analytics active' : ''}`
         };
       }
 
@@ -110,26 +110,26 @@ const AppLoader = ({
         if (analyticsEnabled) features.push('Analytics');
         if (apiEnabled) features.push('API');
         return {
-          primary: 'Workspace ready',
-          secondary: `${vaultsMax} vaults · ${membersMax} members${features.length ? ' · ' + features.join(', ') : ''}`
+          primary: 'Matrix Systems Online',
+          secondary: `${vaultsMax} vaults · ${membersMax} operators${features.length ? ' · ' + features.join(', ') + ' active' : ''}`
         };
       }
 
       if (planTier === 1) { // Starter
         return {
-          primary: 'Workspace ready',
-          secondary: `${vaultsMax} vaults · ${membersMax} members`
+          primary: 'Matrix Systems Online',
+          secondary: `${vaultsMax} vaults · ${membersMax} operators connected`
         };
       }
 
       // Free tier
       return {
-        primary: 'Workspace ready',
-        secondary: `${vaultsMax} vault · Personal workspace`
+        primary: 'Matrix Systems Online',
+        secondary: `${vaultsMax} vault · Solo operator mode`
       };
     }
 
-    return { primary: 'Loading', secondary: null };
+    return { primary: 'Connecting', secondary: null };
   }, [phase, entitlements, planTier]);
 
   const shouldShow = isLoading || !canDismiss || phase !== 'ready';
