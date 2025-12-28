@@ -18,7 +18,7 @@ import {
   PencilSimple,
   Plus,
   PlusCircle,
-  ShieldCheck,
+  ShieldPlus,
   Timer,
   Trash,
   User,
@@ -63,7 +63,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // Insurance type config
 const insuranceTypeConfig = {
-  whole_life: { icon: ShieldCheck, color: 'text-emerald-400', bg: 'bg-emerald-500/20', label: 'Whole Life' },
+  whole_life: { icon: ShieldPlus, color: 'text-emerald-400', bg: 'bg-emerald-500/20', label: 'Whole Life' },
   term: { icon: Timer, color: 'text-blue-400', bg: 'bg-blue-500/20', label: 'Term Life' },
   universal: { icon: CurrencyDollar, color: 'text-amber-400', bg: 'bg-amber-500/20', label: 'Universal Life' },
   variable: { icon: House, color: 'text-purple-400', bg: 'bg-purple-500/20', label: 'Variable Life' },
