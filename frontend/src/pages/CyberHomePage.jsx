@@ -1354,11 +1354,7 @@ export default function CyberHomePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.6, duration: 0.5 }}
             >
-              <motion.div 
-                whileHover={{ scale: 1.08 }} 
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              >
+              <div>
                 <Button 
                   size="lg" 
                   className="bg-[#C6A87C] hover:bg-[#C6A87C]/90 text-[#05080F] font-semibold px-8"
@@ -1366,7 +1362,7 @@ export default function CyberHomePage() {
                 >
                   Enter the Vault
                 </Button>
-              </motion.div>
+              </div>
             </motion.div>
           </motion.div>
         </div>
