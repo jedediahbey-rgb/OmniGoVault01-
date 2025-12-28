@@ -729,25 +729,36 @@ export default function CyberHomePage() {
   // Handle labyrinth click (mobile) or hover (desktop)
   const handleLabyrinthClick = (e) => {
     e.preventDefault();
-    setShowLabyrinthPopup(true);
-    // Prevent background scroll on both mobile and desktop
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.top = `-${window.scrollY}px`;
+    // Only handle click on mobile/touch devices
+    if (!window.matchMedia('(hover: hover)').matches) {
+      setShowLabyrinthPopup(true);
+      // Prevent background scroll
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    }
   };
   
   const handleLabyrinthHover = (isHovering) => {
     // Only show on hover for desktop (non-touch devices)
     if (window.matchMedia('(hover: hover)').matches) {
       setIsLabyrinthHovered(isHovering);
+      setShowLabyrinthPopup(isHovering);
       if (isHovering) {
-        setShowLabyrinthPopup(true);
-        // Lock scroll on desktop hover too
+        // Lock scroll on desktop hover
         document.body.style.overflow = 'hidden';
         document.body.style.position = 'fixed';
         document.body.style.width = '100%';
         document.body.style.top = `-${window.scrollY}px`;
+      } else {
+        // Restore scroll when hover ends
+        const scrollY = document.body.style.top;
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
       }
     }
   };
