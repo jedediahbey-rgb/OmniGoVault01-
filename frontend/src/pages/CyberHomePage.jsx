@@ -519,7 +519,7 @@ const GovernanceMatrixSection = () => {
                   >
                     <HoloCard 
                       className="p-3 sm:p-4 cursor-pointer h-full"
-                      onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
+                      onClick={() => navigate(module.id === 'compensation' ? '/vault/audit-log' : `/vault/governance?tab=${module.id}`)}
                     >
                       {/* Mobile: Centered layout, Desktop: Row layout */}
                       <div className="flex flex-col items-center text-center sm:text-left sm:items-start">
@@ -555,7 +555,7 @@ const GovernanceMatrixSection = () => {
                   >
                     <HoloCard 
                       className="p-3 sm:p-4 cursor-pointer"
-                      onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
+                      onClick={() => navigate(module.id === 'compensation' ? '/vault/audit-log' : `/vault/governance?tab=${module.id}`)}
                     >
                       <div className="flex flex-col items-center text-center sm:text-left sm:items-start">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between w-full gap-2 mb-2">
@@ -590,7 +590,7 @@ const GovernanceMatrixSection = () => {
                   >
                     <HoloCard 
                       className="p-3 sm:p-4 cursor-pointer h-full"
-                      onClick={() => navigate(`/vault/governance?tab=${module.id}`)}
+                      onClick={() => navigate(module.id === 'compensation' ? '/vault/audit-log' : `/vault/governance?tab=${module.id}`)}
                     >
                       <div className="flex flex-col items-center text-center sm:text-left sm:items-start">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between w-full gap-2 mb-2">
