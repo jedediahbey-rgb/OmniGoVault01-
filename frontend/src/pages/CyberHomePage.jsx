@@ -1075,6 +1075,32 @@ export default function CyberHomePage() {
                     style={{ imageRendering: 'crisp-edges' }}
                   />
                 </div>
+                {/* Jack In Icon - positioned under OMNIGOVAULT */}
+                <div className="flex justify-center mt-2 sm:mt-1">
+                  <div className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg bg-vault-gold/10 border border-vault-gold/40 flex items-center justify-center">
+                    <svg 
+                      viewBox="0 0 24 24" 
+                      className="w-6 h-6 sm:w-5 sm:h-5 text-vault-gold"
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      {/* Main connector body */}
+                      <rect x="7" y="2" width="10" height="8" rx="1" />
+                      {/* Prongs */}
+                      <line x1="10" y1="10" x2="10" y2="14" />
+                      <line x1="14" y1="10" x2="14" y2="14" />
+                      {/* Base plate */}
+                      <rect x="6" y="14" width="12" height="3" rx="0.5" />
+                      {/* Connection lines going down */}
+                      <line x1="9" y1="17" x2="9" y2="22" />
+                      <line x1="12" y1="17" x2="12" y2="20" />
+                      <line x1="15" y1="17" x2="15" y2="22" />
+                    </svg>
+                  </div>
+                </div>
               </motion.div>
               
               <motion.h2
@@ -1559,13 +1585,13 @@ export default function CyberHomePage() {
                 
                 {/* Scrollable content area */}
                 <div className="max-h-[80vh] overflow-y-auto">
-                  {/* Labyrinth Image */}
+                  {/* Labyrinth Image - Transparent/faded */}
                   <div className="relative w-full bg-[#05080F]">
                     <div className="aspect-square sm:aspect-[4/3] flex items-center justify-center p-6 sm:p-8">
                       <img
                         src={LABYRINTH_IMAGE}
                         alt="Cretan Labyrinth Design"
-                        className="max-w-full max-h-full object-contain"
+                        className="max-w-full max-h-full object-contain opacity-40"
                       />
                     </div>
                     {/* Subtle golden glow overlay */}

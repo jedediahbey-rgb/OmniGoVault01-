@@ -181,10 +181,10 @@ const AppLoader = ({
       const apiEnabled = entitlements?.['features.api.enabled'] ?? false;
       const isUnlimited = vaultsMax === -1;
 
-      // Tier-specific messaging with Network theme
+      // Tier-specific messaging with Matrix theme
       if (planTier === 3) { // Enterprise
         return {
-          primary: 'Network Systems Online',
+          primary: 'Matrix System Online',
           secondary: `Full clearance granted · Unlimited trust capacity${analyticsEnabled ? ' · Analytics active' : ''}`
         };
       }
@@ -194,21 +194,21 @@ const AppLoader = ({
         if (analyticsEnabled) features.push('Analytics');
         if (apiEnabled) features.push('API');
         return {
-          primary: 'Network Systems Online',
+          primary: 'Matrix System Online',
           secondary: `${vaultsMax} vaults · ${membersMax} operators${features.length ? ' · ' + features.join(', ') + ' active' : ''}`
         };
       }
 
       if (planTier === 1) { // Starter
         return {
-          primary: 'Network Systems Online',
+          primary: 'Matrix System Online',
           secondary: `${vaultsMax} vaults · ${membersMax} operators connected`
         };
       }
 
       // Free tier
       return {
-        primary: 'Network Systems Online',
+        primary: 'Matrix System Online',
         secondary: `${vaultsMax} vault · Solo operator mode`
       };
     }
