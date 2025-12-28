@@ -726,38 +726,41 @@ export default function CyberHomePage() {
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
   
-  // Handle labyrinth click (mobile) or hover (desktop)
+  // State for labyrinth popup - desktop uses hover, mobile uses click
+  const [isDesktop, setIsDesktop] = useState(false);
+  
+  // Check if desktop on mount and resize
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 640);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  // Handle labyrinth click (mobile only)
   const handleLabyrinthClick = (e) => {
     e.preventDefault();
-    // Show popup on click for both mobile and desktop
-    setShowLabyrinthPopup(true);
-    // Prevent background scroll
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.top = `-${window.scrollY}px`;
+    if (!isDesktop) {
+      setShowLabyrinthPopup(true);
+      // Prevent background scroll on mobile
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    }
   };
   
+  // Handle labyrinth hover (desktop only)
   const handleLabyrinthHover = (isHovering) => {
-    // Desktop hover behavior - check if device supports hover
-    const isDesktop = window.innerWidth >= 640; // sm breakpoint
     if (isDesktop) {
       setIsLabyrinthHovered(isHovering);
       setShowLabyrinthPopup(isHovering);
       if (isHovering) {
         // Lock scroll on desktop hover
         document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.top = `-${window.scrollY}px`;
       } else {
         // Restore scroll when hover ends
-        const scrollY = document.body.style.top;
         document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
       }
     }
   };
@@ -766,12 +769,14 @@ export default function CyberHomePage() {
     setShowLabyrinthPopup(false);
     setIsLabyrinthHovered(false);
     // Restore background scroll
-    const scrollY = document.body.style.top;
+    if (!isDesktop) {
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
     document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.width = '';
-    document.body.style.top = '';
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
   };
   
   // Cleanup on unmount
