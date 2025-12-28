@@ -37,6 +37,9 @@ class EquityTrustAPITester:
         self.trust_profiles = []
         self.proper_rm_id_profile = None
         self.placeholder_rm_id_profile = None
+        # Vault testing variables
+        self.test_vault_id = None
+        self.test_document_id = None
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
