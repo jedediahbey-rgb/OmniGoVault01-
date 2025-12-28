@@ -322,16 +322,35 @@ const SignalFeed = ({ signals }) => (
   </div>
 );
 
-// Trust Health Card - LIVE VERSION
-const TrustHealthCard = () => {
+// Demo Health Data for logged-out users
+const DEMO_HEALTH_DATA = {
+  score: 78,
+  trend: 5,
+  next_actions: [
+    { title: 'Complete trust registration', priority: 'high', impact_points: 15 },
+    { title: 'Upload trustee documents', priority: 'medium', impact_points: 10 },
+    { title: 'Schedule annual review', priority: 'low', impact_points: 5 }
+  ],
+  history: [65, 68, 72, 74, 76, 78],
+  findings_count: { critical: 0, warning: 2 }
+};
+
+// Trust Health Card - Supports both Demo (logged out) and Live (logged in) modes
+const TrustHealthCard = ({ isLoggedIn }) => {
   const navigate = useNavigate();
   const [healthData, setHealthData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
-    fetchHealthSummary();
-  }, []);
+    if (isLoggedIn) {
+      fetchHealthSummary();
+    } else {
+      // Use demo data for logged-out users
+      setHealthData(DEMO_HEALTH_DATA);
+      setLoading(false);
+    }
+  }, [isLoggedIn]);
 
   const fetchHealthSummary = async () => {
     try {
@@ -341,6 +360,8 @@ const TrustHealthCard = () => {
       }
     } catch (error) {
       console.error('Failed to fetch health summary:', error);
+      // Fall back to demo data if API fails
+      setHealthData(DEMO_HEALTH_DATA);
     } finally {
       setLoading(false);
     }
@@ -391,7 +412,7 @@ const TrustHealthCard = () => {
 
   // Build trend bars from history
   const trendBars = history.length > 0 
-    ? history.map(h => h.score || 0)
+    ? (Array.isArray(history[0]) ? history : history.map(h => typeof h === 'number' ? h : h.score || 0))
     : [65, 70, 68, 75, 80, 85, score]; // Fallback trend
   
   return (
@@ -409,7 +430,12 @@ const TrustHealthCard = () => {
               {findingsCount.critical} critical
             </span>
           )}
-          <IconChip icon={Pulse} label="Live" variant="green" />
+          {/* Show Demo or Live badge based on login status */}
+          <IconChip 
+            icon={Pulse} 
+            label={isLoggedIn ? "Live" : "Demo"} 
+            variant={isLoggedIn ? "green" : "gold"} 
+          />
         </div>
       </div>
       
@@ -418,7 +444,7 @@ const TrustHealthCard = () => {
         <div className="flex items-end gap-3 mb-4 animate-pulse">
           <div className="h-12 w-16 bg-white/10 rounded"></div>
         </div>
-      ) : needsScan ? (
+      ) : needsScan && isLoggedIn ? (
         <div className="text-center py-4 mb-4">
           <p className="text-slate-400 text-sm mb-3">No health data yet</p>
           <Button 
@@ -454,7 +480,7 @@ const TrustHealthCard = () => {
       )}
       
       {/* Mini trend */}
-      {!loading && !needsScan && (
+      {!loading && !(needsScan && isLoggedIn) && (
         <div className="h-10 mb-4 flex items-end gap-1">
           {trendBars.map((val, i) => (
             <motion.div
@@ -489,8 +515,8 @@ const TrustHealthCard = () => {
         </div>
       )}
 
-      {/* Empty state for actions */}
-      {!loading && !needsScan && nextActions.length === 0 && (
+      {/* Empty state for actions - only show for logged-in users with no actions */}
+      {!loading && !(needsScan && isLoggedIn) && nextActions.length === 0 && isLoggedIn && (
         <div className="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
           <div className="flex items-center gap-2 text-emerald-400 text-sm">
             <CheckCircle className="w-4 h-4" weight="fill" />
