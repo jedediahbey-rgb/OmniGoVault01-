@@ -485,6 +485,9 @@ class DocumentService:
         
         await self.db.document_objections.insert_one(objection)
         
+        # Remove MongoDB _id
+        objection.pop("_id", None)
+        
         # Log event
         await self._log_event(
             document_id,
