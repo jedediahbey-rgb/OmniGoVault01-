@@ -278,6 +278,13 @@ const AppRouter = ({ auth }) => {
         </AuthLayout>
       } />
       
+      {/* Admin Console (Omnicompetent) */}
+      <Route path="/admin" element={
+        <AuthLayout auth={auth}>
+          <AdminConsolePage />
+        </AuthLayout>
+      } />
+      
       {/* Protected Vault Routes */}
       <Route
         path="/vault"
