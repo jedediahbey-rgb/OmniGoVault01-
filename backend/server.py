@@ -4027,6 +4027,15 @@ billing_svc = init_billing_service(db, subscription_svc, entitlement_svc)
 
 app.include_router(billing_router, prefix="/api")
 
+# Initialize and include Admin routes (Omnicompetent system)
+from routes.admin import router as admin_router
+from services.admin_service import init_admin_service
+
+# Initialize admin service
+admin_svc = init_admin_service(db, entitlement_svc, subscription_svc)
+
+app.include_router(admin_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
