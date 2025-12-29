@@ -194,7 +194,7 @@ export default function MainLayout({ children, user, onLogout }) {
                               e.preventDefault();
                               e.stopPropagation();
                               setUserMenuOpen(false);
-                              onLogout();
+                              onLogout(userTier);
                             }}
                             className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors text-left"
                           >
