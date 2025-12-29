@@ -52,6 +52,8 @@ import {
 import { UpgradePrompt } from '../components/UpgradePrompt';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import { toast } from 'sonner';
+import StyledPortfolioCard from '../components/portfolio/StyledPortfolioCard';
+import PortfolioStyleSelector from '../components/portfolio/PortfolioStyleSelector';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
