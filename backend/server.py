@@ -626,12 +626,14 @@ OWNER_NAME = "Jedediah Bey"
 ROLE_OMNICOMPETENT_OWNER = "OMNICOMPETENT_OWNER"  # Full admin + all features (owner only)
 ROLE_OMNICOMPETENT = "OMNICOMPETENT"  # All features free (no admin access)
 ROLE_SUPPORT_ADMIN = "SUPPORT_ADMIN"  # Limited admin access
+ROLE_BILLING_ADMIN = "BILLING_ADMIN"  # Billing management access
 
 # Role descriptions
 ROLE_DESCRIPTIONS = {
     ROLE_OMNICOMPETENT_OWNER: "Full platform control and all features",
     ROLE_OMNICOMPETENT: "All platform features without billing",
-    ROLE_SUPPORT_ADMIN: "Limited administrative access for support"
+    ROLE_SUPPORT_ADMIN: "Limited administrative access for support",
+    ROLE_BILLING_ADMIN: "Billing and subscription management"
 }
 
 logger.info(f"🔧 Dev Bypass Mode: {'ENABLED' if DEV_BYPASS_ENABLED else 'DISABLED'}")
