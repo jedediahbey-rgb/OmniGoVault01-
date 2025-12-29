@@ -798,6 +798,7 @@ export default function CyberHomePage() {
   const [showLabyrinthPopup, setShowLabyrinthPopup] = useState(false);
   const [isLabyrinthHovered, setIsLabyrinthHovered] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false); // User dropdown menu state
+  const [isLoggingOut, setIsLoggingOut] = useState(false); // Track logout state for "Matrix System Offline"
   const featuresRef = useRef(null);
   const userMenuRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
