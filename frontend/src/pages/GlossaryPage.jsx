@@ -767,16 +767,16 @@ export default function GlossaryPage({ user }) {
 
       {/* Search and Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <div className="relative w-full md:w-80">
+        <div className="relative w-full md:w-80 h-9">
+          <MagnifyingGlass 
+            className="absolute left-3 top-0 bottom-0 my-auto w-4 h-4 text-white/50 pointer-events-none" 
+            weight="duotone" 
+          />
           <Input
             placeholder="Search terms..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-vault-dark/50 border border-white/20 focus:border-vault-gold h-10 w-full"
-          />
-          <MagnifyingGlass 
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" 
-            weight="duotone" 
+            className="pl-10 bg-vault-dark/50 border border-white/20 focus:border-vault-gold absolute inset-0"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
