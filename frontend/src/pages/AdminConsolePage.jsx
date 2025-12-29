@@ -592,9 +592,16 @@ const AccountRow = ({ account, onViewDetails, onChangePlan, isOmnicompetent }) =
 const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate, isOmnicompetent, currentUserId }) => {
   if (!user) return null;
   
-  const handleRevokeRole = (role) => {
+  const handleRevokeClick = (e, role) => {
+    e.stopPropagation();
+    if (role === 'OMNICOMPETENT_OWNER') {
+      toast.error('Cannot revoke OMNICOMPETENT_OWNER role');
+      return;
+    }
     if (isOmnicompetent && user.user_id !== currentUserId && onRevokeRole) {
-      onRevokeRole(role);
+      if (window.confirm(`Remove ${role} role from ${user.email || user.name}?`)) {
+        onRevokeRole(role);
+      }
     }
   };
   
@@ -619,12 +626,17 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
           <Badge
             key={role}
             variant="outline"
-            className={`${roleBadgeColors[role] || 'bg-gray-500/20 text-gray-400'} cursor-pointer hover:opacity-80`}
-            onClick={() => handleRevokeRole(role)}
+            className={`${roleBadgeColors[role] || 'bg-gray-500/20 text-gray-400'} ${
+              isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' 
+                ? 'cursor-pointer hover:opacity-70 hover:line-through' 
+                : ''
+            }`}
+            onClick={(e) => handleRevokeClick(e, role)}
+            title={isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' ? `Click to remove ${role}` : ''}
           >
             {role}
-            {isOmnicompetent && user.user_id !== currentUserId && (
-              <span className="ml-1 text-xs">×</span>
+            {isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' && (
+              <span className="ml-1 text-red-400">×</span>
             )}
           </Badge>
         ))}
