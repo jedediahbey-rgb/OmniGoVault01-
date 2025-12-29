@@ -799,9 +799,14 @@ const ChangePlanDialog = ({ open, onClose, account, plans, onChangePlan }) => {
     setReason('');
   };
 
+  const isCurrentPlan = (planId) => {
+    if (planId === 'free_forever' && account?.free_forever) return true;
+    return account?.plan_id === planId;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-vault-dark border-vault-gold/30">
+      <DialogContent className="bg-vault-dark border-vault-gold/30 max-w-md">
         <DialogHeader>
           <DialogTitle className="text-vault-light">Change Account Plan</DialogTitle>
           <DialogDescription className="text-vault-muted">
@@ -810,6 +815,20 @@ const ChangePlanDialog = ({ open, onClose, account, plans, onChangePlan }) => {
         </DialogHeader>
         
         <div className="space-y-4 py-4">
+          {/* Current Plan Info */}
+          <div className="p-3 bg-vault-navy/50 rounded-lg border border-vault-gold/10">
+            <p className="text-xs text-vault-muted mb-1">Current Plan</p>
+            <p className="text-vault-light font-medium flex items-center gap-2">
+              {account?.plan_name || 'Free'}
+              {account?.free_forever && (
+                <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Free Forever
+                </Badge>
+              )}
+            </p>
+          </div>
+
           <div className="space-y-2">
             <Label className="text-vault-light">New Plan</Label>
             <Select value={selectedPlan} onValueChange={setSelectedPlan}>
@@ -817,14 +836,47 @@ const ChangePlanDialog = ({ open, onClose, account, plans, onChangePlan }) => {
                 <SelectValue placeholder="Select plan" />
               </SelectTrigger>
               <SelectContent className="bg-vault-dark border-vault-gold/20">
+                {/* Free Forever Option - Special */}
+                <SelectItem 
+                  value="free_forever" 
+                  className="text-purple-300 focus:text-purple-200"
+                  disabled={isCurrentPlan('free_forever')}
+                >
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                    <span>Free Forever - All Features</span>
+                  </div>
+                </SelectItem>
+                
+                <Separator className="my-2 bg-vault-gold/10" />
+                
+                {/* Regular Plans */}
                 {plans.map((plan) => (
-                  <SelectItem key={plan.plan_id} value={plan.plan_id}>
+                  <SelectItem 
+                    key={plan.plan_id} 
+                    value={plan.plan_id}
+                    disabled={isCurrentPlan(plan.plan_id)}
+                  >
                     {plan.name} - ${plan.price_monthly}/mo
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
+          
+          {/* Free Forever Description */}
+          {selectedPlan === 'free_forever' && (
+            <div className="p-3 bg-purple-500/10 rounded-lg border border-purple-500/30">
+              <p className="text-purple-300 text-sm flex items-start gap-2">
+                <Gem className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>
+                  <strong>Free Forever</strong> grants unlimited access to all platform features 
+                  without any billing. This includes unlimited vaults, team members, storage, 
+                  document signing, and all premium features.
+                </span>
+              </p>
+            </div>
+          )}
           
           <div className="space-y-2">
             <Label className="text-vault-light">Reason</Label>
@@ -844,9 +896,19 @@ const ChangePlanDialog = ({ open, onClose, account, plans, onChangePlan }) => {
           <Button
             onClick={handleChange}
             disabled={!selectedPlan}
-            className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
+            className={selectedPlan === 'free_forever' 
+              ? "bg-purple-600 hover:bg-purple-700 text-white" 
+              : "bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
+            }
           >
-            Change Plan
+            {selectedPlan === 'free_forever' ? (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Grant Free Forever
+              </>
+            ) : (
+              'Change Plan'
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
