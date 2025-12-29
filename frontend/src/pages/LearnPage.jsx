@@ -596,7 +596,7 @@ Both relationships are fiduciary, meaning both agent and trustee must exercise u
   {
     id: 'documents',
     title: 'Trust Documents',
-    description: 'Learn about essential documents in trust administration',
+    description: 'Become fluent in the essential documents that drive trust administration.',
     icon: FileText,
     duration: '40 min',
     lessons: [
