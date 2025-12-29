@@ -113,8 +113,12 @@ const ADMIN_EMAILS = ['jedediah.bey@gmail.com', 'dev.admin@system.local'];
 export default function Sidebar({ user, onLogout, isOpen, onClose }) {
   const navigate = useNavigate();
   
+  // Get user's subscription tier for logout screen
+  const { subscription } = useBilling();
+  const userTier = subscription?.plan_name || 'Free';
+  
   const handleLogout = async () => {
-    if (onLogout) await onLogout();
+    if (onLogout) await onLogout(userTier);
     navigate('/login');
   };
 
