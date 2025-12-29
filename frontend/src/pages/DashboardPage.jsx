@@ -438,11 +438,6 @@ export default function DashboardPage({ user }) {
         title={`Welcome back, ${welcomeName}`}
         subtitle="Your trust portfolio dashboard"
         subtitleAction={<PageHelpTooltip pageKey="dashboard" />}
-        actions={
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline text-white/30 text-xs">Ctrl+K for commands</span>
-          </div>
-        }
       />
 
       {/* Stats SquaresFour */}
