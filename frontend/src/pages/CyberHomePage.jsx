@@ -2255,7 +2255,7 @@ export default function CyberHomePage() {
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                        <Gem className="w-4 h-4 text-purple-400" weight="duotone" />
+                        <Diamond className="w-4 h-4 text-purple-400" weight="duotone" />
                         Dynasty
                       </h3>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/40">Elite</span>
