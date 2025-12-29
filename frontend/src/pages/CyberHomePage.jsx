@@ -840,42 +840,37 @@ export default function CyberHomePage() {
     }
   }, []);
   
-  // Handle vault entry animation - for main "Enter the Vault" button ONLY
-  // If user has an existing session, this will auto-login them
+  // Handle vault entry animation - ALWAYS plays vault transition first
+  // "Enter the Vault" = animation first, then navigation/auth
+  // Logged OUT: animation → Google Auth → app
+  // Logged IN: animation → app
   const handleEnterVault = async (e) => {
     e.preventDefault();
     
-    // Check if user already has a session/account
-    try {
-      const response = await axios.get(`${API}/auth/me`, { withCredentials: true });
-      if (response.data && response.data.user_id && response.data.email !== 'dev.admin@system.local') {
-        // User has an account - start vault animation and go to vault
-        setVaultOpening(true);
-        setTimeout(() => {
-          setVaultOpening(false);
-          setShowAccessComplete(true);
-        }, 2500);
-        setTimeout(() => {
-          navigate('/vault');
-        }, 4000);
-        return;
-      }
-    } catch (error) {
-      // No session or error - continue with normal flow
-    }
-    
-    // Start vault animation for dev/new users
+    // ALWAYS start vault animation first - it's part of the brand experience
     setVaultOpening(true);
+    
+    // After vault animation completes, show ACCESS DOWNLOAD COMPLETE
     setTimeout(() => {
       setVaultOpening(false);
       setShowAccessComplete(true);
     }, 2500);
-    setTimeout(() => {
-      navigate('/vault');
+    
+    // After ACCESS COMPLETE screen, handle navigation/auth
+    setTimeout(async () => {
+      if (isLoggedIn) {
+        // User is already logged in - go directly to vault
+        navigate('/vault');
+      } else {
+        // User not logged in - trigger Google Auth
+        // The redirect will bring them back to /vault after auth
+        const redirectUrl = window.location.origin + '/vault';
+        window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+      }
     }, 4000);
   };
   
-  // Handle Google Auth - Create Account
+  // Handle Google Auth - Create Account (only for logged-out users)
   // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
   const handleCreateAccount = (e) => {
     e.preventDefault();
