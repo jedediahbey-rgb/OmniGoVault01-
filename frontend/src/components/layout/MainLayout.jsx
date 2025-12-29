@@ -171,25 +171,27 @@ export default function MainLayout({ children, user, onLogout }) {
                         {/* Menu Items */}
                         <div className="py-1">
                           <button
+                            type="button"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               setUserMenuOpen(false);
-                              navigate('/vault/settings');
+                              setTimeout(() => navigate('/vault/settings'), 50);
                             }}
-                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left"
                           >
                             <Gear className="w-4 h-4" weight="duotone" />
                             Settings
                           </button>
                           <button
+                            type="button"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               setUserMenuOpen(false);
                               onLogout();
                             }}
-                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors"
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors text-left"
                           >
                             <SignOut className="w-4 h-4" weight="duotone" />
                             Sign Out
