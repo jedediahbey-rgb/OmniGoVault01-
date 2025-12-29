@@ -850,11 +850,9 @@ export default function CyberHomePage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   
-  // Handle logout - shows "Matrix System Offline" loading screen
+  // Handle logout - redirects to /?logout=true which triggers "Matrix System Offline" screen
   const handleLogout = async () => {
     setUserMenuOpen(false);
-    setIsLoggingOut(true);
-    setShowInitialLoading(true);
     
     // Call logout API
     try {
@@ -863,13 +861,8 @@ export default function CyberHomePage() {
       console.error('Logout error:', error);
     }
     
-    // Show offline screen for a moment, then redirect
-    setTimeout(() => {
-      setIsLoggedIn(false);
-      setUserData(null);
-      setIsLoggingOut(false);
-      window.location.href = '/';
-    }, 2000);
+    // Redirect to homepage with logout flag - the URL param handler will show the offline screen
+    window.location.href = '/?logout=true';
   };
   
   // Fetch user's subscription tier for loading screen
