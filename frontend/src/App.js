@@ -107,9 +107,11 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Logout error:', error);
     }
-    // After logout, revert to dev bypass
-    setUser(DEV_BYPASS_USER);
-    setIsDevMode(true);
+    // After logout, set user to null and redirect to homepage
+    setUser(null);
+    setIsDevMode(false);
+    // Redirect to homepage after logout
+    window.location.href = '/';
   };
   
   const clearWelcome = async () => {
