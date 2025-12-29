@@ -154,3 +154,4 @@ yarl==1.22.0
 zipp==3.23.0
 zopfli==0.4.0
 zstandard==0.25.0
+resend>=2.0.0
