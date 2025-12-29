@@ -768,6 +768,8 @@ const GovernanceMatrixSection = () => {
 export default function CyberHomePage() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null); // Store user data for avatar, name, tier
+  const [userTier, setUserTier] = useState('Free'); // Default tier for loading screen
   const [liveSignals, setLiveSignals] = useState([]);
   const [signalsLoading, setSignalsLoading] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -779,20 +781,48 @@ export default function CyberHomePage() {
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
   
-  // Check if user is logged in (not dev bypass user)
+  // Fetch user's subscription tier for loading screen
+  const fetchUserTier = async () => {
+    try {
+      const response = await axios.get(`${API}/billing/subscription`, { withCredentials: true });
+      if (response.data && response.data.plan_name) {
+        setUserTier(response.data.plan_name);
+      }
+    } catch (error) {
+      // If can't fetch subscription, check if omnicompetent owner
+      try {
+        const profileRes = await axios.get(`${API}/user/profile`, { withCredentials: true });
+        if (profileRes.data?.global_roles?.includes('OMNICOMPETENT_OWNER')) {
+          setUserTier('Dynasty');
+        }
+      } catch {
+        setUserTier('Testamentary'); // Default tier for logged-in users
+      }
+    }
+  };
+  
+  // Check if user is logged in
+  // Dev bypass IS treated as logged in (same as real user experience)
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await axios.get(`${API}/auth/me`, { withCredentials: true });
-        // User is "logged in" if they have a valid user_id AND they are not using dev bypass
-        // The dev bypass user should see "Demo" mode since they haven't actually authenticated
-        if (response.data && response.data.user_id && !response.data.dev_bypass_enabled) {
+        // User is "logged in" if they have a valid user_id
+        // Dev bypass should also be treated as logged in (real product experience)
+        if (response.data && response.data.user_id) {
           setIsLoggedIn(true);
+          setUserData(response.data);
+          // Fetch user's subscription tier
+          fetchUserTier();
         } else {
           setIsLoggedIn(false);
+          setUserData(null);
+          setUserTier('Free');
         }
       } catch (error) {
         setIsLoggedIn(false);
+        setUserData(null);
+        setUserTier('Free');
       }
     };
     checkAuth();
