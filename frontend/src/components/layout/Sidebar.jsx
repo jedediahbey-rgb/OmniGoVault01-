@@ -191,11 +191,16 @@ export default function Sidebar({ user, onLogout, isOpen, onClose }) {
 function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
   return (
     <>
-      {/* Logo - Links to Landing Page - MATCHES landing page header exactly */}
-      <Link to="/" className="block border-b border-white/10 hover:bg-white/5 transition-colors">
-        <div className="flex items-center justify-center gap-2 h-16 px-4">
-          <Key className="w-5 h-5 text-[#C6A87C] shrink-0" weight="duotone" />
-          <span className="text-sm sm:text-base font-medium text-white whitespace-nowrap">Private Equity & Trusts</span>
+      {/* Logo Header - Premium branding */}
+      <Link to="/" className="block border-b border-vault-gold/20 hover:bg-vault-gold/5 transition-colors">
+        <div className="flex items-center gap-3 h-16 px-4">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-vault-gold/20 to-vault-gold/5 border border-vault-gold/30 flex items-center justify-center flex-shrink-0">
+            <Key className="w-5 h-5 text-vault-gold" weight="fill" />
+          </div>
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-semibold text-white leading-tight">Private Equity</span>
+            <span className="text-xs text-vault-gold/80 leading-tight">& Trusts</span>
+          </div>
         </div>
       </Link>
 
