@@ -243,6 +243,7 @@ const Scanline = () => (
 );
 
 // Holographic Card component - clean, no animations
+// Holographic Card component - with hover pop-out effect
 const HoloCard = ({ children, className = '', hover = true, onClick, delay = 0 }) => {
   const handleClick = (e) => {
     e.preventDefault();
@@ -251,16 +252,22 @@ const HoloCard = ({ children, className = '', hover = true, onClick, delay = 0 }
   };
   
   return (
-    <div
-      className={`relative bg-[#0B1221]/70 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#C6A87C]/40 hover:shadow-[0_0_30px_rgba(198,168,124,0.1)] ${className}`}
+    <motion.div
+      className={`relative bg-[#0B1221]/70 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden transition-all duration-300 ${hover ? 'hover:border-[#C6A87C]/40 hover:shadow-[0_0_30px_rgba(198,168,124,0.15)]' : ''} ${className}`}
       onClick={handleClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') handleClick(e); } : undefined}
+      whileHover={hover ? { 
+        scale: 1.02, 
+        y: -4,
+        transition: { duration: 0.2, ease: "easeOut" }
+      } : {}}
+      whileTap={hover ? { scale: 0.98 } : {}}
     >
       <Scanline />
       <div className="relative z-20">{children}</div>
-    </div>
+    </motion.div>
   );
 };
 
