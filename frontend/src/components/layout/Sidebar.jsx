@@ -189,7 +189,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
       {/* Logo - Links to Landing Page - MATCHES landing page header exactly */}
       <Link to="/" className="block border-b border-white/10 hover:bg-white/5 transition-colors">
         <div className="flex items-center justify-center gap-2 h-16 px-4">
-          <Key className="w-5 h-5 text-vault-gold shrink-0" weight="fill" />
+          <Keyhole className="w-5 h-5 text-[#C6A87C]/70 shrink-0" weight="duotone" />
           <span className="text-sm sm:text-base font-medium text-white whitespace-nowrap">Private Equity & Trusts</span>
         </div>
       </Link>
