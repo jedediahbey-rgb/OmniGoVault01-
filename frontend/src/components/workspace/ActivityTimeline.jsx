@@ -331,7 +331,7 @@ export default function ActivityTimeline({ vaultId, documents = [] }) {
                           )}
                           {event.metadata?.note && (
                             <p className="text-xs text-white/50 mt-1 italic">
-                              "{event.metadata.note}"
+                              &ldquo;{event.metadata.note}&rdquo;
                             </p>
                           )}
                         </div>
