@@ -720,17 +720,25 @@ async def get_current_user(request: Request) -> User:
                 email=OWNER_EMAIL,
                 name=OWNER_NAME,
                 picture="",
+                global_roles=[ROLE_OMNICOMPETENT_OWNER],
                 created_at=datetime.now(timezone.utc)
             )
         else:
             raise HTTPException(status_code=401, detail="User not found")
+    
+    # Fetch global roles from the user_global_roles collection
+    roles_docs = await db.user_global_roles.find(
+        {"user_id": user_doc["user_id"]},
+        {"_id": 0}
+    ).to_list(100)
+    global_roles = [r["role"] for r in roles_docs] if roles_docs else []
     
     return User(
         user_id=user_doc["user_id"],
         email=user_doc.get("email", ""),
         name=user_doc.get("name", ""),
         picture=user_doc.get("picture", ""),
-        global_roles=user_doc.get("global_roles", []),
+        global_roles=global_roles,
         created_at=datetime.now(timezone.utc)
     )
 
