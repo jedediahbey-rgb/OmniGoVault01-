@@ -896,33 +896,36 @@ export default function CyberHomePage() {
   }, []);
   
   // Handle vault entry animation - ALWAYS plays vault transition first
-  // "Enter the Vault" = animation first, then navigation/auth
-  // Logged OUT: animation → Google Auth → app
-  // Logged IN: animation → app
+  // For logged-OUT users: Vault animation → Google Auth → (callback handles loading screen)
+  // For logged-IN users: Vault animation → Access Complete → Portfolio
   const handleEnterVault = async (e) => {
     e.preventDefault();
     
     // ALWAYS start vault animation first - it's part of the brand experience
     setVaultOpening(true);
     
-    // After vault animation completes, show ACCESS DOWNLOAD COMPLETE
-    setTimeout(() => {
-      setVaultOpening(false);
-      setShowAccessComplete(true);
-    }, 2500);
-    
-    // After ACCESS COMPLETE screen, handle navigation/auth
-    setTimeout(async () => {
-      if (isLoggedIn) {
-        // User is already logged in - go directly to vault
+    if (isLoggedIn) {
+      // User is already logged in
+      // After vault animation completes, show ACCESS COMPLETE then navigate
+      setTimeout(() => {
+        setVaultOpening(false);
+        setShowAccessComplete(true);
+      }, 2500);
+      
+      setTimeout(() => {
         navigate('/vault');
-      } else {
-        // User not logged in - trigger Google Auth
-        // The redirect will bring them back to /vault after auth
-        const redirectUrl = window.location.origin + '/vault';
+      }, 4000);
+    } else {
+      // User not logged in - show vault animation, then redirect to Google Auth
+      // After vault animation completes, trigger Google Auth
+      setTimeout(() => {
+        setVaultOpening(false);
+        // Redirect to Google Auth - the auth callback will show the loading screen
+        // Use a special redirect URL that tells the callback to show the loading animation
+        const redirectUrl = window.location.origin + '/auth/callback?show_loading=true';
         window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-      }
-    }, 4000);
+      }, 2500);
+    }
   };
   
   // Handle Google Auth - Create Account (only for logged-out users)
