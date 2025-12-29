@@ -735,7 +735,10 @@ export default function WorkspaceDetailPage({ user }) {
                     </Button>
                   )}
                   {selectedDocument.can_sign && !selectedDocument.has_user_signed && (
-                    <Button className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy">
+                    <Button 
+                      className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
+                      onClick={() => setShowSignDialog(true)}
+                    >
                       <Signature className="w-4 h-4 mr-2" />
                       Sign Document
                     </Button>
