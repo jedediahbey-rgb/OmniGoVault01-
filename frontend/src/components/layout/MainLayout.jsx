@@ -129,12 +129,12 @@ export default function MainLayout({ children, user, onLogout }) {
             </Link>
             
             {/* User Menu - Right */}
-            <div className="w-10 relative" ref={userMenuRef}>
+            <div className="w-8 relative" ref={userMenuRef}>
               {user && (
                 <>
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
+                    className="w-8 h-8 rounded-full overflow-hidden border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
                   >
                     {user.picture ? (
                       <img 
