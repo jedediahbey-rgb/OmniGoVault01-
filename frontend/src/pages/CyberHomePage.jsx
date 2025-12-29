@@ -1689,24 +1689,40 @@ export default function CyberHomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#05080F]/95 backdrop-blur-xl border-b border-white/5 pt-1.5 sm:pt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Vault Icon - Left side - matches portfolio header */}
+            {/* Vault Icon - Left side - Only clickable when logged in (bypasses transition) */}
             <div className="w-10">
-              <button
-                onClick={() => isLoggedIn ? window.location.href = '/vault' : null}
-                className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#C6A87C]/20 to-transparent border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-all duration-300 group"
-                aria-label="Enter vault"
-              >
-                {/* Glow effect */}
-                <div className="absolute inset-0 rounded-xl bg-[#C6A87C]/10 opacity-0 group-hover:opacity-100 blur-sm transition-opacity" />
-                
-                {/* Icon */}
-                <div className="relative z-10">
-                  <Vault 
-                    className="w-5 h-5 text-[#C6A87C]/70 group-hover:text-[#C6A87C] transition-colors duration-300"
-                    weight="duotone"
-                  />
+              {isLoggedIn ? (
+                <button
+                  onClick={() => window.location.href = '/vault'}
+                  className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#C6A87C]/20 to-transparent border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-all duration-300 group cursor-pointer"
+                  aria-label="Go to vault (skip transition)"
+                  title="Go directly to vault"
+                >
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 rounded-xl bg-[#C6A87C]/10 opacity-0 group-hover:opacity-100 blur-sm transition-opacity" />
+                  
+                  {/* Icon */}
+                  <div className="relative z-10">
+                    <Vault 
+                      className="w-5 h-5 text-[#C6A87C]/70 group-hover:text-[#C6A87C] transition-colors duration-300"
+                      weight="duotone"
+                    />
+                  </div>
+                </button>
+              ) : (
+                <div
+                  className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 cursor-default"
+                  aria-label="Vault (sign in to access)"
+                >
+                  {/* Icon - dimmed when not logged in */}
+                  <div className="relative z-10">
+                    <Vault 
+                      className="w-5 h-5 text-white/30"
+                      weight="duotone"
+                    />
+                  </div>
                 </div>
-              </button>
+              )}
             </div>
             
             {/* Logo - Private Equity & Trusts - Centered - NO link */}
