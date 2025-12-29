@@ -4,7 +4,10 @@ import { useLocation, Link } from 'react-router-dom';
 import {
   Vault,
   X,
-  Key
+  Key,
+  SignOut,
+  User,
+  Gear
 } from '@phosphor-icons/react';
 import Sidebar from './Sidebar';
 import { pageTransition } from '../../lib/motion';
