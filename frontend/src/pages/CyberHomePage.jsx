@@ -932,7 +932,7 @@ export default function CyberHomePage() {
   }, []);
   
   // Handle vault entry animation - ALWAYS plays vault transition first
-  // For logged-OUT users: Vault animation → Google Auth → (callback handles loading screen)
+  // For logged-OUT users: Vault animation → Google Auth → Landing page with loading screen → Portfolio
   // For logged-IN users: Vault animation → Access Complete → Portfolio
   const handleEnterVault = async (e) => {
     e.preventDefault();
@@ -956,9 +956,10 @@ export default function CyberHomePage() {
       // After vault animation completes, trigger Google Auth
       setTimeout(() => {
         setVaultOpening(false);
-        // Redirect to Google Auth - the auth callback will show the loading screen
-        // Use a special redirect URL that tells the callback to show the loading animation
-        const redirectUrl = window.location.origin + '/auth/callback?show_loading=true';
+        // Set flag to show loading screen after auth callback
+        sessionStorage.setItem('show_vault_loading', 'true');
+        // Redirect to Google Auth
+        const redirectUrl = window.location.origin + '/';
         window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
       }, 2500);
     }
