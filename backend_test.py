@@ -434,7 +434,7 @@ class SharedWorkspaceTester:
             payload = {
                 "legal_name": "Jedediah Bey",
                 "signature_type": "TYPED_NAME",
-                "signature_data": {"typed_name": "Jedediah Bey"},
+                "signature_data": "Jedediah Bey",  # For TYPED_NAME, send the name as string
                 "consent_acknowledged": True
             }
             
