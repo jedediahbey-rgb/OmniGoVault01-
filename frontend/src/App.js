@@ -107,6 +107,8 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Logout error:', error);
     }
+    // Mark as explicitly logged out in localStorage to prevent dev bypass auto-login
+    localStorage.setItem('explicitly_logged_out', 'true');
     // After logout, set user to null and redirect to homepage
     setUser(null);
     setIsDevMode(false);
