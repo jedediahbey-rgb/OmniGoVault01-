@@ -1,62 +1,58 @@
-# Test Results - UI Fixes and Admin Console Improvements
+# Test Results - Landing Page Authentication & UI Improvements
 
 ## Testing Protocol
 Do not edit this section.
 
 ## Test Scope
-Testing the following fixes:
-1. Loading screen behavior (appears after entering vault, not on public homepage)
-2. Removed gold/red/brown shimmer flash during navigation
-3. Changed Grant Role icon from ShieldCheck to UserPlus
-4. Fixed User Details dialog layout
-5. Fixed pricing in Change Plan dialog with trust-relevant names
-6. OMNICOMPETENT_OWNER badge glowing purple with Gem icon
-7. OMNICOMPETENT badge display in Billing tab
-8. Display name customization in Settings Profile tab
-9. Welcome back message uses custom display name
-10. **NEW: Automatic Demo/Live mode for homepage cards based on login status**
+Testing the following features:
+1. Logged-in user experience: avatar/name in navbar, "Create Account" hidden
+2. Signal Console showing "No activity yet" when no live data
+3. Trust Health showing real data for logged-in users
+4. Subscription Plans section with tier cards
+5. Vault door animation improvements (PRIVATE VAULT text more visible)
+6. Access Complete screen - more sophisticated design
+7. Card hover effects (pop-out on hover)
+8. Sign out functionality in sidebar
 
 ## Incorporate User Feedback
-- User reported loading screen was removed - VERIFIED: loading screen was NOT removed, it appears when entering vault
-- User requested removal of gold/brown flash during navigation - DONE: removed shimmer effect from AuthLayout
-- User requested trust-relevant plan names - DONE: Testamentary, Revocable, Irrevocable, Dynasty
-- User requested proper pricing - DONE: $0, $29, $79, Custom ($199)
-- User requested display name input - DONE: Added Profile tab in Settings
-- **NEW: User requested automatic Demo/Live mode for homepage cards - DONE: Cards now show Demo mode when logged out and Live mode when authenticated**
+- User requested "Create Account" button hidden at ALL locations when logged in - DONE
+- User requested subscription tier cards section - DONE  
+- User requested card hover pop-out effects - DONE
+- User requested vault door text "PRIVATE VAULT" more visible - DONE
+- User requested more sophisticated "Access Complete" animation - DONE
+- User requested sidebar sign out to work - DONE (redirects to homepage)
+- User mentioned signal console was showing fake data - FIXED (shows "No activity yet" when empty)
 
-## New Feature: Automatic Demo/Live Mode
+## Test Cases
 
-### Implementation Details
-1. **Signal Console Card:**
-   - Shows "Demo" badge (amber) when user is logged out/dev bypass
-   - Shows "Live" badge (green) when user is authenticated
-   - Uses DEMO_SIGNALS array for demo mode
-   - Fetches real governance records for live mode
-   - Refresh button only visible in live mode
+### Landing Page - Logged In State
+1. Verify user avatar/name shown in top-right navbar
+2. Verify "Create Account" button hidden in hero section
+3. Verify "Create Account" button hidden in Final CTA section
+4. Verify Signal Console shows "Live" badge with real data or "No activity yet"
+5. Verify Trust Health shows "Live" badge with real health data
 
-2. **Trust Health Card:**
-   - Shows "Demo" badge (amber) when user is logged out/dev bypass  
-   - Shows "Live" badge (green) when user is authenticated
-   - Uses DEMO_HEALTH_DATA for demo mode (score: 78, sample next actions)
-   - Fetches real health summary for live mode
+### Subscription Plans Section
+1. Verify 4 tier cards visible: Testamentary, Revocable, Irrevocable, Dynasty
+2. Verify correct pricing: $0, $29, $79, $199
+3. Verify badges: Free, Popular, Pro, Elite
+4. Verify Dynasty card has purple gradient button
 
-3. **Authentication Logic:**
-   - `isLoggedIn` state is set based on `/api/auth/me` response
-   - Dev bypass users (`dev_bypass_enabled: true`) are treated as logged OUT for demo purposes
-   - Real authenticated users (Google Auth) are treated as logged IN for live data
+### Vault Animation
+1. Click "Enter the Vault" button
+2. Verify vault door animation plays
+3. Verify "PRIVATE VAULT" text is clearly visible on vault door
+4. Verify Access Complete screen shows: checkmark, "Access Verified", "Welcome to the Vault", loading dots
 
-## Test Cases for Automatic Demo/Live Mode
+### Card Hover Effects
+1. Hover over any HoloCard component
+2. Verify card scales up slightly and lifts (scale: 1.02, y: -4px)
 
-### Frontend Tests
-1. Homepage - Signal Console shows "Demo" badge when logged out
-2. Homepage - Trust Health shows "Demo" badge when logged out
-3. Homepage - Demo data displays in Signal Console (Meeting Finalized, Distribution Logged, etc.)
-4. Homepage - Demo health score (78) displays in Trust Health card
-5. Homepage - Demo next actions display in Trust Health card
-6. Homepage - No refresh button visible on Signal Console in demo mode
-7. Vault (logged in) - Signal Console shows "Live" badge
-8. Vault (logged in) - Trust Health shows "Live" badge
-9. Vault (logged in) - Refresh button visible on Signal Console
+### Sign Out
+1. Navigate to /vault after login
+2. Click Sign Out in sidebar
+3. Verify redirect to homepage (/)
+4. Verify user is logged out
 
 ## Test Cases
 
