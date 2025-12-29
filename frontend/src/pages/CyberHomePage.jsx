@@ -1329,7 +1329,7 @@ export default function CyberHomePage() {
                 />
               </div>
 
-              {/* Plan Badge - Shows user's actual tier */}
+              {/* Plan Badge - Shows user's actual tier (or logout tier when logging out) */}
               <AnimatePresence>
                 {loadingPhase !== 'booting' && (
                   <motion.div
@@ -1338,16 +1338,17 @@ export default function CyberHomePage() {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.4 }}
                     className={`px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase ${
-                      userTier === 'Dynasty' 
-                        ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                        : userTier === 'Irrevocable'
-                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                        : userTier === 'Revocable'
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+                      // Use logoutTier when logging out, otherwise use userTier
+                      (() => {
+                        const displayTier = isLoggingOut ? logoutTier : userTier;
+                        if (displayTier === 'Dynasty') return 'bg-purple-500/20 text-purple-400 border border-purple-500/30';
+                        if (displayTier === 'Irrevocable') return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+                        if (displayTier === 'Revocable') return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                        return 'bg-slate-500/20 text-slate-400 border border-slate-500/30';
+                      })()
                     }`}
                   >
-                    {userTier.toUpperCase()}
+                    {(isLoggingOut ? logoutTier : userTier).toUpperCase()}
                   </motion.div>
                 )}
               </AnimatePresence>
