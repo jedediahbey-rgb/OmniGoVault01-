@@ -775,7 +775,7 @@ export default function DashboardPage({ user }) {
           <DialogHeader>
             <DialogTitle className="text-white font-heading">Delete Portfolio</DialogTitle>
             <DialogDescription className="text-white/50">
-              Are you sure you want to delete "{portfolioToDelete?.name}"? This will permanently delete all documents and data associated with this portfolio.
+              Are you sure you want to delete &ldquo;{portfolioToDelete?.name}&rdquo;? This will permanently delete all documents and data associated with this portfolio.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">
