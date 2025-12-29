@@ -4526,8 +4526,9 @@ init_integrity_routes(db, get_current_user)
 app.include_router(integrity_router)
 
 # Initialize and include Health routes
-from routes.health import router as health_router, set_db as set_health_db
+from routes.health import router as health_router, set_db as set_health_db, set_auth_dependency as set_health_auth
 set_health_db(db)
+set_health_auth(get_current_user)
 app.include_router(health_router)
 
 # Initialize and include Global Search routes
