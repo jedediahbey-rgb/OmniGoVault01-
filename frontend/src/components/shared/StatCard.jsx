@@ -279,11 +279,20 @@ export default function StatCard({
       
       {/* Content - Mobile */}
       <div className="sm:hidden relative z-10">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] uppercase tracking-[0.25em] text-white/60 leading-none">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/60 leading-none truncate">
               {displayLabel}
             </p>
+            <div className="flex items-baseline gap-1 mt-1.5">
+              <motion.p 
+                className="text-xl font-heading text-white tabular-nums"
+                animate={isPulsing ? { scale: [1, 1.05, 1] } : {}}
+              >
+                {value}
+              </motion.p>
+              {renderMobileMaxIndicator()}
+            </div>
           </div>
           {Icon && (
             <motion.div 
@@ -297,30 +306,29 @@ export default function StatCard({
             </motion.div>
           )}
         </div>
-        <div className="flex items-baseline gap-1 mt-2">
-          <motion.p 
-            className="text-2xl font-heading text-white tabular-nums"
-            animate={isPulsing ? { scale: [1, 1.05, 1] } : {}}
-          >
-            {value}
-          </motion.p>
-          {renderMobileMaxIndicator()}
-        </div>
         {subtitle && (
-          <p className="text-xs text-white/40 mt-1">{subtitle}</p>
+          <p className="text-[10px] text-white/40 mt-1">{subtitle}</p>
         )}
         {trend && (
           <p className={cn(
-            'text-xs mt-2',
+            'text-[10px] mt-1.5',
             trend > 0 ? 'text-green-400' : 'text-red-400'
           )}>
             {trend > 0 ? '+' : ''}{trend}% from last month
           </p>
         )}
         
+        {/* Tier next indicator for mobile */}
+        {isInfinite && tierInfo && !tierInfo.isMaxTier && (
+          <div className="text-[8px] text-white/40 mt-1">
+            <span className="text-white/50">{tierInfo.currentTier.next}</span>
+            <span className="ml-0.5">to next tier</span>
+          </div>
+        )}
+        
         {/* Progress bar for mobile */}
         {showProgressBar && (
-          <div className="mt-3 h-1 bg-white/10 rounded-full overflow-hidden">
+          <div className="mt-2 h-1 bg-white/10 rounded-full overflow-hidden">
             <motion.div 
               className={cn(
                 'h-full rounded-full bg-gradient-to-r',
