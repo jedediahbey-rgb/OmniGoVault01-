@@ -349,6 +349,27 @@ class VaultService:
         
         logger.info(f"Invited {email} to vault {vault_id} as {role.value}")
         
+        # Send invitation email
+        try:
+            from services.email_service import send_workspace_invitation_email
+            
+            # Get inviter's name
+            inviter = await self.db.users.find_one({"user_id": inviter_user_id}, {"_id": 0})
+            inviter_name = inviter.get("name", "A team member") if inviter else "A team member"
+            
+            email_result = await send_workspace_invitation_email(
+                recipient_email=email,
+                inviter_name=inviter_name,
+                vault_name=vault["name"],
+                role=role.value,
+                vault_id=vault_id
+            )
+            participant["email_status"] = email_result.get("status", "unknown")
+            logger.info(f"Invitation email result: {email_result}")
+        except Exception as e:
+            logger.error(f"Failed to send invitation email: {e}")
+            participant["email_status"] = "failed"
+        
         return participant
     
     async def remove_participant(
