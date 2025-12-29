@@ -801,6 +801,7 @@ export default function CyberHomePage() {
   const [userMenuOpen, setUserMenuOpen] = useState(false); // User dropdown menu state
   const [isLoggingOut, setIsLoggingOut] = useState(false); // Track logout state for "Matrix System Offline"
   const [isAuthSuccess, setIsAuthSuccess] = useState(false); // Track successful auth from Google for loading screen
+  const [logoutTier, setLogoutTier] = useState('Free'); // Store the tier of the user who just logged out
   const featuresRef = useRef(null);
   const userMenuRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
@@ -809,13 +810,19 @@ export default function CyberHomePage() {
   useEffect(() => {
     const logoutParam = searchParams.get('logout');
     const authSuccessParam = searchParams.get('auth_success');
+    const tierParam = searchParams.get('tier');
     
     if (logoutParam === 'true') {
       // User just logged out - show "Matrix System Offline" loading screen
       setIsLoggingOut(true);
       setShowInitialLoading(true);
-      // Remove the query parameter from URL to clean up
+      // Set the tier from URL param (passed during logout)
+      if (tierParam) {
+        setLogoutTier(tierParam);
+      }
+      // Remove the query parameters from URL to clean up
       searchParams.delete('logout');
+      searchParams.delete('tier');
       setSearchParams(searchParams, { replace: true });
       
       // After showing the offline screen, clear the state
