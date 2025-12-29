@@ -171,14 +171,18 @@ export default function MainLayout({ children, user, onLogout }) {
                         <div className="py-1">
                           <Link
                             to="/vault/settings"
-                            onClick={() => setUserMenuOpen(false)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setUserMenuOpen(false);
+                            }}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
                           >
                             <Gear className="w-4 h-4" weight="duotone" />
                             Settings
                           </Link>
                           <button
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setUserMenuOpen(false);
                               onLogout();
                             }}
