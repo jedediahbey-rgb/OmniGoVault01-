@@ -1313,6 +1313,71 @@ async def update_portfolio(portfolio_id: str, data: PortfolioCreate, user: User 
     return doc
 
 
+@api_router.put("/portfolios/{portfolio_id}/style")
+async def update_portfolio_style(portfolio_id: str, request: Request, user: User = Depends(get_current_user)):
+    """
+    Update portfolio decorative style.
+    Style is validated against user's subscription tier.
+    """
+    body = await request.json()
+    style_id = body.get("style_id", "standard")
+    
+    # Validate portfolio exists
+    existing = await db.portfolios.find_one({"portfolio_id": portfolio_id, "user_id": user.user_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    
+    # Define style tier requirements
+    STYLE_TIERS = {
+        "standard": ["Free", "Testamentary", "Revocable", "Irrevocable", "Dynasty"],
+        "ledger": ["Free", "Testamentary", "Revocable", "Irrevocable", "Dynasty"],
+        "familyOffice": ["Revocable", "Irrevocable", "Dynasty"],
+        "privateVault": ["Irrevocable", "Dynasty"],
+        "dynasty": ["Dynasty"],
+        "crownEstate": ["Dynasty"]
+    }
+    
+    # Get user's subscription tier
+    account_member = await db.account_members.find_one({"user_id": user.user_id}, {"_id": 0})
+    if not account_member:
+        user_tier = "Free"
+    else:
+        account_id = account_member.get("account_id")
+        subscription = await db.subscriptions.find_one({"account_id": account_id, "status": "active"}, {"_id": 0})
+        if subscription:
+            plan = await db.plans.find_one({"plan_id": subscription.get("plan_id")}, {"_id": 0})
+            user_tier = plan.get("name", "Free") if plan else "Free"
+        else:
+            user_tier = "Free"
+    
+    # Validate style access
+    allowed_tiers = STYLE_TIERS.get(style_id, ["Dynasty"])
+    if user_tier not in allowed_tiers:
+        # Fall back to standard if user doesn't have access
+        style_id = "standard"
+        logger.warning(f"User {user.user_id} attempted to use style {body.get('style_id')} but only has {user_tier} tier")
+    
+    # Update portfolio with style
+    update_data = {
+        "style_id": style_id,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.portfolios.update_one({"portfolio_id": portfolio_id}, {"$set": update_data})
+    
+    doc = await db.portfolios.find_one({"portfolio_id": portfolio_id}, {"_id": 0})
+    return {"success": True, "style_id": style_id, "portfolio": doc}
+
+
+@api_router.get("/portfolios/{portfolio_id}/style")
+async def get_portfolio_style(portfolio_id: str, user: User = Depends(get_current_user)):
+    """Get portfolio style preference"""
+    doc = await db.portfolios.find_one({"portfolio_id": portfolio_id, "user_id": user.user_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    
+    return {"style_id": doc.get("style_id", "standard")}
+
+
 # ============ TRUST PROFILE ENDPOINTS ============
 
 @api_router.get("/trust-profiles")
