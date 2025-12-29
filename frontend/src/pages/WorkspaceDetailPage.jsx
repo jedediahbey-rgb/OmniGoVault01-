@@ -750,6 +750,23 @@ export default function WorkspaceDetailPage({ user }) {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Sign Document Dialog */}
+        <SignDocumentDialog
+          open={showSignDialog}
+          onOpenChange={setShowSignDialog}
+          document={selectedDocument}
+          userRole={vault?.current_user_role}
+          onSignatureComplete={(signature) => {
+            // Refresh the document details
+            fetchVault();
+            setSelectedDocument(prev => ({
+              ...prev,
+              has_user_signed: true,
+              signatures: [...(prev.signatures || []), signature]
+            }));
+          }}
+        />
       </div>
     </div>
   );
