@@ -2417,6 +2417,7 @@ export default function CyberHomePage() {
           </motion.div>
         </div>
       </section>
+      )}
       
       {/* ===== FINAL CTA ===== */}
       <section className="py-10 lg:py-14 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
