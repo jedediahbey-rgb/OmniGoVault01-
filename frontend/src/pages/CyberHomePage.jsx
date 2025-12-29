@@ -1272,88 +1272,101 @@ export default function CyberHomePage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
           >
-            {/* Background glow */}
+            {/* Subtle gradient background */}
             <div 
               className="absolute inset-0"
               style={{
-                background: 'radial-gradient(ellipse at center, rgba(198,168,124,0.15) 0%, transparent 50%)',
+                background: 'radial-gradient(ellipse at center, rgba(198,168,124,0.08) 0%, transparent 50%)',
               }}
             />
             
-            {/* Content */}
+            {/* Sophisticated Content */}
             <motion.div
-              className="relative text-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
+              className="relative text-center max-w-md mx-auto px-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
             >
-              {/* Success Icon */}
+              {/* Elegant checkmark with ring */}
               <motion.div
-                className="w-24 h-24 mx-auto mb-6 rounded-full border-2 border-[#C6A87C]/50 flex items-center justify-center"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-                style={{
-                  boxShadow: '0 0 40px rgba(198,168,124,0.3)',
-                }}
+                className="w-20 h-20 mx-auto mb-8 relative"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 150 }}
               >
+                {/* Outer ring */}
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
+                  className="absolute inset-0 rounded-full border border-[#C6A87C]/30"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.4 }}
+                />
+                {/* Inner filled circle with checkmark */}
+                <motion.div
+                  className="absolute inset-2 rounded-full bg-[#C6A87C]/10 border border-[#C6A87C]/40 flex items-center justify-center"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
                 >
-                  <DownloadSimple className="w-12 h-12 text-[#C6A87C]" weight="duotone" />
+                  <CheckCircle className="w-8 h-8 text-[#C6A87C]" weight="fill" />
                 </motion.div>
               </motion.div>
               
-              {/* Title */}
-              <motion.h1
-                className="text-[#C6A87C] text-2xl sm:text-3xl font-bold tracking-widest mb-3"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                ACCESS DOWNLOAD
-              </motion.h1>
-              
-              <motion.h2
-                className="text-white text-3xl sm:text-4xl font-bold tracking-wide mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                COMPLETE
-              </motion.h2>
-              
-              {/* Progress bar complete */}
-              <motion.div
-                className="w-64 h-1.5 bg-[#C6A87C]/20 rounded-full mx-auto overflow-hidden"
+              {/* Title - clean and minimal */}
+              <motion.p
+                className="text-[#C6A87C]/60 text-xs tracking-[0.3em] uppercase mb-2"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                Access Verified
+              </motion.p>
+              
+              <motion.h2
+                className="text-white text-2xl sm:text-3xl font-semibold tracking-wide mb-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                <motion.div
-                  className="h-full bg-gradient-to-r from-[#C6A87C] to-[#E8D5B5] rounded-full"
-                  initial={{ width: '0%' }}
-                  animate={{ width: '100%' }}
-                  transition={{ delay: 0.7, duration: 0.5, ease: 'easeOut' }}
-                />
-              </motion.div>
+                Welcome to the Vault
+              </motion.h2>
               
-              {/* Checkmark particles */}
-              {[...Array(8)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-[#C6A87C]"
-                  style={{
-                    left: `calc(50% + ${Math.cos((i * Math.PI * 2) / 8) * 80}px)`,
-                    top: `calc(40% + ${Math.sin((i * Math.PI * 2) / 8) * 80}px)`,
-                  }}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
-                  transition={{ delay: 0.6 + i * 0.05, duration: 0.8 }}
-                />
-              ))}
+              <motion.p
+                className="text-slate-400 text-sm mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 }}
+              >
+                Your secure trust environment is ready
+              </motion.p>
+              
+              {/* Subtle loading indicator */}
+              <motion.div
+                className="flex items-center justify-center gap-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+              >
+                <div className="flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="w-1.5 h-1.5 rounded-full bg-[#C6A87C]"
+                      animate={{ 
+                        opacity: [0.3, 1, 0.3],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{ 
+                        duration: 1.2, 
+                        delay: i * 0.15, 
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  ))}
+                </div>
+                <span className="text-slate-500 text-xs">Initializing</span>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}
