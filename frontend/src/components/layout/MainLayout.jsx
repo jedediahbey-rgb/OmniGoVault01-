@@ -95,7 +95,7 @@ export default function MainLayout({ children, user, onLogout }) {
       />
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#05080F]/80 backdrop-blur-xl border-b border-white/5">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#05080F]/95 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-16 relative">
             {/* Menu Toggle - Absolute left */}
@@ -106,10 +106,10 @@ export default function MainLayout({ children, user, onLogout }) {
               />
             </div>
             
-            {/* Logo - Centered - Links to landing page */}
-            <Link to="/" className="flex items-center gap-2 hover:opacity-80">
-              <Key className="w-5 h-5 text-vault-gold" weight="fill" />
-              <span className="text-base font-medium text-white">Private Equity & Trusts</span>
+            {/* Logo - Centered - Links to landing page - MATCHES landing page exactly */}
+            <Link to="/" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
+              <Key className="w-5 h-5 text-vault-gold shrink-0" weight="fill" />
+              <span className="text-sm sm:text-base font-medium text-white whitespace-nowrap">Private Equity & Trusts</span>
             </Link>
           </div>
         </div>
