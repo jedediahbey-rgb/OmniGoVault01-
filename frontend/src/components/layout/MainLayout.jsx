@@ -113,9 +113,9 @@ export default function MainLayout({ children, user, onLogout }) {
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#05080F]/95 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center h-16 relative">
-            {/* Menu Toggle - Absolute left */}
-            <div className="absolute left-0">
+          <div className="flex items-center justify-between h-16">
+            {/* Menu Toggle - Left */}
+            <div className="w-10">
               <VaultToggle 
                 isOpen={sidebarOpen} 
                 onClick={() => setSidebarOpen(!sidebarOpen)} 
@@ -127,6 +127,73 @@ export default function MainLayout({ children, user, onLogout }) {
               <Key className="w-5 h-5 text-vault-gold shrink-0" weight="fill" />
               <span className="text-sm sm:text-base font-medium text-white whitespace-nowrap">Private Equity & Trusts</span>
             </Link>
+            
+            {/* User Menu - Right */}
+            <div className="w-10 relative" ref={userMenuRef}>
+              {user && (
+                <>
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
+                  >
+                    {user.picture ? (
+                      <img 
+                        src={user.picture} 
+                        alt={user.name || 'User'} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#C6A87C]/20 flex items-center justify-center">
+                        <span className="text-[#C6A87C] text-sm font-medium">
+                          {(user.name || user.email || 'U').charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                  
+                  {/* Dropdown Menu */}
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-12 w-48 bg-[#0B1221] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50"
+                      >
+                        {/* User Info */}
+                        <div className="px-4 py-3 border-b border-white/10">
+                          <p className="text-sm text-white font-medium truncate">{user.name}</p>
+                          <p className="text-xs text-white/40 truncate">{user.email}</p>
+                        </div>
+                        
+                        {/* Menu Items */}
+                        <div className="py-1">
+                          <Link
+                            to="/vault/settings"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                          >
+                            <Gear className="w-4 h-4" weight="duotone" />
+                            Settings
+                          </Link>
+                          <button
+                            onClick={() => {
+                              setUserMenuOpen(false);
+                              onLogout();
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors"
+                          >
+                            <SignOut className="w-4 h-4" weight="duotone" />
+                            Sign Out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>
