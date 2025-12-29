@@ -71,7 +71,7 @@ async def get_or_create_account_for_user(user_id: str, db) -> Dict:
 @router.get("/subscription")
 async def get_subscription(request: Request):
     """Get current subscription and entitlements"""
-    from server import get_current_user, db
+    from server import get_current_user, db, ROLE_OMNICOMPETENT, ROLE_OMNICOMPETENT_OWNER
     
     user = await get_current_user(request)
     account = await get_or_create_account_for_user(user.user_id, db)
@@ -79,8 +79,23 @@ async def get_subscription(request: Request):
     subscription_service = get_subscription_service()
     overview = await subscription_service.get_billing_overview(account["account_id"])
     
+    # Check if user has omnicompetent role - they get unlimited access
+    roles_doc = await db.user_global_roles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    is_omnicompetent = ROLE_OMNICOMPETENT in global_roles or ROLE_OMNICOMPETENT_OWNER in global_roles
+    
+    # If user is omnicompetent, override plan to Dynasty with unlimited access
+    if is_omnicompetent:
+        overview["plan_name"] = "Dynasty"
+        overview["is_omnicompetent"] = True
+        overview["has_unlimited_access"] = True
+    else:
+        overview["is_omnicompetent"] = False
+        overview["has_unlimited_access"] = False
+    
     return {
         "account_id": account["account_id"],
+        "global_roles": global_roles,
         **overview
     }
 
