@@ -12,6 +12,7 @@ import {
 import Sidebar from './Sidebar';
 import { pageTransition } from '../../lib/motion';
 import { useBilling } from '../../contexts/BillingContext';
+import NotificationBell from '../notifications/NotificationBell';
 
 // Set theme color for browser chrome
 const setThemeColor = (color) => {
