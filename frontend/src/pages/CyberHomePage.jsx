@@ -1661,17 +1661,17 @@ export default function CyberHomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#05080F]/95 backdrop-blur-xl border-b border-white/5 pt-1.5 sm:pt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Empty space for balance */}
-            <div className="w-32 sm:w-40" />
+            {/* Empty space for balance - smaller on mobile */}
+            <div className="w-10 sm:w-40" />
             
             {/* Logo - Private Equity & Trusts - Centered - NO link */}
-            <div className="flex items-center gap-2">
-              <Key className="w-5 h-5 text-vault-gold" weight="fill" />
-              <span className="text-base font-medium text-white">Private Equity & Trusts</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <Key className="w-5 h-5 text-vault-gold shrink-0" weight="fill" />
+              <span className="text-sm sm:text-base font-medium text-white whitespace-nowrap">Private Equity & Trusts</span>
             </div>
             
             {/* User Avatar/Name when logged in - Right side */}
-            <div className="w-32 sm:w-40 flex justify-end">
+            <div className="w-10 sm:w-40 flex justify-end">
               {isLoggedIn && userData && (
                 <div className="flex items-center gap-2">
                   {userData.picture ? (
