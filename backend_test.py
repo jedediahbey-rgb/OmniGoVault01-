@@ -506,68 +506,38 @@ class SharedWorkspaceTester:
 
     # ============ TEST RUNNER ============
 
-    def run_onboarding_tests(self):
-        """Run all Onboarding and Dev Loop tests"""
-        self.log("🚀 Starting OMNIGOVAULT Onboarding and Dev Loop Tests")
+    def run_shared_workspace_tests(self):
+        """Run all Shared Workspace feature tests"""
+        self.log("🚀 Starting SHARED WORKSPACE Feature Tests")
         self.log(f"Testing against: {self.base_url}")
+        self.log("User: jedediah.bey@gmail.com (OMNICOMPETENT_OWNER role)")
         self.log("=" * 80)
         
-        # Test sequence for onboarding and dev loop implementation
+        # Test sequence for shared workspace feature
         test_sequence = [
-            # Dev Environment Status
-            self.test_dev_environment_status,
+            # Authentication
+            self.test_auth_status,
             
-            # Auth/Me with Dev Bypass
-            self.test_auth_me_dev_bypass,
+            # Vault Operations
+            self.test_list_vaults,
+            self.test_create_vault,
+            self.test_get_vault_details,
             
-            # Test Account Switching
-            self.test_switch_to_free_account,
-            self.test_switch_to_starter_account,
-            self.test_switch_to_pro_account,
+            # Participant Management
+            self.test_invite_participant,
+            self.test_list_participants,
             
-            # Test Account Entitlements
-            self.test_free_account_entitlements,
-            self.test_starter_account_entitlements,
-            self.test_pro_account_entitlements,
+            # Document Operations
+            self.test_create_document,
+            self.test_get_document_details,
+            self.test_submit_for_review,
+            self.test_affirm_document,
             
-            # First Login Flag
-            self.test_first_login_flag,
-            self.test_clear_first_login,
+            # Signing
+            self.test_sign_document,
             
-            # Session Endpoint Validation
-            self.test_session_endpoint_invalid_session,
-        ]
-        
-        for test_func in test_sequence:
-            try:
-                test_func()
-                time.sleep(0.5)  # Brief pause between tests
-            except Exception as e:
-                self.log(f"❌ Test {test_func.__name__} crashed: {str(e)}")
-                self.tests_run += 1
-                self.failed_tests.append({
-                    'test': test_func.__name__,
-                    'details': f"Test crashed: {str(e)}",
-                    'timestamp': datetime.now().isoformat()
-                })
-        
-        return self.print_summary()
-
-    def run_ui_fixes_tests(self):
-        """Run UI Fixes and Admin Console tests"""
-        self.log("🚀 Starting UI Fixes and Admin Console Backend API Tests")
-        self.log(f"Testing against: {self.base_url}")
-        self.log("=" * 80)
-        
-        # Test sequence for UI fixes backend APIs
-        test_sequence = [
-            # Backend API Tests for UI fixes
-            self.test_user_profile_get,
-            self.test_user_profile_update,
-            self.test_billing_plans,
-            
-            # Basic system health
-            self.test_basic_system_health,
+            # Notifications
+            self.test_get_notifications,
         ]
         
         for test_func in test_sequence:
@@ -588,7 +558,7 @@ class SharedWorkspaceTester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 ONBOARDING AND DEV LOOP TEST SUMMARY")
+        self.log("🏁 SHARED WORKSPACE FEATURE TEST SUMMARY")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
@@ -605,26 +575,43 @@ class SharedWorkspaceTester:
         
         self.log("\n🎯 KEY FINDINGS:")
         if success_rate >= 90:
-            self.log("✅ Onboarding and dev loop implementation working perfectly")
-            self.log("✅ Dev bypass mode allows full access without Google OAuth")
-            self.log("✅ Test accounts can be switched for testing different tier entitlements")
-            self.log("✅ All 3 test accounts (Free/Starter/Pro) have correct entitlements seeded")
+            self.log("✅ Shared Workspace feature working perfectly")
+            self.log("✅ All vault CRUD operations functional")
+            self.log("✅ Participant management working correctly")
+            self.log("✅ Document workflow (create, review, affirm, sign) operational")
+            self.log("✅ Notifications system capturing vault activities")
         elif success_rate >= 75:
-            self.log("⚠️ Most onboarding functionality working with minor issues")
+            self.log("⚠️ Most shared workspace functionality working with minor issues")
         else:
-            self.log("❌ Significant onboarding implementation issues detected")
+            self.log("❌ Significant shared workspace implementation issues detected")
+        
+        # Specific feature status
+        self.log("\n📋 FEATURE STATUS:")
+        
+        # Vault operations
+        vault_tests = [t for t in self.test_results if 'vault' in t['test'].lower()]
+        vault_success = sum(1 for t in vault_tests if t['success'])
+        self.log(f"  Vault Operations: {vault_success}/{len(vault_tests)} ({'✅' if vault_success == len(vault_tests) else '❌'})")
+        
+        # Participant management
+        participant_tests = [t for t in self.test_results if 'participant' in t['test'].lower()]
+        participant_success = sum(1 for t in participant_tests if t['success'])
+        self.log(f"  Participant Management: {participant_success}/{len(participant_tests)} ({'✅' if participant_success == len(participant_tests) else '❌'})")
+        
+        # Document operations
+        document_tests = [t for t in self.test_results if 'document' in t['test'].lower() or 'affirm' in t['test'].lower() or 'sign' in t['test'].lower()]
+        document_success = sum(1 for t in document_tests if t['success'])
+        self.log(f"  Document Operations: {document_success}/{len(document_tests)} ({'✅' if document_success == len(document_tests) else '❌'})")
+        
+        # Notifications
+        notification_tests = [t for t in self.test_results if 'notification' in t['test'].lower()]
+        notification_success = sum(1 for t in notification_tests if t['success'])
+        self.log(f"  Notifications: {notification_success}/{len(notification_tests)} ({'✅' if notification_success == len(notification_tests) else '❌'})")
         
         return success_rate >= 75
 
 
 if __name__ == "__main__":
-    tester = OmniGoVaultOnboardingTester()
-    
-    # Check if we should run UI fixes tests or onboarding tests
-    import sys
-    if len(sys.argv) > 1 and sys.argv[1] == "ui-fixes":
-        success = tester.run_ui_fixes_tests()
-    else:
-        success = tester.run_onboarding_tests()
-    
+    tester = SharedWorkspaceTester()
+    success = tester.run_shared_workspace_tests()
     sys.exit(0 if success else 1)
