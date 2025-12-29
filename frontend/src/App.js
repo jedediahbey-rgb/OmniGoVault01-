@@ -115,7 +115,7 @@ export const useAuth = () => {
     checkAuth();
   }, [checkAuth]);
 
-  return { user, setUser, loading, setLoading, checkAuth, logout, isDevMode, showWelcome, clearWelcome };
+  return { user, setUser, loading, setLoading, checkAuth, logout, showWelcome, clearWelcome };
 };
 
 // Auth Callback Component - Handles Emergent Google Auth redirect
