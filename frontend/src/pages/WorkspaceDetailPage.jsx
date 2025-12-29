@@ -499,9 +499,11 @@ export default function WorkspaceDetailPage({ user }) {
           {/* Activity Tab */}
           <TabsContent value="activity">
             <Card className="bg-vault-navy/30 border-vault-gold/10">
-              <CardContent className="p-8 text-center">
-                <Clock className="w-12 h-12 text-vault-muted mx-auto mb-4" />
-                <p className="text-vault-muted">Activity timeline coming soon</p>
+              <CardContent className="p-6">
+                <ActivityTimeline 
+                  vaultId={vaultId} 
+                  documents={vault?.documents || []} 
+                />
               </CardContent>
             </Card>
           </TabsContent>
