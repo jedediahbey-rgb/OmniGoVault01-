@@ -1661,8 +1661,25 @@ export default function CyberHomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#05080F]/95 backdrop-blur-xl border-b border-white/5 pt-1.5 sm:pt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Empty space for balance - smaller on mobile */}
-            <div className="w-10 sm:w-40" />
+            {/* Vault Icon - Left side - matches portfolio header */}
+            <div className="w-10">
+              <button
+                onClick={() => isLoggedIn ? window.location.href = '/vault' : null}
+                className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#C6A87C]/20 to-transparent border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-all duration-300 group"
+                aria-label="Enter vault"
+              >
+                {/* Glow effect */}
+                <div className="absolute inset-0 rounded-xl bg-[#C6A87C]/10 opacity-0 group-hover:opacity-100 blur-sm transition-opacity" />
+                
+                {/* Icon */}
+                <div className="relative z-10">
+                  <Vault 
+                    className="w-5 h-5 text-[#C6A87C]/70 group-hover:text-[#C6A87C] transition-colors duration-300"
+                    weight="duotone"
+                  />
+                </div>
+              </button>
+            </div>
             
             {/* Logo - Private Equity & Trusts - Centered - NO link */}
             <div className="flex items-center gap-2 shrink-0">
@@ -1671,7 +1688,7 @@ export default function CyberHomePage() {
             </div>
             
             {/* User Avatar/Name when logged in - Right side */}
-            <div className="w-10 sm:w-40 flex justify-end">
+            <div className="w-10 flex justify-end">
               {isLoggedIn && userData && (
                 <div className="flex items-center gap-2">
                   {userData.picture ? (
@@ -1687,9 +1704,6 @@ export default function CyberHomePage() {
                       </span>
                     </div>
                   )}
-                  <span className="hidden sm:block text-sm text-slate-300 max-w-[100px] truncate">
-                    {userData.name?.split(' ')[0] || 'User'}
-                  </span>
                 </div>
               )}
             </div>
