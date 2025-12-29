@@ -1882,7 +1882,7 @@ export default function CyberHomePage() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        window.location.href = '/governance';
+                        window.location.href = '/vault/governance';
                       }}
                     >
                       Create First Record
