@@ -186,13 +186,11 @@ export default function Sidebar({ user, onLogout, isOpen, onClose }) {
 function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
   return (
     <>
-      {/* Logo - Links to Landing Page */}
-      <Link to="/" className="block p-6 border-b border-white/10 hover:bg-white/5">
-        <div className="flex items-center gap-2">
-          <Key className="w-5 h-5 text-vault-gold" weight="fill" />
-          <div className="min-w-0 flex-1">
-            <span className="font-heading text-base text-white tracking-tight block truncate">Private Equity & Trusts</span>
-          </div>
+      {/* Logo - Links to Landing Page - MATCHES landing page header exactly */}
+      <Link to="/" className="block border-b border-white/10 hover:bg-white/5 transition-colors">
+        <div className="flex items-center justify-center gap-2 h-16 px-4">
+          <Key className="w-5 h-5 text-vault-gold shrink-0" weight="fill" />
+          <span className="text-sm sm:text-base font-medium text-white whitespace-nowrap">Private Equity & Trusts</span>
         </div>
       </Link>
 
