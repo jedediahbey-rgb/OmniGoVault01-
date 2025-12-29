@@ -1620,11 +1620,38 @@ export default function CyberHomePage() {
       {/* ===== TOP NAV ===== */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#05080F]/95 backdrop-blur-xl border-b border-white/5 pt-1.5 sm:pt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center h-16">
+          <div className="flex items-center justify-between h-16">
+            {/* Empty space for balance */}
+            <div className="w-32 sm:w-40" />
+            
             {/* Logo - Private Equity & Trusts - Centered - NO link */}
             <div className="flex items-center gap-2">
               <Key className="w-5 h-5 text-vault-gold" weight="fill" />
               <span className="text-base font-medium text-white">Private Equity & Trusts</span>
+            </div>
+            
+            {/* User Avatar/Name when logged in - Right side */}
+            <div className="w-32 sm:w-40 flex justify-end">
+              {isLoggedIn && userData && (
+                <div className="flex items-center gap-2">
+                  {userData.picture ? (
+                    <img 
+                      src={userData.picture} 
+                      alt={userData.name || 'User'} 
+                      className="w-8 h-8 rounded-full border border-[#C6A87C]/30"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-[#C6A87C]/20 border border-[#C6A87C]/30 flex items-center justify-center">
+                      <span className="text-[#C6A87C] text-sm font-medium">
+                        {(userData.name || userData.email || 'U').charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  <span className="hidden sm:block text-sm text-slate-300 max-w-[100px] truncate">
+                    {userData.name?.split(' ')[0] || 'User'}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
