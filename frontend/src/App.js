@@ -53,19 +53,10 @@ const API = `${BACKEND_URL}/api`;
 axios.defaults.withCredentials = true;
 
 // Auth Hook
-// Dev bypass mode - allows unrestricted access for development/maintenance
-// In production, real authenticated users will be used
-const DEV_BYPASS_USER = {
-  user_id: "dev_admin_user",
-  email: "dev.admin@system.local",
-  name: "Dev Admin",
-  picture: ""
-};
-
+// No dev bypass - require real Google OAuth authentication
 export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isDevMode, setIsDevMode] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
 
   const checkAuth = useCallback(async () => {
@@ -77,25 +68,21 @@ export const useAuth = () => {
       if (response.data && response.data.user_id) {
         const userData = response.data;
         setUser(userData);
-        // Check if this is dev bypass user
-        setIsDevMode(userData.dev_bypass_enabled || userData.user_id === DEV_BYPASS_USER.user_id);
         // Check if first login - show welcome modal
         if (userData.is_first_login) {
           setShowWelcome(true);
         }
         return userData;
       } else {
-        // No authenticated user - use dev bypass
-        setUser(DEV_BYPASS_USER);
-        setIsDevMode(true);
-        return DEV_BYPASS_USER;
+        // No authenticated user
+        setUser(null);
+        return null;
       }
     } catch (error) {
-      // Auth check failed - use dev bypass for maintenance access
-      console.log('Auth check using dev bypass mode');
-      setUser(DEV_BYPASS_USER);
-      setIsDevMode(true);
-      return DEV_BYPASS_USER;
+      // Auth check failed - user is not authenticated
+      console.log('User not authenticated');
+      setUser(null);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -107,11 +94,8 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Logout error:', error);
     }
-    // Mark as explicitly logged out in localStorage to prevent dev bypass auto-login
-    localStorage.setItem('explicitly_logged_out', 'true');
-    // After logout, set user to null and redirect to homepage
+    // Clear user state
     setUser(null);
-    setIsDevMode(false);
     // Redirect to homepage after logout
     window.location.href = '/';
   };
