@@ -510,7 +510,7 @@ Safeguard trust assets, maintain appropriate insurance, and defend against threa
   {
     id: 'relationships',
     title: 'Trust Relationships',
-    description: 'Understand the paired duties and rights in equitable relationships',
+    description: 'Reflect on the reciprocal duties and rights that shape equitable relationships.',
     icon: Users,
     duration: '50 min',
     lessons: [
