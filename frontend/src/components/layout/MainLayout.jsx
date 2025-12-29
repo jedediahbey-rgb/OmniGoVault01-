@@ -63,6 +63,7 @@ const VaultToggle = ({ isOpen, onClick }) => (
 
 export default function MainLayout({ children, user, onLogout }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const scrollContainerRef = useRef(null);
