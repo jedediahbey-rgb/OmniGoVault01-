@@ -4,7 +4,7 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import {
   Vault,
   X,
-  Keyhole,
+  Key,
   SignOut,
   User,
   Gear
