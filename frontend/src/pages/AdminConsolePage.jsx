@@ -973,7 +973,7 @@ const ImpersonateDialog = ({ open, onClose, user, onImpersonate }) => {
 };
 
 // Account Details Dialog
-const AccountDetailsDialog = ({ open, onClose, account }) => {
+const AccountDetailsDialog = ({ open, onClose, account, onChangePlan }) => {
   if (!account) return null;
   
   return (
@@ -998,7 +998,15 @@ const AccountDetailsDialog = ({ open, onClose, account }) => {
             </div>
             <div>
               <p className="text-xs text-vault-muted mb-1">Plan</p>
-              <p className="text-vault-light">{account.plan_name || 'Free'}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-vault-light">{account.plan_name || 'Free'}</p>
+                {account.free_forever && (
+                  <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-xs">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    Forever
+                  </Badge>
+                )}
+              </div>
             </div>
             <div>
               <p className="text-xs text-vault-muted mb-1">Members</p>
@@ -1024,6 +1032,43 @@ const AccountDetailsDialog = ({ open, onClose, account }) => {
               </p>
             </div>
           )}
+          
+          {/* Quick Actions */}
+          <Separator className="bg-vault-gold/10" />
+          
+          <div>
+            <p className="text-xs text-vault-muted mb-2">Quick Actions</p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  onClose();
+                  onChangePlan?.();
+                }}
+                className="border-vault-gold/30 text-vault-light hover:bg-vault-gold/10"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Change Plan
+              </Button>
+              {!account.free_forever && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (window.confirm(`Grant Free Forever access to ${account.name}? This will give them unlimited access to all features.`)) {
+                      onClose();
+                      onChangePlan?.('free_forever');
+                    }
+                  }}
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Grant Free Forever
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
         
         <DialogFooter>
