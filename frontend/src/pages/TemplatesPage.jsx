@@ -5,15 +5,20 @@ import axios from 'axios';
 import {
   ArrowRight,
   Bell,
+  Certificate,
   CheckCircle,
   CircleNotch,
   FileText,
+  Gavel,
+  Handshake,
   Package,
   Plus,
   Scales,
   Scroll,
+  Seal,
   Sparkle,
-  Stamp
+  Stamp,
+  UserCircleCheck
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import PageHelpTooltip from '../components/shared/PageHelpTooltip';
