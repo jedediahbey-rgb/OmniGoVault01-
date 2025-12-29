@@ -326,7 +326,7 @@ Today, most jurisdictions have merged law and equity procedurally, but the subst
   {
     id: 'maxims',
     title: 'Maxims of Equity',
-    description: 'Master the foundational principles governing equitable decisions',
+    description: 'Innerstanding the foundational principles governing equitable decisions',
     icon: Scroll,
     duration: '60 min',
     lessons: [
