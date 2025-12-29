@@ -54,7 +54,12 @@ const iconMap = {
   bell: Bell,
   package: Package,
   stamp: Stamp,
-  scale: Scales
+  scale: Scales,
+  handshake: Handshake,
+  certificate: Certificate,
+  gavel: Gavel,
+  seal: Seal,
+  'user-check': UserCircleCheck
 };
 
 export default function TemplatesPage({ user }) {
