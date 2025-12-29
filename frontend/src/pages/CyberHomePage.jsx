@@ -35,6 +35,7 @@ import {
   Scroll,
   ShieldPlus,
   SignIn,
+  SignOut,
   Sparkle,
   Stamp,
   Timer,
