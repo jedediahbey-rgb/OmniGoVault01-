@@ -616,7 +616,19 @@ const AccountRow = ({ account, onViewDetails, onChangePlan, isOmnicompetent }) =
 const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate, isOmnicompetent, currentUserId }) => {
   if (!user) return null;
   
+  // Filter roles - hide OMNICOMPETENT if user has OMNICOMPETENT_OWNER
+  const displayRoles = (user.global_roles || []).filter(role => {
+    if (role === 'OMNICOMPETENT' && (user.global_roles || []).includes('OMNICOMPETENT_OWNER')) {
+      return false; // Hide OMNICOMPETENT when OMNICOMPETENT_OWNER is present
+    }
+    return true;
+  });
+  
   const canRemoveRole = (role) => {
+    // Allow removing own OMNICOMPETENT if have OMNICOMPETENT_OWNER
+    if (user.user_id === currentUserId && role === 'OMNICOMPETENT') {
+      return (user.global_roles || []).includes('OMNICOMPETENT_OWNER');
+    }
     return isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER';
   };
   
