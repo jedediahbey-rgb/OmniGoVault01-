@@ -535,6 +535,14 @@ const AdminConsolePage = () => {
           open={showAccountDetails}
           onClose={() => setShowAccountDetails(false)}
           account={selectedAccount}
+          onChangePlan={(planId) => {
+            if (planId === 'free_forever') {
+              handleChangePlan(selectedAccount?.account_id, 'free_forever', 'Granted via Quick Action');
+            } else {
+              setShowAccountDetails(false);
+              setShowChangePlanDialog(true);
+            }
+          }}
         />
         
         {/* User Details Dialog */}
