@@ -13,7 +13,7 @@ import uuid
 import hashlib
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://vault-access-matrix.preview.emergentagent.com/api"
+BASE_URL = "https://trustworkspace.preview.emergentagent.com/api"
 
 class OmniGoVaultOnboardingTester:
     def __init__(self):

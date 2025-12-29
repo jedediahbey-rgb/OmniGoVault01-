@@ -75,7 +75,7 @@ Testing the following features:
 ### ✅ BACKEND API TESTS COMPLETED - ALL PASSING
 
 **Test Date:** 2025-12-28 21:16 UTC  
-**Test Environment:** https://vault-access-matrix.preview.emergentagent.com/api  
+**Test Environment:** https://trustworkspace.preview.emergentagent.com/api  
 **Test Status:** 4/4 tests passed (100% success rate)
 
 #### 1. GET /api/user/profile ✅
@@ -498,7 +498,7 @@ Based on previous successful tests from 2025-12-29 00:20 UTC:
 ### ❌ ADMIN CONSOLE FUNCTIONALITY TESTS - AUTHENTICATION REQUIRED
 
 **Test Date:** 2025-12-29 06:33 UTC  
-**Test Environment:** https://vault-access-matrix.preview.emergentagent.com  
+**Test Environment:** https://trustworkspace.preview.emergentagent.com  
 **Test Status:** Unable to complete testing due to authentication requirements
 
 #### 1. Admin Console Access ❌
@@ -544,7 +544,7 @@ Based on previous successful tests from 2025-12-29 00:20 UTC:
 ### ✅ SHARED WORKSPACE FUNCTIONALITY TESTS - AUTHENTICATION VERIFICATION COMPLETED
 
 **Test Date:** 2025-12-29 07:20 UTC  
-**Test Environment:** https://vault-access-matrix.preview.emergentagent.com  
+**Test Environment:** https://trustworkspace.preview.emergentagent.com  
 **Test Status:** Authentication flow verified - workspace features require Google OAuth
 
 #### Authentication Flow Testing Results ✅

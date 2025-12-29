@@ -17,7 +17,7 @@ import time
 import uuid
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://vault-access-matrix.preview.emergentagent.com/api"
+BASE_URL = "https://trustworkspace.preview.emergentagent.com/api"
 
 class CourtModeAPITester:
     def __init__(self):
