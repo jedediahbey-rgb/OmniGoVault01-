@@ -1213,13 +1213,12 @@ const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, isOmnicompetent,
             <div>
               <p className="text-xs text-vault-muted mb-2">
                 Roles 
-                {isOmnicompetent && user.user_id !== currentUserId && (
+                {(isOmnicompetent && user.user_id !== currentUserId) || canRemoveRole('OMNICOMPETENT') ? (
                   <span className="text-vault-gold ml-1">(tap × to remove)</span>
-                )}
+                ) : null}
               </p>
               <div className="flex flex-wrap gap-2">
-                {user.global_roles.map((role) => {
-                  const canRemove = isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER';
+                {displayRoles.map((role) => {
                   return (
                     <div key={role} className="flex items-center">
                       <span 
@@ -1231,7 +1230,7 @@ const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, isOmnicompetent,
                       >
                         {role}
                       </span>
-                      {canRemove && (
+                      {canRemoveRole(role) && (
                         <button
                           type="button"
                           onClick={() => handleRemoveRole(role)}
