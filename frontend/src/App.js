@@ -96,8 +96,8 @@ export const useAuth = () => {
     }
     // Clear user state
     setUser(null);
-    // Redirect to homepage after logout
-    window.location.href = '/';
+    // Redirect to homepage with logout=true to trigger "Matrix System Offline" screen
+    window.location.href = '/?logout=true';
   };
   
   const clearWelcome = async () => {
@@ -155,8 +155,16 @@ const AuthCallback = ({ setUser, setLoading, onFirstLogin }) => {
             onFirstLogin();
           }
           
-          // Navigate to vault dashboard after successful auth
-          navigate('/vault', { state: { user: response.data.user }, replace: true });
+          // Check if user came from "Enter the Vault" flow (should show loading animation)
+          const showLoadingScreen = sessionStorage.getItem('show_vault_loading') === 'true';
+          if (showLoadingScreen) {
+            sessionStorage.removeItem('show_vault_loading');
+            // Navigate to landing page with auth_success flag to show the loading screen
+            navigate('/?auth_success=true', { state: { user: response.data.user }, replace: true });
+          } else {
+            // Navigate directly to vault dashboard (e.g., from "Create Account" button)
+            navigate('/vault', { state: { user: response.data.user }, replace: true });
+          }
         } else {
           navigate('/login');
         }
