@@ -704,6 +704,7 @@ async def get_current_user(request: Request) -> User:
                     email=OWNER_EMAIL,
                     name=OWNER_NAME,
                     picture="",
+                    global_roles=[ROLE_OMNICOMPETENT_OWNER],
                     created_at=datetime.now(timezone.utc)
                 )
             else:
