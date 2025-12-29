@@ -1562,15 +1562,15 @@ export default function CyberHomePage() {
                       />
                     ))}
                     
-                    {/* Engraved text */}
+                    {/* Engraved text - PRIVATE VAULT - More visible */}
                     <motion.div
-                      className="absolute bottom-8 sm:bottom-10 left-0 right-0 text-center"
-                      initial={{ opacity: 0.5 }}
-                      animate={{ opacity: [0.5, 0.5, 0] }}
-                      transition={{ duration: 2.5, times: [0, 0.4, 0.6] }}
+                      className="absolute bottom-6 sm:bottom-8 left-0 right-0 text-center"
+                      initial={{ opacity: 0.8 }}
+                      animate={{ opacity: [0.8, 1, 0.6, 0] }}
+                      transition={{ duration: 2.5, times: [0, 0.2, 0.5, 0.7] }}
                     >
-                      <span className="text-[#C6A87C]/30 text-[10px] tracking-[0.25em] font-light uppercase">
-                        Private Vault
+                      <span className="text-[#C6A87C] text-xs sm:text-sm tracking-[0.3em] font-semibold uppercase drop-shadow-[0_0_10px_rgba(198,168,124,0.8)]">
+                        PRIVATE VAULT
                       </span>
                     </motion.div>
                   </motion.div>
