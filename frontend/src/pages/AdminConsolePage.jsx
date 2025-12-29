@@ -539,6 +539,9 @@ const AdminConsolePage = () => {
           onChangePlan={(planId) => {
             if (planId === 'free_forever') {
               handleChangePlan(selectedAccount?.account_id, 'free_forever', 'Granted via Quick Action');
+            } else if (planId === 'remove_free_forever') {
+              // Remove Free Forever - change to Free plan
+              handleChangePlan(selectedAccount?.account_id, 'plan_free', 'Removed Free Forever');
             } else {
               setShowAccountDetails(false);
               setShowChangePlanDialog(true);
