@@ -959,8 +959,8 @@ export default function CyberHomePage() {
         setVaultOpening(false);
         // Set flag to show loading screen after auth callback
         sessionStorage.setItem('show_vault_loading', 'true');
-        // Redirect to Google Auth
-        const redirectUrl = window.location.origin + '/';
+        // Redirect to Google Auth - go to /vault after login
+        const redirectUrl = window.location.origin + '/vault';
         window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
       }, 2500);
     }
