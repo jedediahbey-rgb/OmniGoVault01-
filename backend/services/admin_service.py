@@ -499,6 +499,86 @@ class AdminService:
         if not can_change:
             raise PermissionError("Requires Omnicompetent or Billing Admin role")
         
+        # Handle "Free Forever" special plan
+        if plan_id == "free_forever":
+            # Grant all entitlements for free
+            all_entitlements = [
+                {"key": "vaults.max", "value": -1, "description": "Unlimited vaults"},
+                {"key": "teamMembers.max", "value": -1, "description": "Unlimited team members"},
+                {"key": "storage.maxMB", "value": -1, "description": "Unlimited storage"},
+                {"key": "features.analytics.enabled", "value": True, "description": "Analytics access"},
+                {"key": "features.api.enabled", "value": True, "description": "API access"},
+                {"key": "features.templates.enabled", "value": True, "description": "Premium templates"},
+                {"key": "features.prioritySupport.enabled", "value": True, "description": "Priority support"},
+                {"key": "features.signing.enabled", "value": True, "description": "Document signing"},
+            ]
+            
+            # Remove existing entitlements
+            await self.db.entitlements.delete_many({"account_id": account_id})
+            
+            # Insert new entitlements
+            for ent in all_entitlements:
+                await self.db.entitlements.insert_one({
+                    "entitlement_id": f"ent_{uuid.uuid4().hex[:12]}",
+                    "account_id": account_id,
+                    "key": ent["key"],
+                    "value": ent["value"],
+                    "source": "free_forever",
+                    "description": ent["description"],
+                    "granted_at": datetime.now(timezone.utc).isoformat(),
+                    "granted_by": admin_user_id
+                })
+            
+            # Update account with free_forever flag
+            await self.db.accounts.update_one(
+                {"account_id": account_id},
+                {"$set": {
+                    "free_forever": True,
+                    "plan_name": "Free Forever",
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            
+            # Update subscription
+            now = datetime.now(timezone.utc)
+            current_sub = await self.subscription_service.get_subscription(account_id)
+            
+            if current_sub:
+                await self.db.subscriptions.update_one(
+                    {"subscription_id": current_sub["subscription_id"]},
+                    {"$set": {
+                        "plan_id": "free_forever",
+                        "updated_at": now.isoformat(),
+                        "updated_by_admin": admin_user_id
+                    }}
+                )
+            else:
+                await self.db.subscriptions.insert_one({
+                    "subscription_id": f"sub_{uuid.uuid4().hex[:12]}",
+                    "account_id": account_id,
+                    "plan_id": "free_forever",
+                    "status": "active",
+                    "created_at": now.isoformat(),
+                    "created_by_admin": admin_user_id
+                })
+            
+            # Audit log
+            await self._log_admin_action(
+                admin_user_id=admin_user_id,
+                action_type=AdminAuditAction.CHANGE_PLAN,
+                account_id=account_id,
+                metadata={
+                    "to_plan": "Free Forever",
+                    "reason": reason,
+                    "is_free_forever": True
+                },
+                ip_address=ip_address
+            )
+            
+            logger.info(f"Admin {admin_user_id} granted Free Forever to account {account_id}")
+            
+            return {"status": "success", "new_plan": "Free Forever", "message": "Granted Free Forever access with all features"}
+        
         # Get current subscription
         current_sub = await self.subscription_service.get_subscription(account_id)
         current_plan = await self.subscription_service.get_plan(current_sub["plan_id"]) if current_sub else None
@@ -507,6 +587,12 @@ class AdminService:
         new_plan = await self.subscription_service.get_plan(plan_id)
         if not new_plan:
             raise ValueError(f"Plan {plan_id} not found")
+        
+        # Remove free_forever flag if it was set
+        await self.db.accounts.update_one(
+            {"account_id": account_id},
+            {"$set": {"free_forever": False, "plan_name": new_plan["name"], "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
         
         # Update subscription
         from datetime import timedelta
@@ -520,6 +606,9 @@ class AdminService:
             current_period_start=now,
             current_period_end=now + timedelta(days=365)
         )
+        
+        # Sync entitlements from the new plan
+        await self.entitlement_service.sync_entitlements_from_plan(account_id, plan_id)
         
         # Audit log
         await self._log_admin_action(
