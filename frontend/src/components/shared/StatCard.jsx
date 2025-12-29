@@ -267,7 +267,7 @@ export default function StatCard({
           
           {/* Tier progress indicator - for infinite stats */}
           {isInfinite && tierInfo && !tierInfo.isMaxTier && (
-            <div className="absolute right-2 top-2 z-10">
+            <div className="absolute right-2 bottom-2 z-10 hidden sm:block">
               <div className="text-[9px] text-white/40 text-right">
                 <span className="text-white/60">{tierInfo.currentTier.next}</span>
                 <span className="ml-0.5">next</span>
