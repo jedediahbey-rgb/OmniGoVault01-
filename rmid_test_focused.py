@@ -10,7 +10,7 @@ from datetime import datetime
 import re
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://trustdashboard-1.preview.emergentagent.com/api"
+BASE_URL = "https://vault-access-matrix.preview.emergentagent.com/api"
 
 class RMIDMigrationTester:
     def __init__(self):

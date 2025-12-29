@@ -75,7 +75,7 @@ Testing the following features:
 ### ✅ BACKEND API TESTS COMPLETED - ALL PASSING
 
 **Test Date:** 2025-12-28 21:16 UTC  
-**Test Environment:** https://trustdashboard-1.preview.emergentagent.com/api  
+**Test Environment:** https://vault-access-matrix.preview.emergentagent.com/api  
 **Test Status:** 4/4 tests passed (100% success rate)
 
 #### 1. GET /api/user/profile ✅

@@ -1,40 +1,67 @@
 <analysis>**original_problem_statement:**
-The user's initial high-level goal was to build a sophisticated SaaS application called a **Shared Trust Workspace**.
+The user wants to build a sophisticated SaaS application called a **Shared Trust Workspace**. The current session involved numerous iterative UI/UX fixes based on the user's detailed feedback, a major overhaul of the authentication flow, and implementation of new UI sections.
 
-In this session, the user's focus was on a large number of iterative UI/UX fixes and the implementation of a high-priority feature, the **Premium Enter the Vault Transition**.
-
-The requests addressed include:
-1.  **Loading & Transition Flow:** Overhauling the entire user entry experience by restoring a Jacking into the Network screen for the initial site visit, creating a cinematic vault door animation for login, and adding an ACCESS DOWNLOAD COMPLETE screen post-animation.
-2.  **Homepage Layout:** Numerous iterative adjustments to the homepage hero section to make it compact, fill the screen, improve spacing, and resize the main logo to the user's exact specification.
-3.  **Homepage Components:** Fixing a broken hover popup for the Labyrinth System text. Fixing a non-functional Demo/Live toggle on the Signal Console card, first by making the button work, then by ensuring the card's content updates correctly. Resizing the Trust Health card to be symmetrically identical to the Signal Console card.
-4.  **General UI/UX Polish:** Implementing a large batch of fixes including removing distracting page transition flashes, updating icons, improving UI in the Admin and Settings pages, and adding a new user profile feature to allow custom display names.
-5.  **New Request:** The user's latest request is to remove the manual Demo/Live toggle on the homepage cards and make their state automatic based on whether the user is logged in or not.
+The most recent user requests are to refine the login and logout sequences:
+1.  **Login Flow:** For logged-out users, clicking Enter the Vault should trigger the vault animation *first*, then Google Auth, and then the Jacking into the Network loading screen before entering the app.
+2.  **Logout Flow:** When a user signs out, a loading screen should appear saying Matrix system offline.
+3.  **Dev Bypass Removal:** The user requested the complete removal of the developer bypass mode to ensure the logout functionality works correctly, relying entirely on Google Authentication.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React/FastAPI/MongoDB project with working Google Authentication. The UI and user flow have been heavily modified in this session.
+The application is a full-stack React/FastAPI/MongoDB project. The developer bypass mode has been completely removed, and the application now relies solely on Google Authentication.
 
-A new, specific loading flow has been implemented: a Jacking into the Network screen appears on the very first visit, and a cinematic Vault Door animation followed by an ACCESS DOWNLOAD COMPLETE screen handles the login transition.
-
-The homepage has been significantly refined. The hero section layout has been fine-tuned for desktop view, the Labyrinth hover popup is functional, and the Signal Console and Trust Health cards are now visually symmetrical. The Signal Console demo toggle now correctly switches between two different sets of sample data.
-
-A broad set of UI fixes has been completed across the application, including a new Profile tab in Settings for users to set a custom display name, updated subscription plan names in the backend, and consistent iconography for insurance-related features.
+The UI has been significantly polished across the board:
+- The landing page and internal dashboard headers are now visually identical for a seamless transition.
+- A user menu with Settings and Sign Out options is available on both desktop and mobile headers for logged-in users.
+- The initial loading screen dynamically displays the user's subscription tier.
+- The subscription pricing plans on the landing page are now hidden for users who already have a paid plan.
+- Numerous mobile UI issues (header wrapping, overlapping elements on cards) have been fixed.
+- Icons on the Templates page are now unique for each template.
+- Card hover effects have been restored.
+- The Create First Record button on the homepage now navigates correctly.
 
 **Last working item**:
--   **Last item agent was working**: The user requested to make the Demo and Live modes for the Signal Console and Trust Health cards on the homepage automatic. Instead of a manual toggle, the cards should show Demo content if the user is logged out and Live content (by fetching real data) if the user is logged in.
--   **Status**: NOT STARTED
+-   **Last item agent was working**: The agent was in the middle of implementing the user's two-part request for login/logout flow changes. The agent was addressing the Matrix system offline screen for the logout flow. The agent correctly identified that after the backend session is destroyed and the page redirects to , the landing page has no context that a logout just occurred.
+-   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: Frontend testing agent to verify the conditional rendering of the homepage cards based on authentication status.
+-   **Which testing method agent to use?**: Frontend testing agent to verify both the new login and logout flows end-to-end. This involves checking for the offline screen on logout and the correct sequence of (Vault Animation -> Google Auth -> Loading Screen) on login.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Incomplete Admin Console Functionality (P1)**
-    -   The Settings (cog) and Impersonate buttons for each user/account in the Admin Console are still not functional. This is a carry-over from a previous session.
+-   **Issue 1: Implement Correct Logout Flow with Offline Screen (P0)**
+    -   The current logout function redirects to the homepage, which then shows the standard online loading animation. The user wants it to display Matrix system offline.
+    -   **Attempted fixes**: The agent started adding an  state to  and modifying the  function.
+    -   **Next debug checklist**:
+        1.  In , modify the  function to navigate to  after clearing the session.
+        2.  In , use a  hook to check for the  URL search parameter on page load.
+        3.  If the parameter is present, set a state (e.g., ) to .
+        4.  Use this state to conditionally render the loading screen with the Matrix System Offline text.
+    -   **Why fix this issue and what will be achieved with the fix?**: To meet the user's specific requirement for the logout user experience.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: frontend
+    -   **Blocked on other issue**: None
+
+-   **Issue 2: Re-order Enter the Vault Flow for New Users (P0)**
+    -   The user wants the sequence for logged-out users to be: 1. Vault Animation -> 2. Google Auth -> 3. Jacking In Loading Screen -> 4. App Dashboard.
+    -   **Attempted fixes**: The agent modified the  function in  to always show the animation first and then initiate the redirect to Google Auth. The part that's missing is showing the loading screen *after* auth completes.
+    -   **Next debug checklist**:
+        1.  In , modify the  component.
+        2.  After successfully fetching user data and before navigating to , set a state or flag that indicates the loading screen should be shown. One way is to set an item in  before the auth redirect and check for it in .
+        3.  The main  component should render the loading screen component when this flag is set, and the loading component itself should handle the navigation to  upon completion.
+    -   **Why fix this issue and what will be achieved with the fix?**: To implement the user's desired cinematic and branded entry experience for new users.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: frontend
+    -   **Blocked on other issue**: None
+
+-   **Issue 3: Incomplete Admin Console Functionality (P1)**
+    -   This is a carry-over issue. The Settings (cog) and Impersonate buttons for each user in the Admin Console are still not functional.
     -   **Attempted fixes**: None in this session.
     -   **Next debug checklist**:
         1.  Examine the  and  handlers in .
-        2.  Implement the required frontend modals and backend API endpoints to support user impersonation and plan changes from the admin console.
+        2.  Implement the required frontend modals and backend API endpoints to support user impersonation and plan changes.
     -   **Why fix this issue and what will be achieved with the fix?**: To provide the fully functional Admin Console the user has requested.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: Y
@@ -42,45 +69,39 @@ A broad set of UI fixes has been completed across the application, including a n
     -   **Blocked on other issue**: None
 
 **In progress Task List**:
--   None.
+-   None apart from the issues listed above.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks**:
--   **(P0) Automatic Demo/Live Mode for Homepage Cards:**
-    -   **Task 1:** Modify  to detect the user's authentication status.
-    -   **Task 2:** Based on the auth status, conditionally render the Signal Console and Trust Health cards.
-        -   If logged out: Display Demo mode with sample data.
-        -   If logged in: Display Live mode and fetch real data from the backend.
-    -   **Task 3:** Remove the now-obsolete manual Demo/Live toggle button.
 -   **(P1) Define and Implement  Permissions:** (Carry-over)
-    -   Define the specific permissions for the  role.
-    -   Implement backend endpoint protection to enforce these permissions.
-    -   Create a UI for the  to manage these permissions.
+    -   Define permissions for the  role, implement backend endpoint protection, and create a UI for the  to manage these permissions.
 
 **Future Tasks**:
--   **(P2) Technical Debt - Bates Numbering Prefix:** (Carry-over) Add an  field to the portfolio data model for use as a prefix in Court Mode.
+-   **(P2) Technical Debt - Bates Numbering Prefix:** (Carry-over) Add an  field to the portfolio data model.
 
 **Completed work in this session**
--   **P0 Enter the Vault Transition & Loading Flow:**
-    -   Restored the Jacking into the Network loading screen for the initial app visit, using the exact design previously used for login.
-    -   Made the Matrix rain effect on the loading screen a more visible gold color.
-    -   Implemented a new cinematic vault door opening animation for the login transition, featuring a turning wheel, glowing bolts, golden light, and document silhouettes.
-    -   Added an ACCESS DOWNLOAD COMPLETE screen that appears after the vault animation.
-    -   Removed the redundant Jacking in loader from the authenticated user flow.
--   **Homepage UI & Functionality Overhaul:**
-    -   **Labyrinth Popup Fix:** Repaired the hover-triggered popup on desktop, which was previously failing to appear or closing instantly.
-    -   **Desktop Layout Adjustment:** Iteratively modified the homepage hero section layout multiple times to adjust compactness, spacing, and logo size per user feedback.
-    -   **Signal Console & Trust Health Cards:**
-        -   Resized the Trust Health card to be symmetrically identical to the Signal Console card.
-        -   Fixed the Demo/Live toggle, which was not changing state or updating the card's content.
--   **Admin, Settings, & Global UI Refinements:**
-    -   **User Profile Feature:** Added a new Profile tab in Settings allowing users to set a custom display name, which is now reflected in the Welcome back... message on the dashboard.
-    -   **UI Polish:** Made Settings tabs more noticeable, added a subtitle to the Audit Log page, and changed the word Configure to Change in a tooltip.
-    -   **Icon Unification:** Updated the Insurance icon globally to , ensuring consistency with the landing page.
-    -   **Backend Data:** Updated subscription plan names and pricing in the database.
+-   **Dev Bypass Removal & Auth Overhaul:** Completely removed the developer bypass mode from the backend () and frontend (), making Google Authentication mandatory and fixing the core sign-out issue.
+-   **Conditional Subscription Tiers:** The subscription plans section on the landing page is now hidden for users with a paid subscription, controlled by logic in .
+-   **Mobile Logout Feature:** Added a user dropdown menu (with Settings and Sign Out) to the mobile header in .
+-   **Header Unification:** Made the headers on the landing page (), dashboard (), and sidebar () visually identical for a seamless transition, including icon sizes, styles, and text.
+-   **Icon Replacement (Key):** Replaced the  icon with a more dynamic  icon () across all headers to match the user's preference.
+-   **Clickable Vault Shortcut:** The Vault icon in the landing page header now functions as a direct link to  for logged-in users, bypassing the long animation. It is disabled/dimmed for logged-out users.
+-   **Mobile UI Fixes:**
+    -   Fixed overlapping elements on dashboard stat cards ().
+    -   Fixed the landing page header title wrapping on mobile ().
+-   **Navigation & Button Fixes:**
+    -   Fixed the Settings link in the header dropdown menu redirecting to the wrong page ().
+    -   Fixed the Create First Record button on the homepage Signal Console navigating incorrectly ().
+-   **Content Updates:**
+    -   Updated numerous titles and descriptions on the .
+    -   Replaced duplicate icons with unique ones for each document type on the .
+-   **Animation & Polish:**
+    -   Restored the hover pop-out effect for cards ().
+    -   Improved the vault entry animation text visibility and refined the Access Complete screen.
+    -   Updated homepage cards to show a No activity yet state for logged-in users with no data.
 
 **Earlier issues found/mentioned but not fixed**
--   The Settings and Impersonate buttons in the Admin Console remain non-functional, as noted in the pending issues list.
+-   The Settings and Impersonate buttons in the Admin Console remain non-functional.
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -89,76 +110,75 @@ A broad set of UI fixes has been completed across the application, including a n
 
 
 **Key Technical Concepts**
--   **Conditional Rendering:** Central to implementing the new loading flow (initial vs. authenticated), the demo/live toggle logic, and will be used for the upcoming automatic demo/live task.
--   **State Management (, ):** Was critical for debugging and implementing the complex state-driven animations, popups, and toggles. Tracing state changes was key to fixing bugs where state was being unintentionally reset.
--   **Framer Motion:** The primary tool used to create the new cinematic Enter the Vault animation and the ACCESS DOWNLOAD COMPLETE screen.
--   **Event Handling (, , ):** Debugged and refactored complex hover logic for the Labyrinth popup and click handlers for the demo/live toggle.
--   **CSS & TailwindCSS:** Used for numerous iterative UI adjustments, including card symmetry and the multi-step refinement of the homepage hero section's layout.
+-   **Authentication Flow:** The core logic was shifted from a dev-bypass-first model to a pure Google Auth model. This involved changes to  in  and / functions in .
+-   **Conditional Rendering:** Used extensively in  to show/hide elements based on  status (e.g., Create Account button, user avatar, subscription plans section, clickable vault icon).
+-   **State Management (, ):** Critical for managing UI state like dropdown menus, loading states, and auth status across components.
+-   **URL Parameters:** The proposed solution for the logout screen involves passing and reading URL search parameters () to transfer state across a full page reload.
+-   **React Router:**  and  components were used and debugged for navigation issues (e.g., the Settings link fix).
+-   **Event Handling:**  handlers were fixed and refined, notably on the  component to allow child button clicks and in the header dropdowns.
 
 **key DB schema**
--   **plans**: Collection was re-seeded with new plans:  (/bin/bash),  (9),  (9),  (99).
--   **users**: A  field was added to user preferences to support custom names.
+-   No schema changes. Template data within  was updated to include new icon identifiers.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   **/app/frontend/src/pages/CyberHomePage.jsx**: Massively overhauled. Contains the logic for the initial loading screen, the vault transition, the ACCESS DOWNLOAD COMPLETE screen, the labyrinth popup, the signal/health cards, and the hero section layout.
--   **/app/frontend/src/pages/SettingsPage.jsx**: Heavily modified. A new Profile tab was added for updating display names, and the UI/UX of tabs and subtitles was improved.
--   **/app/frontend/src/App.js**: Modified to remove the  from authenticated routes, preventing a double-loading screen.
--   **/app/frontend/src/pages/DashboardPage.jsx**: Updated to fetch and display the user's custom .
--   **/app/backend/server.py**: Modified to add a new endpoint for updating user profiles ().
+-   **/app/frontend/src/pages/CyberHomePage.jsx**: Contains the logic for the entire landing page, including multiple user states (logged in/out), animations, conditional sections, and the in-progress login/logout flows.
+-   **/app/frontend/src/App.js**: Manages the global authentication state, ,  logic, and the  component.
+-   **/app/backend/server.py**: The  flag was set to , fundamentally changing the authentication behavior of the application.
+-   **/app/frontend/src/components/layout/MainLayout.jsx**: Contains the main application header for the authenticated vault area. Was heavily modified to match the landing page header and add a mobile user menu.
+-   **/app/frontend/src/pages/LearnPage.jsx**: All text content was updated based on user requests.
+-   **/app/frontend/src/pages/TemplatesPage.jsx**: The icon mapping was updated to provide unique icons for each template.
+-   **/app/frontend/src/components/shared/StatCard.jsx**: Fixed mobile responsive layout issues.
 
 **Areas that need refactoring**:
--   ** is extremely large and complex.** The loading screens, vault transition, and homepage-specific cards (Signal Console, Trust Health) should be extracted into their own modular components to improve maintainability.
--   **** remains large and could benefit from extracting its dialog and row components into separate files.
+-   ****: Remains extremely large and complex. The multiple loading screens, vault animations, and conditional sections are tightly coupled, making it difficult to maintain. Extracting these into smaller, dedicated components is highly recommended.
+-   ****: The auth logic, while functional, could be further cleaned up and potentially moved into a more robust context provider, especially with the new loading state requirements after auth callback.
 
 **key api endpoints**
--   : (NEW) Updates a user's profile, including their .
--   : (NEW) Fetches a user's profile information.
--   : (NEW) Fetches the global roles for the current user.
+-   : Deletes the session cookie from the browser.
+-   : Now correctly returns a 401 Unauthorized error if the user has no valid session, as dev bypass is disabled.
 
 **Critical Info for New Agent**
--   **The user's immediate priority is to make the Demo vs Live mode on the homepage cards automatic based on login status.** This will replace the manual toggle button. Logged-out users see Demo content; logged-in users must see Live content fetched from the backend.
--   **The application's loading flow is now highly specific and must be preserved:**
-    1.  **Initial Visit:** Full-screen Jacking into the Network animation with gold Matrix rain.
-    2.  **Login:** Cinematic vault door animation -> ACCESS DOWNLOAD COMPLETE screen -> Direct navigation to the dashboard. The Jacking in screen must **not** appear during the login flow.
--   **Mocked Data:** The Live mode on the Signal Console currently uses a mocked  array. When implementing the automatic live mode for authenticated users, this must be replaced with a real API call to fetch live signals.
+-   **DEV BYPASS IS REMOVED**: The application now relies **exclusively on Google Authentication**. You cannot access authenticated routes without a valid Google login. The  user is the primary test/owner account.
+-   **LOGIN/LOGOUT FLOWS ARE IN-PROGRESS**: The agent's top priority is to complete the user's specific requirements for the login and logout sequences as detailed in the Pending/In progress Issue list. The logout requires passing a URL parameter, and the login requires showing a loading screen after the auth callback.
+-   **CONDITIONAL UI ON LANDING PAGE**: The landing page () has significant conditional logic. The subscription plans are hidden for paid users, and the vault icon shortcut is only active for logged-in users. Be mindful of these states when testing.
 
 **documents and test reports created in this job**
--   /app/test_result.md
+-   None.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **LATEST**: Requested that the Demo/Live status for homepage cards be automatic based on login status, rather than a manual toggle.
-2.  Reported that the Signal Console's content did not change when toggling between Demo and Live. (RESOLVED)
-3.  Reported that the Demo/Live toggle button on the Signal Console was not working. (RESOLVED)
-4.  Requested that the Trust Health card's size be made symmetrical to the Signal Console card. (RESOLVED)
-5.  Requested to make the hero section logo bigger and move the content below it up. (RESOLVED)
-6.  Requested to make the hero section logo bigger. (RESOLVED)
-7.  Requested better spacing for the elements in the hero section. (RESOLVED)
-8.  Requested that the hero section content fill the entire screen height. (RESOLVED)
-9.  Requested to adjust the desktop layout to be more compact (less zoomed in). (RESOLVED)
-10. Reported that the Labyrinth hover popup was not working on desktop. (RESOLVED)
+1.  **Request:** Fix the  link in the header dropdown menu. (Completed)
+2.  **Request:** Add the vault icon to the landing page header to match the portfolio dashboard header. (Completed)
+3.  **Request:** Replace the  icon in the headers with a more dynamic one (). (Completed)
+4.  **Request:** Then, the user changed their mind and asked to revert from  back to a dynamic  icon. (Completed)
+5.  **Request:** Make the vault icon on the landing page a clickable shortcut to  only for logged-in users. (Completed)
+6.  **Request:** Hide the subscription price cards on the landing page for users who already have a paid subscription. (Completed)
+7.  **Request:** Refine login/logout flow: Matrix system offline on logout, and Vault Animation -> Google Auth -> Loading Screen on login. (IN PROGRESS)
+8.  **Request (clarification):** Re-iterated that the logout screen must say Matrix system offline. (IN PROGRESS)
+9.  **Request (from agent's interpretation):** The user approved removing the dev bypass completely to fix the sign-out issue. (Completed)
+10. **LATEST:** When a user is signing out I told you it should say matrix system offline on the loading screen instead of Matrix system online. This is a re-iteration of the pending logout flow task.
 
 **Project Health Check:**
--   **Broken**: The new requirement to make the Demo/Live mode automatic is not yet implemented.
--   **Mocked**: The Live mode on the public homepage uses a mocked  data array. This will need to be replaced with a real API call for authenticated users.
+-   **Broken**: The login and logout flows do not match the user's latest specifications. These are high-priority items.
+-   **Mocked**: None.
 
 **3rd Party Integrations**
 -   **Stripe**: For subscription billing.
 -   **Emergent-managed Google Auth**: For user sign-up and sign-in.
 -   **Framer Motion**: For UI animations.
 -   **Shadcn UI**: For UI components.
--   **Lucide React / Phosphor Icons**: For icons.
+-   **Phosphor Icons**: For icons.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES, both backend and frontend testing agents were used to validate UI fixes and the new vault transition.
+-   **Testing agent used after significant changes**: YES, the agent used the testing agent multiple times, which helped identify transient UI state issues and a major loading screen blocker.
 -   **Troubleshoot agent used after agent stuck in loop**: NO
--   **Test files created**: None
--   **Known regressions**: None
+-   **Test files created**: None.
+-   **Known regressions**: None.
 
 **Credentials to test flow:**
--   **Owner/Admin Access**: On the homepage, click the **Enter the Vault** button. This uses a developer bypass to automatically log you in as the owner () with full permissions.
+-   **No credentials needed.** The developer bypass has been removed. All authentication must be done via the Google Auth flow triggered by the Enter the Vault or Create Account buttons.
 
 **What agent forgot to execute**
--   The agent did not address the non-functional Settings and Impersonate buttons in the Admin Console, an outstanding issue from a previous session.</analysis>
+-   The agent did not address the non-functional Settings and Impersonate buttons in the Admin Console, which is a recurring issue from the previous fork.</analysis>

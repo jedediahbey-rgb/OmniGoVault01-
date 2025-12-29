@@ -7,7 +7,7 @@ import requests
 import json
 from datetime import datetime
 
-BASE_URL = "https://trustdashboard-1.preview.emergentagent.com/api"
+BASE_URL = "https://vault-access-matrix.preview.emergentagent.com/api"
 
 def test_detailed_apis():
     session = requests.Session()

@@ -15,7 +15,7 @@ from collections import defaultdict
 import re
 
 class RMIDv2Tester:
-    def __init__(self, base_url="https://trustdashboard-1.preview.emergentagent.com"):
+    def __init__(self, base_url="https://vault-access-matrix.preview.emergentagent.com"):
         self.base_url = base_url
         self.session_token = None
         self.user_id = None
