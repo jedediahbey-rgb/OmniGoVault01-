@@ -1210,7 +1210,9 @@ export default function CyberHomePage() {
                     >
                       {loadingPhase === 'booting' 
                         ? 'Establishing secure connection...' 
-                        : '1 vault · Solo operator mode'}
+                        : isLoggedIn 
+                          ? `Tier: ${userTier} Trust` 
+                          : 'Free tier · Create account to unlock'}
                     </motion.p>
                   </motion.div>
                 </AnimatePresence>
