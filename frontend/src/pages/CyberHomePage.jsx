@@ -1247,7 +1247,7 @@ export default function CyberHomePage() {
               <div className="flex flex-col items-center gap-3 min-h-[80px] mt-2">
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={loadingPhase}
+                    key={isLoggingOut ? 'offline' : loadingPhase}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
@@ -1255,7 +1255,11 @@ export default function CyberHomePage() {
                     className="text-center"
                   >
                     <p className="text-white/90 text-lg font-medium tracking-wider">
-                      {loadingPhase === 'booting' ? 'Jacking into the Network' : 'Matrix System Online'}
+                      {isLoggingOut 
+                        ? 'Matrix System Offline' 
+                        : loadingPhase === 'booting' 
+                          ? 'Jacking into the Network' 
+                          : 'Matrix System Online'}
                     </p>
                     <motion.p
                       initial={{ opacity: 0 }}
@@ -1263,11 +1267,13 @@ export default function CyberHomePage() {
                       transition={{ duration: 0.4, delay: 0.2 }}
                       className="text-white/50 text-sm mt-2 tracking-wide"
                     >
-                      {loadingPhase === 'booting' 
-                        ? 'Establishing secure connection...' 
-                        : isLoggedIn 
-                          ? `Tier: ${userTier} Trust` 
-                          : 'Free tier · Create account to unlock'}
+                      {isLoggingOut
+                        ? 'Disconnecting securely...'
+                        : loadingPhase === 'booting' 
+                          ? 'Establishing secure connection...' 
+                          : isLoggedIn 
+                            ? `Tier: ${userTier} Trust` 
+                            : 'Free tier · Create account to unlock'}
                     </motion.p>
                   </motion.div>
                 </AnimatePresence>
