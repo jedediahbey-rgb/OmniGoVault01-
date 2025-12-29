@@ -21,7 +21,9 @@ export const BillingProvider = ({ children }) => {
 
   const fetchBillingData = useCallback(async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/billing/subscription`);
+      const response = await axios.get(`${BACKEND_URL}/api/billing/subscription`, {
+        withCredentials: true
+      });
       setSubscription(response.data);
       setEntitlements(response.data.entitlements || {});
       setUsage(response.data.usage || {});
