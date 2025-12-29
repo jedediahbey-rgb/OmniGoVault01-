@@ -362,13 +362,16 @@ const TrustHealthCard = ({ isLoggedIn }) => {
   const fetchHealthSummary = async () => {
     try {
       const res = await axios.get(`${API}/health/summary`);
-      if (res.data.ok) {
+      if (res.data.ok && res.data.data) {
         setHealthData(res.data.data);
+      } else {
+        // No data available - show needs_scan state for logged-in users
+        setHealthData({ needs_scan: true, score: 0, next_actions: [], history: [] });
       }
     } catch (error) {
       console.error('Failed to fetch health summary:', error);
-      // Fall back to demo data if API fails
-      setHealthData(DEMO_HEALTH_DATA);
+      // Show needs_scan state instead of falling back to demo data
+      setHealthData({ needs_scan: true, score: 0, next_actions: [], history: [] });
     } finally {
       setLoading(false);
     }
