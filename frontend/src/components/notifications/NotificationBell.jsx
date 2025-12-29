@@ -143,9 +143,9 @@ export default function NotificationBell() {
     // Navigate based on notification type
     if (notification.vault_id) {
       if (notification.document_id) {
-        navigate(`/vault/workspace/${notification.vault_id}?doc=${notification.document_id}`);
+        navigate(`/vault/workspaces/${notification.vault_id}?doc=${notification.document_id}`);
       } else {
-        navigate(`/vault/workspace/${notification.vault_id}`);
+        navigate(`/vault/workspaces/${notification.vault_id}`);
       }
     }
 
