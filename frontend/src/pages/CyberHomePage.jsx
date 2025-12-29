@@ -2082,6 +2082,218 @@ export default function CyberHomePage() {
         </div>
       </section>
       
+      {/* ===== SUBSCRIPTION PLANS SECTION ===== */}
+      <section id="plans" className="py-10 lg:py-14 bg-[#0B1221]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-50px' }}
+            variants={staggerContainer}
+          >
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-8"
+            >
+              <IconChip icon={Crown} label="Plans" variant="gold" />
+              <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-white">Choose Your Trust Tier</h2>
+              <p className="mt-2 text-slate-400">Secure governance solutions for every trust structure</p>
+            </motion.div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+              {/* Testamentary Plan */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1, duration: 0.5 }}
+              >
+                <HoloCard className="p-5 h-full flex flex-col">
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-bold text-white">Testamentary</h3>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600">Free</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-white">$0</span>
+                      <span className="text-slate-500 text-sm">/month</span>
+                    </div>
+                    <p className="text-slate-400 text-xs mt-2">Perfect for getting started</p>
+                  </div>
+                  <ul className="space-y-2 mb-5 flex-1">
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>1 Trust Portfolio</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>Basic Templates</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>Health Monitoring</span>
+                    </li>
+                  </ul>
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-slate-600 text-slate-300 hover:bg-slate-800"
+                    onClick={handleCreateAccount}
+                  >
+                    Get Started Free
+                  </Button>
+                </HoloCard>
+              </motion.div>
+              
+              {/* Revocable Plan */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+              >
+                <HoloCard className="p-5 h-full flex flex-col border-emerald-500/30">
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-bold text-white">Revocable</h3>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">Popular</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-white">$29</span>
+                      <span className="text-slate-500 text-sm">/month</span>
+                    </div>
+                    <p className="text-slate-400 text-xs mt-2">For growing trust portfolios</p>
+                  </div>
+                  <ul className="space-y-2 mb-5 flex-1">
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>Up to 5 Portfolios</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>All Templates</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>Court Mode</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>Priority Support</span>
+                    </li>
+                  </ul>
+                  <Button 
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                    onClick={handleEnterVault}
+                  >
+                    Start Free Trial
+                  </Button>
+                </HoloCard>
+              </motion.div>
+              
+              {/* Irrevocable Plan */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
+                <HoloCard className="p-5 h-full flex flex-col border-blue-500/30">
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-bold text-white">Irrevocable</h3>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/40">Pro</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-white">$79</span>
+                      <span className="text-slate-500 text-sm">/month</span>
+                    </div>
+                    <p className="text-slate-400 text-xs mt-2">For professional trustees</p>
+                  </div>
+                  <ul className="space-y-2 mb-5 flex-1">
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>Unlimited Portfolios</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>Advanced Analytics</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>Multi-User Access</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>API Access</span>
+                    </li>
+                  </ul>
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={handleEnterVault}
+                  >
+                    Upgrade to Pro
+                  </Button>
+                </HoloCard>
+              </motion.div>
+              
+              {/* Dynasty Plan */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <HoloCard className="p-5 h-full flex flex-col border-purple-500/30 relative overflow-visible">
+                  {/* Glow effect */}
+                  <div className="absolute -inset-[1px] bg-gradient-to-r from-purple-500/20 via-[#C6A87C]/20 to-purple-500/20 rounded-2xl blur-sm -z-10" />
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <Gem className="w-4 h-4 text-purple-400" weight="duotone" />
+                        Dynasty
+                      </h3>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/40">Elite</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-white">$199</span>
+                      <span className="text-slate-500 text-sm">/month</span>
+                    </div>
+                    <p className="text-slate-400 text-xs mt-2">For dynasty trust management</p>
+                  </div>
+                  <ul className="space-y-2 mb-5 flex-1">
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-purple-400 flex-shrink-0" weight="bold" />
+                      <span>Everything in Irrevocable</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-purple-400 flex-shrink-0" weight="bold" />
+                      <span>White-Label Options</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-purple-400 flex-shrink-0" weight="bold" />
+                      <span>Dedicated Support</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-purple-400 flex-shrink-0" weight="bold" />
+                      <span>Custom Integrations</span>
+                    </li>
+                  </ul>
+                  <Button 
+                    className="w-full bg-gradient-to-r from-purple-600 to-[#C6A87C] hover:from-purple-700 hover:to-[#B5976D] text-white font-semibold"
+                    onClick={handleEnterVault}
+                  >
+                    Contact Sales
+                  </Button>
+                </HoloCard>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+      
       {/* ===== FINAL CTA ===== */}
       <section className="py-10 lg:py-14 bg-gradient-to-b from-[#0B1221] to-[#05080F]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
