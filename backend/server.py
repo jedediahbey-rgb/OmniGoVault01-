@@ -730,6 +730,7 @@ async def get_current_user(request: Request) -> User:
         email=user_doc.get("email", ""),
         name=user_doc.get("name", ""),
         picture=user_doc.get("picture", ""),
+        global_roles=user_doc.get("global_roles", []),
         created_at=datetime.now(timezone.utc)
     )
 
