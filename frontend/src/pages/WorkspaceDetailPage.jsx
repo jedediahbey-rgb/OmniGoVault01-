@@ -59,6 +59,8 @@ import {
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
 import { staggerContainer, fadeInUp } from '../lib/motion';
+import SignDocumentDialog from '../components/workspace/SignDocumentDialog';
+import ActivityTimeline from '../components/workspace/ActivityTimeline';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
