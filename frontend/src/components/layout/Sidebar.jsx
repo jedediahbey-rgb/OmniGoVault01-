@@ -32,6 +32,7 @@ import {
   X
 } from '@phosphor-icons/react';
 import { cn } from '../../lib/utils';
+import { useBilling } from '../../contexts/BillingContext';
 
 const navItems = [
   // main - sorted by length: Dashboard (9)
