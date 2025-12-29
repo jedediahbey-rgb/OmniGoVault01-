@@ -11,6 +11,7 @@ import {
 } from '@phosphor-icons/react';
 import Sidebar from './Sidebar';
 import { pageTransition } from '../../lib/motion';
+import { useBilling } from '../../contexts/BillingContext';
 
 // Set theme color for browser chrome
 const setThemeColor = (color) => {
