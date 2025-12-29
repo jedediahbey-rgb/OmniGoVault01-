@@ -385,6 +385,35 @@ export default function DashboardPage({ user }) {
     setShowEditPortfolio(true);
   };
 
+  // Portfolio Style Functions
+  const openStyleSelector = (portfolio) => {
+    setStyleTargetPortfolio(portfolio);
+    setShowStyleSelector(true);
+  };
+
+  const updatePortfolioStyle = async (styleId) => {
+    if (!styleTargetPortfolio) return;
+    
+    try {
+      const response = await axios.put(`${API}/portfolios/${styleTargetPortfolio.portfolio_id}/style`, {
+        style_id: styleId
+      });
+      
+      // Update local state
+      setPortfolios(portfolios.map(p => 
+        p.portfolio_id === styleTargetPortfolio.portfolio_id 
+          ? { ...p, style_id: response.data.style_id }
+          : p
+      ));
+      
+      toast.success('Portfolio style updated');
+    } catch (error) {
+      console.error('Failed to update portfolio style:', error);
+      toast.error('Failed to update style');
+      throw error;
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
