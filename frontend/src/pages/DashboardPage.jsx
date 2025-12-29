@@ -395,16 +395,21 @@ export default function DashboardPage({ user }) {
     if (!styleTargetPortfolio) return;
     
     try {
-      const response = await axios.put(`${API}/portfolios/${styleTargetPortfolio.portfolio_id}/style`, {
-        style_id: styleId
-      });
+      const response = await axios.put(
+        `${API}/portfolios/${styleTargetPortfolio.portfolio_id}/style`, 
+        { style_id: styleId },
+        { withCredentials: true }
+      );
       
-      // Update local state
-      setPortfolios(portfolios.map(p => 
+      // Update local state with the new style
+      setPortfolios(prev => prev.map(p => 
         p.portfolio_id === styleTargetPortfolio.portfolio_id 
-          ? { ...p, style_id: response.data.style_id }
+          ? { ...p, style_id: response.data.style_id || styleId }
           : p
       ));
+      
+      // Also update the target portfolio in case modal is still open
+      setStyleTargetPortfolio(prev => prev ? { ...prev, style_id: styleId } : prev);
       
       toast.success('Portfolio style updated');
     } catch (error) {
