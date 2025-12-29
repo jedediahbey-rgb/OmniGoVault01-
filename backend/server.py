@@ -1320,6 +1320,7 @@ async def update_portfolio_style(portfolio_id: str, request: Request, user: User
     """
     Update portfolio decorative style.
     Style is validated against user's subscription tier.
+    OMNICOMPETENT_OWNER and OMNICOMPETENT roles get unrestricted access to all styles.
     """
     body = await request.json()
     style_id = body.get("style_id", "standard")
@@ -1329,35 +1330,43 @@ async def update_portfolio_style(portfolio_id: str, request: Request, user: User
     if not existing:
         raise HTTPException(status_code=404, detail="Portfolio not found")
     
-    # Define style tier requirements
-    STYLE_TIERS = {
-        "standard": ["Free", "Testamentary", "Revocable", "Irrevocable", "Dynasty"],
-        "ledger": ["Free", "Testamentary", "Revocable", "Irrevocable", "Dynasty"],
-        "familyOffice": ["Revocable", "Irrevocable", "Dynasty"],
-        "privateVault": ["Irrevocable", "Dynasty"],
-        "dynasty": ["Dynasty"],
-        "crownEstate": ["Dynasty"]
-    }
+    # Check if user has omnicompetent access (bypasses all tier restrictions)
+    global_roles = user.global_roles or []
+    is_omnicompetent = ROLE_OMNICOMPETENT in global_roles or ROLE_OMNICOMPETENT_OWNER in global_roles
     
-    # Get user's subscription tier
-    account_member = await db.account_members.find_one({"user_id": user.user_id}, {"_id": 0})
-    if not account_member:
-        user_tier = "Free"
-    else:
-        account_id = account_member.get("account_id")
-        subscription = await db.subscriptions.find_one({"account_id": account_id, "status": "active"}, {"_id": 0})
-        if subscription:
-            plan = await db.plans.find_one({"plan_id": subscription.get("plan_id")}, {"_id": 0})
-            user_tier = plan.get("name", "Free") if plan else "Free"
-        else:
+    # Omnicompetent users get access to ALL styles without tier checks
+    if not is_omnicompetent:
+        # Define style tier requirements for regular users
+        STYLE_TIERS = {
+            "standard": ["Free", "Testamentary", "Revocable", "Irrevocable", "Dynasty"],
+            "ledger": ["Free", "Testamentary", "Revocable", "Irrevocable", "Dynasty"],
+            "familyOffice": ["Revocable", "Irrevocable", "Dynasty"],
+            "privateVault": ["Irrevocable", "Dynasty"],
+            "dynasty": ["Dynasty"],
+            "crownEstate": ["Dynasty"]
+        }
+        
+        # Get user's subscription tier
+        account_member = await db.account_members.find_one({"user_id": user.user_id}, {"_id": 0})
+        if not account_member:
             user_tier = "Free"
-    
-    # Validate style access
-    allowed_tiers = STYLE_TIERS.get(style_id, ["Dynasty"])
-    if user_tier not in allowed_tiers:
-        # Fall back to standard if user doesn't have access
-        style_id = "standard"
-        logger.warning(f"User {user.user_id} attempted to use style {body.get('style_id')} but only has {user_tier} tier")
+        else:
+            account_id = account_member.get("account_id")
+            subscription = await db.subscriptions.find_one({"account_id": account_id, "status": "active"}, {"_id": 0})
+            if subscription:
+                plan = await db.plans.find_one({"plan_id": subscription.get("plan_id")}, {"_id": 0})
+                user_tier = plan.get("name", "Free") if plan else "Free"
+            else:
+                user_tier = "Free"
+        
+        # Validate style access
+        allowed_tiers = STYLE_TIERS.get(style_id, ["Dynasty"])
+        if user_tier not in allowed_tiers:
+            # Fall back to standard if user doesn't have access
+            style_id = "standard"
+            logger.warning(f"User {user.user_id} attempted to use style {body.get('style_id')} but only has {user_tier} tier")
+    else:
+        logger.info(f"User {user.user_id} (omnicompetent) applying style {style_id} without tier restrictions")
     
     # Update portfolio with style
     update_data = {
