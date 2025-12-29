@@ -2205,6 +2205,8 @@ export default function CyberHomePage() {
       </section>
       
       {/* ===== SUBSCRIPTION PLANS SECTION ===== */}
+      {/* Only show if user is not logged in OR has free tier (Testamentary/Free) */}
+      {(!isLoggedIn || userTier === 'Free' || userTier === 'Testamentary') && (
       <section id="plans" className="py-10 lg:py-14 bg-[#0B1221]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
