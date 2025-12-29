@@ -3281,7 +3281,7 @@ async def get_templates():
             "name": "Acknowledgement / Receipt / Acceptance",
             "description": "Formal acknowledgement of receipt and acceptance for lawful consideration in trust transactions.",
             "source": "Exclusive Trust Under Equity, Page 9",
-            "icon": "check-circle",
+            "icon": "handshake",
             "subject_code": "03",
             "fields": ["parties", "items", "consideration", "date"]
         },
@@ -3317,7 +3317,7 @@ async def get_templates():
             "name": "Affidavit of Fact",
             "description": "Sworn statement establishing facts under oath with jurat.",
             "source": "Exclusive Trust Under Equity, Page 13",
-            "icon": "scale",
+            "icon": "gavel",
             "subject_code": "07",
             "fields": ["affiant", "facts", "attestation"]
         },
@@ -3326,7 +3326,7 @@ async def get_templates():
             "name": "Trustee Acceptance",
             "description": "Notice of acceptance by trustee acknowledging receipt of certificate of legal title and duties.",
             "source": "Exclusive Trust Under Equity, Pages 14-15",
-            "icon": "check-circle",
+            "icon": "user-check",
             "subject_code": "08",
             "fields": ["trustee", "trust_name", "rm_id", "address"]
         },
@@ -3335,7 +3335,7 @@ async def get_templates():
             "name": "Certificate of Foreign Grantor Trust",
             "description": "Formal certificate establishing the trust under full faith and credit with all essential details.",
             "source": "Exclusive Trust Under Equity, Pages 16-17",
-            "icon": "scroll",
+            "icon": "certificate",
             "subject_code": "09",
             "fields": ["trust_name", "grantor", "trustee", "creation_date", "execution_date"]
         }
