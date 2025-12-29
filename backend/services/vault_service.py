@@ -299,7 +299,7 @@ class VaultService:
         )
         
         # Get participant limit from entitlements
-        limit = await self.entitlement_service.get_limit(acc_id, "participants.max")
+        limit = await self.entitlement_service.get_limit(acc_id, "teamMembers.max")
         if limit != float('inf') and current_count >= limit:
             raise PermissionError(
                 f"Participant limit reached ({current_count}/{int(limit)}). "
