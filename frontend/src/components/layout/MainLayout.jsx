@@ -139,6 +139,9 @@ export default function MainLayout({ children, user, onLogout }) {
             <div className="w-8 relative" ref={userMenuRef}>
               {user && (
                 <>
+                  {/* Notification Bell */}
+                  <NotificationBell />
+                  
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="w-8 h-8 rounded-full overflow-hidden border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
