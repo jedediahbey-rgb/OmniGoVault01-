@@ -136,33 +136,35 @@ export default function MainLayout({ children, user, onLogout }) {
             </Link>
             
             {/* User Menu - Right */}
-            <div className="w-8 relative" ref={userMenuRef}>
+            <div className="flex items-center gap-2" ref={userMenuRef}>
               {user && (
                 <>
                   {/* Notification Bell */}
                   <NotificationBell />
                   
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="w-8 h-8 rounded-full overflow-hidden border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
-                  >
-                    {user.picture ? (
-                      <img 
-                        src={user.picture} 
-                        alt={user.name || 'User'} 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-[#C6A87C]/20 flex items-center justify-center">
-                        <span className="text-[#C6A87C] text-sm font-medium">
-                          {(user.name || user.email || 'U').charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                  </button>
+                  {/* User Avatar Button */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="w-8 h-8 rounded-full overflow-hidden border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
+                    >
+                      {user.picture ? (
+                        <img 
+                          src={user.picture} 
+                          alt={user.name || 'User'} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-[#C6A87C]/20 flex items-center justify-center">
+                          <span className="text-[#C6A87C] text-sm font-medium">
+                            {(user.name || user.email || 'U').charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </button>
                   
-                  {/* Dropdown Menu */}
-                  <AnimatePresence>
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
                     {userMenuOpen && (
                       <motion.div
                         initial={{ opacity: 0, y: -10, scale: 0.95 }}
