@@ -211,6 +211,7 @@ export default function MainLayout({ children, user, onLogout }) {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  </div>
                 </>
               )}
             </div>
