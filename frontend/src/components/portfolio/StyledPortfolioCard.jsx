@@ -8,7 +8,6 @@ import {
   Trash,
   ArrowRight,
   PaintBrush,
-  Sparkle,
   Crown,
   Diamond
 } from '@phosphor-icons/react';
@@ -19,8 +18,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '../ui/dropdown-menu';
-import IconBadge from '../shared/IconBadge';
-import { getStyleById } from '../../config/portfolioStyles';
 
 // Visual configurations for each style
 const STYLE_VISUALS = {
@@ -148,7 +145,7 @@ export default function StyledPortfolioCard({
   
   // Build card classes
   const cardClasses = `
-    relative flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 cursor-pointer group min-h-[72px] overflow-hidden
+    relative flex items-center gap-3 p-4 rounded-xl border transition-all duration-300 cursor-pointer group overflow-hidden
     ${isDefault ? `${visuals.defaultBg} ${visuals.defaultBorder}` : `${visuals.cardBg} ${visuals.cardBorder} ${visuals.cardHoverBorder} ${visuals.cardHoverBg}`}
     ${visuals.showGlow ? visuals.glowColor : ''}
   `;
@@ -168,46 +165,47 @@ export default function StyledPortfolioCard({
         </div>
       )}
       
-      {/* Icon Badge with style-specific color */}
-      <div className={`w-12 h-12 rounded-xl border flex items-center justify-center flex-shrink-0 ${ICON_VARIANTS[visuals.iconVariant]}`}>
-        <ShieldCheck className="w-6 h-6" weight="duotone" />
+      {/* Left: Icon Badge with style-specific color */}
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl border flex items-center justify-center flex-shrink-0 ${ICON_VARIANTS[visuals.iconVariant]}`}>
+        <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" weight="duotone" />
       </div>
       
-      {/* Portfolio Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-white font-medium">{portfolio.name}</p>
+      {/* Center: Portfolio Info - flex-1 to take remaining space */}
+      <div className="flex-1 min-w-0 overflow-hidden">
+        {/* Title row with premium icon */}
+        <div className="flex items-center gap-1.5">
+          <p className="text-white font-medium truncate">{portfolio.name}</p>
+          {/* Premium style indicator - inline with title */}
+          {AccentIcon && (
+            <AccentIcon className={`w-4 h-4 flex-shrink-0 ${visuals.chipText}`} weight="fill" />
+          )}
+        </div>
+        
+        {/* Second row: Default badge (if set) and description */}
+        <div className="flex items-center gap-2 mt-0.5">
           {isDefault && (
             <span className={`
-              px-2 py-0.5 text-[10px] font-semibold rounded-full shrink-0 border uppercase tracking-wide
+              px-1.5 py-0.5 text-[9px] font-semibold rounded border uppercase tracking-wide flex-shrink-0
               ${visuals.chipBg} ${visuals.chipText} ${visuals.chipBorder}
             `}>
               Default
             </span>
           )}
-          {/* Premium style indicator */}
-          {AccentIcon && (
-            <AccentIcon className={`w-4 h-4 ${visuals.chipText}`} weight="fill" />
-          )}
+          <p className="text-white/40 text-xs sm:text-sm truncate">
+            {portfolio.description || 'No description'}
+          </p>
         </div>
-        <p className="text-white/40 text-sm truncate mt-0.5">
-          {portfolio.description || 'No description'}
-        </p>
       </div>
       
-      {/* Actions */}
-      <div className="flex items-center gap-2 shrink-0">
-        <span className="hidden md:inline text-white/30 text-xs">
-          {new Date(portfolio.created_at).toLocaleDateString()}
-        </span>
-        
-        {/* Set as Default Button */}
+      {/* Right: Action buttons - fixed width, properly aligned */}
+      <div className="flex items-center gap-1 flex-shrink-0">
+        {/* Star button for default */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             isDefault ? onClearDefault?.(e) : onSetDefault?.(portfolio.portfolio_id, e);
           }}
-          className={`p-2 rounded-lg transition-colors ${
+          className={`p-1.5 sm:p-2 rounded-lg transition-colors ${
             isDefault 
               ? `${visuals.chipText} hover:opacity-70` 
               : 'text-white/30 hover:text-vault-gold hover:bg-white/5'
@@ -222,12 +220,12 @@ export default function StyledPortfolioCard({
           <DropdownMenuTrigger asChild>
             <button 
               onClick={e => e.stopPropagation()}
-              className="p-2 text-white/30 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              className="p-1.5 sm:p-2 text-white/30 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             >
               <DotsThreeVertical className="w-5 h-5" weight="bold" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-vault-navy border-white/10 min-w-[180px]">
+          <DropdownMenuContent align="end" className="bg-vault-navy border-white/10 min-w-[160px]">
             <DropdownMenuItem 
               onClick={(e) => {
                 e.stopPropagation();
@@ -270,7 +268,8 @@ export default function StyledPortfolioCard({
           </DropdownMenuContent>
         </DropdownMenu>
         
-        <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors" weight="bold" />
+        {/* Arrow - hidden on mobile to save space */}
+        <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors hidden sm:block" weight="bold" />
       </div>
     </motion.div>
   );
