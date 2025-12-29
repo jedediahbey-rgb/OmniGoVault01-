@@ -20,13 +20,13 @@ const STYLE_DEFINITIONS = {
   standard: {
     id: 'standard',
     name: 'Standard',
-    description: 'Clean and minimal design',
+    description: 'Clean and minimal design with gold accents',
     icon: Vault,
     previewBg: 'bg-gradient-to-br from-slate-700 to-slate-800',
     previewBorder: 'border-slate-600',
     previewAccent: 'bg-vault-gold/30 border-vault-gold',
     iconColor: 'text-vault-gold',
-    hasShimmer: false,
+    isPremium: false,
   },
   ledger: {
     id: 'ledger',
@@ -37,29 +37,29 @@ const STYLE_DEFINITIONS = {
     previewBorder: 'border-zinc-500',
     previewAccent: 'bg-slate-500/30 border-slate-400',
     iconColor: 'text-slate-300',
-    hasShimmer: false,
+    isPremium: false,
   },
   familyOffice: {
     id: 'familyOffice',
     name: 'Family Office',
-    description: 'Refined frame with soft gradient',
+    description: 'Refined frame with soft emerald gradient',
     icon: Crown,
     previewBg: 'bg-gradient-to-br from-emerald-800 to-emerald-950',
     previewBorder: 'border-emerald-600',
     previewAccent: 'bg-emerald-500/30 border-emerald-400',
     iconColor: 'text-emerald-400',
-    hasShimmer: false,
+    isPremium: false,
   },
   privateVault: {
     id: 'privateVault',
     name: 'Private Vault',
-    description: 'Dark, high-contrast with engraved borders',
+    description: 'Dark high-contrast with engraved borders',
     icon: LockIcon,
     previewBg: 'bg-gradient-to-br from-slate-900 to-zinc-950',
     previewBorder: 'border-slate-500',
     previewAccent: 'bg-slate-400/20 border-slate-400',
     iconColor: 'text-slate-300',
-    hasShimmer: false,
+    isPremium: false,
   },
   dynasty: {
     id: 'dynasty',
@@ -70,23 +70,23 @@ const STYLE_DEFINITIONS = {
     previewBorder: 'border-amber-500',
     previewAccent: 'bg-amber-400/30 border-amber-300',
     iconColor: 'text-amber-300',
-    hasShimmer: true,
+    isPremium: true,
   },
   crownEstate: {
     id: 'crownEstate',
     name: 'Crown Estate',
-    description: 'Subtle pattern texture with refined corners',
+    description: 'Royal purple with refined pattern texture',
     icon: Crown,
     previewBg: 'bg-gradient-to-br from-purple-800 via-indigo-900 to-violet-950',
     previewBorder: 'border-purple-500',
     previewAccent: 'bg-purple-400/30 border-purple-300',
     iconColor: 'text-purple-300',
-    hasShimmer: true,
+    isPremium: true,
   },
 };
 
 /**
- * Style Preview Card Component
+ * Style Preview Card Component - Clean aligned layout
  */
 const StylePreviewCard = ({ style, isSelected, isLocked, requiredTier, onSelect }) => {
   const styleConfig = STYLE_DEFINITIONS[style.id] || STYLE_DEFINITIONS.standard;
@@ -115,7 +115,7 @@ const StylePreviewCard = ({ style, isSelected, isLocked, requiredTier, onSelect 
         }
       `}
     >
-      {/* Locked overlay */}
+      {/* Locked badge - top right */}
       {isLocked && (
         <div className="absolute top-2 right-2 z-10">
           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/10 text-white/50 text-[10px]">
@@ -125,52 +125,56 @@ const StylePreviewCard = ({ style, isSelected, isLocked, requiredTier, onSelect 
         </div>
       )}
       
+      {/* Selected checkmark - top right */}
+      {isSelected && !isLocked && (
+        <div className="absolute top-2 right-2 z-10">
+          <div className="w-6 h-6 rounded-full bg-vault-gold flex items-center justify-center">
+            <Check className="w-4 h-4 text-vault-dark" weight="bold" />
+          </div>
+        </div>
+      )}
+      
       {/* Style Preview Box */}
       <div 
-        className={`h-20 rounded-lg mb-3 ${styleConfig.previewBg} border ${styleConfig.previewBorder} flex items-center justify-center relative overflow-hidden ${isLocked ? 'grayscale' : ''}`}
+        className={`h-16 rounded-lg mb-2 ${styleConfig.previewBg} border ${styleConfig.previewBorder} flex items-center justify-center relative overflow-hidden ${isLocked ? 'grayscale' : ''}`}
       >
         {/* Shimmer effect for premium styles */}
-        {styleConfig.hasShimmer && !isLocked && (
+        {styleConfig.isPremium && !isLocked && (
           <div className="absolute inset-0 opacity-30">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
           </div>
         )}
         
         {/* Icon with accent background */}
-        <div className={`w-12 h-12 rounded-lg border-2 ${styleConfig.previewAccent} flex items-center justify-center`}>
-          <IconComponent className={`w-6 h-6 ${styleConfig.iconColor}`} weight="duotone" />
+        <div className={`w-10 h-10 rounded-lg border-2 ${styleConfig.previewAccent} flex items-center justify-center`}>
+          <IconComponent className={`w-5 h-5 ${styleConfig.iconColor}`} weight="duotone" />
         </div>
         
         {/* Decorative corners for premium styles */}
-        {(style.id === 'dynasty' || style.id === 'crownEstate') && !isLocked && (
+        {styleConfig.isPremium && !isLocked && (
           <>
-            <div className={`absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 ${styleConfig.previewBorder} rounded-tl`} />
-            <div className={`absolute top-1 right-1 w-3 h-3 border-t-2 border-r-2 ${styleConfig.previewBorder} rounded-tr`} />
-            <div className={`absolute bottom-1 left-1 w-3 h-3 border-b-2 border-l-2 ${styleConfig.previewBorder} rounded-bl`} />
-            <div className={`absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 ${styleConfig.previewBorder} rounded-br`} />
+            <div className={`absolute top-1 left-1 w-2 h-2 border-t-2 border-l-2 ${styleConfig.previewBorder} rounded-tl`} />
+            <div className={`absolute top-1 right-1 w-2 h-2 border-t-2 border-r-2 ${styleConfig.previewBorder} rounded-tr`} />
+            <div className={`absolute bottom-1 left-1 w-2 h-2 border-b-2 border-l-2 ${styleConfig.previewBorder} rounded-bl`} />
+            <div className={`absolute bottom-1 right-1 w-2 h-2 border-b-2 border-r-2 ${styleConfig.previewBorder} rounded-br`} />
           </>
         )}
       </div>
       
-      {/* Style Info */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h4 className={`font-medium text-sm ${isLocked ? 'text-white/50' : 'text-white'}`}>{styleConfig.name}</h4>
-            {styleConfig.hasShimmer && !isLocked && (
-              <Sparkle className="w-3 h-3 text-amber-400" weight="fill" />
-            )}
-          </div>
-          <p className={`text-xs mt-0.5 truncate ${isLocked ? 'text-white/30' : 'text-white/50'}`}>{styleConfig.description}</p>
-        </div>
-        
-        {/* Selected checkmark */}
-        {isSelected && !isLocked && (
-          <div className="w-6 h-6 rounded-full bg-vault-gold flex items-center justify-center flex-shrink-0">
-            <Check className="w-3 h-3 text-vault-dark" weight="bold" />
-          </div>
+      {/* Style Name with premium sparkle */}
+      <div className="flex items-center gap-1.5 mb-0.5">
+        <h4 className={`font-medium text-sm ${isLocked ? 'text-white/50' : 'text-white'}`}>
+          {styleConfig.name}
+        </h4>
+        {styleConfig.isPremium && !isLocked && (
+          <Sparkle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" weight="fill" />
         )}
       </div>
+      
+      {/* Description - full text, wraps naturally */}
+      <p className={`text-[11px] leading-tight ${isLocked ? 'text-white/30' : 'text-white/50'}`}>
+        {styleConfig.description}
+      </p>
     </button>
   );
 };
@@ -245,64 +249,59 @@ export default function PortfolioStyleSelector({
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-vault-navy border-white/10 max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-white font-heading flex items-center gap-2">
+      <DialogContent className="bg-vault-navy border-white/10 max-w-lg mx-4">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-white font-heading flex items-center gap-2 text-lg">
             <PaintBrush className="w-5 h-5 text-vault-gold" weight="duotone" />
-            Customize Portfolio Style
+            Customize Style
           </DialogTitle>
-          <DialogDescription className="text-white/50">
-            Choose a decorative theme for <span className="text-white/70 font-medium">{portfolioName}</span>
+          <DialogDescription className="text-white/50 text-sm">
+            Choose a theme for <span className="text-white/70 font-medium">{portfolioName}</span>
             {isOmnicompetent && (
               <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-xs">
                 <Sparkle className="w-3 h-3" weight="fill" />
-                All Styles Unlocked
+                All Unlocked
               </span>
             )}
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-4 max-h-[60vh] overflow-y-auto pr-1">
+        <div className="py-2 max-h-[55vh] overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
-            <>
-              <p className="text-white/40 text-xs uppercase tracking-wider mb-3">
-                Available Styles ({allStyleIds.length})
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {allStyleIds.map(styleId => {
-                  const styleInfo = availableStyles?.[styleId] || { unlocked: false, required_tier: 'Unknown' };
-                  return (
-                    <StylePreviewCard
-                      key={styleId}
-                      style={{ id: styleId }}
-                      isSelected={selectedStyle === styleId}
-                      isLocked={!styleInfo.unlocked}
-                      requiredTier={styleInfo.required_tier}
-                      onSelect={setSelectedStyle}
-                    />
-                  );
-                })}
-              </div>
-            </>
+            <div className="grid grid-cols-2 gap-2.5">
+              {allStyleIds.map(styleId => {
+                const styleInfo = availableStyles?.[styleId] || { unlocked: false, required_tier: 'Unknown' };
+                return (
+                  <StylePreviewCard
+                    key={styleId}
+                    style={{ id: styleId }}
+                    isSelected={selectedStyle === styleId}
+                    isLocked={!styleInfo.unlocked}
+                    requiredTier={styleInfo.required_tier}
+                    onSelect={setSelectedStyle}
+                  />
+                );
+              })}
+            </div>
           )}
         </div>
         
-        <DialogFooter className="border-t border-white/10 pt-4">
+        <DialogFooter className="border-t border-white/10 pt-3 gap-2 sm:gap-2">
           <Button 
             variant="ghost" 
             onClick={() => onOpenChange(false)}
-            className="text-white/60 hover:text-white"
+            className="text-white/60 hover:text-white flex-1 sm:flex-none"
           >
             Cancel
           </Button>
           <Button 
             onClick={handleSave}
             disabled={saving || loading}
-            className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-medium"
+            className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-medium flex-1 sm:flex-none"
           >
             {saving ? (
               <>
