@@ -24,6 +24,7 @@ import {
   HandCoins,
   Heartbeat,
   Key,
+  Keyhole,
   Lightning,
   Lock,
   LockOpen,
