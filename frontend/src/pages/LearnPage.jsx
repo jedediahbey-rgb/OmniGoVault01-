@@ -244,7 +244,7 @@ const learningModules = [
   {
     id: 'foundations',
     title: 'Master Equity',
-    description: 'Understand the origins and principles of equity jurisprudence',
+    description: 'Decode the lineage, logic, and living practice of equity jurisprudence.',
     icon: Scales,
     duration: '45 min',
     lessons: [
@@ -326,7 +326,7 @@ Today, most jurisdictions have merged law and equity procedurally, but the subst
   {
     id: 'maxims',
     title: 'Maxims of Equity',
-    description: 'Innerstanding the foundational principles governing equitable decisions',
+    description: 'Innerstand the timeless maxims that shape every equitable judgment.',
     icon: Scroll,
     duration: '60 min',
     lessons: [
@@ -993,7 +993,7 @@ export default function LearnPage({ user }) {
       <PageHeader
         icon={BookOpen}
         title="Learn"
-        subtitle="Enlighten the mind in equity jurisprudence through structured lessons"
+        subtitle="Cultivate your equity mindset with guided, real-world lessons."
         subtitleAction={<PageHelpTooltip pageKey="learn" />}
       />
 
