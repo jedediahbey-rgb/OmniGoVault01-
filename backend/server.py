@@ -85,6 +85,7 @@ class User(BaseModel):
     email: str
     name: str
     picture: Optional[str] = None
+    global_roles: Optional[List[str]] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
