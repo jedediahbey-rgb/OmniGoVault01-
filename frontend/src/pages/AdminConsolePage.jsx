@@ -1148,6 +1148,21 @@ const AccountDetailsDialog = ({ open, onClose, account, onChangePlan }) => {
 const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, isOmnicompetent, currentUserId }) => {
   if (!user) return null;
   
+  // Filter roles - hide OMNICOMPETENT if user has OMNICOMPETENT_OWNER
+  const displayRoles = (user.global_roles || []).filter(role => {
+    if (role === 'OMNICOMPETENT' && (user.global_roles || []).includes('OMNICOMPETENT_OWNER')) {
+      return false;
+    }
+    return true;
+  });
+  
+  const canRemoveRole = (role) => {
+    if (user.user_id === currentUserId && role === 'OMNICOMPETENT') {
+      return (user.global_roles || []).includes('OMNICOMPETENT_OWNER');
+    }
+    return isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER';
+  };
+  
   const handleRemoveRole = (role) => {
     if (role === 'OMNICOMPETENT_OWNER') {
       toast.error('Cannot revoke OMNICOMPETENT_OWNER role');
