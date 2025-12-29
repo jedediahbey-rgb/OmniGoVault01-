@@ -1860,8 +1860,25 @@ export default function CyberHomePage() {
                   <div className="flex items-center justify-center py-8">
                     <div className="w-8 h-8 border-2 border-[#C6A87C] border-t-transparent rounded-full animate-spin" />
                   </div>
+                ) : isLoggedIn && liveSignals.length === 0 ? (
+                  /* No activity state for logged-in users */
+                  <div className="py-8 text-center">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-slate-800/50 border border-slate-700 flex items-center justify-center">
+                      <Notebook className="w-6 h-6 text-slate-500" />
+                    </div>
+                    <p className="text-slate-400 text-sm mb-1">No activity yet</p>
+                    <p className="text-slate-500 text-xs">Governance records will appear here</p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-4 border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 text-xs"
+                      onClick={() => navigate('/governance')}
+                    >
+                      Create First Record
+                    </Button>
+                  </div>
                 ) : (
-                  <SignalFeed signals={isLoggedIn ? (liveSignals.length > 0 ? liveSignals : LIVE_DEMO_SIGNALS) : DEMO_SIGNALS} />
+                  <SignalFeed signals={isLoggedIn ? liveSignals : DEMO_SIGNALS} />
                 )}
               </HoloCard>
             </motion.div>
