@@ -6,7 +6,6 @@ import {
   DotsThreeVertical, 
   PencilSimple, 
   Trash,
-  ArrowRight,
   PaintBrush,
   Crown,
   Diamond
@@ -128,6 +127,7 @@ const ICON_VARIANTS = {
 /**
  * Styled Portfolio Card Component
  * Renders a portfolio card with the user's selected decorative style
+ * Optimized for mobile with full name visibility
  */
 export default function StyledPortfolioCard({
   portfolio,
@@ -145,7 +145,7 @@ export default function StyledPortfolioCard({
   
   // Build card classes
   const cardClasses = `
-    relative flex items-center gap-3 p-4 rounded-xl border transition-all duration-300 cursor-pointer group overflow-hidden
+    relative p-3 sm:p-4 rounded-xl border transition-all duration-300 cursor-pointer group overflow-hidden
     ${isDefault ? `${visuals.defaultBg} ${visuals.defaultBorder}` : `${visuals.cardBg} ${visuals.cardBorder} ${visuals.cardHoverBorder} ${visuals.cardHoverBg}`}
     ${visuals.showGlow ? visuals.glowColor : ''}
   `;
@@ -165,111 +165,112 @@ export default function StyledPortfolioCard({
         </div>
       )}
       
-      {/* Left: Icon Badge with style-specific color */}
-      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl border flex items-center justify-center flex-shrink-0 ${ICON_VARIANTS[visuals.iconVariant]}`}>
-        <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" weight="duotone" />
-      </div>
-      
-      {/* Center: Portfolio Info - flex-1 to take remaining space */}
-      <div className="flex-1 min-w-0 overflow-hidden">
-        {/* Title row with premium icon */}
-        <div className="flex items-center gap-1.5">
-          <p className="text-white font-medium truncate">{portfolio.name}</p>
-          {/* Premium style indicator - inline with title */}
-          {AccentIcon && (
-            <AccentIcon className={`w-4 h-4 flex-shrink-0 ${visuals.chipText}`} weight="fill" />
-          )}
+      {/* Top Row: Icon, Name, and Actions */}
+      <div className="flex items-start gap-3">
+        {/* Left: Icon Badge */}
+        <div className={`w-10 h-10 rounded-lg border flex items-center justify-center flex-shrink-0 ${ICON_VARIANTS[visuals.iconVariant]}`}>
+          <ShieldCheck className="w-5 h-5" weight="duotone" />
         </div>
         
-        {/* Second row: Default badge (if set) and description */}
-        <div className="flex items-center gap-2 mt-0.5">
-          {isDefault && (
-            <span className={`
-              px-1.5 py-0.5 text-[9px] font-semibold rounded border uppercase tracking-wide flex-shrink-0
-              ${visuals.chipBg} ${visuals.chipText} ${visuals.chipBorder}
-            `}>
-              Default
-            </span>
-          )}
-          <p className="text-white/40 text-xs sm:text-sm truncate">
-            {portfolio.description || 'No description'}
-          </p>
+        {/* Center: Portfolio Name - Takes full width, wraps naturally */}
+        <div className="flex-1 min-w-0 pt-0.5">
+          <div className="flex items-start gap-2">
+            <h3 className="text-white font-medium text-sm sm:text-base leading-tight break-words">
+              {portfolio.name}
+            </h3>
+            {/* Premium style indicator */}
+            {AccentIcon && (
+              <AccentIcon className={`w-4 h-4 flex-shrink-0 mt-0.5 ${visuals.chipText}`} weight="fill" />
+            )}
+          </div>
+        </div>
+        
+        {/* Right: Action buttons - compact */}
+        <div className="flex items-center gap-0.5 flex-shrink-0">
+          {/* Star button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              isDefault ? onClearDefault?.(e) : onSetDefault?.(portfolio.portfolio_id, e);
+            }}
+            className={`p-1.5 rounded-lg transition-colors ${
+              isDefault 
+                ? `${visuals.chipText}` 
+                : 'text-white/30 hover:text-vault-gold'
+            }`}
+            title={isDefault ? 'Remove as default' : 'Set as default'}
+          >
+            <Star className="w-4 h-4" weight={isDefault ? 'fill' : 'regular'} />
+          </button>
+          
+          {/* Menu button */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button 
+                onClick={e => e.stopPropagation()}
+                className="p-1.5 text-white/30 hover:text-white rounded-lg transition-colors"
+              >
+                <DotsThreeVertical className="w-5 h-5" weight="bold" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-vault-navy border-white/10 min-w-[160px]">
+              <DropdownMenuItem 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCustomize?.(portfolio);
+                }}
+                className="text-vault-gold hover:text-vault-gold focus:text-vault-gold cursor-pointer"
+              >
+                <PaintBrush className="w-4 h-4 mr-2" weight="duotone" />
+                Customize Style
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  isDefault ? onClearDefault?.(e) : onSetDefault?.(portfolio.portfolio_id, e);
+                }}
+                className="text-white/70 hover:text-white focus:text-white cursor-pointer"
+              >
+                <Star className="w-4 h-4 mr-2" weight={isDefault ? 'fill' : 'regular'} /> 
+                {isDefault ? 'Remove Default' : 'Set as Default'}
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.(portfolio, e);
+                }}
+                className="text-white/70 hover:text-white focus:text-white cursor-pointer"
+              >
+                <PencilSimple className="w-4 h-4 mr-2" weight="duotone" /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete?.(portfolio);
+                }}
+                className="text-red-400 hover:text-red-300 focus:text-red-300 cursor-pointer"
+              >
+                <Trash className="w-4 h-4 mr-2" weight="duotone" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       
-      {/* Right: Action buttons - fixed width, properly aligned */}
-      <div className="flex items-center gap-1 flex-shrink-0">
-        {/* Star button for default */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            isDefault ? onClearDefault?.(e) : onSetDefault?.(portfolio.portfolio_id, e);
-          }}
-          className={`p-1.5 sm:p-2 rounded-lg transition-colors ${
-            isDefault 
-              ? `${visuals.chipText} hover:opacity-70` 
-              : 'text-white/30 hover:text-vault-gold hover:bg-white/5'
-          }`}
-          title={isDefault ? 'Remove as default' : 'Set as default portfolio'}
-        >
-          <Star className="w-4 h-4" weight={isDefault ? 'fill' : 'regular'} />
-        </button>
-        
-        {/* Dropdown Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button 
-              onClick={e => e.stopPropagation()}
-              className="p-1.5 sm:p-2 text-white/30 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            >
-              <DotsThreeVertical className="w-5 h-5" weight="bold" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-vault-navy border-white/10 min-w-[160px]">
-            <DropdownMenuItem 
-              onClick={(e) => {
-                e.stopPropagation();
-                onCustomize?.(portfolio);
-              }}
-              className="text-vault-gold hover:text-vault-gold focus:text-vault-gold cursor-pointer"
-            >
-              <PaintBrush className="w-4 h-4 mr-2" weight="duotone" />
-              Customize Style
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-white/10" />
-            <DropdownMenuItem 
-              onClick={(e) => {
-                e.stopPropagation();
-                isDefault ? onClearDefault?.(e) : onSetDefault?.(portfolio.portfolio_id, e);
-              }}
-              className="text-white/70 hover:text-white focus:text-white cursor-pointer"
-            >
-              <Star className="w-4 h-4 mr-2" weight={isDefault ? 'fill' : 'regular'} /> 
-              {isDefault ? 'Remove Default' : 'Set as Default'}
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit?.(portfolio, e);
-              }}
-              className="text-white/70 hover:text-white focus:text-white cursor-pointer"
-            >
-              <PencilSimple className="w-4 h-4 mr-2" weight="duotone" /> Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete?.(portfolio);
-              }}
-              className="text-red-400 hover:text-red-300 focus:text-red-300 cursor-pointer"
-            >
-              <Trash className="w-4 h-4 mr-2" weight="duotone" /> Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        
-        {/* Arrow - hidden on mobile to save space */}
-        <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors hidden sm:block" weight="bold" />
+      {/* Bottom Row: Default badge and Description */}
+      <div className="flex items-center gap-2 mt-2 pl-[52px]">
+        {isDefault && (
+          <span className={`
+            px-2 py-0.5 text-[10px] font-semibold rounded border uppercase tracking-wide flex-shrink-0
+            ${visuals.chipBg} ${visuals.chipText} ${visuals.chipBorder}
+          `}>
+            Default
+          </span>
+        )}
+        <p className="text-white/40 text-xs truncate">
+          {portfolio.description || 'No description'}
+        </p>
       </div>
     </motion.div>
   );
