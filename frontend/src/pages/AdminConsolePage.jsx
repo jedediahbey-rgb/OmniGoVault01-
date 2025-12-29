@@ -1082,7 +1082,7 @@ const AccountDetailsDialog = ({ open, onClose, account, onChangePlan }) => {
           
           <div>
             <p className="text-xs text-vault-muted mb-2">Quick Actions</p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -1095,7 +1095,7 @@ const AccountDetailsDialog = ({ open, onClose, account, onChangePlan }) => {
                 <Settings className="w-4 h-4 mr-2" />
                 Change Plan
               </Button>
-              {!account.free_forever && (
+              {!account.free_forever ? (
                 <Button
                   variant="outline"
                   size="sm"
@@ -1109,6 +1109,21 @@ const AccountDetailsDialog = ({ open, onClose, account, onChangePlan }) => {
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
                   Grant Free Forever
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (window.confirm(`Remove Free Forever from ${account.name}? They will need to select a paid plan.`)) {
+                      onClose();
+                      onChangePlan?.('remove_free_forever');
+                    }
+                  }}
+                  className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Remove Free Forever
                 </Button>
               )}
             </div>
