@@ -563,8 +563,14 @@ const AdminConsolePage = () => {
 const AccountRow = ({ account, onViewDetails, onChangePlan, isOmnicompetent }) => (
   <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-vault-navy/50 rounded-lg border border-vault-gold/10 hover:border-vault-gold/20 transition-colors gap-3">
     <div className="flex items-center gap-3 sm:gap-4">
-      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-vault-gold/10 flex items-center justify-center flex-shrink-0">
-        <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-vault-gold" />
+      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+        account.free_forever ? 'bg-purple-500/20' : 'bg-vault-gold/10'
+      }`}>
+        {account.free_forever ? (
+          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+        ) : (
+          <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-vault-gold" />
+        )}
       </div>
       <div className="min-w-0 flex-1">
         <p className="font-medium text-vault-light text-sm sm:text-base truncate">{account.name}</p>
@@ -573,11 +579,18 @@ const AccountRow = ({ account, onViewDetails, onChangePlan, isOmnicompetent }) =
     </div>
     
     <div className="flex items-center gap-2 sm:gap-4 ml-11 sm:ml-0 flex-wrap">
-      <Badge variant="outline" className="border-vault-gold/30 text-vault-gold text-xs">
-        {account.plan_name}
-      </Badge>
+      {account.free_forever ? (
+        <Badge variant="outline" className="border-purple-500/30 text-purple-300 text-xs bg-purple-500/10">
+          <Sparkles className="w-3 h-3 mr-1" />
+          Free Forever
+        </Badge>
+      ) : (
+        <Badge variant="outline" className="border-vault-gold/30 text-vault-gold text-xs">
+          {account.plan_name || 'Free'}
+        </Badge>
+      )}
       <span className="text-xs sm:text-sm text-vault-muted">
-        {account.member_count} member{account.member_count !== 1 ? 's' : ''}
+        {account.member_count || 0} member{account.member_count !== 1 ? 's' : ''}
       </span>
       {account.is_suspended && (
         <Badge variant="outline" className="border-red-500/30 text-red-400 text-xs">
