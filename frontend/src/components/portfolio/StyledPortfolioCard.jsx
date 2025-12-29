@@ -127,7 +127,7 @@ const ICON_VARIANTS = {
 /**
  * Styled Portfolio Card Component
  * Renders a portfolio card with the user's selected decorative style
- * Optimized for mobile with full name visibility
+ * Crown and Star icons are aligned at the same height
  */
 export default function StyledPortfolioCard({
   portfolio,
@@ -165,35 +165,36 @@ export default function StyledPortfolioCard({
         </div>
       )}
       
-      {/* Top Row: Icon, Name, and Actions */}
-      <div className="flex items-start gap-3">
+      {/* Top Row: Icon, Name, and Actions - all items-center for perfect alignment */}
+      <div className="flex items-center gap-3">
         {/* Left: Icon Badge */}
         <div className={`w-10 h-10 rounded-lg border flex items-center justify-center flex-shrink-0 ${ICON_VARIANTS[visuals.iconVariant]}`}>
           <ShieldCheck className="w-5 h-5" weight="duotone" />
         </div>
         
-        {/* Center: Portfolio Name - Takes full width, wraps naturally */}
-        <div className="flex-1 min-w-0 pt-0.5">
-          <div className="flex items-start gap-2">
-            <h3 className="text-white font-medium text-sm sm:text-base leading-tight break-words">
-              {portfolio.name}
-            </h3>
-            {/* Premium style indicator */}
-            {AccentIcon && (
-              <AccentIcon className={`w-4 h-4 flex-shrink-0 mt-0.5 ${visuals.chipText}`} weight="fill" />
-            )}
-          </div>
+        {/* Center: Portfolio Name */}
+        <div className="flex-1 min-w-0">
+          <h3 className="text-white font-medium text-sm sm:text-base leading-tight break-words line-clamp-2">
+            {portfolio.name}
+          </h3>
         </div>
         
-        {/* Right: Action buttons - compact */}
-        <div className="flex items-center gap-0.5 flex-shrink-0">
-          {/* Star button */}
+        {/* Right: Icons row - Crown, Star, Menu all at same height */}
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {/* Premium style indicator (Crown/Diamond) - same size as Star */}
+          {AccentIcon && (
+            <div className="p-1.5 flex items-center justify-center">
+              <AccentIcon className={`w-4 h-4 ${visuals.chipText}`} weight="fill" />
+            </div>
+          )}
+          
+          {/* Star button - same height as Crown */}
           <button
             onClick={(e) => {
               e.stopPropagation();
               isDefault ? onClearDefault?.(e) : onSetDefault?.(portfolio.portfolio_id, e);
             }}
-            className={`p-1.5 rounded-lg transition-colors ${
+            className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${
               isDefault 
                 ? `${visuals.chipText}` 
                 : 'text-white/30 hover:text-vault-gold'
@@ -208,7 +209,7 @@ export default function StyledPortfolioCard({
             <DropdownMenuTrigger asChild>
               <button 
                 onClick={e => e.stopPropagation()}
-                className="p-1.5 text-white/30 hover:text-white rounded-lg transition-colors"
+                className="p-1.5 text-white/30 hover:text-white rounded-lg transition-colors flex items-center justify-center"
               >
                 <DotsThreeVertical className="w-5 h-5" weight="bold" />
               </button>
