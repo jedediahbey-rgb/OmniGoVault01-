@@ -786,6 +786,7 @@ const GovernanceMatrixSection = () => {
 // Main Homepage Component
 export default function CyberHomePage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null); // Store user data for avatar, name, tier
   const [userTier, setUserTier] = useState('Free'); // Default tier for loading screen
@@ -799,9 +800,44 @@ export default function CyberHomePage() {
   const [isLabyrinthHovered, setIsLabyrinthHovered] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false); // User dropdown menu state
   const [isLoggingOut, setIsLoggingOut] = useState(false); // Track logout state for "Matrix System Offline"
+  const [isAuthSuccess, setIsAuthSuccess] = useState(false); // Track successful auth from Google for loading screen
   const featuresRef = useRef(null);
   const userMenuRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
+  
+  // Check URL params for logout or auth_success on mount
+  useEffect(() => {
+    const logoutParam = searchParams.get('logout');
+    const authSuccessParam = searchParams.get('auth_success');
+    
+    if (logoutParam === 'true') {
+      // User just logged out - show "Matrix System Offline" loading screen
+      setIsLoggingOut(true);
+      setShowInitialLoading(true);
+      // Remove the query parameter from URL to clean up
+      searchParams.delete('logout');
+      setSearchParams(searchParams, { replace: true });
+      
+      // After showing the offline screen, clear the state
+      setTimeout(() => {
+        setIsLoggingOut(false);
+        setShowInitialLoading(false);
+      }, 3200);
+    } else if (authSuccessParam === 'true') {
+      // User just authenticated from Google - show "Jacking In" loading screen then go to vault
+      setIsAuthSuccess(true);
+      setIsLoggedIn(true);
+      setShowInitialLoading(true);
+      // Remove the query parameter from URL to clean up
+      searchParams.delete('auth_success');
+      setSearchParams(searchParams, { replace: true });
+      
+      // After loading screen completes, navigate to vault
+      setTimeout(() => {
+        navigate('/vault');
+      }, 3500);
+    }
+  }, [searchParams, setSearchParams, navigate]);
   
   // Close user menu when clicking outside
   useEffect(() => {
