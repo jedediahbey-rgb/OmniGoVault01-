@@ -240,8 +240,96 @@ export default function MainLayout({ children, user, onLogout }) {
         onClose={() => setSidebarOpen(false)}
       />
       
+      {/* Desktop Header Bar - only visible on desktop */}
+      <header className="hidden lg:flex fixed top-0 left-64 right-0 h-14 z-30 bg-[#05080F]/95 backdrop-blur-xl border-b border-white/5">
+        <div className="flex-1 flex items-center justify-between px-6">
+          {/* Left side - Page breadcrumb or empty */}
+          <div className="flex items-center gap-2">
+            {/* Can add breadcrumbs here if needed */}
+          </div>
+          
+          {/* Right side - Notification bell and user avatar */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-white/30 hidden xl:inline">Ctrl+K for commands</span>
+            
+            {user && (
+              <>
+                {/* Notification Bell */}
+                <NotificationBell />
+                
+                {/* User Avatar */}
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="w-8 h-8 rounded-full overflow-hidden border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
+                  >
+                    {user.picture ? (
+                      <img 
+                        src={user.picture} 
+                        alt={user.name || 'User'} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#C6A87C]/20 flex items-center justify-center">
+                        <span className="text-[#C6A87C] text-sm font-medium">
+                          {(user.name || user.email || 'U').charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                  
+                  {/* Desktop User Dropdown */}
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-10 w-48 bg-[#0B1221] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50"
+                      >
+                        <div className="px-4 py-3 border-b border-white/10">
+                          <p className="text-sm text-white font-medium truncate">{user.name}</p>
+                          <p className="text-xs text-white/40 truncate">{user.email}</p>
+                        </div>
+                        <div className="py-1">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setUserMenuOpen(false);
+                              window.location.href = '/settings';
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left"
+                          >
+                            <Gear className="w-4 h-4" weight="duotone" />
+                            Settings
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setUserMenuOpen(false);
+                              onLogout(userTier);
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors text-left"
+                          >
+                            <SignOut className="w-4 h-4" weight="duotone" />
+                            Sign Out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </header>
+      
       {/* Main Content */}
-      <main className="lg:ml-64 flex-1 min-h-0 relative pt-14 lg:pt-0 overflow-hidden">
+      <main className="lg:ml-64 flex-1 min-h-0 relative pt-14 lg:pt-14 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
