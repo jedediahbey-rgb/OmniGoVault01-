@@ -19,15 +19,19 @@ class SharedWorkspaceTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
+        # Set the session cookie for authentication
+        self.session.cookies.set('session_token', 'IcKDtBmAaY65JQz99DHwiV-NkRpcnqJFDFvh4WfIsCI')
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'OmniGoVault-Onboarding-Tester/1.0'
+            'User-Agent': 'SharedWorkspace-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_results = []
-        self.current_session_token = None
+        self.vault_id = None
+        self.document_id = None
+        self.participant_id = None
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
