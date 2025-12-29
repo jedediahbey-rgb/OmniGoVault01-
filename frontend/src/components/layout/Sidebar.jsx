@@ -15,7 +15,7 @@ import {
   Graph,
   Heartbeat,
   House,
-  Keyhole,
+  Key,
   MapTrifold,
   Robot,
   Scroll,
