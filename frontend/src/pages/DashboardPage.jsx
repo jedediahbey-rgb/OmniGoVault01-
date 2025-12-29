@@ -73,6 +73,10 @@ export default function DashboardPage({ user }) {
   const [showQuickActionSettings, setShowQuickActionSettings] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   
+  // Portfolio Style Selector state
+  const [showStyleSelector, setShowStyleSelector] = useState(false);
+  const [styleTargetPortfolio, setStyleTargetPortfolio] = useState(null);
+  
   // Entitlement/Upgrade state
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [vaultLimit, setVaultLimit] = useState({ current: 0, limit: 1 });
