@@ -814,17 +814,26 @@ export default function CyberHomePage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   
-  // Handle logout
+  // Handle logout - shows "Matrix System Offline" loading screen
   const handleLogout = async () => {
+    setUserMenuOpen(false);
+    setIsLoggingOut(true);
+    setShowInitialLoading(true);
+    
+    // Call logout API
     try {
       await axios.post(`${API}/auth/logout`, {}, { withCredentials: true });
     } catch (error) {
       console.error('Logout error:', error);
     }
-    setUserMenuOpen(false);
-    setIsLoggedIn(false);
-    setUserData(null);
-    window.location.href = '/';
+    
+    // Show offline screen for a moment, then redirect
+    setTimeout(() => {
+      setIsLoggedIn(false);
+      setUserData(null);
+      setIsLoggingOut(false);
+      window.location.href = '/';
+    }, 2000);
   };
   
   // Fetch user's subscription tier for loading screen
