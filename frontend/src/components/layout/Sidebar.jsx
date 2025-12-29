@@ -195,7 +195,7 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
       <Link to="/" className="block border-b border-vault-gold/20 hover:bg-vault-gold/5 transition-colors">
         <div className="flex items-center gap-3 h-16 px-4">
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-vault-gold/20 to-vault-gold/5 border border-vault-gold/30 flex items-center justify-center flex-shrink-0">
-            <Key className="w-5 h-5 text-vault-gold" weight="fill" />
+            <Key className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-semibold text-white leading-tight">Private Equity</span>
