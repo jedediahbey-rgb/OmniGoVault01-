@@ -109,6 +109,7 @@ export default function WorkspaceDetailPage({ user }) {
   const [showInviteParticipant, setShowInviteParticipant] = useState(false);
   const [showDocumentViewer, setShowDocumentViewer] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [showSignDialog, setShowSignDialog] = useState(false);
   
   // Form states
   const [newDocument, setNewDocument] = useState({
