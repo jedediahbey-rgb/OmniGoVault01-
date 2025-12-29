@@ -1389,6 +1389,69 @@ async def get_portfolio_style(portfolio_id: str, user: User = Depends(get_curren
     return {"style_id": doc.get("style_id", "standard")}
 
 
+@api_router.get("/portfolio-styles/available")
+async def get_available_portfolio_styles(user: User = Depends(get_current_user)):
+    """
+    Get available portfolio styles for the current user based on their tier/role.
+    Returns all styles with their unlock status.
+    """
+    # Check if user has omnicompetent access
+    global_roles = user.global_roles or []
+    is_omnicompetent = ROLE_OMNICOMPETENT in global_roles or ROLE_OMNICOMPETENT_OWNER in global_roles
+    
+    # Define all available styles
+    ALL_STYLES = ["standard", "ledger", "familyOffice", "privateVault", "dynasty", "crownEstate"]
+    
+    # Define style tier requirements
+    STYLE_TIERS = {
+        "standard": ["Free", "Testamentary", "Revocable", "Irrevocable", "Dynasty"],
+        "ledger": ["Free", "Testamentary", "Revocable", "Irrevocable", "Dynasty"],
+        "familyOffice": ["Revocable", "Irrevocable", "Dynasty"],
+        "privateVault": ["Irrevocable", "Dynasty"],
+        "dynasty": ["Dynasty"],
+        "crownEstate": ["Dynasty"]
+    }
+    
+    # If omnicompetent, all styles are unlocked
+    if is_omnicompetent:
+        return {
+            "is_omnicompetent": True,
+            "user_tier": "Omnicompetent",
+            "styles": {style: {"unlocked": True, "required_tier": None} for style in ALL_STYLES}
+        }
+    
+    # Get user's subscription tier
+    account_member = await db.account_members.find_one({"user_id": user.user_id}, {"_id": 0})
+    if not account_member:
+        user_tier = "Free"
+    else:
+        account_id = account_member.get("account_id")
+        subscription = await db.subscriptions.find_one({"account_id": account_id, "status": "active"}, {"_id": 0})
+        if subscription:
+            plan = await db.plans.find_one({"plan_id": subscription.get("plan_id")}, {"_id": 0})
+            user_tier = plan.get("name", "Free") if plan else "Free"
+        else:
+            user_tier = "Free"
+    
+    # Build the styles response
+    styles_response = {}
+    for style in ALL_STYLES:
+        allowed_tiers = STYLE_TIERS.get(style, ["Dynasty"])
+        is_unlocked = user_tier in allowed_tiers
+        # Get minimum required tier
+        min_tier = allowed_tiers[0] if allowed_tiers else "Dynasty"
+        styles_response[style] = {
+            "unlocked": is_unlocked,
+            "required_tier": None if is_unlocked else min_tier
+        }
+    
+    return {
+        "is_omnicompetent": False,
+        "user_tier": user_tier,
+        "styles": styles_response
+    }
+
+
 # ============ TRUST PROFILE ENDPOINTS ============
 
 @api_router.get("/trust-profiles")
