@@ -1711,7 +1711,7 @@ export default function CyberHomePage() {
             
             {/* Logo - Private Equity & Trusts - Centered - NO link */}
             <div className="flex items-center gap-2 shrink-0">
-              <Keyhole className="w-5 h-5 text-[#C6A87C]/70 shrink-0" weight="duotone" />
+              <Key className="w-5 h-5 text-[#C6A87C] shrink-0" weight="duotone" />
               <span className="text-sm sm:text-base font-medium text-white whitespace-nowrap">Private Equity & Trusts</span>
             </div>
             
