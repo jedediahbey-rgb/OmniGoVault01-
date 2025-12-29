@@ -64,7 +64,9 @@ const VaultToggle = ({ isOpen, onClick }) => (
 export default function MainLayout({ children, user, onLogout }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const scrollContainerRef = useRef(null);
+  const userMenuRef = useRef(null);
 
   // Set theme color on mount to match app background
   useEffect(() => {
@@ -79,6 +81,17 @@ export default function MainLayout({ children, user, onLogout }) {
     // Also reset window scroll for any edge cases
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden bg-vault-navy">
