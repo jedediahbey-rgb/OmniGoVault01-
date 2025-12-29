@@ -972,8 +972,18 @@ const AccountDetailsDialog = ({ open, onClose, account }) => {
 };
 
 // User Details Dialog  
-const UserDetailsDialog = ({ open, onClose, user }) => {
+const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, isOmnicompetent, currentUserId }) => {
   if (!user) return null;
+  
+  const handleRemoveRole = (role) => {
+    if (role === 'OMNICOMPETENT_OWNER') {
+      toast.error('Cannot revoke OMNICOMPETENT_OWNER role');
+      return;
+    }
+    if (window.confirm(`Remove ${role} role from ${user.email || user.name}?`)) {
+      onRevokeRole?.(user.user_id, role);
+    }
+  };
   
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -1013,18 +1023,27 @@ const UserDetailsDialog = ({ open, onClose, user }) => {
           
           {user.global_roles && user.global_roles.length > 0 && (
             <div>
-              <p className="text-xs text-vault-muted mb-2">Roles</p>
+              <p className="text-xs text-vault-muted mb-2">Roles {isOmnicompetent && user.user_id !== currentUserId && <span className="text-vault-gold">(click to remove)</span>}</p>
               <div className="flex flex-wrap gap-2">
                 {user.global_roles.map((role) => (
                   <span 
                     key={role} 
-                    className={`px-2 py-1 text-xs rounded ${
+                    onClick={() => isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' && handleRemoveRole(role)}
+                    className={`px-2 py-1 text-xs rounded flex items-center gap-1 ${
                       role === 'OMNICOMPETENT_OWNER' 
                         ? 'bg-purple-600/30 text-purple-300 border border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]' 
                         : 'bg-purple-500/20 text-purple-300'
+                    } ${
+                      isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER'
+                        ? 'cursor-pointer hover:bg-red-500/20 hover:text-red-300 hover:line-through'
+                        : ''
                     }`}
+                    title={isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' ? `Click to remove ${role}` : ''}
                   >
                     {role}
+                    {isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' && (
+                      <span className="text-red-400 font-bold">×</span>
+                    )}
                   </span>
                 ))}
               </div>
