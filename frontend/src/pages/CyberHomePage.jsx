@@ -1864,6 +1864,7 @@ export default function CyberHomePage() {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  </div>
                 </>
               )}
             </div>
