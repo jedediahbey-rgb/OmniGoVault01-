@@ -797,8 +797,34 @@ export default function CyberHomePage() {
   const [showInitialLoading, setShowInitialLoading] = useState(true);
   const [showLabyrinthPopup, setShowLabyrinthPopup] = useState(false);
   const [isLabyrinthHovered, setIsLabyrinthHovered] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false); // User dropdown menu state
   const featuresRef = useRef(null);
+  const userMenuRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
+  
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${API}/auth/logout`, {}, { withCredentials: true });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    setUserMenuOpen(false);
+    setIsLoggedIn(false);
+    setUserData(null);
+    window.location.href = '/';
+  };
   
   // Fetch user's subscription tier for loading screen
   const fetchUserTier = async () => {
