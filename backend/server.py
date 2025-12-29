@@ -5031,7 +5031,77 @@ async def change_account_plan(account_id: str, request: Request, user: User = De
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
     
-    # Check if plan exists
+    # Handle "Free Forever" special plan
+    if plan_id == "free_forever":
+        # Grant all entitlements for free
+        all_entitlements = [
+            {"key": "vaults.max", "value": -1, "description": "Unlimited vaults"},
+            {"key": "teamMembers.max", "value": -1, "description": "Unlimited team members"},
+            {"key": "storage.maxMB", "value": -1, "description": "Unlimited storage"},
+            {"key": "features.analytics.enabled", "value": True, "description": "Analytics access"},
+            {"key": "features.api.enabled", "value": True, "description": "API access"},
+            {"key": "features.templates.enabled", "value": True, "description": "Premium templates"},
+            {"key": "features.prioritySupport.enabled", "value": True, "description": "Priority support"},
+            {"key": "features.signing.enabled", "value": True, "description": "Document signing"},
+        ]
+        
+        # Remove existing entitlements
+        await db.entitlements.delete_many({"account_id": account_id})
+        
+        # Insert new entitlements
+        for ent in all_entitlements:
+            await db.entitlements.insert_one({
+                "entitlement_id": f"ent_{uuid.uuid4().hex[:12]}",
+                "account_id": account_id,
+                "key": ent["key"],
+                "value": ent["value"],
+                "source": "free_forever",
+                "description": ent["description"],
+                "granted_at": datetime.now(timezone.utc).isoformat(),
+                "granted_by": user.user_id
+            })
+        
+        # Update account with free_forever flag
+        await db.accounts.update_one(
+            {"account_id": account_id},
+            {"$set": {
+                "free_forever": True,
+                "plan_name": "Free Forever",
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        # Update subscription to free_forever
+        current_sub = await db.subscriptions.find_one({"account_id": account_id, "status": "active"}, {"_id": 0})
+        if current_sub:
+            await db.subscriptions.update_one(
+                {"subscription_id": current_sub["subscription_id"]},
+                {"$set": {
+                    "plan_id": "free_forever",
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_by_admin": user.user_id
+                }}
+            )
+        else:
+            await db.subscriptions.insert_one({
+                "subscription_id": f"sub_{uuid.uuid4().hex[:12]}",
+                "account_id": account_id,
+                "plan_id": "free_forever",
+                "status": "active",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_by_admin": user.user_id
+            })
+        
+        await log_admin_action(
+            user.user_id, 
+            "GRANT_FREE_FOREVER", 
+            account_id=account_id, 
+            details={"reason": reason}
+        )
+        
+        return {"success": True, "message": "Granted Free Forever access with all features"}
+    
+    # Check if plan exists (for normal plans)
     plan = await db.plans.find_one({"plan_id": plan_id}, {"_id": 0})
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -5064,11 +5134,16 @@ async def change_account_plan(account_id: str, request: Request, user: User = De
             "created_by_admin": user.user_id
         })
     
-    # Update account's cached plan name for quick lookups
+    # Remove free_forever flag if it was set
     await db.accounts.update_one(
         {"account_id": account_id},
-        {"$set": {"plan_name": plan.get("name"), "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"plan_name": plan.get("name"), "free_forever": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
+    
+    # Sync entitlements from the new plan
+    from services.entitlement_service import EntitlementService
+    entitlement_service = EntitlementService(db)
+    await entitlement_service.sync_entitlements_from_plan(account_id, plan_id)
     
     await log_admin_action(
         user.user_id, 
