@@ -1790,44 +1790,49 @@ export default function CyberHomePage() {
             </div>
             
             {/* User Avatar/Name when logged in - Right side */}
-            <div className="w-8 flex justify-end relative" ref={userMenuRef}>
+            <div className="flex items-center gap-2" ref={userMenuRef}>
               {isLoggedIn && userData && (
                 <>
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="w-8 h-8 rounded-full overflow-hidden border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
-                  >
-                    {userData.picture ? (
-                      <img 
-                        src={userData.picture} 
-                        alt={userData.name || 'User'} 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-[#C6A87C]/20 flex items-center justify-center">
-                        <span className="text-[#C6A87C] text-sm font-medium">
-                          {(userData.name || userData.email || 'U').charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                  </button>
+                  {/* Notification Bell */}
+                  <NotificationBell />
                   
-                  {/* Dropdown Menu */}
-                  <AnimatePresence>
-                    {userMenuOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-10 w-48 bg-[#0B1221] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50"
-                      >
-                        {/* User Info */}
-                        <div className="px-4 py-3 border-b border-white/10">
-                          <p className="text-sm text-white font-medium truncate">{userData.name}</p>
-                          <p className="text-xs text-white/40 truncate">{userData.email}</p>
+                  {/* User Avatar */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="w-8 h-8 rounded-full overflow-hidden border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
+                    >
+                      {userData.picture ? (
+                        <img 
+                          src={userData.picture} 
+                          alt={userData.name || 'User'} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-[#C6A87C]/20 flex items-center justify-center">
+                          <span className="text-[#C6A87C] text-sm font-medium">
+                            {(userData.name || userData.email || 'U').charAt(0).toUpperCase()}
+                          </span>
                         </div>
-                        
+                      )}
+                    </button>
+                    
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                      {userMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute right-0 top-10 w-48 bg-[#0B1221] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50"
+                        >
+                          {/* User Info */}
+                          <div className="px-4 py-3 border-b border-white/10">
+                            <p className="text-sm text-white font-medium truncate">{userData.name}</p>
+                            <p className="text-xs text-white/40 truncate">{userData.email}</p>
+                          </div>
+                          
                         {/* Menu Items */}
                         <div className="py-1">
                           <button
