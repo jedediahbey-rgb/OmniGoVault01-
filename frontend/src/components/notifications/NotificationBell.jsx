@@ -266,15 +266,18 @@ export default function NotificationBell() {
 
             {/* Footer */}
             {notifications.length > 0 && (
-              <div className="px-4 py-3 border-t border-white/10">
+              <div className="px-4 py-3 border-t border-white/10 flex items-center justify-between">
                 <button
-                  onClick={() => {
-                    navigate('/notifications');
-                    setOpen(false);
-                  }}
-                  className="w-full text-center text-sm text-vault-gold hover:text-vault-gold/80 transition-colors"
+                  onClick={markAllAsRead}
+                  className="text-sm text-white/40 hover:text-white/60 transition-colors"
                 >
-                  View all notifications
+                  Clear all
+                </button>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="text-sm text-vault-gold hover:text-vault-gold/80 transition-colors"
+                >
+                  Close
                 </button>
               </div>
             )}
