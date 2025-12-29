@@ -616,8 +616,8 @@ def is_dev_environment() -> bool:
     # In production, explicitly set AUTH_BYPASS=false
     return True
 
-# Dev bypass configuration - Owner account
-DEV_BYPASS_ENABLED = is_dev_environment()
+# Dev bypass DISABLED - require real authentication
+DEV_BYPASS_ENABLED = False
 OWNER_EMAIL = "jedediah.bey@gmail.com"
 OWNER_USER_ID = "dev_admin_user"
 OWNER_NAME = "Jedediah Bey"
