@@ -993,7 +993,7 @@ export default function LearnPage({ user }) {
       <PageHeader
         icon={BookOpen}
         title="Learn"
-        subtitle="Master equity jurisprudence through structured lessons"
+        subtitle="Enlighten the mind in equity jurisprudence through structured lessons"
         subtitleAction={<PageHelpTooltip pageKey="learn" />}
       />
 
