@@ -663,7 +663,7 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
       </div>
       
       <div className="flex items-center gap-2 sm:gap-3 ml-11 sm:ml-0 flex-wrap">
-        {(user.global_roles || []).map((role) => (
+        {displayRoles.map((role) => (
           <div key={role} className="flex items-center">
             <Badge
               variant="outline"
