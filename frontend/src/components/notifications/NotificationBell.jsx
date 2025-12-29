@@ -71,6 +71,19 @@ export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
 
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get(`${API}/api/notifications`, {
+        withCredentials: true,
+      });
+      setNotifications(response.data.notifications || []);
+      setUnreadCount(response.data.unread_count || 0);
+    } catch (error) {
+      // Silently fail - notifications are non-critical
+      console.debug('Failed to fetch notifications:', error);
+    }
+  };
+
   useEffect(() => {
     fetchNotifications();
     // Poll for new notifications every 30 seconds
@@ -89,19 +102,6 @@ export default function NotificationBell() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const fetchNotifications = async () => {
-    try {
-      const response = await axios.get(`${API}/api/notifications`, {
-        withCredentials: true,
-      });
-      setNotifications(response.data.notifications || []);
-      setUnreadCount(response.data.unread_count || 0);
-    } catch (error) {
-      // Silently fail - notifications are non-critical
-      console.debug('Failed to fetch notifications:', error);
-    }
-  };
 
   const markAsRead = async (notificationId) => {
     try {
