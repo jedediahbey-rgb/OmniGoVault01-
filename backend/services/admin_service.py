@@ -245,9 +245,15 @@ class AdminService:
             )
             raise PermissionError("Only Omnicompetent users can revoke global roles")
         
-        # Prevent self-revocation of Omnicompetent
+        # Prevent self-revocation of Omnicompetent ONLY if user doesn't have OMNICOMPETENT_OWNER
         if admin_user_id == target_user_id and role == GlobalRole.OMNICOMPETENT:
-            raise ValueError("Cannot revoke your own Omnicompetent status")
+            # Check if user has OMNICOMPETENT_OWNER - if so, allow removing OMNICOMPETENT
+            has_owner_role = await self.db.user_global_roles.find_one({
+                "user_id": admin_user_id,
+                "role": GlobalRole.OMNICOMPETENT_OWNER.value
+            })
+            if not has_owner_role:
+                raise ValueError("Cannot revoke your own Omnicompetent status")
         
         result = await self.db.user_global_roles.delete_one({
             "user_id": target_user_id,
