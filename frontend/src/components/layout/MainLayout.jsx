@@ -132,7 +132,10 @@ export default function MainLayout({ children, user, onLogout }) {
             {/* Logo - Centered - Links to landing page - MATCHES landing page exactly */}
             <Link to="/" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
               <Key className="w-5 h-5 text-[#C6A87C] shrink-0" weight="duotone" />
-              <span className="text-sm sm:text-base font-medium text-white whitespace-nowrap">Private Equity & Trusts</span>
+              <span className="text-sm sm:text-base font-medium whitespace-nowrap">
+                <span className="text-white">Private Equity</span>
+                <span className="text-[#C6A87C]/80"> & Trusts</span>
+              </span>
             </Link>
             
             {/* User Menu - Right */}
