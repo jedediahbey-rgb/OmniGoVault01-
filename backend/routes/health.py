@@ -3,7 +3,7 @@ Trust Health API Routes
 Endpoints for the Trust Health scoring system.
 """
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone
 from services.health_scanner import TrustHealthScanner, get_health_history, AuditReadinessChecker
@@ -38,14 +38,20 @@ def error_response(code, message, status_code=400, details=None):
     }
 
 
+# Import the main authentication dependency
+_get_current_user_func = None
+
+def set_auth_dependency(auth_func):
+    """Set the authentication function from server.py"""
+    global _get_current_user_func
+    _get_current_user_func = auth_func
+
+
 async def get_current_user(request: Request):
-    """Get current user from request."""
-    class User:
-        def __init__(self):
-            self.user_id = "default_user"
-            self.email = "default@example.com"
-            self.name = "Default User"
-    return User()
+    """Get current user using the main app's authentication."""
+    if _get_current_user_func is None:
+        raise HTTPException(status_code=500, detail="Authentication not configured")
+    return await _get_current_user_func(request)
 
 
 @router.get("/score")
