@@ -868,8 +868,8 @@ export default function CyberHomePage() {
       console.error('Logout error:', error);
     }
     
-    // Redirect to homepage with logout flag - the URL param handler will show the offline screen
-    window.location.href = '/?logout=true';
+    // Redirect to homepage with logout flag and tier - the URL param handler will show the offline screen
+    window.location.href = `/?logout=true&tier=${encodeURIComponent(userTier)}`;
   };
   
   // Fetch user's subscription tier for loading screen
