@@ -795,6 +795,15 @@ export default function DashboardPage({ user }) {
         current={vaultLimit.current}
         limit={vaultLimit.limit}
       />
+      
+      {/* Portfolio Style Selector */}
+      <PortfolioStyleSelector
+        open={showStyleSelector}
+        onOpenChange={setShowStyleSelector}
+        currentStyle={styleTargetPortfolio?.style_id || 'standard'}
+        onStyleSelect={updatePortfolioStyle}
+        portfolioName={styleTargetPortfolio?.name || 'Portfolio'}
+      />
     </div>
   );
 }
