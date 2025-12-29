@@ -166,7 +166,9 @@ export default function PortfolioStyleSelector({
   portfolioName = 'Portfolio'
 }) {
   const { subscription } = useBilling();
-  const userTier = subscription?.plan_name || 'Free';
+  // Check for unlimited access (OMNICOMPETENT users) or use plan name
+  const hasUnlimitedAccess = subscription?.has_unlimited_access || subscription?.is_omnicompetent;
+  const userTier = hasUnlimitedAccess ? 'Dynasty' : (subscription?.plan_name || 'Free');
   const [selectedStyle, setSelectedStyle] = useState(currentStyle);
   const [saving, setSaving] = useState(false);
   
