@@ -1875,7 +1875,11 @@ export default function CyberHomePage() {
                       variant="outline" 
                       size="sm" 
                       className="mt-4 border-[#C6A87C]/30 text-[#C6A87C] hover:bg-[#C6A87C]/10 text-xs"
-                      onClick={() => navigate('/governance')}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.location.href = '/governance';
+                      }}
                     >
                       Create First Record
                     </Button>
