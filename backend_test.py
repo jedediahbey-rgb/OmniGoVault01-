@@ -86,6 +86,34 @@ class SharedWorkspaceTester:
             self.log_test("Authentication Check", False, f"Error: {str(e)}")
             return False
 
+    def test_user_subscription(self):
+        """Test user subscription status to understand entitlements"""
+        try:
+            response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                plan_name = data.get("plan_name", "Unknown")
+                entitlements = data.get("entitlements", {})
+                e_signatures = entitlements.get("eSignatures", False)
+                
+                details += f", Plan: {plan_name}, eSignatures: {e_signatures}"
+                
+                # This is informational, not a failure
+                if not e_signatures:
+                    details += " (Note: eSignatures not enabled - this may affect signing tests)"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("User Subscription Check", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("User Subscription Check", False, f"Error: {str(e)}")
+            return False
+
     # ============ VAULT OPERATIONS TESTS ============
 
     def test_list_vaults(self):
