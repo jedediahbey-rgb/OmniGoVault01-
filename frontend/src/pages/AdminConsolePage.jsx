@@ -1165,29 +1165,41 @@ const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, isOmnicompetent,
           
           {user.global_roles && user.global_roles.length > 0 && (
             <div>
-              <p className="text-xs text-vault-muted mb-2">Roles {isOmnicompetent && user.user_id !== currentUserId && <span className="text-vault-gold">(click to remove)</span>}</p>
+              <p className="text-xs text-vault-muted mb-2">
+                Roles 
+                {isOmnicompetent && user.user_id !== currentUserId && (
+                  <span className="text-vault-gold ml-1">(tap × to remove)</span>
+                )}
+              </p>
               <div className="flex flex-wrap gap-2">
-                {user.global_roles.map((role) => (
-                  <span 
-                    key={role} 
-                    onClick={() => isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' && handleRemoveRole(role)}
-                    className={`px-2 py-1 text-xs rounded flex items-center gap-1 ${
-                      role === 'OMNICOMPETENT_OWNER' 
-                        ? 'bg-purple-600/30 text-purple-300 border border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]' 
-                        : 'bg-purple-500/20 text-purple-300'
-                    } ${
-                      isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER'
-                        ? 'cursor-pointer hover:bg-red-500/20 hover:text-red-300 hover:line-through'
-                        : ''
-                    }`}
-                    title={isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' ? `Click to remove ${role}` : ''}
-                  >
-                    {role}
-                    {isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' && (
-                      <span className="text-red-400 font-bold">×</span>
-                    )}
-                  </span>
-                ))}
+                {user.global_roles.map((role) => {
+                  const canRemove = isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER';
+                  return (
+                    <div key={role} className="flex items-center">
+                      <span 
+                        className={`px-2 py-1 text-xs rounded ${
+                          role === 'OMNICOMPETENT_OWNER' 
+                            ? 'bg-purple-600/30 text-purple-300 border border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]' 
+                            : 'bg-purple-500/20 text-purple-300'
+                        }`}
+                      >
+                        {role}
+                      </span>
+                      {canRemove && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveRole(role)}
+                          className="ml-1 p-1.5 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-300 transition-colors active:scale-95"
+                          title={`Remove ${role}`}
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
