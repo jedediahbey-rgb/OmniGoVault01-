@@ -616,13 +616,18 @@ const AccountRow = ({ account, onViewDetails, onChangePlan, isOmnicompetent }) =
 const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate, isOmnicompetent, currentUserId }) => {
   if (!user) return null;
   
+  const canRemoveRole = (role) => {
+    return isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER';
+  };
+  
   const handleRevokeClick = (e, role) => {
+    e.preventDefault();
     e.stopPropagation();
     if (role === 'OMNICOMPETENT_OWNER') {
       toast.error('Cannot revoke OMNICOMPETENT_OWNER role');
       return;
     }
-    if (isOmnicompetent && user.user_id !== currentUserId && onRevokeRole) {
+    if (canRemoveRole(role) && onRevokeRole) {
       if (window.confirm(`Remove ${role} role from ${user.email || user.name}?`)) {
         onRevokeRole(role);
       }
@@ -647,22 +652,28 @@ const UserRow = ({ user, onViewDetails, onGrantRole, onRevokeRole, onImpersonate
       
       <div className="flex items-center gap-2 sm:gap-3 ml-11 sm:ml-0 flex-wrap">
         {(user.global_roles || []).map((role) => (
-          <Badge
-            key={role}
-            variant="outline"
-            className={`${roleBadgeColors[role] || 'bg-gray-500/20 text-gray-400'} ${
-              isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' 
-                ? 'cursor-pointer hover:opacity-70 hover:line-through' 
-                : ''
-            }`}
-            onClick={(e) => handleRevokeClick(e, role)}
-            title={isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' ? `Click to remove ${role}` : ''}
-          >
-            {role}
-            {isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER' && (
-              <span className="ml-1 text-red-400">×</span>
+          <div key={role} className="flex items-center">
+            <Badge
+              variant="outline"
+              className={`${roleBadgeColors[role] || 'bg-gray-500/20 text-gray-400'} ${
+                canRemoveRole(role) ? 'pr-1' : ''
+              }`}
+            >
+              {role}
+            </Badge>
+            {canRemoveRole(role) && (
+              <button
+                type="button"
+                onClick={(e) => handleRevokeClick(e, role)}
+                className="ml-0.5 p-1 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-300 transition-colors"
+                title={`Remove ${role}`}
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             )}
-          </Badge>
+          </div>
         ))}
         
         <div className="flex gap-1 sm:gap-2 ml-auto">
