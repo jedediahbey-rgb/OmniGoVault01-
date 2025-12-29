@@ -4565,6 +4565,87 @@ async def get_dashboard_stats(user: User = Depends(get_current_user)):
     }
 
 
+# ============ NOTIFICATION ENDPOINTS ============
+
+@api_router.get("/notifications")
+async def get_notifications(
+    limit: int = 50,
+    user: User = Depends(get_current_user)
+):
+    """Get notifications for the current user"""
+    notifications = await db.notifications.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    unread_count = await db.notifications.count_documents({
+        "user_id": user.user_id,
+        "read": False
+    })
+    
+    return {
+        "notifications": notifications,
+        "unread_count": unread_count,
+        "total": len(notifications)
+    }
+
+
+@api_router.post("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, user: User = Depends(get_current_user)):
+    """Mark a notification as read"""
+    result = await db.notifications.update_one(
+        {"notification_id": notification_id, "user_id": user.user_id},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    return {"success": True}
+
+
+@api_router.post("/notifications/read-all")
+async def mark_all_notifications_read(user: User = Depends(get_current_user)):
+    """Mark all notifications as read"""
+    await db.notifications.update_many(
+        {"user_id": user.user_id, "read": False},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"success": True}
+
+
+async def create_notification(
+    user_id: str,
+    notification_type: str,
+    message: str,
+    vault_id: Optional[str] = None,
+    vault_name: Optional[str] = None,
+    document_id: Optional[str] = None,
+    document_title: Optional[str] = None,
+    actor_id: Optional[str] = None,
+    actor_name: Optional[str] = None
+):
+    """Helper function to create a notification"""
+    notification = {
+        "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "type": notification_type,
+        "message": message,
+        "vault_id": vault_id,
+        "vault_name": vault_name,
+        "document_id": document_id,
+        "document_title": document_title,
+        "actor_id": actor_id,
+        "actor_name": actor_name,
+        "read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.notifications.insert_one(notification)
+    return notification
+
+
 # ============ HEALTH CHECK ============
 
 @api_router.get("/")
