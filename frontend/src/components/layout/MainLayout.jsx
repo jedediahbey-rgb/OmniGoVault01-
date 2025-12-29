@@ -69,6 +69,10 @@ export default function MainLayout({ children, user, onLogout }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const scrollContainerRef = useRef(null);
   const userMenuRef = useRef(null);
+  
+  // Get user's subscription tier for logout screen
+  const { subscription } = useBilling();
+  const userTier = subscription?.plan_name || 'Free';
 
   // Set theme color on mount to match app background
   useEffect(() => {
