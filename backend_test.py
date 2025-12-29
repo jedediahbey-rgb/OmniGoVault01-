@@ -555,6 +555,7 @@ class SharedWorkspaceTester:
         test_sequence = [
             # Authentication
             self.test_auth_status,
+            self.test_user_subscription,
             
             # Vault Operations
             self.test_list_vaults,
