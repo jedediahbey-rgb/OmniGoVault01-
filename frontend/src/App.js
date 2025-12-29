@@ -88,7 +88,7 @@ export const useAuth = () => {
     }
   }, []);
 
-  const logout = async () => {
+  const logout = async (userTier = 'Free') => {
     try {
       await axios.post(`${API}/auth/logout`, {}, { withCredentials: true });
     } catch (error) {
@@ -96,8 +96,9 @@ export const useAuth = () => {
     }
     // Clear user state
     setUser(null);
-    // Redirect to homepage with logout=true to trigger "Matrix System Offline" screen
-    window.location.href = '/?logout=true';
+    // Redirect to homepage with logout=true and tier to trigger "Matrix System Offline" screen
+    // The tier is passed so the loading screen can show the user's actual subscription tier
+    window.location.href = `/?logout=true&tier=${encodeURIComponent(userTier)}`;
   };
   
   const clearWelcome = async () => {
