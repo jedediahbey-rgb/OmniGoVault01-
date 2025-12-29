@@ -4601,6 +4601,395 @@ app.add_middleware(
 )
 
 
+# ============ ADMIN CONSOLE ENDPOINTS ============
+
+async def get_admin_user(user: User = Depends(get_current_user)) -> User:
+    """Dependency to check if user has admin privileges"""
+    roles_doc = await db.user_global_roles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    
+    is_omnicompetent = ROLE_OMNICOMPETENT in global_roles or ROLE_OMNICOMPETENT_OWNER in global_roles
+    is_support_admin = ROLE_SUPPORT_ADMIN in global_roles
+    is_billing_admin = ROLE_BILLING_ADMIN in global_roles
+    
+    if not (is_omnicompetent or is_support_admin or is_billing_admin):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    user.global_roles = global_roles
+    user.is_omnicompetent = is_omnicompetent
+    return user
+
+
+@api_router.get("/admin/status")
+async def get_admin_status(user: User = Depends(get_current_user)):
+    """Get current user's admin status and active impersonation"""
+    roles_doc = await db.user_global_roles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    
+    is_omnicompetent = ROLE_OMNICOMPETENT in global_roles or ROLE_OMNICOMPETENT_OWNER in global_roles
+    is_support_admin = ROLE_SUPPORT_ADMIN in global_roles
+    is_billing_admin = ROLE_BILLING_ADMIN in global_roles
+    is_admin = is_omnicompetent or is_support_admin or is_billing_admin
+    
+    # Check for active impersonation
+    active_impersonation = await db.admin_impersonations.find_one({
+        "admin_user_id": user.user_id,
+        "ended_at": None
+    }, {"_id": 0})
+    
+    return {
+        "is_admin": is_admin,
+        "is_omnicompetent": is_omnicompetent,
+        "is_support_admin": is_support_admin,
+        "is_billing_admin": is_billing_admin,
+        "global_roles": global_roles,
+        "user_id": user.user_id,
+        "active_impersonation": active_impersonation
+    }
+
+
+@api_router.get("/admin/accounts")
+async def get_admin_accounts(
+    search: Optional[str] = None,
+    limit: int = 50,
+    user: User = Depends(get_admin_user)
+):
+    """Get all accounts for admin console"""
+    query = {}
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"account_id": {"$regex": search, "$options": "i"}}
+        ]
+    
+    accounts = await db.accounts.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    
+    # Enrich with plan info and member count
+    enriched = []
+    for account in accounts:
+        # Get subscription and plan
+        subscription = await db.subscriptions.find_one({
+            "account_id": account["account_id"],
+            "status": "active"
+        }, {"_id": 0})
+        
+        plan_name = "Free"
+        if subscription:
+            plan = await db.plans.find_one({"plan_id": subscription.get("plan_id")}, {"_id": 0})
+            plan_name = plan.get("name", "Free") if plan else "Free"
+        
+        # Get member count
+        member_count = await db.account_members.count_documents({"account_id": account["account_id"]})
+        
+        enriched.append({
+            **account,
+            "plan_name": plan_name,
+            "member_count": member_count
+        })
+    
+    return {"accounts": enriched}
+
+
+@api_router.get("/admin/users")
+async def get_admin_users(
+    search: Optional[str] = None,
+    limit: int = 50,
+    user: User = Depends(get_admin_user)
+):
+    """Get all users for admin console"""
+    query = {}
+    if search:
+        query["$or"] = [
+            {"email": {"$regex": search, "$options": "i"}},
+            {"name": {"$regex": search, "$options": "i"}},
+            {"user_id": {"$regex": search, "$options": "i"}}
+        ]
+    
+    users = await db.users.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    
+    # Enrich with roles
+    enriched = []
+    for u in users:
+        roles_doc = await db.user_global_roles.find({"user_id": u["user_id"]}, {"_id": 0}).to_list(10)
+        global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+        
+        enriched.append({
+            **u,
+            "global_roles": global_roles,
+            "is_omnicompetent": ROLE_OMNICOMPETENT in global_roles or ROLE_OMNICOMPETENT_OWNER in global_roles
+        })
+    
+    return {"users": enriched}
+
+
+@api_router.get("/admin/audit-logs")
+async def get_admin_audit_logs(
+    limit: int = 100,
+    user: User = Depends(get_admin_user)
+):
+    """Get admin audit logs (omnicompetent only)"""
+    roles_doc = await db.user_global_roles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    
+    if ROLE_OMNICOMPETENT not in global_roles and ROLE_OMNICOMPETENT_OWNER not in global_roles:
+        raise HTTPException(status_code=403, detail="Omnicompetent access required")
+    
+    logs = await db.admin_audit_logs.find({}, {"_id": 0}).sort("timestamp", -1).limit(limit).to_list(limit)
+    return {"logs": logs}
+
+
+async def log_admin_action(
+    admin_user_id: str,
+    action_type: str,
+    target_user_id: Optional[str] = None,
+    account_id: Optional[str] = None,
+    details: Optional[Dict] = None,
+    success: bool = True
+):
+    """Log an admin action for audit trail"""
+    await db.admin_audit_logs.insert_one({
+        "id": str(uuid.uuid4()),
+        "admin_user_id": admin_user_id,
+        "action_type": action_type,
+        "target_user_id": target_user_id,
+        "account_id": account_id,
+        "details": details or {},
+        "success": success,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
+
+
+@api_router.post("/admin/roles/grant")
+async def grant_admin_role(request: Request, user: User = Depends(get_admin_user)):
+    """Grant a global role to a user (omnicompetent only)"""
+    roles_doc = await db.user_global_roles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    
+    if ROLE_OMNICOMPETENT not in global_roles and ROLE_OMNICOMPETENT_OWNER not in global_roles:
+        raise HTTPException(status_code=403, detail="Omnicompetent access required")
+    
+    body = await request.json()
+    target_user_id = body.get("user_id")
+    role = body.get("role")
+    notes = body.get("notes", "")
+    
+    if not target_user_id or not role:
+        raise HTTPException(status_code=400, detail="user_id and role are required")
+    
+    # Validate role
+    valid_roles = [ROLE_OMNICOMPETENT, ROLE_SUPPORT_ADMIN, ROLE_BILLING_ADMIN]
+    if role not in valid_roles:
+        raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {valid_roles}")
+    
+    # Can't grant OMNICOMPETENT_OWNER
+    if role == ROLE_OMNICOMPETENT_OWNER:
+        raise HTTPException(status_code=403, detail="Cannot grant OMNICOMPETENT_OWNER role")
+    
+    # Check if user exists
+    target_user = await db.users.find_one({"user_id": target_user_id}, {"_id": 0})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if already has role
+    existing = await db.user_global_roles.find_one({"user_id": target_user_id, "role": role})
+    if existing:
+        raise HTTPException(status_code=400, detail="User already has this role")
+    
+    # Grant role
+    await db.user_global_roles.insert_one({
+        "user_id": target_user_id,
+        "role": role,
+        "granted_by": user.user_id,
+        "granted_at": datetime.now(timezone.utc).isoformat(),
+        "notes": notes
+    })
+    
+    await log_admin_action(user.user_id, "GRANT_GLOBAL_ROLE", target_user_id, details={"role": role, "notes": notes})
+    
+    return {"success": True, "message": f"Granted {role} to user"}
+
+
+@api_router.post("/admin/roles/revoke")
+async def revoke_admin_role(request: Request, user: User = Depends(get_admin_user)):
+    """Revoke a global role from a user (omnicompetent only)"""
+    roles_doc = await db.user_global_roles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    
+    if ROLE_OMNICOMPETENT not in global_roles and ROLE_OMNICOMPETENT_OWNER not in global_roles:
+        raise HTTPException(status_code=403, detail="Omnicompetent access required")
+    
+    body = await request.json()
+    target_user_id = body.get("user_id")
+    role = body.get("role")
+    reason = body.get("reason", "")
+    
+    if not target_user_id or not role:
+        raise HTTPException(status_code=400, detail="user_id and role are required")
+    
+    # Can't revoke OMNICOMPETENT_OWNER
+    if role == ROLE_OMNICOMPETENT_OWNER:
+        raise HTTPException(status_code=403, detail="Cannot revoke OMNICOMPETENT_OWNER role")
+    
+    # Revoke role
+    result = await db.user_global_roles.delete_one({"user_id": target_user_id, "role": role})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Role not found for user")
+    
+    await log_admin_action(user.user_id, "REVOKE_GLOBAL_ROLE", target_user_id, details={"role": role, "reason": reason})
+    
+    return {"success": True, "message": f"Revoked {role} from user"}
+
+
+@api_router.post("/admin/accounts/{account_id}/change-plan")
+async def change_account_plan(account_id: str, request: Request, user: User = Depends(get_admin_user)):
+    """Change an account's subscription plan (omnicompetent only)"""
+    roles_doc = await db.user_global_roles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    
+    if ROLE_OMNICOMPETENT not in global_roles and ROLE_OMNICOMPETENT_OWNER not in global_roles:
+        raise HTTPException(status_code=403, detail="Omnicompetent access required")
+    
+    body = await request.json()
+    plan_id = body.get("plan_id")
+    reason = body.get("reason", "")
+    
+    if not plan_id:
+        raise HTTPException(status_code=400, detail="plan_id is required")
+    
+    # Check if account exists
+    account = await db.accounts.find_one({"account_id": account_id}, {"_id": 0})
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+    
+    # Check if plan exists
+    plan = await db.plans.find_one({"plan_id": plan_id}, {"_id": 0})
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    
+    # Get current subscription
+    current_sub = await db.subscriptions.find_one({
+        "account_id": account_id,
+        "status": "active"
+    }, {"_id": 0})
+    
+    old_plan_id = current_sub.get("plan_id") if current_sub else None
+    
+    # Update or create subscription
+    if current_sub:
+        await db.subscriptions.update_one(
+            {"subscription_id": current_sub["subscription_id"]},
+            {"$set": {
+                "plan_id": plan_id,
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_by_admin": user.user_id
+            }}
+        )
+    else:
+        await db.subscriptions.insert_one({
+            "subscription_id": f"sub_{uuid.uuid4().hex[:12]}",
+            "account_id": account_id,
+            "plan_id": plan_id,
+            "status": "active",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by_admin": user.user_id
+        })
+    
+    # Update account's cached plan name for quick lookups
+    await db.accounts.update_one(
+        {"account_id": account_id},
+        {"$set": {"plan_name": plan.get("name"), "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    await log_admin_action(
+        user.user_id, 
+        "CHANGE_PLAN", 
+        account_id=account_id, 
+        details={"old_plan_id": old_plan_id, "new_plan_id": plan_id, "reason": reason}
+    )
+    
+    return {"success": True, "message": f"Changed plan to {plan.get('name')}"}
+
+
+@api_router.post("/admin/impersonate/start")
+async def start_impersonation(request: Request, user: User = Depends(get_admin_user)):
+    """Start impersonating another user (omnicompetent or support admin)"""
+    roles_doc = await db.user_global_roles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    
+    is_omnicompetent = ROLE_OMNICOMPETENT in global_roles or ROLE_OMNICOMPETENT_OWNER in global_roles
+    is_support_admin = ROLE_SUPPORT_ADMIN in global_roles
+    
+    if not (is_omnicompetent or is_support_admin):
+        raise HTTPException(status_code=403, detail="Impersonation requires omnicompetent or support admin access")
+    
+    body = await request.json()
+    target_user_id = body.get("target_user_id")
+    reason = body.get("reason", "")
+    
+    if not target_user_id:
+        raise HTTPException(status_code=400, detail="target_user_id is required")
+    
+    if not reason.strip():
+        raise HTTPException(status_code=400, detail="Reason is required for impersonation")
+    
+    # Check if target user exists
+    target_user = await db.users.find_one({"user_id": target_user_id}, {"_id": 0})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="Target user not found")
+    
+    # Can't impersonate yourself
+    if target_user_id == user.user_id:
+        raise HTTPException(status_code=400, detail="Cannot impersonate yourself")
+    
+    # Can't impersonate OMNICOMPETENT_OWNER
+    target_roles = await db.user_global_roles.find({"user_id": target_user_id}, {"_id": 0}).to_list(10)
+    target_global_roles = [r["role"] for r in target_roles] if target_roles else []
+    
+    if ROLE_OMNICOMPETENT_OWNER in target_global_roles:
+        raise HTTPException(status_code=403, detail="Cannot impersonate the platform owner")
+    
+    # End any existing impersonation
+    await db.admin_impersonations.update_many(
+        {"admin_user_id": user.user_id, "ended_at": None},
+        {"$set": {"ended_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Start new impersonation
+    impersonation_id = f"imp_{uuid.uuid4().hex[:12]}"
+    await db.admin_impersonations.insert_one({
+        "impersonation_id": impersonation_id,
+        "admin_user_id": user.user_id,
+        "target_user_id": target_user_id,
+        "reason": reason,
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "ended_at": None
+    })
+    
+    await log_admin_action(
+        user.user_id, 
+        "IMPERSONATION_START", 
+        target_user_id, 
+        details={"reason": reason, "impersonation_id": impersonation_id}
+    )
+    
+    return {"success": True, "impersonation_id": impersonation_id, "message": f"Now viewing as {target_user.get('email', target_user_id)}"}
+
+
+@api_router.post("/admin/impersonate/stop")
+async def stop_impersonation(user: User = Depends(get_admin_user)):
+    """Stop current impersonation session"""
+    result = await db.admin_impersonations.update_many(
+        {"admin_user_id": user.user_id, "ended_at": None},
+        {"$set": {"ended_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.modified_count > 0:
+        await log_admin_action(user.user_id, "IMPERSONATION_END")
+    
+    return {"success": True, "message": "Impersonation ended"}
+
+
 @app.on_event("startup")
 async def startup_init():
     """Initialize services on startup"""
