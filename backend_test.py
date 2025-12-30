@@ -91,94 +91,376 @@ class V2TrustHealthTester:
             self.log_test("Authentication Check", False, f"Error: {str(e)}")
             return False
 
-    # ============ DYNASTY PLAN TIER FIX TEST ============
+    # ============ V2 TRUST HEALTH TESTS ============
 
-    def test_billing_subscription_dynasty_tier(self):
-        """Test GET /api/billing/subscription - Dynasty Plan Tier Fix for OMNICOMPETENT users"""
+    def test_get_v2_ruleset(self):
+        """Test GET /api/health/v2/ruleset - Fetch V2 ruleset configuration"""
         try:
-            response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
+            response = self.session.get(f"{self.base_url}/health/v2/ruleset", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                plan_name = data.get("plan_name")
-                plan_tier = data.get("plan_tier")
-                is_omnicompetent = data.get("is_omnicompetent", False)
-                global_roles = data.get("global_roles", [])
                 
-                details += f", Plan: {plan_name}, Tier: {plan_tier}, Omnicompetent: {is_omnicompetent}"
-                
-                # Check if user has OMNICOMPETENT role
-                has_omnicompetent_role = any(role in ["OMNICOMPETENT", "OMNICOMPETENT_OWNER"] for role in global_roles)
-                
-                if has_omnicompetent_role:
-                    # For OMNICOMPETENT users, verify Dynasty plan with tier 3
-                    if plan_name == "Dynasty" and plan_tier == 3 and is_omnicompetent:
-                        details += " ✅ OMNICOMPETENT user correctly has Dynasty plan with tier 3"
-                    else:
-                        success = False
-                        if plan_name != "Dynasty":
-                            details += f" ❌ Expected Dynasty plan for OMNICOMPETENT user, got {plan_name}"
-                        if plan_tier != 3:
-                            details += f" ❌ Expected tier 3 for Dynasty plan, got {plan_tier}"
-                        if not is_omnicompetent:
-                            details += f" ❌ Expected is_omnicompetent=true, got {is_omnicompetent}"
-                else:
-                    details += " ℹ️ User does not have OMNICOMPETENT role, testing regular user flow"
-                    # For regular users, just verify the response structure
-                    if plan_name and isinstance(plan_tier, int):
-                        details += f" ✅ Regular user has valid plan structure"
-                    else:
-                        success = False
-                        details += f" ❌ Invalid plan structure for regular user"
-                
-                # Verify required fields are present
-                required_fields = ["account_id", "plan_name", "plan_tier"]
-                missing_fields = [field for field in required_fields if field not in data]
-                if missing_fields:
-                    success = False
-                    details += f", Missing required fields: {missing_fields}"
+                # Check response structure
+                if data.get("ok") and data.get("data"):
+                    ruleset = data["data"]
+                    details += ", Valid response structure"
                     
+                    # Check category weights
+                    weights = ruleset.get("category_weights", {})
+                    if weights:
+                        total_weight = sum(weights.values())
+                        details += f", Category weights sum: {total_weight}%"
+                        
+                        # Verify weights sum to 100%
+                        if abs(total_weight - 100) <= 0.1:
+                            details += " ✅ Weights sum to 100%"
+                        else:
+                            success = False
+                            details += f" ❌ Weights should sum to 100%, got {total_weight}%"
+                        
+                        # Check expected categories
+                        expected_cats = self.expected_v2_features["category_weights"]
+                        missing_cats = [cat for cat in expected_cats if cat not in weights]
+                        if missing_cats:
+                            success = False
+                            details += f", Missing categories: {missing_cats}"
+                        else:
+                            details += f", All {len(expected_cats)} categories present"
+                    else:
+                        success = False
+                        details += ", Missing category_weights"
+                    
+                    # Check severity multipliers
+                    multipliers = ruleset.get("severity_multipliers", {})
+                    if multipliers:
+                        expected_severities = self.expected_v2_features["severity_multipliers"]
+                        missing_sev = [sev for sev in expected_severities if sev not in multipliers]
+                        if missing_sev:
+                            success = False
+                            details += f", Missing severity multipliers: {missing_sev}"
+                        else:
+                            details += f", All {len(expected_severities)} severity multipliers present"
+                    else:
+                        success = False
+                        details += ", Missing severity_multipliers"
+                    
+                    # Check blocking caps
+                    caps = ruleset.get("blocking_caps", {})
+                    if caps:
+                        expected_caps = self.expected_v2_features["blocking_caps"]
+                        missing_caps = [cap for cap in expected_caps if cap not in caps]
+                        if missing_caps:
+                            success = False
+                            details += f", Missing blocking caps: {missing_caps}"
+                        else:
+                            details += f", All {len(expected_caps)} blocking caps present"
+                    
+                    # Check readiness mode
+                    mode = ruleset.get("readiness_mode", "")
+                    if mode in self.expected_v2_features["readiness_modes"]:
+                        details += f", Readiness mode: {mode}"
+                    else:
+                        success = False
+                        details += f", Invalid readiness mode: {mode}"
+                        
+                else:
+                    success = False
+                    details += ", Invalid response structure"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("Billing API - Dynasty Plan Tier Fix", success, details)
+            self.log_test("GET /api/health/v2/ruleset", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Billing API - Dynasty Plan Tier Fix", False, f"Error: {str(e)}")
+            self.log_test("GET /api/health/v2/ruleset", False, f"Error: {str(e)}")
             return False
 
-    def test_user_subscription_check(self):
-        """Test user subscription details for OMNICOMPETENT role verification"""
+    def test_put_v2_ruleset(self):
+        """Test PUT /api/health/v2/ruleset - Save custom V2 ruleset"""
         try:
-            response = self.session.get(f"{self.base_url}/auth/me", timeout=10)
+            # Test payload with valid weights
+            payload = {
+                "category_weights": {
+                    "governance_hygiene": 30,
+                    "financial_integrity": 25,
+                    "compliance_recordkeeping": 15,
+                    "risk_exposure": 10,
+                    "data_integrity": 20
+                },
+                "readiness_mode": "audit"
+            }
+            
+            response = self.session.put(f"{self.base_url}/health/v2/ruleset", json=payload, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                email = data.get("email")
-                user_id = data.get("user_id")
                 
-                details += f", User: {email}"
-                
-                # Verify this is the expected test user
-                if email == "jedediah.bey@gmail.com":
-                    details += " ✅ Correct test user authenticated"
+                if data.get("ok") and data.get("data"):
+                    saved_config = data["data"]
+                    details += ", Configuration saved successfully"
+                    
+                    # Verify saved weights
+                    saved_weights = saved_config.get("category_weights", {})
+                    if saved_weights == payload["category_weights"]:
+                        details += ", Weights saved correctly"
+                    else:
+                        success = False
+                        details += ", Weights not saved correctly"
+                    
+                    # Verify saved mode
+                    saved_mode = saved_config.get("readiness_mode")
+                    if saved_mode == payload["readiness_mode"]:
+                        details += f", Mode saved correctly: {saved_mode}"
+                    else:
+                        success = False
+                        details += f", Mode not saved correctly: expected {payload['readiness_mode']}, got {saved_mode}"
+                        
                 else:
                     success = False
-                    details += f" ❌ Expected jedediah.bey@gmail.com, got {email}"
-                    
+                    details += ", Invalid response structure"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("User Subscription Check", success, details)
+            self.log_test("PUT /api/health/v2/ruleset (Valid)", success, details)
             return success
             
         except Exception as e:
-            self.log_test("User Subscription Check", False, f"Error: {str(e)}")
+            self.log_test("PUT /api/health/v2/ruleset (Valid)", False, f"Error: {str(e)}")
+            return False
+
+    def test_put_v2_ruleset_invalid_weights(self):
+        """Test PUT /api/health/v2/ruleset with invalid weights (should return error)"""
+        try:
+            # Test payload with weights that don't sum to 100
+            payload = {
+                "category_weights": {
+                    "governance_hygiene": 30,
+                    "financial_integrity": 25,
+                    "compliance_recordkeeping": 15,
+                    "risk_exposure": 10,
+                    "data_integrity": 10  # Total = 90%, should fail
+                }
+            }
+            
+            response = self.session.put(f"{self.base_url}/health/v2/ruleset", json=payload, timeout=10)
+            success = response.status_code == 400  # Should return error
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("ok") == False and "weight" in data.get("error", {}).get("message", "").lower():
+                    details += ", Correctly rejected invalid weights"
+                else:
+                    success = False
+                    details += ", Error response structure incorrect"
+            else:
+                details += f", Expected 400 error, got {response.status_code}"
+                if response.status_code == 200:
+                    details += " (Should have rejected invalid weights)"
+            
+            self.log_test("PUT /api/health/v2/ruleset (Invalid Weights)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("PUT /api/health/v2/ruleset (Invalid Weights)", False, f"Error: {str(e)}")
+            return False
+
+    def test_post_v2_ruleset_reset(self):
+        """Test POST /api/health/v2/ruleset/reset - Reset to defaults"""
+        try:
+            response = self.session.post(f"{self.base_url}/health/v2/ruleset/reset", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if data.get("ok") and data.get("data"):
+                    reset_config = data["data"]
+                    details += ", Reset to defaults successful"
+                    
+                    # Verify default weights are restored
+                    weights = reset_config.get("category_weights", {})
+                    if weights:
+                        total_weight = sum(weights.values())
+                        if abs(total_weight - 100) <= 0.1:
+                            details += f", Default weights sum to 100%"
+                        else:
+                            success = False
+                            details += f", Default weights don't sum to 100%: {total_weight}%"
+                    else:
+                        success = False
+                        details += ", Missing category_weights in reset"
+                    
+                    # Check that all expected fields are present
+                    required_fields = ["category_weights", "severity_multipliers", "blocking_caps", "readiness_mode"]
+                    missing_fields = [field for field in required_fields if field not in reset_config]
+                    if missing_fields:
+                        success = False
+                        details += f", Missing fields after reset: {missing_fields}"
+                    else:
+                        details += ", All required fields present after reset"
+                        
+                else:
+                    success = False
+                    details += ", Invalid response structure"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/health/v2/ruleset/reset", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/health/v2/ruleset/reset", False, f"Error: {str(e)}")
+            return False
+
+    def test_get_health_score_v2(self):
+        """Test GET /api/health/score?version=v2 - Run V2 health scan"""
+        try:
+            response = self.session.get(f"{self.base_url}/health/score?version=v2", timeout=30)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if data.get("ok") and data.get("data"):
+                    scan_result = data["data"]
+                    details += ", V2 health scan completed"
+                    
+                    # Check V2-specific fields
+                    version = scan_result.get("version")
+                    if version == "v2":
+                        details += ", Correct version: v2"
+                    else:
+                        success = False
+                        details += f", Expected version v2, got {version}"
+                    
+                    # Check score structure
+                    final_score = scan_result.get("final_score")
+                    raw_score = scan_result.get("raw_score")
+                    if isinstance(final_score, (int, float)) and isinstance(raw_score, (int, float)):
+                        details += f", Scores: final={final_score}, raw={raw_score}"
+                        
+                        # Check if score is within valid range
+                        if 0 <= final_score <= 100 and 0 <= raw_score <= 100:
+                            details += ", Scores in valid range (0-100)"
+                        else:
+                            success = False
+                            details += ", Scores outside valid range"
+                    else:
+                        success = False
+                        details += ", Invalid score format"
+                    
+                    # Check V2 features
+                    blockers = scan_result.get("blockers_triggered", [])
+                    details += f", Blockers triggered: {len(blockers)}"
+                    
+                    findings = scan_result.get("findings", [])
+                    details += f", Findings: {len(findings)}"
+                    
+                    next_actions = scan_result.get("next_actions", [])
+                    if next_actions:
+                        # Check for V2 estimated_gain feature
+                        first_action = next_actions[0]
+                        if "estimated_gain" in first_action:
+                            details += f", Next actions with estimated gains: {len(next_actions)}"
+                        else:
+                            success = False
+                            details += ", Next actions missing estimated_gain (V2 feature)"
+                    
+                    # Check category scores
+                    category_scores = scan_result.get("category_scores", {})
+                    expected_categories = self.expected_v2_features["category_weights"]
+                    missing_cats = [cat for cat in expected_categories if cat not in category_scores]
+                    if missing_cats:
+                        success = False
+                        details += f", Missing category scores: {missing_cats}"
+                    else:
+                        details += f", All {len(expected_categories)} category scores present"
+                        
+                else:
+                    success = False
+                    details += ", Invalid response structure"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/health/score?version=v2", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/health/score?version=v2", False, f"Error: {str(e)}")
+            return False
+
+    def test_post_health_scan_v2(self):
+        """Test POST /api/health/scan?version=v2 - Force fresh V2 scan"""
+        try:
+            response = self.session.post(f"{self.base_url}/health/scan?version=v2", timeout=30)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if data.get("ok") and data.get("data"):
+                    scan_result = data["data"]
+                    details += ", Fresh V2 scan completed"
+                    
+                    # Verify it's a V2 scan
+                    version = scan_result.get("version")
+                    if version == "v2":
+                        details += ", Confirmed V2 scan"
+                    else:
+                        success = False
+                        details += f", Expected V2 scan, got {version}"
+                    
+                    # Check scan metadata
+                    scan_id = scan_result.get("scan_id")
+                    scanned_at = scan_result.get("scanned_at")
+                    if scan_id and scanned_at:
+                        details += f", Scan ID: {scan_id[:12]}..., Time: {scanned_at[:19]}"
+                    else:
+                        success = False
+                        details += ", Missing scan metadata"
+                    
+                    # Check V2-specific structure
+                    v2_fields = ["final_score", "raw_score", "category_penalties", "blockers_triggered", "readiness"]
+                    missing_v2_fields = [field for field in v2_fields if field not in scan_result]
+                    if missing_v2_fields:
+                        success = False
+                        details += f", Missing V2 fields: {missing_v2_fields}"
+                    else:
+                        details += ", All V2-specific fields present"
+                    
+                    # Check findings structure
+                    findings = scan_result.get("findings", [])
+                    if findings:
+                        first_finding = findings[0]
+                        v2_finding_fields = ["severity", "penalty_applied", "max_penalty", "estimated_gain"]
+                        missing_finding_fields = [field for field in v2_finding_fields if field not in first_finding]
+                        if missing_finding_fields:
+                            success = False
+                            details += f", Missing V2 finding fields: {missing_finding_fields}"
+                        else:
+                            details += ", V2 finding structure correct"
+                            
+                else:
+                    success = False
+                    details += ", Invalid response structure"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/health/scan?version=v2", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/health/scan?version=v2", False, f"Error: {str(e)}")
             return False
 
     # ============ TEST RUNNER ============
