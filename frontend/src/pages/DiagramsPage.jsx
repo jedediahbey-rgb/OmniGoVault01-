@@ -543,15 +543,15 @@ export default function DiagramsPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="h-[calc(100dvh-3.5rem)] sm:h-auto p-3 sm:p-8 overflow-hidden sm:overflow-auto">
       <PageHeader
         icon={GitBranch}
         title="Interactive Diagrams"
-        subtitle="Visualize trust relationships, equity concepts, and legal structures"
+        subtitle="Visualize trust relationships and legal structures"
         subtitleAction={<PageHelpTooltip pageKey="diagrams" />}
       />
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
         {diagrams.map((diagram) => (
           <motion.div
             key={diagram.id}
@@ -562,14 +562,14 @@ export default function DiagramsPage() {
               interactive
               glow
               onClick={() => loadDiagram(diagram)}
-              className="h-full group"
+              className="h-full group !p-3 sm:!p-6"
             >
-              <IconBadge icon={diagram.icon} size="lg" variant="gold" className="mb-4" />
-              <h3 className="text-xl font-heading text-white mb-2">{diagram.title}</h3>
-              <p className="text-white/50 text-sm mb-4">{diagram.description}</p>
-              <div className="flex items-center text-vault-gold text-sm">
-                <span>Explore Diagram</span>
-                <ArrowRight className="w-4 h-4 ml-2" weight="duotone" />
+              <IconBadge icon={diagram.icon} size="md" variant="gold" className="mb-2 sm:mb-4" />
+              <h3 className="text-base sm:text-xl font-heading text-white mb-1 sm:mb-2">{diagram.title}</h3>
+              <p className="text-white/50 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-2">{diagram.description}</p>
+              <div className="flex items-center text-vault-gold text-xs sm:text-sm">
+                <span>Explore</span>
+                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" weight="duotone" />
               </div>
             </GlassCard>
           </motion.div>
