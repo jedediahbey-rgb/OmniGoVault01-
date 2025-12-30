@@ -403,7 +403,7 @@ export default function VaultPage({ user, initialView }) {
                 <X className="w-5 h-5" weight="duotone" />
               </button>
             </div>
-            <SidebarContent />
+            <VaultSidebarContent {...sidebarProps} />
           </motion.div>
         )}
       </AnimatePresence>
