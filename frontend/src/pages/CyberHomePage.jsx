@@ -53,6 +53,9 @@ import {
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import NotificationBell from '../components/notifications/NotificationBell';
+import StyledPortrait from '../components/portrait/StyledPortrait';
+import PortraitStyleSelector from '../components/portrait/PortraitStyleSelector';
+import { PaintBrush } from '@phosphor-icons/react';
 
 // Matrix Rain Canvas Component for Initial Loading
 const MatrixRain = () => {
