@@ -806,6 +806,8 @@ export default function CyberHomePage() {
   const [isLoggingOut, setIsLoggingOut] = useState(false); // Track logout state for "Matrix System Offline"
   const [isAuthSuccess, setIsAuthSuccess] = useState(false); // Track successful auth from Google for loading screen
   const [logoutTier, setLogoutTier] = useState('Free'); // Store the tier of the user who just logged out
+  const [showPortraitSelector, setShowPortraitSelector] = useState(false); // Portrait style selector dialog
+  const [userPlanTier, setUserPlanTier] = useState(0); // Numeric plan tier for portrait style gating
   const featuresRef = useRef(null);
   const userMenuRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, margin: '-100px' });
