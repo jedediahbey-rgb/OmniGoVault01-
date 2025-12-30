@@ -487,8 +487,12 @@ export default function DiagramsPage() {
             />
             <MiniMap 
               style={{ 
-                backgroundColor: 'rgba(11, 18, 33, 0.8)',
-                border: '1px solid rgba(255,255,255,0.1)'
+                backgroundColor: 'rgba(11, 18, 33, 0.95)',
+                border: '1px solid rgba(198, 168, 124, 0.3)',
+                borderRadius: '6px',
+                width: 100,
+                height: 70,
+                margin: '12px',
               }}
               nodeColor={(node) => {
                 if (node.style?.borderColor?.includes('C6A87C')) return '#C6A87C';
@@ -497,6 +501,9 @@ export default function DiagramsPage() {
                 if (node.style?.borderColor?.includes('A855F7')) return '#A855F7';
                 return '#EF4444';
               }}
+              position="top-right"
+              pannable={false}
+              zoomable={false}
             />
             <Background color="rgba(255,255,255,0.05)" gap={20} />
           </ReactFlow>
