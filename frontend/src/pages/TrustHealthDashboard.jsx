@@ -280,11 +280,18 @@ export default function TrustHealthDashboard() {
     }
   };
 
-  const score = healthData?.overall_score ?? 0;
+  const score = healthData?.final_score ?? healthData?.overall_score ?? 0;
   const rawScore = healthData?.raw_score ?? 0;
-  const blockingConditions = healthData?.blocking_conditions || [];
-  const findingsCount = healthData?.findings_count || {};
+  // Support both V1 (blocking_conditions) and V2 (blockers_triggered) formats
+  const blockersTriggered = healthData?.blockers_triggered || [];
+  const blockingConditions = healthData?.blocking_conditions || blockersTriggered.map(b => b.name);
+  const isCapped = healthData?.is_capped || blockingConditions.length > 0;
+  // Support both V1 (findings_count) and V2 (findings_summary) formats
+  const findingsCount = healthData?.findings_summary || healthData?.findings_count || {};
+  // V2 next_actions (prioritized)
+  const nextActions = healthData?.next_actions || [];
   const stats = healthData?.stats || {};
+  const version = healthData?.version || 'v1';
 
   if (loading) {
     return (
