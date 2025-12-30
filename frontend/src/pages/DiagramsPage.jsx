@@ -569,50 +569,37 @@ function DiagramsContent() {
     setReactFlowInstance(null); // Reset instance for new diagram
   };
 
-  // Diagram view with "Luxury Scroll" layout
+  // Diagram view with "Luxury Scroll" layout - uses MainLayout header
   if (selectedDiagram) {
     return (
-      <div 
-        className="flex flex-col overflow-x-hidden"
-        style={{
-          minHeight: '100dvh',
-          paddingTop: 'env(safe-area-inset-top, 0px)',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        }}
-      >
-        {/* Sticky Header */}
-        <header className="sticky top-0 z-50 bg-vault-dark/95 backdrop-blur-sm border-b border-white/5">
-          <div className="flex items-center justify-between p-2 sm:p-4 gap-2">
-            <button
-              onClick={() => setSelectedDiagram(null)}
-              className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base shrink-0"
+      <div className="h-full flex flex-col overflow-hidden">
+        {/* Page Controls - matches vault page inner content style */}
+        <div className="flex items-center justify-between p-3 sm:p-4 pb-2 gap-2 shrink-0">
+          <button
+            onClick={() => setSelectedDiagram(null)}
+            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base shrink-0"
+          >
+            ← Back
+          </button>
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <h2 className="text-sm sm:text-xl font-heading text-white truncate">{selectedDiagram.title}</h2>
+            <Button
+              onClick={() => setShowInfo(!showInfo)}
+              variant="outline"
+              size="sm"
+              className="btn-secondary h-7 sm:h-9 text-xs sm:text-sm px-2 sm:px-3 shrink-0"
             >
-              ← Back
-            </button>
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-              <h2 className="text-sm sm:text-xl font-heading text-white truncate">{selectedDiagram.title}</h2>
-              <Button
-                onClick={() => setShowInfo(!showInfo)}
-                variant="outline"
-                size="sm"
-                className="btn-secondary h-7 sm:h-9 text-xs sm:text-sm px-2 sm:px-3 shrink-0"
-              >
-                <Info className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" weight="duotone" />
-                <span className="hidden sm:inline">{showInfo ? 'Hide' : 'Show'} Info</span>
-              </Button>
-            </div>
+              <Info className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" weight="duotone" />
+              <span className="hidden sm:inline">{showInfo ? 'Hide' : 'Show'} Info</span>
+            </Button>
           </div>
-        </header>
+        </div>
 
-        {/* Scrollable Body */}
-        <div className="flex-1 p-2 sm:p-4 overflow-y-auto">
-          {/* ReactFlow Framed Viewport Section */}
+        {/* ReactFlow Framed Viewport Section - Luxury Scroll */}
+        <div className="flex-1 px-3 sm:px-4 pb-3 sm:pb-4 min-h-0">
           <div 
             ref={reactFlowWrapper} 
-            className="relative rounded-xl overflow-hidden border border-white/10 shadow-lg"
-            style={{ 
-              height: 'clamp(420px, 70dvh, 780px)',
-            }}
+            className="h-full relative rounded-xl overflow-hidden border border-white/10 shadow-lg"
           >
             <ReactFlow
               nodes={nodes}
@@ -692,30 +679,17 @@ function DiagramsContent() {
     );
   }
 
-  // Cards grid view with "Luxury Scroll" layout
+  // Cards grid view - uses MainLayout header
   return (
-    <div 
-      className="flex flex-col overflow-x-hidden"
-      style={{
-        minHeight: '100dvh',
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-      }}
-    >
-      {/* Sticky Header for card view */}
-      <header className="sticky top-0 z-50 bg-vault-dark/95 backdrop-blur-sm">
-        <div className="p-3 sm:p-8 pb-0">
-          <PageHeader
-            icon={GitBranch}
-            title="Interactive Diagrams"
-            subtitle="Visualize trust relationships and legal structures"
-            subtitleAction={<PageHelpTooltip pageKey="diagrams" />}
-          />
-        </div>
-      </header>
+    <div className="h-full overflow-y-auto">
+      <div className="p-3 sm:p-8">
+        <PageHeader
+          icon={GitBranch}
+          title="Interactive Diagrams"
+          subtitle="Visualize trust relationships and legal structures"
+          subtitleAction={<PageHelpTooltip pageKey="diagrams" />}
+        />
 
-      {/* Scrollable Body */}
-      <div className="flex-1 p-3 sm:p-8 pt-3 overflow-y-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {diagrams.map((diagram) => (
             <motion.div
