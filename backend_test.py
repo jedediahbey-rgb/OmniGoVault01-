@@ -184,7 +184,35 @@ class DocumentSigningTester:
             self.log_test("Submit Document for Review", False, f"Error: {str(e)}")
             return False
 
-    # ============ DOCUMENT SIGNING TESTS ============
+    def test_affirm_document(self):
+        """Affirm document to make it ready for execution"""
+        if not self.document_id:
+            self.log_test("Affirm Document", False, "No document_id available")
+            return False
+            
+        try:
+            payload = {
+                "note": "Approved for execution"
+            }
+            
+            response = self.session.post(f"{self.base_url}/vaults/documents/{self.document_id}/affirm", json=payload, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                affirmation_id = data.get("id")
+                note = data.get("note")
+                details += f", Affirmation created: {affirmation_id}, Note: {note}"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("Affirm Document", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Affirm Document", False, f"Error: {str(e)}")
+            return False
 
     def test_sign_document_valid_payload(self):
         """Test signing document with valid payload"""
