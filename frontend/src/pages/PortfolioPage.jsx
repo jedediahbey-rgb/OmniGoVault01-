@@ -57,7 +57,22 @@ const PortfolioPage = ({ user, logout }) => {
     if (portfolioId && portfolioId !== 'undefined') {
       fetchData();
     }
+    // Fetch user profile for portrait styling
+    fetchUserProfile();
   }, [portfolioId]);
+
+  const fetchUserProfile = async () => {
+    try {
+      const [profileRes, billingRes] = await Promise.all([
+        axios.get(`${API}/user/profile`),
+        axios.get(`${API}/billing/subscription`).catch(() => ({ data: { plan_tier: 0 } }))
+      ]);
+      setUserProfile(profileRes.data);
+      setUserPlanTier(billingRes.data?.plan_tier || 0);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
 
   const fetchData = async () => {
     if (!portfolioId || portfolioId === 'undefined') {
