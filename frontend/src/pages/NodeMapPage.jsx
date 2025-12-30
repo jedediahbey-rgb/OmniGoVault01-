@@ -812,6 +812,38 @@ export default function NodeMapPage() {
         )}
       </div>
 
+      {/* Mobile Legend - Outside ReactFlow for guaranteed visibility */}
+      {isMobile && (
+        <div className="mt-1 px-1">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-[9px]">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded bg-[#C6A87C]" />
+              <span className="text-white/70">Trust</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded bg-[#A855F7]" />
+              <span className="text-white/70">Grantor</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded bg-[#22C55E]" />
+              <span className="text-white/70">Trustee</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded bg-[#FBBF24]" />
+              <span className="text-white/70">Beneficiary</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded bg-[#EF4444]" />
+              <span className="text-white/70">Asset</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded bg-[#0EA5E9]" />
+              <span className="text-white/70">Gov</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer hint - hidden on mobile to save space */}
       <div className="hidden sm:block mt-2 text-center text-white/40 text-xs sm:text-sm">
         Click on nodes for details • Drag to rearrange • Scroll to zoom
