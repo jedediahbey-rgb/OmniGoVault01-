@@ -132,6 +132,12 @@ export default function WorkspaceDetailPage({ user }) {
 
   // Fetch vault details
   const fetchVault = useCallback(async () => {
+    // Guard against undefined or invalid vaultId
+    if (!vaultId || vaultId === 'undefined') {
+      setLoading(false);
+      return;
+    }
+    
     try {
       setLoading(true);
       const response = await axios.get(`${API}/vaults/${vaultId}`, { withCredentials: true });
