@@ -75,23 +75,28 @@ async def get_health_score(request: Request, version: str = Query(default=None))
     """
     Get the current trust health score.
     Returns the most recent scan or runs a new one if none exists.
+    Supports both V1 and V2 scanners via version parameter or user preference.
     """
     try:
         user = await get_current_user(request)
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    # Get most recent scan (less than 1 hour old)
+    # Determine version to use
+    use_version = version or await get_user_health_version(user.user_id)
+    
+    # Get most recent scan (less than 1 hour old, matching version)
     recent_scan = await db.health_scans.find_one(
-        {"user_id": user.user_id},
+        {"user_id": user.user_id, "version": use_version} if use_version == "v2" else {"user_id": user.user_id},
         {"_id": 0},
         sort=[("scanned_at", -1)]
     )
     
     if recent_scan:
-        # Check if scan is recent enough (within 1 hour)
+        # Check if scan is recent enough (within 1 hour) and matches version
         scanned_at = recent_scan.get("scanned_at")
-        if scanned_at:
+        scan_version = recent_scan.get("version", "v1")
+        if scanned_at and scan_version == use_version:
             try:
                 scan_time = datetime.fromisoformat(scanned_at.replace("Z", "+00:00"))
                 age_minutes = (datetime.now(timezone.utc) - scan_time).total_seconds() / 60
@@ -100,18 +105,23 @@ async def get_health_score(request: Request, version: str = Query(default=None))
             except:
                 pass
     
-    # Run a new scan
-    scanner = TrustHealthScanner(db)
+    # Run a new scan with appropriate version
+    if use_version == "v2":
+        scanner = TrustHealthScannerV2(db)
+    else:
+        scanner = TrustHealthScanner(db)
+    
     result = await scanner.run_full_scan(user.user_id)
     
     return success_response(result)
 
 
 @router.post("/scan")
-async def run_health_scan(request: Request):
+async def run_health_scan(request: Request, version: str = Query(default=None)):
     """
     Run a fresh trust health scan.
     Forces a new scan regardless of cache.
+    Supports both V1 and V2 scanners.
     """
     try:
         user = await get_current_user(request)
