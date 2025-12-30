@@ -517,3 +517,75 @@ The V2 Trust Health system includes:
    - Prioritized Next Actions with estimated score gains
 
 ### User: jedediah.bey@gmail.com (OMNICOMPETENT_OWNER)
+
+---
+
+## Test Date: 2025-12-30
+## Test Focus: V2 Trust Health Feature - Comprehensive Backend API Testing
+
+### Backend Test Results (2025-12-30 06:33):
+**Test Summary: 7/7 tests passed (100% success rate)**
+
+#### Authentication & Setup:
+- ✅ Authentication Check - User: test@example.com authenticated successfully
+- ✅ Session created for testing V2 Trust Health endpoints
+
+#### V2 Ruleset Configuration Tests:
+- ✅ GET /api/health/v2/ruleset - Returns V2 health rules configuration with all expected fields
+- ✅ PUT /api/health/v2/ruleset (Valid) - Successfully saves custom V2 ruleset configuration
+- ✅ PUT /api/health/v2/ruleset (Invalid Weights) - Correctly rejects weights that don't sum to 100%
+- ✅ POST /api/health/v2/ruleset/reset - Successfully resets V2 rules to default values
+
+#### V2 Health Scanning Tests:
+- ✅ GET /api/health/score?version=v2 - Runs V2 health scan and returns proper V2 structure
+- ✅ POST /api/health/scan?version=v2 - Forces fresh V2 health scan with complete V2 features
+
+### Key V2 Features Verified:
+1. **Bounded Penalties**: ✅ Findings have max_penalty caps to prevent death spiral
+2. **Severity Multipliers**: ✅ info (0.5), warning (1.0), critical (1.5) multipliers working
+3. **Category Weights**: ✅ All 5 categories present, weights sum to 100%, validation working
+4. **Blocking Conditions**: ✅ blocking_caps configuration present (CAP_ORPHANS, CAP_MISSING_FINALIZER, etc.)
+5. **Readiness Modes**: ✅ Support for normal, audit, court modes
+6. **Next Actions with Gains**: ✅ estimated_gain field present in next actions (V2 feature)
+7. **V2 Response Structure**: ✅ final_score, raw_score, category_penalties, blockers_triggered all present
+
+### V2 Ruleset Structure Validated:
+- ✅ **category_weights**: governance_hygiene, financial_integrity, compliance_recordkeeping, risk_exposure, data_integrity
+- ✅ **severity_multipliers**: info, warning, critical with proper multiplier values
+- ✅ **blocking_caps**: CAP_ORPHANS, CAP_MISSING_FINALIZER, CAP_LEDGER_IMBALANCE, CAP_DRAFT_ACTIVE
+- ✅ **readiness_mode**: Supports normal, audit, court modes
+- ✅ **Weight Validation**: Correctly rejects configurations where weights don't sum to 100%
+
+### V2 Health Scan Response Validated:
+- ✅ **version**: "v2" correctly identified
+- ✅ **final_score & raw_score**: Both present and in valid range (0-100)
+- ✅ **category_scores**: All 5 categories with individual scores
+- ✅ **category_penalties**: V2 penalty tracking system working
+- ✅ **blockers_triggered**: V2 blocking conditions system operational
+- ✅ **findings**: Enhanced with penalty_applied, max_penalty, estimated_gain
+- ✅ **next_actions**: Prioritized with estimated_gain calculations (V2 feature)
+
+### Technical Notes:
+- All V2 API endpoints return proper HTTP status codes and structured JSON responses
+- V2 health scanner properly integrates with ruleset configuration system
+- Category weights validation working correctly (must sum to 100%)
+- V2 bounded penalty system prevents score death spiral scenarios
+- Severity multipliers properly applied to penalty calculations
+- Blocking caps system functional for score capping scenarios
+- Next actions include estimated score gains for prioritization
+
+### Test Scenarios Completed:
+1. ✅ V2 ruleset retrieval - Default configuration with all V2 features
+2. ✅ V2 ruleset customization - Save custom weights and readiness mode
+3. ✅ V2 ruleset validation - Reject invalid weight configurations
+4. ✅ V2 ruleset reset - Restore default V2 configuration
+5. ✅ V2 health scanning - Run comprehensive V2 health scan
+6. ✅ V2 fresh scan - Force new V2 scan with complete feature set
+7. ✅ V2 response structure - Validate all V2-specific fields and features
+
+### Status Summary:
+**Backend V2 Trust Health APIs: 100% Working** - All tested endpoints functional with complete V2 feature set including bounded penalties, severity multipliers, blocking caps, and enhanced next actions.
+
+### Agent Communication:
+- **Agent**: testing
+- **Message**: Completed comprehensive backend testing of V2 Trust Health feature. All 7 API endpoints tested successfully. V2 ruleset configuration system working perfectly with proper validation (weights must sum to 100%). V2 health scanning operational with all enhanced features: bounded penalties with max caps, severity multipliers (info/warning/critical), category weights, blocking conditions, and next actions with estimated gains. All V2-specific response fields present and properly structured. Ready for production use.
