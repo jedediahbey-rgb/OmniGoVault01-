@@ -53,6 +53,92 @@ import { humanizeSlug } from '../lib/utils';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Extracted SidebarContent component to avoid defining during render
+function VaultSidebarContent({ 
+  selectedPortfolio, 
+  setSelectedPortfolio, 
+  showTrash, 
+  setShowTrash,
+  setShowNewPortfolio, 
+  setSidebarOpen, 
+  navigate, 
+  documents, 
+  portfolios, 
+  trashedDocuments 
+}) {
+  return (
+    <>
+      <div className="p-4 border-b border-white/10">
+        <Button 
+          onClick={() => { setShowNewPortfolio(true); setSidebarOpen(false); }}
+          className="w-full btn-secondary text-sm"
+        >
+          <Plus className="w-4 h-4 mr-2" weight="duotone" />
+          New Portfolio
+        </Button>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+        <button
+          onClick={() => { setSelectedPortfolio(null); setShowTrash(false); setSidebarOpen(false); navigate('/vault/documents'); }}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+            !selectedPortfolio && !showTrash
+              ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
+              : 'text-white/60 hover:bg-white/5'
+          }`}
+        >
+          <FolderSimple className="w-4 h-4" weight="duotone" />
+          <span className="text-sm">All Documents</span>
+          <span className="ml-auto text-xs opacity-60">{documents.length}</span>
+        </button>
+        
+        <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-4 mb-2">Portfolios</p>
+        
+        {portfolios.map(portfolio => (
+          <button
+            key={portfolio.portfolio_id}
+            onClick={() => { setSelectedPortfolio(portfolio); setShowTrash(false); setSidebarOpen(false); navigate('/vault/documents'); }}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+              selectedPortfolio?.portfolio_id === portfolio.portfolio_id
+                ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
+                : 'text-white/60 hover:bg-white/5'
+            }`}
+          >
+            <Folder className="w-4 h-4" weight="duotone" />
+            <span className="text-sm truncate">{portfolio.name}</span>
+          </button>
+        ))}
+        
+        {portfolios.length === 0 && (
+          <p className="text-white/30 text-xs text-center py-4">No portfolios yet</p>
+        )}
+
+        {/* Trash Section */}
+        <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-6 mb-2">System</p>
+        <button
+          onClick={() => { 
+            setSelectedPortfolio(null); 
+            setShowTrash(true); 
+            setSidebarOpen(false);
+            navigate('/vault/trash');
+          }}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+            showTrash
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20' 
+              : 'text-white/40 hover:bg-white/5'
+          }`}
+        >
+          <Trash className="w-4 h-4" weight="duotone" />
+          <span className="text-sm">Trash</span>
+          {trashedDocuments.length > 0 && (
+            <span className="ml-auto text-xs opacity-60">{trashedDocuments.length}</span>
+          )}
+        </button>
+      </div>
+    </>
+  );
+}
+
 export default function VaultPage({ user, initialView }) {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
