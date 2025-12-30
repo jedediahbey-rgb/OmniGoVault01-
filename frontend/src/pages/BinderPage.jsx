@@ -760,6 +760,7 @@ export default function BinderPage() {
       const res = await fetch(`${API_URL}/api/evidence-binder/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           portfolio_id: portfolioId,
           dispute_id: selectedDispute,
@@ -803,6 +804,7 @@ export default function BinderPage() {
       const res = await fetch(`${API_URL}/api/binder/schedules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           portfolio_id: portfolioId,
           ...scheduleForm
