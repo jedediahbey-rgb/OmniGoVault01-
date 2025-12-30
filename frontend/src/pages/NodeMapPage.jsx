@@ -813,9 +813,9 @@ export default function NodeMapPage() {
         )}
       </div>
 
-      {/* Mobile Legend - Outside ReactFlow for guaranteed visibility */}
+      {/* Mobile Legend - Inside the fixed container */}
       {isMobile && (
-        <div className="mt-1 px-1">
+        <div className="shrink-0 py-1 px-1">
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-[9px]">
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded bg-[#C6A87C]" />
@@ -844,11 +844,6 @@ export default function NodeMapPage() {
           </div>
         </div>
       )}
-
-      {/* Footer hint - hidden on mobile to save space */}
-      <div className="hidden sm:block mt-2 text-center text-white/40 text-xs sm:text-sm">
-        Click on nodes for details • Drag to rearrange • Scroll to zoom
-      </div>
     </div>
   );
 }
