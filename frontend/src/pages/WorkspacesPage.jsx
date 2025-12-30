@@ -432,12 +432,12 @@ function VaultCard({ vault, onClick }) {
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="cursor-pointer"
+      className="cursor-pointer h-full"
     >
-      <Card className="bg-vault-navy/50 border-vault-gold/10 hover:border-vault-gold/30 transition-all duration-200">
-        <CardContent className="p-4">
+      <Card className="bg-vault-navy/50 border-vault-gold/10 hover:border-vault-gold/30 transition-all duration-200 h-full flex flex-col">
+        <CardContent className="p-4 flex flex-col h-full">
           <div className="flex items-start justify-between mb-3">
-            <div className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center flex-shrink-0">
               <Icon className="w-5 h-5 text-vault-gold" weight="duotone" />
             </div>
             <Badge variant="outline" className={status.color}>
@@ -446,11 +446,11 @@ function VaultCard({ vault, onClick }) {
           </div>
           
           <h3 className="font-semibold text-white mb-1 line-clamp-1">{vault.name}</h3>
-          {vault.description && (
-            <p className="text-sm text-vault-muted line-clamp-2 mb-3">{vault.description}</p>
-          )}
+          <p className="text-sm text-vault-muted line-clamp-2 mb-3 flex-1 min-h-[40px]">
+            {vault.description || 'No description'}
+          </p>
           
-          <div className="flex items-center gap-4 text-xs text-vault-muted">
+          <div className="flex items-center gap-4 text-xs text-vault-muted mt-auto">
             <span className="flex items-center gap-1">
               <Users className="w-3.5 h-3.5" />
               {vault.participant_count || 1}
