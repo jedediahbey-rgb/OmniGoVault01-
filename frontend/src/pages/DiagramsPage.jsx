@@ -24,6 +24,18 @@ import GlassCard from '../components/shared/GlassCard';
 import IconBadge from '../components/shared/IconBadge';
 import { Button } from '../components/ui/button';
 
+// Custom styles to hide React Flow attribution
+const reactFlowStyles = `
+  .react-flow__attribution {
+    display: none !important;
+  }
+  .react-flow__controls {
+    right: 10px !important;
+    bottom: 10px !important;
+    left: auto !important;
+  }
+`;
+
 // Helper function to parse **bold** markdown to JSX
 const parseBoldText = (text) => {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
