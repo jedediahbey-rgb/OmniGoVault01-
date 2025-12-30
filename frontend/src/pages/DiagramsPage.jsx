@@ -541,7 +541,11 @@ function DiagramsContent() {
           </div>
         </div>
 
-        <div ref={reactFlowWrapper} className="flex-1 relative mx-2 sm:mx-4 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10" style={{ minHeight: '300px' }}>
+        <div 
+          ref={reactFlowWrapper} 
+          className="flex-grow relative mx-2 sm:mx-4 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10"
+          style={{ flex: '1 1 auto', minHeight: 0 }}
+        >
           <ReactFlow
             nodes={nodes}
             edges={edges}
