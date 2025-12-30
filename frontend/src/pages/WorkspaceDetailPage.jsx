@@ -187,7 +187,11 @@ export default function WorkspaceDetailPage({ user }) {
       fetchVault();
     } catch (error) {
       console.error('Error creating document:', error);
-      toast.error(error.response?.data?.detail || 'Failed to create document');
+      toast.error(
+            typeof error.response?.data?.detail === 'string' 
+              ? error.response.data.detail 
+              : 'Failed to create document'
+          );
     } finally {
       setCreating(false);
     }
@@ -209,7 +213,11 @@ export default function WorkspaceDetailPage({ user }) {
       fetchVault();
     } catch (error) {
       console.error('Error inviting participant:', error);
-      toast.error(error.response?.data?.detail || 'Failed to send invitation');
+      toast.error(
+            typeof error.response?.data?.detail === 'string' 
+              ? error.response.data.detail 
+              : 'Failed to send invitation'
+          );
     } finally {
       setCreating(false);
     }
@@ -222,7 +230,11 @@ export default function WorkspaceDetailPage({ user }) {
       toast.success('Vault activated');
       fetchVault();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to activate vault');
+      toast.error(
+            typeof error.response?.data?.detail === 'string' 
+              ? error.response.data.detail 
+              : 'Failed to activate vault'
+          );
     }
   };
 
@@ -244,7 +256,11 @@ export default function WorkspaceDetailPage({ user }) {
       toast.success('Document submitted for review');
       fetchVault();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to submit');
+      toast.error(
+            typeof error.response?.data?.detail === 'string' 
+              ? error.response.data.detail 
+              : 'Failed to submit'
+          );
     }
   };
 
@@ -258,7 +274,11 @@ export default function WorkspaceDetailPage({ user }) {
       }
       fetchVault();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to affirm');
+      toast.error(
+            typeof error.response?.data?.detail === 'string' 
+              ? error.response.data.detail 
+              : 'Failed to affirm'
+          );
     }
   };
 
