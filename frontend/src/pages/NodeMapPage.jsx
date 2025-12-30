@@ -536,7 +536,7 @@ export default function NodeMapPage() {
 
   const onNodeClick = useCallback((event, node) => {
     if (node.data.type === 'placeholder') {
-      navigate(`/vault/trust-profile?portfolio=${selectedPortfolio}`);
+      navigate(`/vault/portfolio/${selectedPortfolio}/trust-profile`);
       return;
     }
     setSelectedNode(node);
