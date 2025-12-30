@@ -219,7 +219,7 @@ const HomePage = () => {
                 <div className="text-center">
                   <Users className="w-24 h-24 text-vault-gold/20 mx-auto mb-6" weight="duotone" />
                   <p className="font-heading text-2xl text-vault-gold italic">
-                    "Equity looks to the intent rather than to the form"
+                    &ldquo;Equity looks to the intent rather than to the form&rdquo;
                   </p>
                   <p className="text-xs text-vault-muted mt-4 uppercase tracking-wider">
                     — Maxim of Equity, Roark p.6
