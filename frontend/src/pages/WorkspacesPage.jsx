@@ -282,7 +282,7 @@ export default function WorkspacesPage({ user }) {
             {draftVaults.length > 0 && (
               <VaultSection
                 title="Draft Vaults"
-                icon={<Clock className="w-5 h-5 text-yellow-400" />}
+                icon={<PencilSimpleLine className="w-5 h-5 text-yellow-400" weight="duotone" />}
                 vaults={draftVaults}
                 onVaultClick={(v) => navigate(`/vault/workspaces/${v.vault_id}`)}
               />
