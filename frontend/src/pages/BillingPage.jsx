@@ -31,36 +31,36 @@ import { motion } from 'framer-motion';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Animated tier icons with unique themes
+// Animated tier icons with unique, impressive themes
 const AnimatedTierIcon = ({ tier }) => {
   const iconConfig = {
     0: {
-      // Testamentary - Document/Scroll theme
-      icon: <Zap className="w-5 h-5" />,
-      gradient: 'from-gray-400 to-gray-600',
-      animation: 'animate-pulse',
-      glow: 'shadow-gray-500/20'
+      // Testamentary - Simple document/scroll
+      icon: <FileText className="w-6 h-6" />,
+      bgClass: 'bg-gradient-to-br from-slate-500 to-slate-700',
+      glowClass: 'shadow-slate-500/30',
+      animationClass: ''
     },
     1: {
-      // Revocable - Growth/Sparkle theme
-      icon: <Sparkles className="w-5 h-5" />,
-      gradient: 'from-emerald-400 to-emerald-600',
-      animation: 'animate-bounce',
-      glow: 'shadow-emerald-500/30'
+      // Revocable - Sparkle/Growth with animation
+      icon: <Sparkle className="w-6 h-6" />,
+      bgClass: 'bg-gradient-to-br from-emerald-400 to-emerald-600',
+      glowClass: 'shadow-emerald-500/40',
+      animationClass: 'animate-pulse'
     },
     2: {
-      // Irrevocable - Crown/Shield theme
-      icon: <Crown className="w-5 h-5" />,
-      gradient: 'from-blue-400 to-blue-600',
-      animation: '',
-      glow: 'shadow-blue-500/30'
+      // Irrevocable - Shield with protective glow
+      icon: <Shield className="w-6 h-6" />,
+      bgClass: 'bg-gradient-to-br from-blue-400 via-cyan-500 to-blue-600',
+      glowClass: 'shadow-blue-500/50',
+      animationClass: ''
     },
     3: {
-      // Dynasty - Building/Empire theme
-      icon: <Building2 className="w-5 h-5" />,
-      gradient: 'from-purple-400 via-pink-500 to-amber-400',
-      animation: '',
-      glow: 'shadow-purple-500/40'
+      // Dynasty - EPIC Castle/Gem with animated gradient
+      icon: <Castle className="w-6 h-6" />,
+      bgClass: 'bg-gradient-to-br from-purple-500 via-pink-500 to-amber-400',
+      glowClass: 'shadow-purple-500/50',
+      animationClass: ''
     }
   };
 
@@ -68,47 +68,67 @@ const AnimatedTierIcon = ({ tier }) => {
 
   return (
     <motion.div
-      className={`p-2.5 rounded-xl bg-gradient-to-br ${config.gradient} shadow-lg ${config.glow} ${config.animation}`}
-      whileHover={{ scale: 1.1, rotate: tier === 3 ? 5 : 0 }}
+      className={`p-3 rounded-xl ${config.bgClass} shadow-lg ${config.glowClass} ${config.animationClass}`}
+      whileHover={{ 
+        scale: 1.15, 
+        rotate: tier === 3 ? [0, -5, 5, 0] : 0,
+        boxShadow: tier === 3 ? '0 0 30px rgba(168, 85, 247, 0.6)' : undefined
+      }}
       transition={{ type: "spring", stiffness: 400, damping: 10 }}
     >
-      <div className="text-white">
+      <div className="text-white drop-shadow-lg">
         {config.icon}
       </div>
+      {/* Dynasty special glow ring */}
+      {tier === 3 && (
+        <motion.div 
+          className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-amber-400/20"
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
+      )}
     </motion.div>
   );
 };
 
+// Background gradient for each tier card
+const tierCardBg = {
+  0: 'bg-gradient-to-b from-slate-900/80 to-slate-950/90',
+  1: 'bg-gradient-to-b from-emerald-950/40 to-slate-950/90',
+  2: 'bg-gradient-to-b from-blue-950/40 to-slate-950/90',
+  3: 'bg-gradient-to-b from-purple-950/50 via-pink-950/30 to-slate-950/90'
+};
+
 // Plan tier colors
 const tierColors = {
-  0: 'text-gray-400 bg-gray-400/10',
+  0: 'text-slate-400 bg-slate-400/10',
   1: 'text-emerald-400 bg-emerald-400/10',
   2: 'text-blue-400 bg-blue-400/10',
   3: 'text-purple-400 bg-purple-400/10'
 };
 
-// Plan tier border colors for cards
+// Plan tier border colors for cards with hover glow
 const tierBorderColors = {
-  0: 'border-gray-500/30 hover:border-gray-400/50',
-  1: 'border-emerald-500/40 hover:border-emerald-400/60',
-  2: 'border-blue-500/40 hover:border-blue-400/60',
-  3: 'border-purple-500/40 hover:border-purple-400/60'
+  0: 'border-slate-600/50 hover:border-slate-500/70',
+  1: 'border-emerald-500/50 hover:border-emerald-400/80 hover:shadow-emerald-500/20',
+  2: 'border-blue-500/50 hover:border-blue-400/80 hover:shadow-blue-500/20',
+  3: 'border-purple-500/50 hover:border-purple-400/80 hover:shadow-purple-500/30'
 };
 
-// Plan tier button colors
+// Plan tier button colors with gradients
 const tierButtonColors = {
-  0: 'bg-gray-600/50 text-gray-300 cursor-default',
-  1: 'bg-emerald-600 hover:bg-emerald-700 text-white',
-  2: 'bg-blue-600 hover:bg-blue-700 text-white',
-  3: 'bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white'
+  0: 'bg-slate-700/60 text-slate-300 border border-slate-600/50',
+  1: 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white shadow-lg shadow-emerald-500/30',
+  2: 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white shadow-lg shadow-blue-500/30',
+  3: 'bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 hover:from-purple-500 hover:via-pink-400 hover:to-amber-400 text-white shadow-lg shadow-purple-500/30'
 };
 
 // Card glow colors based on tier
 const tierGlowColors = {
-  0: 'group-hover:shadow-gray-500/10',
-  1: 'group-hover:shadow-emerald-500/20',
-  2: 'group-hover:shadow-blue-500/20',
-  3: 'group-hover:shadow-purple-500/30'
+  0: '',
+  1: 'group-hover:shadow-lg group-hover:shadow-emerald-500/20',
+  2: 'group-hover:shadow-lg group-hover:shadow-blue-500/20',
+  3: 'group-hover:shadow-xl group-hover:shadow-purple-500/30'
 };
 
 const BillingPage = () => {
