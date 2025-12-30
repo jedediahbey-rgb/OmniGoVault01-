@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for OMNIGOVAULT Application
-Billing/Subscription Feature Testing
+Document Signing Feature Testing - Shared Workspace
 """
 
 import requests
