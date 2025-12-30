@@ -651,33 +651,42 @@ class OmniBinderV2Tester:
 
     # ============ TEST RUNNER ============
 
-    def run_global_search_v2_tests(self):
-        """Run all Global Search V2 API tests"""
-        self.log("🚀 Starting GLOBAL SEARCH V2 API Tests")
+    def run_omnibinder_v2_tests(self):
+        """Run all OmniBinder V2 and Real-time Collaboration V2 API tests"""
+        self.log("🚀 Starting OMNIBINDER V2 & REAL-TIME COLLABORATION V2 API Tests")
         self.log(f"Testing against: {self.base_url}")
         self.log(f"User: {self.test_user_email} ({self.test_user_role} role)")
         self.log("=" * 80)
         
-        # Test sequence for Global Search V2 API
+        # Test sequence for OmniBinder V2 and Real-time Collaboration V2 APIs
         test_sequence = [
             # Authentication
             self.test_auth_status,
             
-            # Main search functionality tests
-            self.test_search_dashboard,
-            self.test_search_new_actions,
-            self.test_search_health,
-            self.test_search_trust,
+            # Setup - Create test portfolio
+            self.test_create_test_portfolio,
             
-            # Search suggestions and history
-            self.test_search_suggestions,
-            self.test_search_recent,
-            self.test_clear_search_history,
+            # OmniBinder V2 - Scheduled Binders
+            self.test_scheduled_binders_create,
+            self.test_scheduled_binders_get,
+            self.test_scheduled_binders_update,
             
-            # V2 specific features
-            self.test_v2_navigation_shortcuts,
-            self.test_fuzzy_matching,
-            self.test_grouped_results,
+            # OmniBinder V2 - Binder Templates
+            self.test_binder_templates_create,
+            self.test_binder_templates_get,
+            
+            # OmniBinder V2 - Court Packet
+            self.test_court_packet_generate,
+            
+            # Real-time Collaboration V2 - REST Endpoints
+            self.test_realtime_presence,
+            self.test_realtime_document_lock,
+            self.test_realtime_broadcast,
+            self.test_realtime_stats,
+            
+            # Cleanup
+            self.test_scheduled_binders_delete,
+            self.test_binder_templates_delete,
         ]
         
         for test_func in test_sequence:
@@ -699,7 +708,7 @@ class OmniBinderV2Tester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 GLOBAL SEARCH V2 API TEST SUMMARY")
+        self.log("🏁 OMNIBINDER V2 & REAL-TIME COLLABORATION V2 API TEST SUMMARY")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
@@ -716,69 +725,98 @@ class OmniBinderV2Tester:
         
         self.log("\n🎯 KEY FINDINGS:")
         if success_rate >= 90:
-            self.log("✅ Global Search V2 API working perfectly")
-            self.log("✅ All main search endpoints functional")
-            self.log("✅ V2 features (shortcuts, fuzzy matching, grouping) working")
-            self.log("✅ Search suggestions and history management working")
-            self.log("✅ Navigation items with shortcuts properly implemented")
+            self.log("✅ OmniBinder V2 & Real-time Collaboration V2 APIs working perfectly")
+            self.log("✅ All scheduled binder endpoints functional")
+            self.log("✅ Binder templates system working")
+            self.log("✅ Court packet generation working")
+            self.log("✅ Real-time collaboration REST endpoints working")
         elif success_rate >= 75:
-            self.log("⚠️ Most Global Search V2 functionality working with minor issues")
+            self.log("⚠️ Most OmniBinder V2 & Real-time functionality working with minor issues")
         else:
-            self.log("❌ Significant Global Search V2 implementation issues detected")
+            self.log("❌ Significant OmniBinder V2 & Real-time implementation issues detected")
         
         # Specific feature status
         self.log("\n📋 FEATURE STATUS:")
         
-        # Main search functionality
-        search_tests = [t for t in self.test_results if 'search' in t['test'].lower() and 'suggestions' not in t['test'].lower() and 'recent' not in t['test'].lower()]
-        search_success = sum(1 for t in search_tests if t['success'])
-        self.log(f"  Main Search Endpoints: {search_success}/{len(search_tests)} ({'✅' if search_success == len(search_tests) else '❌'})")
+        # OmniBinder V2 Scheduled Binders
+        scheduled_tests = [t for t in self.test_results if 'schedule' in t['test'].lower()]
+        scheduled_success = sum(1 for t in scheduled_tests if t['success'])
+        self.log(f"  Scheduled Binders: {scheduled_success}/{len(scheduled_tests)} ({'✅' if scheduled_success == len(scheduled_tests) else '❌'})")
         
-        # V2 features
-        v2_tests = [t for t in self.test_results if 'v2' in t['test'].lower() or 'fuzzy' in t['test'].lower() or 'grouped' in t['test'].lower()]
-        v2_success = sum(1 for t in v2_tests if t['success'])
-        self.log(f"  V2 Enhanced Features: {v2_success}/{len(v2_tests)} ({'✅' if v2_success == len(v2_tests) else '❌'})")
+        # OmniBinder V2 Templates
+        template_tests = [t for t in self.test_results if 'template' in t['test'].lower()]
+        template_success = sum(1 for t in template_tests if t['success'])
+        self.log(f"  Binder Templates: {template_success}/{len(template_tests)} ({'✅' if template_success == len(template_tests) else '❌'})")
         
-        # Suggestions and history
-        suggestions_tests = [t for t in self.test_results if 'suggestions' in t['test'].lower() or 'recent' in t['test'].lower() or 'clear' in t['test'].lower()]
-        suggestions_success = sum(1 for t in suggestions_tests if t['success'])
-        self.log(f"  Suggestions & History: {suggestions_success}/{len(suggestions_tests)} ({'✅' if suggestions_success == len(suggestions_tests) else '❌'})")
+        # Court Packet
+        court_tests = [t for t in self.test_results if 'court' in t['test'].lower()]
+        court_success = sum(1 for t in court_tests if t['success'])
+        self.log(f"  Court Packet Generation: {court_success}/{len(court_tests)} ({'✅' if court_success == len(court_tests) else '❌'})")
+        
+        # Real-time Collaboration
+        realtime_tests = [t for t in self.test_results if 'realtime' in t['test'].lower()]
+        realtime_success = sum(1 for t in realtime_tests if t['success'])
+        self.log(f"  Real-time Collaboration: {realtime_success}/{len(realtime_tests)} ({'✅' if realtime_success == len(realtime_tests) else '❌'})")
         
         # Authentication
         auth_tests = [t for t in self.test_results if 'auth' in t['test'].lower()]
         auth_success = sum(1 for t in auth_tests if t['success'])
         self.log(f"  Authentication: {auth_success}/{len(auth_tests)} ({'✅' if auth_success == len(auth_tests) else '❌'})")
         
-        self.log("\n🔍 SEARCH QUERIES TESTED:")
-        tested_queries = ["dashboard", "new", "health", "trust", "dash", "gov"]
-        for query in tested_queries:
-            query_tests = [t for t in self.test_results if query in t['test'].lower()]
-            query_success = all(t['success'] for t in query_tests) if query_tests else False
-            self.log(f"  • '{query}': {'✅' if query_success else '❌'}")
+        self.log("\n🔍 OMNIBINDER V2 ENDPOINTS TESTED:")
+        omnibinder_endpoints = [
+            "POST /api/binder/schedule",
+            "GET /api/binder/schedules", 
+            "PUT /api/binder/schedule/{schedule_id}",
+            "DELETE /api/binder/schedule/{schedule_id}",
+            "POST /api/binder/templates",
+            "GET /api/binder/templates",
+            "DELETE /api/binder/templates/{template_id}",
+            "POST /api/binder/generate/court-packet"
+        ]
+        
+        for endpoint in omnibinder_endpoints:
+            endpoint_tests = [t for t in self.test_results if endpoint.split()[-1].replace('/', '_').replace('{', '').replace('}', '') in t['test'].lower()]
+            endpoint_success = all(t['success'] for t in endpoint_tests) if endpoint_tests else False
+            self.log(f"  • {endpoint}: {'✅' if endpoint_success else '❌'}")
+        
+        self.log("\n🔍 REAL-TIME COLLABORATION V2 ENDPOINTS TESTED:")
+        realtime_endpoints = [
+            "GET /api/realtime/presence/{room_id}",
+            "GET /api/realtime/document/{document_id}/lock",
+            "POST /api/realtime/broadcast",
+            "GET /api/realtime/stats"
+        ]
+        
+        for endpoint in realtime_endpoints:
+            endpoint_tests = [t for t in self.test_results if endpoint.split()[-1].replace('/', '_').replace('{', '').replace('}', '') in t['test'].lower()]
+            endpoint_success = all(t['success'] for t in endpoint_tests) if endpoint_tests else False
+            self.log(f"  • {endpoint}: {'✅' if endpoint_success else '❌'}")
         
         self.log("\n📝 V2 FEATURES VERIFIED:")
         v2_features = [
-            ("Version field 'v2'", any('version' in t['details'] and t['success'] for t in self.test_results)),
-            ("Navigation shortcuts", any('shortcut' in t['details'] and t['success'] for t in self.test_results)),
-            ("Fuzzy matching", any('fuzzy' in t['test'].lower() and t['success'] for t in self.test_results)),
-            ("Grouped results", any('grouped' in t['test'].lower() and t['success'] for t in self.test_results)),
-            ("Search suggestions", any('suggestions' in t['test'].lower() and t['success'] for t in self.test_results)),
-            ("Search history", any('recent' in t['test'].lower() and t['success'] for t in self.test_results))
+            ("Scheduled Binder Creation", any('schedule' in t['test'].lower() and 'create' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("Binder Template System", any('template' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("Court-Grade Evidence Packets", any('court' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("Real-time Room Presence", any('presence' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("Document Locking System", any('lock' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("Event Broadcasting", any('broadcast' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("Real-time Statistics", any('stats' in t['test'].lower() and t['success'] for t in self.test_results))
         ]
         
         for feature_name, feature_working in v2_features:
             self.log(f"  • {feature_name}: {'✅' if feature_working else '❌'}")
         
-        self.log("\n🎯 NAVIGATION SHORTCUTS TESTED:")
-        expected_shortcuts = ["G D (Dashboard)", "G G (Governance)", "G H (Trust Health)", "G S (Settings)", "G B (Billing)"]
-        for shortcut in expected_shortcuts:
-            shortcut_working = any(shortcut.split()[0] in t['details'] and t['success'] for t in self.test_results)
-            self.log(f"  • {shortcut}: {'✅' if shortcut_working else '❌'}")
+        self.log("\n🎯 SCHEDULED BINDER FEATURES:")
+        schedule_features = ["Create Schedule", "List Schedules", "Update Schedule", "Delete Schedule"]
+        for feature in schedule_features:
+            feature_working = any(feature.lower().replace(' ', '_') in t['test'].lower() and t['success'] for t in self.test_results)
+            self.log(f"  • {feature}: {'✅' if feature_working else '❌'}")
         
         return success_rate >= 75
 
 
 if __name__ == "__main__":
-    tester = GlobalSearchV2Tester()
-    success = tester.run_global_search_v2_tests()
+    tester = OmniBinderV2Tester()
+    success = tester.run_omnibinder_v2_tests()
     sys.exit(0 if success else 1)
