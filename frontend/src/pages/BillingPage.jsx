@@ -102,17 +102,20 @@ const BillingPage = () => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [subRes, plansRes, usageRes, profileRes] = await Promise.all([
-        axios.get(`${BACKEND_URL}/api/billing/subscription`),
-        axios.get(`${BACKEND_URL}/api/billing/plans`),
-        axios.get(`${BACKEND_URL}/api/billing/usage`),
+      // Fetch plans first (public endpoint - always works)
+      const plansRes = await axios.get(`${BACKEND_URL}/api/billing/plans`);
+      setPlans(plansRes.data.plans || []);
+      
+      // Try to fetch authenticated data (may fail if not logged in)
+      const [subRes, usageRes, profileRes] = await Promise.all([
+        axios.get(`${BACKEND_URL}/api/billing/subscription`).catch(() => ({ data: null })),
+        axios.get(`${BACKEND_URL}/api/billing/usage`).catch(() => ({ data: null })),
         axios.get(`${BACKEND_URL}/api/user/profile`).catch(() => ({ data: null }))
       ]);
 
-      setSubscription(subRes.data);
-      setPlans(plansRes.data.plans || []);
-      setUsage(usageRes.data);
-      setUserProfile(profileRes.data);
+      if (subRes.data) setSubscription(subRes.data);
+      if (usageRes.data) setUsage(usageRes.data);
+      if (profileRes.data) setUserProfile(profileRes.data);
     } catch (error) {
       console.error('Error fetching billing data:', error);
       toast.error('Failed to load billing information');
