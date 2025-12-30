@@ -1,10 +1,11 @@
 """
-Global Search API
-Provides unified search across all content types.
+Global Search API V2
+Provides unified search across all content types with enhanced features.
 """
 
-from fastapi import APIRouter, Request, Query
-from typing import Dict, Optional
+from fastapi import APIRouter, Request, Query, Depends
+from typing import Dict, Optional, List
+from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api/search", tags=["Global Search"])
 
@@ -31,70 +32,109 @@ async def get_current_user(request: Request):
     return User()
 
 
-# Navigation items for quick actions
+# Navigation items for quick actions - V2 Enhanced
 NAVIGATION_ITEMS = [
-    {"id": "nav_dashboard", "type": "navigation", "title": "Dashboard", "subtitle": "Go to main dashboard", "path": "/vault", "icon": "House", "keywords": ["home", "main", "overview"]},
-    {"id": "nav_governance", "type": "navigation", "title": "Governance", "subtitle": "Manage governance records", "path": "/vault/governance", "icon": "Gavel", "keywords": ["meetings", "distributions", "insurance", "compensation", "disputes"]},
-    {"id": "nav_ledger", "type": "navigation", "title": "Ledger", "subtitle": "View ledger entries", "path": "/ledger", "icon": "Scroll", "keywords": ["transactions", "entries", "accounting"]},
-    {"id": "nav_templates", "type": "navigation", "title": "Templates", "subtitle": "Document templates", "path": "/templates", "icon": "FileText", "keywords": ["documents", "forms", "declaration"]},
-    {"id": "nav_health", "type": "navigation", "title": "Trust Health", "subtitle": "Health dashboard", "path": "/health", "icon": "Heartbeat", "keywords": ["score", "audit", "integrity"]},
+    {"id": "nav_dashboard", "type": "navigation", "title": "Dashboard", "subtitle": "Go to main dashboard", "path": "/vault", "icon": "House", "keywords": ["home", "main", "overview"], "shortcut": "G D"},
+    {"id": "nav_governance", "type": "navigation", "title": "Governance", "subtitle": "Manage governance records", "path": "/vault/governance", "icon": "Gavel", "keywords": ["meetings", "distributions", "insurance", "compensation", "disputes"], "shortcut": "G G"},
+    {"id": "nav_ledger", "type": "navigation", "title": "Ledger", "subtitle": "View ledger entries", "path": "/ledger", "icon": "Scroll", "keywords": ["transactions", "entries", "accounting"], "shortcut": "G L"},
+    {"id": "nav_templates", "type": "navigation", "title": "Templates", "subtitle": "Document templates", "path": "/templates", "icon": "FileText", "keywords": ["documents", "forms", "declaration"], "shortcut": "G T"},
+    {"id": "nav_health", "type": "navigation", "title": "Trust Health", "subtitle": "Health dashboard", "path": "/trust-health", "icon": "Heartbeat", "keywords": ["score", "audit", "integrity"], "shortcut": "G H"},
     {"id": "nav_diagnostics", "type": "navigation", "title": "Diagnostics", "subtitle": "System diagnostics", "path": "/diagnostics", "icon": "ShieldCheck", "keywords": ["scan", "repair", "orphan"]},
     {"id": "nav_learn", "type": "navigation", "title": "Learn", "subtitle": "Knowledge base", "path": "/learn", "icon": "BookOpen", "keywords": ["education", "tutorials", "guide"]},
     {"id": "nav_glossary", "type": "navigation", "title": "Glossary", "subtitle": "Term definitions", "path": "/glossary", "icon": "BookOpen", "keywords": ["terms", "definitions", "dictionary"]},
-    {"id": "nav_maxims", "type": "navigation", "title": "Maxims", "subtitle": "Equity maxims", "path": "/maxims", "icon": "Sparkle", "keywords": ["principles", "rules", "equity"]},
-    {"id": "nav_assistant", "type": "navigation", "title": "AI Assistant", "subtitle": "Get help from AI", "path": "/assistant", "icon": "Robot", "keywords": ["chat", "help", "ai", "question"]},
+    {"id": "nav_maxims", "type": "navigation", "title": "Maxims", "subtitle": "Equity maxims", "path": "/maxims", "icon": "Sparkle", "keywords": ["principles", "rules", "equity"], "shortcut": "G M"},
+    {"id": "nav_assistant", "type": "navigation", "title": "AI Assistant", "subtitle": "Get help from AI", "path": "/assistant", "icon": "Robot", "keywords": ["chat", "help", "ai", "question"], "shortcut": "G A"},
     {"id": "nav_scenarios", "type": "navigation", "title": "Scenarios", "subtitle": "What-if scenarios", "path": "/scenarios", "icon": "ChartLine", "keywords": ["simulation", "planning"]},
-    {"id": "nav_nodemap", "type": "navigation", "title": "Node Map", "subtitle": "Visual node map", "path": "/node-map", "icon": "MapTrifold", "keywords": ["graph", "relationships", "visual"]},
+    {"id": "nav_nodemap", "type": "navigation", "title": "Node Map", "subtitle": "Visual node map", "path": "/node-map", "icon": "MapTrifold", "keywords": ["graph", "relationships", "visual"], "shortcut": "G N"},
+    {"id": "nav_settings", "type": "navigation", "title": "Settings", "subtitle": "Account settings", "path": "/settings", "icon": "Gear", "keywords": ["preferences", "profile", "account"], "shortcut": "G S"},
+    {"id": "nav_billing", "type": "navigation", "title": "Billing", "subtitle": "Subscription & billing", "path": "/billing", "icon": "CreditCard", "keywords": ["subscription", "payment", "plan"], "shortcut": "G B"},
+    {"id": "nav_workspaces", "type": "navigation", "title": "Workspaces", "subtitle": "Shared workspaces", "path": "/workspaces", "icon": "Users", "keywords": ["shared", "team", "collaborate"]},
+    {"id": "nav_binder", "type": "navigation", "title": "Binder", "subtitle": "Document binder", "path": "/binder", "icon": "Folder", "keywords": ["export", "compile", "pdf"]},
 ]
 
-# Quick actions
+# Quick actions - V2 Enhanced
 QUICK_ACTIONS = [
+    {"id": "action_new_portfolio", "type": "action", "title": "New Portfolio", "subtitle": "Create a new trust portfolio", "action": "create_portfolio", "icon": "FolderPlus", "keywords": ["create", "new", "portfolio", "trust"]},
     {"id": "action_new_meeting", "type": "action", "title": "New Meeting Minutes", "subtitle": "Create meeting minutes", "action": "create_minutes", "icon": "Notebook", "keywords": ["create", "new", "meeting"]},
     {"id": "action_new_distribution", "type": "action", "title": "New Distribution", "subtitle": "Create distribution record", "action": "create_distribution", "icon": "CurrencyDollar", "keywords": ["create", "new", "payment"]},
     {"id": "action_new_insurance", "type": "action", "title": "New Insurance Policy", "subtitle": "Create insurance record", "action": "create_insurance", "icon": "Shield", "keywords": ["create", "new", "policy"]},
     {"id": "action_new_compensation", "type": "action", "title": "New Compensation", "subtitle": "Create compensation entry", "action": "create_compensation", "icon": "Users", "keywords": ["create", "new", "trustee", "payment"]},
     {"id": "action_new_dispute", "type": "action", "title": "New Dispute", "subtitle": "Create dispute record", "action": "create_dispute", "icon": "Gavel", "keywords": ["create", "new", "case"]},
+    {"id": "action_new_document", "type": "action", "title": "New Document", "subtitle": "Create from template", "action": "create_document", "icon": "FilePlus", "keywords": ["create", "new", "document", "template"]},
     {"id": "action_run_scan", "type": "action", "title": "Run Health Scan", "subtitle": "Scan for issues", "action": "run_health_scan", "icon": "MagnifyingGlass", "keywords": ["scan", "check", "health"]},
     {"id": "action_export_report", "type": "action", "title": "Export Health Report", "subtitle": "Download PDF report", "action": "export_health_report", "icon": "Download", "keywords": ["export", "download", "pdf", "report"]},
+    {"id": "action_export_binder", "type": "action", "title": "Export Binder", "subtitle": "Compile and export binder", "action": "export_binder", "icon": "FileArchive", "keywords": ["export", "binder", "pdf", "compile"]},
 ]
 
 
+def fuzzy_match(query: str, text: str) -> float:
+    """Simple fuzzy matching score."""
+    if not query or not text:
+        return 0.0
+    
+    query_lower = query.lower()
+    text_lower = text.lower()
+    
+    # Exact match
+    if query_lower == text_lower:
+        return 1.0
+    
+    # Contains match
+    if query_lower in text_lower:
+        return 0.8 + (len(query_lower) / len(text_lower)) * 0.2
+    
+    # Word start match
+    words = text_lower.split()
+    for word in words:
+        if word.startswith(query_lower):
+            return 0.7
+    
+    # Character sequence match (fuzzy)
+    query_idx = 0
+    matches = 0
+    for char in text_lower:
+        if query_idx < len(query_lower) and char == query_lower[query_idx]:
+            matches += 1
+            query_idx += 1
+    
+    if query_idx == len(query_lower):
+        return 0.5 + (matches / len(text_lower)) * 0.2
+    
+    return 0.0
+
+
 def score_match(query: str, item: Dict) -> float:
-    """Score how well an item matches the query."""
+    """Score how well an item matches the query with fuzzy matching."""
     query_lower = query.lower()
     score = 0.0
     
     # Title match (highest weight)
-    title = item.get("title", "").lower()
-    if query_lower in title:
-        score += 100
-        if title.startswith(query_lower):
-            score += 50
-        if title == query_lower:
-            score += 100
+    title = item.get("title", "")
+    title_score = fuzzy_match(query_lower, title.lower())
+    score += title_score * 100
     
     # Subtitle match
-    subtitle = item.get("subtitle", "").lower()
-    if query_lower in subtitle:
-        score += 30
+    subtitle = item.get("subtitle", "")
+    subtitle_score = fuzzy_match(query_lower, subtitle.lower())
+    score += subtitle_score * 30
     
     # Keywords match
     keywords = item.get("keywords", [])
     for keyword in keywords:
-        if query_lower in keyword.lower():
-            score += 20
-        if keyword.lower().startswith(query_lower):
-            score += 10
+        keyword_score = fuzzy_match(query_lower, keyword.lower())
+        score += keyword_score * 20
     
     # RM-ID match (for records)
-    rm_id = item.get("rm_id", "").lower()
-    if rm_id and query_lower in rm_id:
-        score += 80
+    rm_id = item.get("rm_id", "")
+    if rm_id:
+        rm_score = fuzzy_match(query_lower, rm_id.lower())
+        score += rm_score * 80
     
     # Module type match
-    module_type = item.get("module_type", "").lower()
-    if module_type and query_lower in module_type:
-        score += 40
+    module_type = item.get("module_type", "")
+    if module_type:
+        module_score = fuzzy_match(query_lower, module_type.lower())
+        score += module_score * 40
     
     return score
 
