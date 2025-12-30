@@ -296,21 +296,16 @@ export default function MainLayout({ children, user, onLogout }) {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="w-8 h-8 rounded-full overflow-hidden border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
+                    className="focus:outline-none"
                   >
-                    {user.picture ? (
-                      <img 
-                        src={user.picture} 
-                        alt={user.name || 'User'} 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-[#C6A87C]/20 flex items-center justify-center">
-                        <span className="text-[#C6A87C] text-sm font-medium">
-                          {(user.name || user.email || 'U').charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    )}
+                    <StyledPortrait
+                      src={user.picture}
+                      alt={user.name || 'User'}
+                      fallbackText={user.name || user.email || 'U'}
+                      styleId={userProfile?.portrait_style || 'standard'}
+                      size="sm"
+                      showAccent={true}
+                    />
                   </button>
                   
                   {/* Desktop User Dropdown */}
@@ -324,10 +319,22 @@ export default function MainLayout({ children, user, onLogout }) {
                         className="absolute right-0 top-10 w-48 bg-[#0B1221] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50"
                       >
                         <div className="px-4 py-3 border-b border-white/10">
-                          <p className="text-sm text-white font-medium truncate">{user.name}</p>
+                          <p className="text-sm text-white font-medium truncate">{userProfile?.display_name || user.name}</p>
                           <p className="text-xs text-white/40 truncate">{user.email}</p>
                         </div>
                         <div className="py-1">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setUserMenuOpen(false);
+                              setShowPortraitSelector(true);
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-vault-gold hover:text-vault-gold hover:bg-vault-gold/10 transition-colors text-left"
+                          >
+                            <PaintBrush className="w-4 h-4" weight="duotone" />
+                            Customize Portrait
+                          </button>
                           <button
                             type="button"
                             onClick={(e) => {
