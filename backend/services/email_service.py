@@ -86,7 +86,9 @@ async def send_workspace_invitation_email(
     inviter_name: str,
     vault_name: str,
     role: str,
-    vault_id: str
+    vault_id: str,
+    user_id: Optional[str] = None,
+    expiry_hours: int = 72
 ) -> dict:
     """
     Send a workspace invitation email to a new participant.
@@ -97,6 +99,8 @@ async def send_workspace_invitation_email(
         vault_name: Name of the workspace/vault
         role: Role being assigned (e.g., TRUSTEE, BENEFICIARY)
         vault_id: ID of the vault for the invitation link
+        user_id: ID of the user sending the invitation (for audit)
+        expiry_hours: Hours until invite expires (default 72)
     
     Returns:
         dict with status and email_id if successful
@@ -104,8 +108,30 @@ async def send_workspace_invitation_email(
     # Format role for display
     role_display = role.replace("_", " ").title()
     
-    # Create invitation link - user will auth via Google then be redirected to workspace
-    invitation_link = f"{APP_URL}/vault/workspaces/{vault_id}?invited=true"
+    # Generate secure invite token
+    token, token_hash, expiry = generate_secure_invite_token(vault_id, recipient_email, expiry_hours)
+    
+    # Store invite token in database for validation
+    if _db:
+        try:
+            await _db.workspace_invites.insert_one({
+                "token_hash": token_hash,
+                "vault_id": vault_id,
+                "recipient_email": recipient_email,
+                "role": role,
+                "inviter_id": user_id,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "expires_at": expiry.isoformat(),
+                "used": False
+            })
+        except Exception as e:
+            logger.error(f"Failed to store invite token: {e}")
+    
+    # Create invitation link with secure token
+    invitation_link = f"{APP_URL}/invite/{token}?vault={vault_id}"
+    
+    # Format expiry for display
+    expiry_display = expiry.strftime("%B %d, %Y at %I:%M %p UTC")
     
     # Build HTML email content
     html_content = f"""
@@ -124,7 +150,7 @@ async def send_workspace_invitation_email(
                         <tr>
                             <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid rgba(198, 168, 124, 0.1);">
                                 <div style="font-size: 24px; font-weight: 600; color: #C6A87C; margin-bottom: 8px;">
-                                    🔐 Private Equity & Trusts
+                                    🔐 Private Equity &amp; Trusts
                                 </div>
                                 <div style="font-size: 14px; color: rgba(255,255,255,0.5);">
                                     Shared Trust Workspace Invitation
@@ -140,22 +166,36 @@ async def send_workspace_invitation_email(
                                 </p>
                                 <p style="color: rgba(255,255,255,0.8); font-size: 16px; margin: 0 0 24px; line-height: 1.6;">
                                     <strong style="color: #C6A87C;">{inviter_name}</strong> has invited you to join 
-                                    <strong style="color: #ffffff;">"{vault_name}"</strong> as a 
+                                    <strong style="color: #ffffff;">&ldquo;{vault_name}&rdquo;</strong> as a 
                                     <strong style="color: #C6A87C;">{role_display}</strong>.
                                 </p>
                                 
-                                <!-- Role Badge -->
+                                <!-- Workspace Info Box -->
                                 <div style="background-color: rgba(198, 168, 124, 0.1); border: 1px solid rgba(198, 168, 124, 0.3); border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-                                    <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                        Your Role
-                                    </p>
-                                    <p style="color: #C6A87C; font-size: 18px; font-weight: 600; margin: 0;">
-                                        {role_display}
-                                    </p>
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="padding-bottom: 12px;">
+                                                <p style="color: rgba(255,255,255,0.6); font-size: 11px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.5px;">Workspace</p>
+                                                <p style="color: #ffffff; font-size: 16px; font-weight: 600; margin: 0;">{vault_name}</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 12px;">
+                                                <p style="color: rgba(255,255,255,0.6); font-size: 11px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.5px;">Your Role</p>
+                                                <p style="color: #C6A87C; font-size: 16px; font-weight: 600; margin: 0;">{role_display}</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <p style="color: rgba(255,255,255,0.6); font-size: 11px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.5px;">Invited By</p>
+                                                <p style="color: #ffffff; font-size: 14px; margin: 0;">{inviter_name}</p>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
                                 
                                 <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin: 0 0 24px; line-height: 1.6;">
-                                    As a {role_display}, you'll be able to view documents, participate in governance workflows, 
+                                    As a {role_display}, you&apos;ll be able to view documents, participate in governance workflows, 
                                     and collaborate with other stakeholders in this trusted workspace.
                                 </p>
                                 
@@ -171,8 +211,15 @@ async def send_workspace_invitation_email(
                                     </tr>
                                 </table>
                                 
+                                <!-- Expiry Notice -->
+                                <div style="background-color: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 6px; padding: 12px; margin-bottom: 16px;">
+                                    <p style="color: #EAB308; font-size: 12px; margin: 0; text-align: center;">
+                                        ⏰ This invitation expires on {expiry_display}
+                                    </p>
+                                </div>
+                                
                                 <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0; line-height: 1.5;">
-                                    If you don't have an account yet, you'll be prompted to sign in with Google when you click the button above.
+                                    If you don&apos;t have an account yet, you&apos;ll be prompted to sign in with Google when you click the button above.
                                 </p>
                             </td>
                         </tr>
@@ -181,8 +228,8 @@ async def send_workspace_invitation_email(
                         <tr>
                             <td style="padding: 24px 32px; background-color: rgba(0,0,0,0.2); border-top: 1px solid rgba(198, 168, 124, 0.1);">
                                 <p style="color: rgba(255,255,255,0.4); font-size: 12px; margin: 0; text-align: center;">
-                                    This invitation was sent by {inviter_name} via Private Equity & Trusts.<br>
-                                    If you didn't expect this email, you can safely ignore it.
+                                    This invitation was sent by {inviter_name} via Private Equity &amp; Trusts.<br>
+                                    If you didn&apos;t expect this email, you can safely ignore it.
                                 </p>
                             </td>
                         </tr>
@@ -200,11 +247,15 @@ You've been invited to join a Trust Workspace
 
 {inviter_name} has invited you to join "{vault_name}" as a {role_display}.
 
+Workspace: {vault_name}
 Your Role: {role_display}
+Invited By: {inviter_name}
 
 As a {role_display}, you'll be able to view documents, participate in governance workflows, and collaborate with other stakeholders.
 
 Accept your invitation: {invitation_link}
+
+⏰ This invitation expires on {expiry_display}
 
 If you don't have an account yet, you'll be prompted to sign in with Google.
 
@@ -212,13 +263,25 @@ If you don't have an account yet, you'll be prompted to sign in with Google.
 This invitation was sent by {inviter_name} via Private Equity & Trusts.
     """
     
+    # Prepare metadata for audit
+    audit_metadata = {
+        "vault_id": vault_id,
+        "vault_name": vault_name,
+        "role": role,
+        "inviter_name": inviter_name,
+        "expires_at": expiry.isoformat()
+    }
+    
     # If no API key, simulate the email
     if not RESEND_API_KEY:
         logger.info(f"[SIMULATED EMAIL] Invitation to {recipient_email} for vault {vault_name}")
+        await log_email_audit("workspace_invitation", recipient_email, "simulated", f"sim_{datetime.now(timezone.utc).isoformat()}", audit_metadata, user_id)
         return {
             "status": "simulated",
             "message": f"Email simulated (no API key). Would send to {recipient_email}",
-            "email_id": f"sim_{datetime.now(timezone.utc).isoformat()}"
+            "email_id": f"sim_{datetime.now(timezone.utc).isoformat()}",
+            "invite_token": token,
+            "expires_at": expiry.isoformat()
         }
     
     # Build email params
@@ -233,18 +296,31 @@ This invitation was sent by {inviter_name} via Private Equity & Trusts.
     try:
         # Run sync SDK in thread to keep FastAPI non-blocking
         email = await asyncio.to_thread(resend.Emails.send, params)
-        logger.info(f"Invitation email sent to {recipient_email} for vault {vault_name}")
+        message_id = email.get("id")
+        logger.info(f"✅ Invitation email sent to {recipient_email} for vault {vault_name} [ID: {message_id}]")
+        
+        # Log success to audit
+        await log_email_audit("workspace_invitation", recipient_email, "success", message_id, audit_metadata, user_id)
+        
         return {
             "status": "success",
             "message": f"Email sent to {recipient_email}",
-            "email_id": email.get("id")
+            "email_id": message_id,
+            "invite_token": token,
+            "expires_at": expiry.isoformat()
         }
     except Exception as e:
-        logger.error(f"Failed to send invitation email to {recipient_email}: {str(e)}")
+        logger.error(f"❌ Failed to send invitation email to {recipient_email}: {str(e)}")
+        
+        # Log failure to audit
+        await log_email_audit("workspace_invitation", recipient_email, "error", None, {**audit_metadata, "error": str(e)}, user_id)
+        
         return {
             "status": "error",
             "message": str(e),
-            "email_id": None
+            "email_id": None,
+            "invite_token": token,
+            "expires_at": expiry.isoformat()
         }
 
 
