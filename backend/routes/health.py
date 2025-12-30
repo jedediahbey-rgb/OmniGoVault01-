@@ -1,12 +1,14 @@
 """
 Trust Health API Routes
 Endpoints for the Trust Health scoring system.
+Supports both V1 and V2 scanners with feature flagging.
 """
 
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone
 from services.health_scanner import TrustHealthScanner, get_health_history, AuditReadinessChecker
+from services.health_scanner_v2 import TrustHealthScannerV2, get_default_v2_ruleset
 import json
 import io
 
@@ -54,8 +56,22 @@ async def get_current_user(request: Request):
     return await _get_current_user_func(request)
 
 
+async def get_user_health_version(user_id: str) -> str:
+    """Get user's preferred health rules version (v1 or v2)."""
+    try:
+        config = await db.system_config.find_one(
+            {"config_type": "health_rules_version", "user_id": user_id},
+            {"_id": 0}
+        )
+        if config:
+            return config.get("version", "v2")
+    except:
+        pass
+    return "v2"  # Default to V2 for new users
+
+
 @router.get("/score")
-async def get_health_score(request: Request):
+async def get_health_score(request: Request, version: str = Query(default=None)):
     """
     Get the current trust health score.
     Returns the most recent scan or runs a new one if none exists.
