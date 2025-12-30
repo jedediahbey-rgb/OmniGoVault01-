@@ -2499,12 +2499,14 @@ export default function CyberHomePage() {
                       <span>Custom Integrations</span>
                     </li>
                   </ul>
-                  <Button 
-                    className="w-full bg-gradient-to-r from-purple-600 to-[#C6A87C] hover:from-purple-700 hover:to-[#B5976D] text-white font-semibold"
-                    onClick={handleSelectPlan(3)}
-                  >
-                    Contact Sales
-                  </Button>
+                  <div className="mt-auto">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-purple-600 to-[#C6A87C] hover:from-purple-700 hover:to-[#B5976D] text-white font-semibold"
+                      onClick={handleSelectPlan(3)}
+                    >
+                      Contact Sales
+                    </Button>
+                  </div>
                 </HoloCard>
               </motion.div>
             </div>
