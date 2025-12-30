@@ -2392,7 +2392,7 @@ export default function CyberHomePage() {
                   </ul>
                   <Button 
                     className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                    onClick={handleEnterVault}
+                    onClick={handleSelectPlan(1)}
                   >
                     Start Free Trial
                   </Button>
