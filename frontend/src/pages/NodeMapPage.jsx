@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ReactFlow, {
@@ -7,23 +7,25 @@ import ReactFlow, {
   Background,
   useNodesState,
   useEdgesState,
+  useReactFlow,
+  ReactFlowProvider,
   MarkerType,
   Panel,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-// Custom styles to hide React Flow attribution and optimize mobile
+// Custom styles for React Flow - mobile optimized
 const reactFlowStyles = `
   .react-flow__attribution {
     display: none !important;
   }
   .react-flow__minimap {
-    width: 120px !important;
-    height: 80px !important;
+    width: 100px !important;
+    height: 65px !important;
     right: 8px !important;
     top: 8px !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
     overflow: hidden !important;
   }
   .react-flow__controls {
@@ -34,13 +36,17 @@ const reactFlowStyles = `
     flex-direction: column !important;
     gap: 2px !important;
   }
+  .react-flow__controls button {
+    width: 28px !important;
+    height: 28px !important;
+  }
   @media (max-width: 640px) {
     .react-flow__minimap {
       display: none !important;
     }
     .react-flow__controls {
-      right: 6px !important;
-      bottom: 6px !important;
+      right: 4px !important;
+      bottom: 4px !important;
     }
     .react-flow__controls button {
       width: 24px !important;
