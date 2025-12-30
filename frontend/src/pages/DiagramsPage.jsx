@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import ReactFlow, {
   MiniMap,
@@ -7,6 +7,7 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
+  ReactFlowProvider,
   MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -24,27 +25,31 @@ import GlassCard from '../components/shared/GlassCard';
 import IconBadge from '../components/shared/IconBadge';
 import { Button } from '../components/ui/button';
 
-// Custom styles to hide React Flow attribution
+// Custom styles to hide React Flow attribution - mobile optimized
 const reactFlowStyles = `
   .react-flow__attribution {
     display: none !important;
   }
   .react-flow__controls {
-    right: 8px !important;
-    bottom: 8px !important;
+    right: 6px !important;
+    bottom: 6px !important;
     left: auto !important;
+  }
+  .react-flow__controls button {
+    width: 26px !important;
+    height: 26px !important;
   }
   @media (max-width: 640px) {
     .react-flow__minimap {
       display: none !important;
     }
     .react-flow__controls {
-      right: 6px !important;
-      bottom: 6px !important;
+      right: 4px !important;
+      bottom: 4px !important;
     }
     .react-flow__controls button {
-      width: 24px !important;
-      height: 24px !important;
+      width: 22px !important;
+      height: 22px !important;
     }
   }
 `;
