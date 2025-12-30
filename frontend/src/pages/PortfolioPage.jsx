@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { 
   Scales, Plus, FileText, ArrowLeft, User, SignOut, Briefcase,
   Wallet, Bell, Clock, CheckCircle, Trash, Download, Edit,
-  CaretRight, Calendar
+  CaretRight, Calendar, PaintBrush, DotsThreeVertical
 } from "@phosphor-icons/react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -12,8 +12,17 @@ import { Textarea } from "../components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '../components/ui/dropdown-menu';
 import { toast } from "sonner";
 import axios from "axios";
+import StyledPortrait from '../components/portrait/StyledPortrait';
+import PortraitStyleSelector from '../components/portrait/PortraitStyleSelector';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
