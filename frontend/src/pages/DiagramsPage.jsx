@@ -460,7 +460,7 @@ export default function DiagramsPage() {
 
   if (selectedDiagram) {
     return (
-      <div className="absolute inset-0 flex flex-col p-2 sm:p-4 overflow-hidden">
+      <div className="h-full flex flex-col p-2 sm:p-4 overflow-hidden">
         <div className="flex items-center justify-between mb-2 sm:mb-4 gap-2 shrink-0">
           <button
             onClick={() => setSelectedDiagram(null)}
