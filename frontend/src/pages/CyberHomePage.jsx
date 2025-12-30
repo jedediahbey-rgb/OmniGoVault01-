@@ -975,8 +975,10 @@ export default function CyberHomePage() {
       navigate('/billing');
     } else {
       // User not logged in - redirect to Google Auth with billing as return URL
+      // Store the post-auth destination
+      sessionStorage.setItem('post_auth_redirect', '/billing');
       sessionStorage.setItem('show_vault_loading', 'true');
-      const redirectUrl = window.location.origin + '/billing';
+      const redirectUrl = window.location.origin + '/auth/callback';
       window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
     }
   };
