@@ -818,7 +818,8 @@ export default function NodeMapPage() {
         )}
       </div>
 
-      <div className="mt-3 text-center text-white/40 text-sm">
+      {/* Footer hint - hidden on mobile to save space */}
+      <div className="hidden sm:block mt-2 text-center text-white/40 text-xs sm:text-sm">
         Click on nodes for details • Drag to rearrange • Scroll to zoom
       </div>
     </div>
