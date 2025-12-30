@@ -4773,7 +4773,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
-        "https://omnidev-central.preview.emergentagent.com",
+        "https://reactflow-optimize.preview.emergentagent.com",
         "http://localhost:3000",
         "http://127.0.0.1:3000"
     ],

@@ -1168,7 +1168,7 @@ Test the following UI fixes on the OmniGoVault application with Google OAuth usi
 
 #### Application Loading Verification:
 - ✅ Application loads with "OMNIGOVAULT" branding and "Jacking into the Network" loading screen
-- ✅ Frontend URL accessible at https://omnidev-central.preview.emergentagent.com
+- ✅ Frontend URL accessible at https://reactflow-optimize.preview.emergentagent.com
 - ✅ React 19 application with proper routing structure
 - ⚠️ Authentication required for accessing protected routes
 
