@@ -2446,12 +2446,14 @@ export default function CyberHomePage() {
                       <span>API Access</span>
                     </li>
                   </ul>
-                  <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={handleSelectPlan(2)}
-                  >
-                    Upgrade to Pro
-                  </Button>
+                  <div className="mt-auto">
+                    <Button 
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={handleSelectPlan(2)}
+                    >
+                      Upgrade to Pro
+                    </Button>
+                  </div>
                 </HoloCard>
               </motion.div>
               
