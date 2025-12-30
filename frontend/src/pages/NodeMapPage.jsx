@@ -752,8 +752,8 @@ export default function NodeMapPage() {
             )}
             <Background color="rgba(255,255,255,0.05)" gap={isMobile ? 20 : 25} />
             
-            {/* Legend Panel - Compact on mobile */}
-            <Panel position="bottom-left" className="!m-2 sm:!m-3 !mb-3 sm:!mb-4">
+            {/* Legend Panel - Compact on mobile, moved up to avoid overlap */}
+            <Panel position="bottom-left" className="!m-3 !mb-12 sm:!mb-10">
               <GlassCard className="!p-2 sm:!p-3 !bg-vault-dark/95 !border-vault-gold/20">
                 <div className="text-[10px] sm:text-xs text-white/70 mb-1.5 sm:mb-2 font-semibold">Legend</div>
                 <div className="grid grid-cols-2 gap-x-2 sm:gap-x-4 gap-y-1 sm:gap-y-1.5 text-[10px] sm:text-xs">
