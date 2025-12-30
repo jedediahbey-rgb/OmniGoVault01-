@@ -2719,6 +2719,19 @@ export default function CyberHomePage() {
           </div>
         </div>
       </footer>
+      
+      {/* Portrait Style Selector Dialog */}
+      <PortraitStyleSelector
+        isOpen={showPortraitSelector}
+        onClose={() => setShowPortraitSelector(false)}
+        currentStyleId={userData?.portrait_style || 'standard'}
+        userTier={userPlanTier}
+        userPicture={userData?.picture}
+        userName={userData?.name}
+        onStyleChange={(newStyle) => {
+          setUserData(prev => ({ ...prev, portrait_style: newStyle }));
+        }}
+      />
     </div>
   );
 }
