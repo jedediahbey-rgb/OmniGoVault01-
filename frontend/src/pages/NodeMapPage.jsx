@@ -18,15 +18,21 @@ const reactFlowStyles = `
     display: none !important;
   }
   .react-flow__minimap {
-    width: 120px !important;
-    height: 80px !important;
-    right: 10px !important;
-    top: 10px !important;
+    width: 140px !important;
+    height: 90px !important;
+    right: 12px !important;
+    top: 12px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden !important;
   }
   .react-flow__controls {
-    right: 10px !important;
-    bottom: 10px !important;
+    right: 12px !important;
+    bottom: 12px !important;
     left: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
   }
   @media (max-width: 768px) {
     .react-flow__minimap {
