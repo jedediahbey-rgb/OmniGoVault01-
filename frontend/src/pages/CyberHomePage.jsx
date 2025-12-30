@@ -2398,12 +2398,14 @@ export default function CyberHomePage() {
                       <span>Priority Support</span>
                     </li>
                   </ul>
-                  <Button 
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                    onClick={handleSelectPlan(1)}
-                  >
-                    Start Free Trial
-                  </Button>
+                  <div className="mt-auto">
+                    <Button 
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                      onClick={handleSelectPlan(1)}
+                    >
+                      Start Free Trial
+                    </Button>
+                  </div>
                 </HoloCard>
               </motion.div>
               
