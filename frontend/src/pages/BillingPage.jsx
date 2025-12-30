@@ -569,7 +569,7 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
         `} />
 
         {isCurrentPlan && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10">
             <Badge className="bg-vault-gold text-vault-navy font-semibold shadow-lg">
               ✓ Current Plan
             </Badge>
@@ -579,7 +579,7 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
         {/* Popular badge for tier 1 */}
         {plan.tier === 1 && !isCurrentPlan && (
           <motion.div 
-            className="absolute top-4 left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-3 left-1/2 -translate-x-1/2 z-10"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 500, delay: 0.3 }}
@@ -593,7 +593,7 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
         {/* Elite badge for Dynasty */}
         {plan.tier === 3 && !isCurrentPlan && (
           <motion.div 
-            className="absolute top-4 left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-3 left-1/2 -translate-x-1/2 z-10"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 500, delay: 0.4 }}
@@ -604,17 +604,22 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
           </motion.div>
         )}
         
-        <CardHeader className={`pb-3 relative z-10 ${isCurrentPlan || plan.tier === 1 || plan.tier === 3 ? 'pt-12' : 'pt-6'}`}>
-          <div className="flex items-center gap-3">
+        <CardHeader className={`relative z-10 text-center ${isCurrentPlan || plan.tier === 1 || plan.tier === 3 ? 'pt-10' : 'pt-5'} pb-2`}>
+          {/* Centered Icon */}
+          <div className="flex justify-center mb-3">
             <AnimatedTierIcon tier={plan.tier} />
-            <CardTitle className={`text-lg font-bold
-              ${plan.tier === 0 ? 'text-slate-200' : ''}
-              ${plan.tier === 1 ? 'text-emerald-100' : ''}
-              ${plan.tier === 2 ? 'text-blue-100' : ''}
-              ${plan.tier === 3 ? 'text-purple-100' : ''}
-            `}>{plan.name}</CardTitle>
           </div>
-          <CardDescription className="text-vault-muted text-sm min-h-[36px] mt-2">
+          
+          {/* Centered Title */}
+          <CardTitle className={`text-xl font-bold mb-1
+            ${plan.tier === 0 ? 'text-slate-200' : ''}
+            ${plan.tier === 1 ? 'text-emerald-100' : ''}
+            ${plan.tier === 2 ? 'text-blue-100' : ''}
+            ${plan.tier === 3 ? 'text-purple-100' : ''}
+          `}>{plan.name}</CardTitle>
+          
+          {/* Centered Description */}
+          <CardDescription className="text-vault-muted text-xs min-h-[32px]">
             {plan.description}
           </CardDescription>
         </CardHeader>
