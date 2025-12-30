@@ -427,7 +427,9 @@ export default function BinderPage() {
 
     try {
       // Fetch profiles
-      const profilesRes = await fetch(`${API_URL}/api/binder/profiles?portfolio_id=${portfolioId}`);
+      const profilesRes = await fetch(`${API_URL}/api/binder/profiles?portfolio_id=${portfolioId}`, {
+        credentials: 'include'
+      });
       const profilesData = await profilesRes.json();
       if (profilesData.ok) {
         setProfiles(profilesData.data.profiles || []);
@@ -438,21 +440,27 @@ export default function BinderPage() {
       }
 
       // Fetch runs
-      const runsRes = await fetch(`${API_URL}/api/binder/runs?portfolio_id=${portfolioId}&limit=10`);
+      const runsRes = await fetch(`${API_URL}/api/binder/runs?portfolio_id=${portfolioId}&limit=10`, {
+        credentials: 'include'
+      });
       const runsData = await runsRes.json();
       if (runsData.ok) {
         setRuns(runsData.data.runs || []);
       }
 
       // Fetch latest
-      const latestRes = await fetch(`${API_URL}/api/binder/latest?portfolio_id=${portfolioId}`);
+      const latestRes = await fetch(`${API_URL}/api/binder/latest?portfolio_id=${portfolioId}`, {
+        credentials: 'include'
+      });
       const latestData = await latestRes.json();
       if (latestData.ok) {
         setLatestRun(latestData.data.run);
       }
 
       // Fetch stale check
-      const staleRes = await fetch(`${API_URL}/api/binder/stale-check?portfolio_id=${portfolioId}`);
+      const staleRes = await fetch(`${API_URL}/api/binder/stale-check?portfolio_id=${portfolioId}`, {
+        credentials: 'include'
+      });
       const staleData = await staleRes.json();
       if (staleData.ok) {
         setStaleCheck(staleData.data);
@@ -499,6 +507,7 @@ export default function BinderPage() {
       const res = await fetch(`${API_URL}/api/binder/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(requestBody)
       });
       const data = await res.json();
@@ -523,7 +532,9 @@ export default function BinderPage() {
         // Fetch the newly created run to update Latest Binder section
         if (data.data.run_id) {
           try {
-            const runRes = await fetch(`${API_URL}/api/binder/runs/${data.data.run_id}`);
+            const runRes = await fetch(`${API_URL}/api/binder/runs/${data.data.run_id}`, {
+              credentials: 'include'
+            });
             const runData = await runRes.json();
             if (runData.ok && runData.data.run) {
               setLatestRun(runData.data.run);
