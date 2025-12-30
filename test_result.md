@@ -477,3 +477,43 @@ Test two specific UI fixes that were just implemented:
 ### Agent Communication:
 - **Agent**: testing
 - **Message**: Completed comprehensive testing of both UI fixes. Settings page shimmer effect working perfectly - custom display names show animated gold gradient shimmer as expected. Billing page Dynasty Crown icon fix working correctly - tier 3 Crown icon properly displayed instead of tier 0 Zap icon. Both CSS animations and visual effects functioning as designed. All test scenarios passed successfully. Ready for production use.
+---
+
+## Test Date: 2025-12-30
+## Test Focus: V2 Trust Health Feature - Comprehensive Testing
+
+### Feature Overview:
+The V2 Trust Health system includes:
+- New backend service: `/app/backend/services/health_scanner_v2.py`
+- Feature-flagged API routes in `/app/backend/routes/health.py`
+- Settings UI for configuring V2 rules in `/app/frontend/src/pages/SettingsPage.jsx`
+- Dashboard UI for displaying V2 data in `/app/frontend/src/pages/TrustHealthDashboard.jsx`
+
+### V2 Features to Test:
+1. **Backend API Endpoints**:
+   - GET /api/health/v2/ruleset - Fetch V2 ruleset configuration
+   - PUT /api/health/v2/ruleset - Save custom V2 ruleset
+   - POST /api/health/v2/ruleset/reset - Reset to defaults
+   - GET /api/health/scan (with V2 flag) - Run V2 health scan
+
+2. **V2 Scoring Engine Features**:
+   - Bounded penalties with max caps
+   - Severity multipliers (info, warning, critical)
+   - Readiness modes (normal, audit, court)
+   - Category weights that sum to 100%
+   - Blocking conditions that cap maximum score
+
+3. **Frontend Settings UI**:
+   - Profile tab with display name
+   - Health Score tab with V2 configuration
+   - Category weights adjustment (must sum to 100%)
+   - Severity multipliers configuration
+   - Blocking conditions toggles
+   - Readiness mode selector
+
+4. **Frontend Dashboard UI**:
+   - V2 health score display
+   - Blockers section
+   - Prioritized Next Actions with estimated score gains
+
+### User: jedediah.bey@gmail.com (OMNICOMPETENT_OWNER)
