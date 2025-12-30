@@ -119,7 +119,7 @@ export default function LandingPage() {
         >
           <motion.div variants={fadeInUp} className="max-w-3xl">
             <p className="text-vault-gold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm mb-4 sm:mb-6">
-              The Sovereign's Workspace
+              The Sovereign&apos;s Workspace
             </p>
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-heading text-white leading-tight mb-4 sm:mb-6">
               Master <span className="text-gold-gradient italic">Equity</span>,
