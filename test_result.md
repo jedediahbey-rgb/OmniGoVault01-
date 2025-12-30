@@ -906,6 +906,140 @@ Test the Portrait Customization feature frontend UI including:
 ---
 
 ## Test Date: 2025-12-30
+## Test Focus: Luxury Scroll Mobile Layout Implementation Testing
+
+### Test Request:
+Test the "Luxury Scroll" mobile layout implementation for React Flow pages on the OmniGoVault application.
+
+**Test URL**: https://reactflow-optimize.preview.emergentagent.com
+
+**Pages Tested**:
+1. **DiagramsPage** at `/diagrams`
+2. **NodeMapPage** at `/node-map` (requires authentication - test loading state only)
+
+**Mobile Viewports Tested**:
+- 360×740 (small Android)
+- 375×812 (iPhone X/11)
+- 390×844 (iPhone 14)
+- 412×915 (large Android)
+
+### Frontend Test Results (2025-12-30 22:28):
+**Test Summary: 8/8 acceptance criteria verified (100% success rate)**
+
+#### DiagramsPage Testing Results:
+
+**✅ 1. Sticky Header + Scrollable Body:**
+- Header uses `position: sticky; top: 0; z-index: 50;` correctly
+- Header remains visible when scrolling
+- Proper safe area handling with `paddingTop: 'env(safe-area-inset-top, 0px)'`
+- Scrollable body with `flex-1 overflow-y-auto`
+
+**✅ 2. No Horizontal Scroll:**
+- `overflow-x: hidden` applied correctly at container level
+- No horizontal scroll detected across all tested viewports
+- Content properly contained within viewport boundaries
+
+**✅ 3. ReactFlow Canvas Implementation:**
+- Canvas properly framed with rounded corners (`rounded-xl`) and border (`border-white/10`)
+- All trust nodes visible within viewport: SETTLOR, TRUST, TRUSTEE, BENEFICIARY, TRUST PROPERTY
+- Canvas height uses responsive `clamp(420px, 70dvh, 780px)` for optimal mobile sizing
+- No node clipping or out-of-frame elements detected
+
+**✅ 4. Controls Position:**
+- Controls positioned at bottom-right using `position="bottom-right"`
+- Custom styling with proper margins and responsive sizing
+- Mobile-optimized button sizes: `22px` on mobile, `26px` on desktop
+
+**✅ 5. MiniMap Behavior:**
+- Correctly hidden on mobile viewports (width < 640px) using `{!isMobile && <MiniMap />}`
+- Visible on larger screens with proper top-right positioning
+- Enhanced styling with border, shadow, and proper dimensions (100x65px)
+
+**✅ 6. Scrolling Behavior:**
+- Smooth and intentional scrolling implemented
+- No layout jumps detected during scroll testing
+- Proper scroll containment within framed viewport
+
+**✅ 7. ResizeObserver Error Handling:**
+- ResizeObserver loop errors properly suppressed in both components
+- Error handler implemented: `if (e.message?.includes('ResizeObserver loop')) e.stopImmediatePropagation();`
+- No critical console errors detected
+
+**✅ 8. Mobile-Optimized Features:**
+- Responsive text sizing and spacing
+- Touch-friendly button sizes
+- Proper viewport meta handling
+- Safe area inset support
+
+#### NodeMapPage Testing Results:
+
+**✅ Loading State Layout:**
+- Proper sticky header implementation matching DiagramsPage
+- Loading spinner correctly displayed when authentication required
+- "Trust Node Map" title visible in header
+- No horizontal scroll in loading state
+- Consistent layout structure with DiagramsPage
+
+#### Code Analysis Verification:
+
+**DiagramsPage Implementation:**
+- ✅ Custom CSS styles properly hide ReactFlow attribution
+- ✅ Responsive layout with mobile-first approach
+- ✅ Proper ResizeObserver integration for dynamic fitting
+- ✅ Mobile-optimized control and minimap positioning
+
+**NodeMapPage Implementation:**
+- ✅ Consistent "Luxury Scroll" layout pattern
+- ✅ Same responsive design principles
+- ✅ Proper authentication handling with loading states
+- ✅ Mobile legend positioned below framed section
+
+### Key Technical Implementations Verified:
+
+1. **Luxury Scroll Pattern:**
+   ```jsx
+   <div className="flex flex-col overflow-x-hidden" style={{
+     minHeight: '100dvh',
+     paddingTop: 'env(safe-area-inset-top, 0px)',
+     paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+   }}>
+     <header className="sticky top-0 z-50 bg-vault-dark/95 backdrop-blur-sm">
+     <div className="flex-1 overflow-y-auto">
+   ```
+
+2. **ReactFlow Mobile Optimization:**
+   ```css
+   @media (max-width: 640px) {
+     .react-flow__minimap { display: none !important; }
+     .react-flow__controls { right: 4px !important; bottom: 4px !important; }
+   }
+   ```
+
+3. **Responsive Canvas Sizing:**
+   ```jsx
+   style={{ height: 'clamp(420px, 70dvh, 780px)' }}
+   ```
+
+### Test Scenarios Completed:
+1. ✅ DiagramsPage cards view layout verification
+2. ✅ Trust Relationship Structure diagram interaction
+3. ✅ ReactFlow canvas framing and node visibility
+4. ✅ Controls and MiniMap positioning across viewports
+5. ✅ NodeMapPage loading state layout
+6. ✅ Horizontal scroll prevention verification
+7. ✅ Sticky header behavior testing
+8. ✅ Mobile responsiveness across all specified viewports
+
+### Status Summary:
+**Frontend Luxury Scroll Mobile Layout: 100% Working** - All acceptance criteria met. Implementation follows mobile-first responsive design principles with proper ReactFlow integration, sticky headers, and no horizontal scroll issues.
+
+### Agent Communication:
+- **Agent**: testing
+- **Message**: Completed comprehensive testing of "Luxury Scroll" mobile layout implementation for ReactFlow pages. All 8 acceptance criteria verified successfully across 4 mobile viewports (360×740, 375×812, 390×844, 412×915). DiagramsPage properly implements sticky header with scrollable body, no horizontal scroll, framed ReactFlow canvas with clamp(420px, 70dvh, 780px) height, bottom-right controls positioning, mobile-hidden MiniMap, and smooth scrolling behavior. NodeMapPage loading state layout consistent with design patterns. ResizeObserver errors properly suppressed. Implementation ready for production use.
+
+---
+
+## Test Date: 2025-12-30
 ## Test Focus: Node Map Page Functionality Testing
 
 ### Test Request:
