@@ -20,7 +20,7 @@ class V2TrustHealthTester:
         self.base_url = BASE_URL
         self.session = requests.Session()
         # Set the session cookie for authentication
-        self.session.cookies.set('session_token', 'signing_test_1767059099')
+        self.session.cookies.set('session_token', 'sess_a67ad050a63d4f0f82e479b165e70f4a')
         self.session.headers.update({
             'Content-Type': 'application/json',
             'User-Agent': 'V2TrustHealth-Tester/1.0'
