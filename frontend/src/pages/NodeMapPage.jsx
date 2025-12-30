@@ -20,14 +20,25 @@ const reactFlowStyles = `
   .react-flow__minimap {
     width: 120px !important;
     height: 80px !important;
+    right: 10px !important;
+    top: 10px !important;
+  }
+  .react-flow__controls {
+    right: 10px !important;
+    bottom: 10px !important;
+    left: auto !important;
   }
   @media (max-width: 768px) {
     .react-flow__minimap {
       width: 100px !important;
       height: 65px !important;
+      right: 8px !important;
+      top: 8px !important;
     }
     .react-flow__controls {
       transform: scale(0.85);
+      right: 8px !important;
+      bottom: 8px !important;
     }
   }
 `;
