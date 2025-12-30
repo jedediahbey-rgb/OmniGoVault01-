@@ -18,33 +18,33 @@ const reactFlowStyles = `
     display: none !important;
   }
   .react-flow__minimap {
-    width: 140px !important;
-    height: 90px !important;
-    right: 12px !important;
-    top: 12px !important;
+    width: 120px !important;
+    height: 80px !important;
+    right: 8px !important;
+    top: 8px !important;
     border-radius: 8px !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
     overflow: hidden !important;
   }
   .react-flow__controls {
-    right: 12px !important;
-    bottom: 12px !important;
+    right: 8px !important;
+    bottom: 8px !important;
     left: auto !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 4px !important;
+    gap: 2px !important;
   }
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     .react-flow__minimap {
-      width: 100px !important;
-      height: 65px !important;
-      right: 8px !important;
-      top: 8px !important;
+      display: none !important;
     }
     .react-flow__controls {
-      transform: scale(0.85);
-      right: 8px !important;
-      bottom: 8px !important;
+      right: 6px !important;
+      bottom: 6px !important;
+    }
+    .react-flow__controls button {
+      width: 24px !important;
+      height: 24px !important;
     }
   }
 `;
