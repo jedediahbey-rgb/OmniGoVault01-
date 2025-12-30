@@ -548,7 +548,7 @@ function DiagramsContent() {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
-            onInit={setReactFlowInstance}
+            onInit={handleInit}
             fitView
             fitViewOptions={{ padding: isMobile ? 0.08 : 0.12, includeHiddenNodes: true }}
             minZoom={isMobile ? 0.08 : 0.15}
