@@ -94,10 +94,11 @@ export default function SettingsPage() {
   const [displayName, setDisplayName] = useState('');
   const [profileSaving, setProfileSaving] = useState(false);
   
-  // Health rules state
+  // Health rules V2 state
   const [healthConfig, setHealthConfig] = useState(null);
   const [isDefault, setIsDefault] = useState(true);
   const [expandedSection, setExpandedSection] = useState('weights');
+  const [healthVersion, setHealthVersion] = useState('v2');
   
   // Checklists state
   const [checklists, setChecklists] = useState(null);
@@ -105,7 +106,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     fetchUserProfile();
-    fetchHealthRules();
+    fetchHealthRulesV2();
     fetchChecklists();
   }, []);
 
@@ -133,16 +134,28 @@ export default function SettingsPage() {
     }
   };
 
-  const fetchHealthRules = async () => {
+  // V2 Health Rules fetch
+  const fetchHealthRulesV2 = async () => {
     try {
-      const res = await axios.get(`${API}/config/health-rules`);
+      const res = await axios.get(`${API}/health/v2/ruleset`);
       if (res.data.ok) {
-        setHealthConfig(res.data.data.config);
-        setIsDefault(res.data.data.is_default);
+        setHealthConfig(res.data.data);
+        setIsDefault(!res.data.data.custom);
+        setHealthVersion('v2');
       }
     } catch (error) {
-      console.error('Failed to fetch health rules:', error);
-      toast.error('Failed to load health rules');
+      console.error('Failed to fetch V2 health rules:', error);
+      // Fallback to V1 endpoint
+      try {
+        const fallback = await axios.get(`${API}/config/health-rules`);
+        if (fallback.data.ok) {
+          setHealthConfig(fallback.data.data.config);
+          setIsDefault(fallback.data.data.is_default);
+          setHealthVersion('v1');
+        }
+      } catch (e) {
+        toast.error('Failed to load health rules');
+      }
     } finally {
       setLoading(false);
     }
@@ -159,10 +172,11 @@ export default function SettingsPage() {
     }
   };
 
+  // V2 Save
   const saveHealthRules = async () => {
     setSaving(true);
     try {
-      const res = await axios.put(`${API}/config/health-rules`, healthConfig);
+      const res = await axios.put(`${API}/health/v2/ruleset`, healthConfig);
       if (res.data.ok) {
         toast.success('Health rules saved');
         setIsDefault(false);
@@ -177,13 +191,14 @@ export default function SettingsPage() {
     }
   };
 
+  // V2 Reset
   const resetHealthRules = async () => {
     if (!window.confirm('Reset all health rules to defaults?')) return;
     
     try {
-      const res = await axios.post(`${API}/config/health-rules/reset`);
+      const res = await axios.post(`${API}/health/v2/ruleset/reset`);
       if (res.data.ok) {
-        setHealthConfig(res.data.data.config);
+        setHealthConfig(res.data.data);
         setIsDefault(true);
         toast.success('Health rules reset to defaults');
       }
@@ -198,10 +213,21 @@ export default function SettingsPage() {
     setHealthConfig({ ...healthConfig, category_weights: newWeights });
   };
 
-  const updateBlockingCap = (capName, field, value) => {
+  const updateSeverityMultiplier = (severity, value) => {
+    const newMultipliers = { ...healthConfig.severity_multipliers };
+    newMultipliers[severity] = parseFloat(value) || 1.0;
+    setHealthConfig({ ...healthConfig, severity_multipliers: newMultipliers });
+  };
+
+  const updateBlockingCap = (capId, field, value) => {
     const newCaps = { ...healthConfig.blocking_caps };
-    newCaps[capName] = { ...newCaps[capName], [field]: value };
+    if (!newCaps[capId]) newCaps[capId] = {};
+    newCaps[capId] = { ...newCaps[capId], [field]: value };
     setHealthConfig({ ...healthConfig, blocking_caps: newCaps });
+  };
+
+  const updateReadinessMode = (mode) => {
+    setHealthConfig({ ...healthConfig, readiness_mode: mode });
   };
 
   const saveChecklist = async (moduleType) => {
