@@ -2344,14 +2344,20 @@ export default function CyberHomePage() {
                       <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
                       <span>Health Monitoring</span>
                     </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" weight="bold" />
+                      <span>Secure Storage</span>
+                    </li>
                   </ul>
-                  <Button 
-                    variant="outline" 
-                    className="w-full border-slate-600 text-slate-300 hover:bg-slate-800"
-                    onClick={handleSelectPlan(0)}
-                  >
-                    Get Started Free
-                  </Button>
+                  <div className="mt-auto">
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-slate-600 text-slate-300 hover:bg-slate-800"
+                      onClick={handleSelectPlan(0)}
+                    >
+                      Get Started Free
+                    </Button>
+                  </div>
                 </HoloCard>
               </motion.div>
               
