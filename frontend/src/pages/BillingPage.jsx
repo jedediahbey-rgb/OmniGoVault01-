@@ -5,9 +5,10 @@ import {
   CreditCard, 
   Check, 
   X, 
-  Zap, 
-  Crown, 
-  Building2, 
+  FileText,
+  Shield, 
+  Gem,
+  Castle,
   Loader2,
   ChevronRight,
   AlertCircle,
@@ -15,8 +16,10 @@ import {
   Users,
   FolderOpen,
   HardDrive,
-  Sparkles,
-  ExternalLink
+  Sparkle,
+  ExternalLink,
+  Flame,
+  Star
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../components/ui/card';
 import { Button } from '../components/ui/button';
