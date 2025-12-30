@@ -64,10 +64,10 @@ export default function SignDocumentDialog({
         {
           legal_name: legalName,
           signature_type: 'ELECTRONIC_CONSENT',
-          signature_data: {
+          signature_data: JSON.stringify({
             consent_text: 'I agree to the terms of this document and consent to electronic records and signatures.',
             typed_name: legalName,
-          },
+          }),
           consent_acknowledged: true,
         },
         { withCredentials: true }
