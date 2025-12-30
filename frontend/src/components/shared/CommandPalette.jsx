@@ -269,6 +269,9 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
 
   const executeAction = async (actionType) => {
     switch (actionType) {
+      case 'create_portfolio':
+        navigate('/vault?action=create_portfolio');
+        break;
       case 'create_minutes':
         navigate('/vault/governance?tab=meetings&action=create');
         break;
@@ -284,8 +287,11 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
       case 'create_dispute':
         navigate('/vault/governance?tab=disputes&action=create');
         break;
+      case 'create_document':
+        navigate('/templates?action=create');
+        break;
       case 'run_health_scan':
-        navigate('/health');
+        navigate('/trust-health');
         toast.info('Navigate to Health Dashboard to run scan');
         break;
       case 'export_health_report':
@@ -305,6 +311,9 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
         } catch (error) {
           toast.error('Failed to generate report');
         }
+        break;
+      case 'export_binder':
+        navigate('/binder?action=export');
         break;
       default:
         if (onAction) {
