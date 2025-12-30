@@ -601,76 +601,78 @@ C/o: <strong>[ADDRESS]</strong><br/>
 
       {/* Create Document Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="bg-vault-navy border-white/10 w-[88vw] max-w-[360px] sm:max-w-md p-5 sm:p-6">
-          <DialogHeader className="space-y-1">
-            <DialogTitle className="text-white font-heading text-base sm:text-lg text-center pr-6">
-              Create {selectedTemplate?.name}
-            </DialogTitle>
-            <DialogDescription className="text-white/50 text-xs sm:text-sm text-center">
-              Customize your document settings before creating
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-3">
-            <div>
-              <label className="text-white/60 text-xs sm:text-sm mb-1.5 block">Document Title</label>
-              <Input
-                ref={titleInputRef}
-                placeholder="Enter document title"
-                value={documentTitle}
-                onChange={(e) => setDocumentTitle(e.target.value)}
-                className="bg-white/5 border-white/10 focus:border-vault-gold text-sm w-full"
-              />
+        <DialogContent className="bg-vault-navy border-white/10 w-[90vw] max-w-md sm:max-w-lg overflow-hidden">
+          <div className="px-1">
+            <DialogHeader className="space-y-1">
+              <DialogTitle className="text-white font-heading text-base sm:text-lg text-center pr-6">
+                Create {selectedTemplate?.name}
+              </DialogTitle>
+              <DialogDescription className="text-white/50 text-xs sm:text-sm text-center px-2">
+                Customize your document settings before creating
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              <div>
+                <label className="text-white/60 text-xs sm:text-sm mb-1.5 block">Document Title</label>
+                <Input
+                  ref={titleInputRef}
+                  placeholder="Enter document title"
+                  value={documentTitle}
+                  onChange={(e) => setDocumentTitle(e.target.value)}
+                  className="bg-white/5 border-white/10 focus:border-vault-gold text-sm text-xs sm:text-sm"
+                />
+              </div>
+              
+              {portfolios.length > 0 && (
+                <div>
+                  <label className="text-white/60 text-xs sm:text-sm mb-1.5 block">Portfolio (Optional)</label>
+                  <Select 
+                    value={selectedPortfolio} 
+                    onValueChange={setSelectedPortfolio}
+                  >
+                    <SelectTrigger 
+                      ref={triggerRef}
+                      className="bg-white/5 border-white/10 text-xs sm:text-sm"
+                      onPointerDown={handlePortfolioPointerDown}
+                    >
+                      <SelectValue placeholder="Select a portfolio" className="truncate" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className="bg-vault-navy border-white/10 z-[9999]"
+                      position="popper"
+                      sideOffset={4}
+                    >
+                      <SelectItem value="__none__" className="text-white/70 text-xs sm:text-sm">No Portfolio</SelectItem>
+                      {portfolios.map(p => (
+                        <SelectItem key={p.portfolio_id} value={p.portfolio_id} className="text-white/70 text-xs sm:text-sm">
+                          <span className="truncate block max-w-[250px]">{p.name}</span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
             
-            {portfolios.length > 0 && (
-              <div>
-                <label className="text-white/60 text-xs sm:text-sm mb-1.5 block">Portfolio (Optional)</label>
-                <Select 
-                  value={selectedPortfolio} 
-                  onValueChange={setSelectedPortfolio}
-                >
-                  <SelectTrigger 
-                    ref={triggerRef}
-                    className="bg-white/5 border-white/10 text-sm w-full"
-                    onPointerDown={handlePortfolioPointerDown}
-                  >
-                    <SelectValue placeholder="Select a portfolio" />
-                  </SelectTrigger>
-                  <SelectContent 
-                    className="bg-vault-navy border-white/10 z-[9999] max-w-[320px]"
-                    position="popper"
-                    sideOffset={4}
-                  >
-                    <SelectItem value="__none__" className="text-white/70">No Portfolio</SelectItem>
-                    {portfolios.map(p => (
-                      <SelectItem key={p.portfolio_id} value={p.portfolio_id} className="text-white/70 truncate">
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            <DialogFooter className="flex flex-col gap-2 pt-2">
+              <Button onClick={createDocument} disabled={creating} className="btn-primary text-sm h-10">
+                {creating ? 'Creating...' : 'Create'}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={handleAiGenerate}
+                disabled={!selectedPortfolio || selectedPortfolio === '__none__'}
+                className="btn-secondary text-xs sm:text-sm h-10"
+              >
+                <Sparkle className="w-4 h-4 mr-1.5 flex-shrink-0" weight="duotone" />
+                <span>Generate with AI</span>
+              </Button>
+              <Button variant="ghost" onClick={() => setShowCreateDialog(false)} className="text-sm h-10">
+                Cancel
+              </Button>
+            </DialogFooter>
           </div>
-          
-          <DialogFooter className="flex flex-col gap-2 pt-2">
-            <Button onClick={createDocument} disabled={creating} className="btn-primary w-full">
-              {creating ? 'Creating...' : 'Create'}
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={handleAiGenerate}
-              disabled={!selectedPortfolio || selectedPortfolio === '__none__'}
-              className="btn-secondary w-full text-xs sm:text-sm"
-            >
-              <Sparkle className="w-4 h-4 mr-1.5 flex-shrink-0" weight="duotone" />
-              <span className="truncate">Generate with AI</span>
-            </Button>
-            <Button variant="ghost" onClick={() => setShowCreateDialog(false)} className="w-full">
-              Cancel
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
