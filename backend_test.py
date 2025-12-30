@@ -127,10 +127,10 @@ class BillingTester:
                         if actual_plan:
                             if (actual_plan.get("tier") == expected_plan["tier"] and 
                                 actual_plan.get("price_monthly") == expected_plan["price_monthly"]):
-                                details += f", {expected_plan['name']}: ✓"
+                                details += f", {expected_plan['name']}: ✓ (${expected_plan['price_monthly']}/mo, tier {expected_plan['tier']})"
                             else:
                                 success = False
-                                details += f", {expected_plan['name']}: tier/price mismatch"
+                                details += f", {expected_plan['name']}: tier/price mismatch - expected tier {expected_plan['tier']}, ${expected_plan['price_monthly']}/mo, got tier {actual_plan.get('tier')}, ${actual_plan.get('price_monthly')}/mo"
                         else:
                             success = False
                             details += f", {expected_plan['name']}: not found"
