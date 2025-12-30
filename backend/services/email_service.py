@@ -1,9 +1,12 @@
-"""Email Service for Workspace Invitations using Resend"""
+"""Email Service for Workspace Invitations using Resend - V2 Enhanced"""
 import os
 import asyncio
 import logging
+import secrets
+import hashlib
 import resend
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -12,11 +15,70 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
 APP_URL = os.environ.get("APP_URL", "https://trusthealth-update.preview.emergentagent.com")
 
+# Database reference for audit logging
+_db = None
+
+def set_email_db(database):
+    """Set database reference for audit logging"""
+    global _db
+    _db = database
+
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
-    logger.info("Resend email service initialized")
+    logger.info("✅ Resend email service initialized with real API key")
 else:
-    logger.warning("RESEND_API_KEY not set - emails will be simulated")
+    logger.warning("⚠️ RESEND_API_KEY not set - emails will be simulated")
+
+
+def generate_secure_invite_token(vault_id: str, recipient_email: str, expiry_hours: int = 72) -> tuple[str, str, datetime]:
+    """
+    Generate a secure invite token with expiration.
+    
+    Returns:
+        tuple: (token, token_hash, expiry_datetime)
+    """
+    # Generate random token
+    token = secrets.token_urlsafe(32)
+    
+    # Create hash for storage (don't store raw token)
+    token_hash = hashlib.sha256(f"{token}:{vault_id}:{recipient_email}".encode()).hexdigest()
+    
+    # Calculate expiry
+    expiry = datetime.now(timezone.utc) + timedelta(hours=expiry_hours)
+    
+    return token, token_hash, expiry
+
+
+async def log_email_audit(
+    email_type: str,
+    recipient_email: str,
+    status: str,
+    message_id: Optional[str],
+    metadata: dict,
+    user_id: Optional[str] = None
+):
+    """Log email send attempt to audit log"""
+    if not _db:
+        logger.warning("Email audit: No database connection for audit logging")
+        return
+    
+    try:
+        audit_entry = {
+            "id": f"email_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}_{secrets.token_hex(4)}",
+            "type": "email",
+            "email_type": email_type,
+            "recipient_email": recipient_email,
+            "status": status,
+            "message_id": message_id,
+            "user_id": user_id,
+            "metadata": metadata,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "sender_email": SENDER_EMAIL
+        }
+        await _db.email_audit_log.insert_one(audit_entry)
+        logger.info(f"📧 Email audit logged: {email_type} to {recipient_email} - {status}")
+    except Exception as e:
+        logger.error(f"Failed to log email audit: {e}")
 
 
 async def send_workspace_invitation_email(
