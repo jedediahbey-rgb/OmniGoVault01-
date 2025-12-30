@@ -567,7 +567,9 @@ export default function BinderPage() {
   // View manifest
   const handleViewManifest = async (runId) => {
     try {
-      const res = await fetch(`${API_URL}/api/binder/manifest/${runId}`);
+      const res = await fetch(`${API_URL}/api/binder/manifest/${runId}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       if (data.ok) {
         setManifestData(data.data);
@@ -592,6 +594,7 @@ export default function BinderPage() {
       const res = await fetch(`${API_URL}/api/binder/profiles/${configProfile.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           rules: configProfile.rules_json
         })
@@ -614,7 +617,9 @@ export default function BinderPage() {
   const fetchSchedules = useCallback(async () => {
     if (!portfolioId) return;
     try {
-      const res = await fetch(`${API_URL}/api/binder/schedules?portfolio_id=${portfolioId}`);
+      const res = await fetch(`${API_URL}/api/binder/schedules?portfolio_id=${portfolioId}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       if (data.ok) {
         setSchedules(data.data.schedules || []);
