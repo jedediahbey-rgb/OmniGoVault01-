@@ -374,15 +374,29 @@ export default function TrustHealthDashboard() {
                     />
                   </div>
 
-                  {blockingConditions.length > 0 && (
+                  {isCapped && (
                     <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                       <div className="flex items-center gap-2 text-red-400 text-sm mb-2">
                         <Warning className="w-4 h-4" weight="fill" />
                         <span className="font-medium">Score Capped</span>
                       </div>
-                      <p className="text-xs text-red-300">
-                        Raw score: {Math.round(rawScore)} → Capped due to: {blockingConditions.join(', ')}
+                      <p className="text-xs text-red-300 mb-2">
+                        Raw score: {Math.round(rawScore)} → Capped at: {Math.round(score)}
                       </p>
+                      {blockersTriggered.length > 0 ? (
+                        <div className="space-y-1">
+                          {blockersTriggered.map((blocker, idx) => (
+                            <div key={idx} className="text-xs text-red-200 flex items-center gap-1">
+                              <span>•</span>
+                              <span>{blocker.name} (max {blocker.cap_value})</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-red-200">
+                          {blockingConditions.join(', ')}
+                        </p>
+                      )}
                     </div>
                   )}
 
