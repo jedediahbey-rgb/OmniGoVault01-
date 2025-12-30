@@ -731,16 +731,16 @@ export default function NodeMapPage() {
               showInteractive={false}
               className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-2 sm:!m-3 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-6 [&>button]:!h-6 sm:[&>button]:!w-8 sm:[&>button]:!h-8"
             />
-            {/* MiniMap - redesigned with better symmetry */}
+            {/* MiniMap - redesigned with better symmetry, hidden on mobile */}
             {!isMobile && (
               <MiniMap 
                 style={{ 
                   backgroundColor: 'rgba(11, 18, 33, 0.98)',
                   border: '2px solid rgba(198, 168, 124, 0.4)',
                   borderRadius: '8px',
-                  width: 140,
-                  height: 90,
-                  margin: '12px',
+                  width: 120,
+                  height: 80,
+                  margin: '8px',
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                 }}
                 nodeColor={(node) => {
