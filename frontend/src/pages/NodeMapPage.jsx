@@ -653,18 +653,19 @@ export default function NodeMapPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-2rem)] flex flex-col p-4 sm:p-6 lg:p-8">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-        <div className="flex items-center gap-4">
+    <div className="h-[calc(100vh-4rem)] sm:h-[calc(100vh-2rem)] flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden">
+      {/* Header - More compact on mobile */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 mb-2 sm:mb-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Link
             to="/vault"
-            className="flex items-center gap-2 text-vault-gold hover:underline"
+            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-sm sm:text-base"
           >
-            <ArrowLeft className="w-4 h-4" /> Back
+            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
           </Link>
           <div>
-            <h1 className="text-2xl font-heading text-white">Trust Node Map</h1>
-            <p className="text-white/50 text-xs sm:text-sm mt-1">
+            <h1 className="text-lg sm:text-2xl font-heading text-white">Trust Node Map</h1>
+            <p className="text-white/50 text-[10px] sm:text-sm mt-0.5 sm:mt-1 hidden sm:block">
               Visual representation of trust{' '}
               <span style={{ whiteSpace: 'nowrap' }}>
                 relationships. <span className="inline-flex align-middle"><PageHelpTooltip pageKey="nodeMap" /></span>
@@ -673,9 +674,9 @@ export default function NodeMapPage() {
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
-            <SelectTrigger className="w-[200px] bg-vault-dark border-vault-gold/30">
+            <SelectTrigger className="flex-1 sm:flex-none sm:w-[200px] bg-vault-dark border-vault-gold/30 h-8 sm:h-10 text-xs sm:text-sm">
               <SelectValue placeholder="Select Portfolio" />
             </SelectTrigger>
             <SelectContent className="bg-vault-dark border-vault-gold/30">
@@ -696,15 +697,17 @@ export default function NodeMapPage() {
               }
             }}
             variant="outline"
-            className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10"
+            size="sm"
+            className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10 h-8 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Party
+            <Plus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Add Party</span>
           </Button>
         </div>
       </div>
 
-      <div className="flex-1 relative rounded-xl overflow-hidden border border-white/10">
+      {/* ReactFlow Canvas - Takes remaining space */}
+      <div className="flex-1 relative rounded-lg sm:rounded-xl overflow-hidden border border-white/10 min-h-0">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
