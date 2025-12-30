@@ -788,7 +788,7 @@ function NodeMapContent() {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
-            onInit={setReactFlowInstance}
+            onInit={handleInit}
             fitView
             fitViewOptions={{ padding: isMobile ? 0.12 : 0.18, includeHiddenNodes: true }}
             minZoom={isMobile ? 0.1 : 0.2}
