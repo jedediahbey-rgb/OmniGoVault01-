@@ -64,8 +64,8 @@ const PortfolioPage = ({ user, logout }) => {
   const fetchUserProfile = async () => {
     try {
       const [profileRes, billingRes] = await Promise.all([
-        axios.get(`${API}/user/profile`),
-        axios.get(`${API}/billing/subscription`).catch(() => ({ data: { plan_tier: 0 } }))
+        axios.get(`${API}/user/profile`, { withCredentials: true }),
+        axios.get(`${API}/billing/subscription`, { withCredentials: true }).catch(() => ({ data: { plan_tier: 0 } }))
       ]);
       setUserProfile(profileRes.data);
       setUserPlanTier(billingRes.data?.plan_tier || 0);
