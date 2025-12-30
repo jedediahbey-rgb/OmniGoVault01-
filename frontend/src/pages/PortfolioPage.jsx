@@ -783,6 +783,19 @@ const PortfolioPage = ({ user, logout }) => {
           </div>
         )}
       </main>
+      
+      {/* Portrait Style Selector Dialog */}
+      <PortraitStyleSelector
+        isOpen={showPortraitSelector}
+        onClose={() => setShowPortraitSelector(false)}
+        currentStyleId={userProfile?.portrait_style || 'standard'}
+        userTier={userPlanTier}
+        userPicture={user?.picture}
+        userName={user?.name}
+        onStyleChange={(newStyle) => {
+          setUserProfile(prev => ({ ...prev, portrait_style: newStyle }));
+        }}
+      />
     </div>
   );
 };
