@@ -576,22 +576,29 @@ export default function TrustHealthDashboard() {
               })}
             </div>
 
-            {/* Next Best Actions */}
+            {/* Next Best Actions - V2 Enhanced */}
             <GlassCard>
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-white">Next Best Actions</h3>
-                  <p className="text-sm text-vault-muted">Prioritized tasks to improve your health score</p>
+                  <p className="text-sm text-vault-muted">
+                    Prioritized tasks to improve your health score
+                    {version === 'v2' && <span className="ml-2 text-xs text-vault-gold">(V2 Engine)</span>}
+                  </p>
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-vault-gold">
-                    +{actions.reduce((sum, a) => sum + (a.impact_points || 0), 0).toFixed(1)}
+                    +{(nextActions.length > 0 
+                      ? healthData?.total_potential_gain || nextActions.reduce((sum, a) => sum + (a.estimated_gain || 0), 0)
+                      : actions.reduce((sum, a) => sum + (a.impact_points || 0), 0)
+                    ).toFixed(1)}
                   </div>
                   <div className="text-xs text-vault-muted">potential points</div>
                 </div>
               </div>
 
-              {actions.length === 0 ? (
+              {/* Use V2 next_actions if available, otherwise fall back to V1 actions */}
+              {(nextActions.length > 0 ? nextActions : actions).length === 0 ? (
                 <div className="text-center py-8">
                   <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" weight="duotone" />
                   <p className="text-white font-medium">All clear!</p>
@@ -599,55 +606,67 @@ export default function TrustHealthDashboard() {
                 </div>
               ) : (
                 <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                  {actions.map((action, idx) => (
-                    <motion.div
-                      key={action.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      className={`p-4 rounded-lg border ${
-                        action.priority === 'high' 
-                          ? 'bg-red-500/5 border-red-500/30' 
-                          : 'bg-vault-dark/30 border-vault-gold/20'
-                      }`}
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                          action.priority === 'high' ? 'bg-red-500/20' : 'bg-vault-gold/20'
-                        }`}>
-                          <span className={`text-sm font-bold ${
-                            action.priority === 'high' ? 'text-red-400' : 'text-vault-gold'
+                  {(nextActions.length > 0 ? nextActions : actions).map((action, idx) => {
+                    // Support both V1 and V2 field names
+                    const gain = action.estimated_gain ?? action.impact_points ?? 0;
+                    const effort = action.effort || 'M';
+                    const priority = action.priority_score ? (action.priority_score > 10 ? 'high' : 'medium') : action.priority;
+                    const effortLabel = { S: 'Quick', M: 'Medium', L: 'Large' }[effort] || effort;
+                    
+                    return (
+                      <motion.div
+                        key={action.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className={`p-4 rounded-lg border ${
+                          priority === 'high' 
+                            ? 'bg-red-500/5 border-red-500/30' 
+                            : 'bg-vault-dark/30 border-vault-gold/20'
+                        }`}
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            priority === 'high' ? 'bg-red-500/20' : 'bg-vault-gold/20'
                           }`}>
-                            {idx + 1}
-                          </span>
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`px-2 py-0.5 text-xs rounded ${
-                              action.priority === 'high' 
-                                ? 'bg-red-500/20 text-red-400' 
-                                : 'bg-amber-500/20 text-amber-400'
+                            <span className={`text-sm font-bold ${
+                              priority === 'high' ? 'text-red-400' : 'text-vault-gold'
                             }`}>
-                              {action.priority}
-                            </span>
-                            <span className="text-xs text-vault-muted">
-                              {categoryConfig[action.category]?.name || action.category}
+                              {idx + 1}
                             </span>
                           </div>
-                          <h4 className="text-white font-medium">{action.title}</h4>
-                          <p className="text-sm text-vault-muted mt-1">{action.description}</p>
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          <div className="text-lg font-bold text-vault-gold">+{action.impact_points}</div>
-                          <div className="text-xs text-vault-muted">points</div>
                           
-                          {action.auto_fixable && (
-                            <Button
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <span className={`px-2 py-0.5 text-xs rounded ${
+                                priority === 'high' 
+                                  ? 'bg-red-500/20 text-red-400' 
+                                  : 'bg-amber-500/20 text-amber-400'
+                              }`}>
+                                {priority === 'high' ? 'High Priority' : 'Medium'}
+                              </span>
+                              <span className="text-xs text-vault-muted">
+                                {categoryConfig[action.category]?.name || action.category}
+                              </span>
+                              {effort && (
+                                <span className="px-1.5 py-0.5 text-xs rounded bg-cyan-500/20 text-cyan-400">
+                                  {effortLabel}
+                                </span>
+                              )}
+                            </div>
+                            <h4 className="text-white font-medium">{action.title}</h4>
+                            <p className="text-sm text-vault-muted mt-1">{action.description}</p>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <div className="text-lg font-bold text-vault-gold">+{gain.toFixed(1)}</div>
+                            <div className="text-xs text-vault-muted">points</div>
+                            
+                            {action.auto_fixable && (
+                              <Button
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                 executeAutoFix(action.id);
                               }}
                               className="mt-2 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 text-xs"
