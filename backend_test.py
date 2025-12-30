@@ -493,6 +493,7 @@ class DocumentSigningTester:
             self.test_create_vault,
             self.test_create_document,
             self.test_submit_document_for_review,
+            self.test_affirm_document,
             
             # Core signing tests
             self.test_sign_document_valid_payload,
