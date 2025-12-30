@@ -490,35 +490,35 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
       whileHover={{ y: -8, transition: { duration: 0.2 } }}
       className="group h-full"
     >
-      <Card className={`relative flex flex-col h-full overflow-hidden transition-all duration-300
+      <Card className={`relative flex flex-col h-full overflow-hidden transition-all duration-300 border-2
         ${isCurrentPlan 
-          ? 'border-vault-gold shadow-lg shadow-vault-gold/20 ring-2 ring-vault-gold/30' 
+          ? 'border-vault-gold shadow-lg shadow-vault-gold/30 ring-2 ring-vault-gold/30' 
           : tierBorderColors[plan.tier]
         }
-        bg-gradient-to-b from-vault-dark to-vault-navy/80
+        ${tierCardBg[plan.tier]}
         ${tierGlowColors[plan.tier]}
-        group-hover:shadow-xl
+        group-hover:shadow-2xl
       `}>
-        {/* Animated background gradient for premium tiers */}
-        {plan.tier >= 2 && (
-          <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none
-            ${plan.tier === 2 ? 'bg-gradient-to-br from-blue-500/5 via-transparent to-blue-500/5' : ''}
-            ${plan.tier === 3 ? 'bg-gradient-to-br from-purple-500/10 via-amber-500/5 to-purple-500/10' : ''}
-          `} />
-        )}
+        {/* Animated background glow for all tiers */}
+        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none
+          ${plan.tier === 0 ? 'bg-gradient-to-br from-slate-500/5 via-transparent to-slate-500/5' : ''}
+          ${plan.tier === 1 ? 'bg-gradient-to-br from-emerald-500/10 via-transparent to-emerald-500/10' : ''}
+          ${plan.tier === 2 ? 'bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-blue-500/10' : ''}
+          ${plan.tier === 3 ? 'bg-gradient-to-br from-purple-500/15 via-pink-500/10 to-amber-500/15' : ''}
+        `} />
 
-        {/* Top glow line */}
-        <div className={`absolute top-0 left-0 right-0 h-[2px] transition-all duration-300
-          ${plan.tier === 0 ? 'bg-gradient-to-r from-transparent via-gray-500/50 to-transparent group-hover:via-gray-400' : ''}
-          ${plan.tier === 1 ? 'bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent group-hover:via-emerald-400' : ''}
-          ${plan.tier === 2 ? 'bg-gradient-to-r from-transparent via-blue-500/50 to-transparent group-hover:via-blue-400' : ''}
-          ${plan.tier === 3 ? 'bg-gradient-to-r from-purple-500/50 via-amber-500/50 to-purple-500/50 group-hover:from-purple-400 group-hover:via-amber-400 group-hover:to-purple-400' : ''}
+        {/* Top glow line - colored per tier */}
+        <div className={`absolute top-0 left-0 right-0 h-1 transition-all duration-300
+          ${plan.tier === 0 ? 'bg-gradient-to-r from-slate-600 via-slate-400 to-slate-600' : ''}
+          ${plan.tier === 1 ? 'bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600' : ''}
+          ${plan.tier === 2 ? 'bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600' : ''}
+          ${plan.tier === 3 ? 'bg-gradient-to-r from-purple-500 via-pink-400 to-amber-400' : ''}
         `} />
 
         {isCurrentPlan && (
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-            <Badge className="bg-vault-gold text-vault-navy font-semibold shadow-lg animate-pulse">
-              Current Plan
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+            <Badge className="bg-vault-gold text-vault-navy font-semibold shadow-lg">
+              ✓ Current Plan
             </Badge>
           </div>
         )}
@@ -526,13 +526,13 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
         {/* Popular badge for tier 1 */}
         {plan.tier === 1 && !isCurrentPlan && (
           <motion.div 
-            className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-4 left-1/2 -translate-x-1/2 z-10"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 500, delay: 0.3 }}
           >
-            <Badge className="bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-500/30">
-              ✨ Popular
+            <Badge className="bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-semibold shadow-lg shadow-emerald-500/50">
+              ✨ Most Popular
             </Badge>
           </motion.div>
         )}
@@ -540,71 +540,72 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
         {/* Elite badge for Dynasty */}
         {plan.tier === 3 && !isCurrentPlan && (
           <motion.div 
-            className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-4 left-1/2 -translate-x-1/2 z-10"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 500, delay: 0.4 }}
           >
-            <Badge className="bg-gradient-to-r from-purple-500 to-amber-500 text-white font-semibold shadow-lg">
+            <Badge className="bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 text-white font-semibold shadow-lg shadow-purple-500/50">
               👑 Elite
             </Badge>
           </motion.div>
         )}
         
-        <CardHeader className="pb-4 pt-6 relative z-10">
+        <CardHeader className={`pb-3 relative z-10 ${isCurrentPlan || plan.tier === 1 || plan.tier === 3 ? 'pt-12' : 'pt-6'}`}>
           <div className="flex items-center gap-3">
             <AnimatedTierIcon tier={plan.tier} />
-            <CardTitle className="text-vault-light text-lg">{plan.name}</CardTitle>
+            <CardTitle className={`text-lg font-bold
+              ${plan.tier === 0 ? 'text-slate-200' : ''}
+              ${plan.tier === 1 ? 'text-emerald-100' : ''}
+              ${plan.tier === 2 ? 'text-blue-100' : ''}
+              ${plan.tier === 3 ? 'text-purple-100' : ''}
+            `}>{plan.name}</CardTitle>
           </div>
-          <CardDescription className="text-vault-muted text-sm min-h-[40px] mt-2">
+          <CardDescription className="text-vault-muted text-sm min-h-[36px] mt-2">
             {plan.description}
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4 flex-1 relative z-10">
-          {/* Price with animation */}
-          <motion.div 
-            className="text-center py-3"
-            whileHover={{ scale: 1.02 }}
-          >
+        <CardContent className="space-y-3 flex-1 relative z-10 pb-2">
+          {/* Price with tier-specific coloring */}
+          <div className="text-center py-2">
             {isEnterprise ? (
-              <div className="text-vault-light">
-                <span className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-amber-400 bg-clip-text text-transparent">
+              <div>
+                <span className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
                   Custom
                 </span>
-                <p className="text-sm text-vault-muted mt-1">Contact for pricing</p>
+                <p className="text-sm text-purple-300/70 mt-1">Contact for pricing</p>
               </div>
             ) : isFree ? (
               <div>
-                <span className="text-4xl font-bold text-vault-light">$0</span>
-                <span className="text-vault-muted text-sm">/month</span>
+                <span className="text-4xl font-bold text-slate-200">$0</span>
+                <span className="text-slate-400 text-sm">/month</span>
               </div>
             ) : (
               <div>
-                <span className="text-4xl font-bold text-vault-light">${price}</span>
+                <span className={`text-4xl font-bold
+                  ${plan.tier === 1 ? 'text-emerald-300' : ''}
+                  ${plan.tier === 2 ? 'text-blue-300' : ''}
+                `}>${price}</span>
                 <span className="text-vault-muted text-sm">/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                 {billingCycle === 'yearly' && (
-                  <motion.p 
-                    className="text-emerald-400 text-xs mt-1 font-medium"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
+                  <p className="text-emerald-400 text-xs mt-1 font-medium">
                     🎉 Save 17% annually
-                  </motion.p>
+                  </p>
                 )}
               </div>
             )}
-          </motion.div>
+          </div>
 
           <Separator className={`
-            ${plan.tier === 0 ? 'bg-gray-500/20' : ''}
-            ${plan.tier === 1 ? 'bg-emerald-500/20' : ''}
-            ${plan.tier === 2 ? 'bg-blue-500/20' : ''}
-            ${plan.tier === 3 ? 'bg-gradient-to-r from-purple-500/20 via-amber-500/20 to-purple-500/20' : ''}
+            ${plan.tier === 0 ? 'bg-slate-600/40' : ''}
+            ${plan.tier === 1 ? 'bg-emerald-500/30' : ''}
+            ${plan.tier === 2 ? 'bg-blue-500/30' : ''}
+            ${plan.tier === 3 ? 'bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-amber-500/30' : ''}
           `} />
 
-          {/* Entitlements with hover effects */}
-          <ul className="space-y-2.5 text-sm">
+          {/* Entitlements */}
+          <ul className="space-y-2 text-sm">
             <EntitlementItem 
               label={`${plan.entitlements['vaults.max'] === -1 ? 'Unlimited' : plan.entitlements['vaults.max']} Vaults`}
               included={true}
@@ -643,43 +644,38 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
           </ul>
         </CardContent>
 
-        {/* Fixed height footer for button alignment */}
-        <CardFooter className="mt-auto pt-4 relative z-10">
-          {isCurrentPlan ? (
-            <Button disabled className="w-full bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
-              ✓ Current Plan
-            </Button>
-          ) : isEnterprise ? (
-            <motion.div className="w-full" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        {/* Footer with aligned buttons */}
+        <CardFooter className="mt-auto pt-3 pb-5 relative z-10">
+          <motion.div className="w-full" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            {isCurrentPlan ? (
+              <Button disabled className="w-full h-11 bg-vault-gold/20 text-vault-gold border border-vault-gold/40 font-semibold">
+                ✓ Current Plan
+              </Button>
+            ) : isEnterprise ? (
               <Button 
                 onClick={onContactEnterprise}
-                className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 hover:from-purple-700 hover:via-pink-600 hover:to-amber-600 text-white font-semibold shadow-lg shadow-purple-500/20"
+                className="w-full h-11 bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 hover:from-purple-500 hover:via-pink-400 hover:to-amber-400 text-white font-bold shadow-lg shadow-purple-500/40 transition-all"
               >
                 Contact Sales <ExternalLink className="w-4 h-4 ml-2" />
               </Button>
-            </motion.div>
-          ) : isFree ? (
-            <Button disabled variant="outline" className="w-full border-gray-500/30 text-gray-400">
-              Free Forever
-            </Button>
-          ) : (
-            <motion.div className="w-full" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            ) : isFree ? (
+              <Button className="w-full h-11 bg-slate-700/80 hover:bg-slate-600/80 text-slate-200 border border-slate-500/50 font-semibold">
+                Free Forever
+              </Button>
+            ) : (
               <Button 
                 onClick={handleUpgradeClick}
                 disabled={loading}
-                className={`w-full ${tierButtonColors[plan.tier]} font-semibold shadow-lg transition-all duration-300
-                  ${plan.tier === 1 ? 'shadow-emerald-500/20 hover:shadow-emerald-500/40' : ''}
-                  ${plan.tier === 2 ? 'shadow-blue-500/20 hover:shadow-blue-500/40' : ''}
-                `}
+                className={`w-full h-11 ${tierButtonColors[plan.tier]} font-bold transition-all`}
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <>Upgrade <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" /></>
+                  <>Upgrade <ChevronRight className="w-4 h-4 ml-1" /></>
                 )}
               </Button>
-            </motion.div>
-          )}
+            )}
+          </motion.div>
         </CardFooter>
       </Card>
     </motion.div>
