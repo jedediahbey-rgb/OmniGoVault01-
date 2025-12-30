@@ -673,3 +673,51 @@ The V2 Trust Health configuration UI in Settings is not loading properly, sugges
 ### Agent Communication:
 - **Agent**: testing
 - **Message**: Completed comprehensive frontend testing of V2 Trust Health feature. Dashboard basic functionality working well - health score display, scan functionality, PDF download, and Next Actions all functional. However, critical issue found: V2 configuration UI in Settings Health tab is not loading - no V2 ENGINE badge, category weights, severity multipliers, or blocking conditions visible. This suggests frontend may not be properly calling V2 health rules API or user lacks V2 access. Backend V2 APIs are confirmed working from previous tests. Recommend investigating V2 health rules API integration in Settings page and user permissions for V2 features.
+
+---
+
+## Test Date: 2025-12-30
+## Test Focus: Portrait Customization Feature Implementation
+
+### Feature Overview:
+Implemented a tier-gated portrait customization system that allows users to customize their avatar appearance with exclusive styles unlocked based on subscription tier.
+
+### Backend Changes:
+- **File**: `/app/backend/server.py`
+- Added `portrait_style` field to user profile (GET /api/user/profile)
+- Added portrait_style update capability (PUT /api/user/profile)
+- Valid styles: standard, gold, emerald, sapphire, amethyst, obsidian, dynasty, crown
+
+### Frontend Components Created:
+1. **StyledPortrait** (`/app/frontend/src/components/portrait/StyledPortrait.jsx`)
+   - Renders styled portrait avatars with visual effects
+   - Supports multiple style configurations (borders, glows, shimmer, pulse effects)
+   - Accent icon badges for premium styles
+
+2. **PortraitStyleSelector** (`/app/frontend/src/components/portrait/PortraitStyleSelector.jsx`)
+   - Dialog for selecting portrait styles
+   - Shows style preview grid with lock indicators for gated styles
+   - Displays user's current tier and available styles
+   - Includes upgrade prompt for non-premium users
+
+### Integration Points:
+1. **CyberHomePage** - Header avatar now uses StyledPortrait with "Customize Portrait" menu option
+2. **PortfolioPage** - Sidebar avatar uses StyledPortrait with 3-dots dropdown menu
+
+### Style Tiers:
+- **Tier 0 (Testamentary/Free)**: standard, gold
+- **Tier 1 (Revocable)**: + emerald
+- **Tier 2 (Irrevocable)**: + sapphire, amethyst, obsidian
+- **Tier 3 (Dynasty)**: + dynasty, crown
+
+### Visual Effects by Style:
+- **standard**: Clean border
+- **gold**: Gold accent border with ring
+- **emerald**: Green glow with Shield icon badge
+- **sapphire**: Blue shimmer glow with Diamond icon badge
+- **amethyst**: Purple shimmer glow with Star icon badge
+- **obsidian**: Dark with orange fire accent, Fire icon badge
+- **dynasty**: Golden animated pulse glow with Diamond icon badge
+- **crown**: Purple/pink animated pulse glow with Crown icon badge
+
+### User: jedediah.bey@gmail.com (OMNICOMPETENT_OWNER - tier 3)
