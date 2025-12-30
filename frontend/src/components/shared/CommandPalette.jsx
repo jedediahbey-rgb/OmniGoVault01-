@@ -1,6 +1,7 @@
 /**
- * Command Palette (⌘K) - Global Search Overlay
+ * Command Palette V2 (⌘K) - Global Search Overlay
  * Provides quick navigation and search across the entire application
+ * V2: Enhanced with fuzzy search, recent searches, shortcuts display
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -33,13 +34,23 @@ import {
   ArrowUp,
   ArrowDown,
   CaretRight,
-  Plus
+  Plus,
+  User,
+  Gear,
+  CreditCard,
+  Folder,
+  FolderPlus,
+  FilePlus,
+  FileArchive,
+  Clock,
+  Scales,
+  Trash
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Icon mapping
+// Icon mapping - V2 expanded
 const iconMap = {
   House,
   Gavel,
@@ -59,15 +70,27 @@ const iconMap = {
   FolderSimple,
   Download,
   MagnifyingGlass,
-  Plus
+  Plus,
+  User,
+  Gear,
+  CreditCard,
+  Folder,
+  FolderPlus,
+  FilePlus,
+  FileArchive,
+  Clock,
+  Scales,
+  Trash
 };
 
-// Type colors
+// Type colors - V2 expanded
 const typeColors = {
   navigation: 'text-blue-400 bg-blue-500/10',
   action: 'text-emerald-400 bg-emerald-500/10',
   record: 'text-vault-gold bg-vault-gold/10',
   portfolio: 'text-purple-400 bg-purple-500/10',
+  document: 'text-cyan-400 bg-cyan-500/10',
+  party: 'text-pink-400 bg-pink-500/10',
   template: 'text-cyan-400 bg-cyan-500/10',
   nav: 'text-blue-400 bg-blue-500/10'
 };
