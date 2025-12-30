@@ -419,7 +419,7 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
               ) : (
                 <div className="py-12 text-center text-vault-muted">
                   <MagnifyingGlass className="w-8 h-8 mx-auto mb-3 opacity-50" />
-                  <p>No results found for "{query}"</p>
+                  <p>No results found for &quot;{query}&quot;</p>
                   <p className="text-xs mt-1">Try searching for pages, records, or actions</p>
                 </div>
               )
