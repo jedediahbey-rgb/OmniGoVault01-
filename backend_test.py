@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for OMNIGOVAULT Application
-Document Signing Feature Testing - Shared Workspace
+UI Fixes Testing - Dynasty Plan Tier Fix
 """
 
 import requests
@@ -15,7 +15,7 @@ import hashlib
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://trusthealth-update.preview.emergentagent.com/api"
 
-class DocumentSigningTester:
+class UIFixesTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
