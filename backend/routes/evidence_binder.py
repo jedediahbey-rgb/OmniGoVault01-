@@ -4,17 +4,14 @@ Evidence Binder API Routes
 Endpoints for generating dispute evidence binders with exhibit organization.
 """
 
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse, Response
 from typing import Optional
 from datetime import datetime, timezone
 import base64
 
 from services.evidence_binder_service import (
-    create_evidence_binder_service,
-    EVIDENCE_PROFILE_DEFAULTS,
-    ExhibitFormat,
-    EvidenceCategory
+    create_evidence_binder_service
 )
 from services.binder_service import BinderStatus
 

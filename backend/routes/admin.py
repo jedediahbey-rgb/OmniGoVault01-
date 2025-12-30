@@ -1,5 +1,5 @@
 """Admin API Routes - Protected admin console endpoints"""
-from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi import APIRouter, HTTPException, Request
 from typing import Optional
 from datetime import datetime, timezone
 import logging
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 async def require_admin(request: Request):
     """Require any admin role to access"""
-    from server import get_current_user, db
+    from server import get_current_user
     
     user = await get_current_user(request)
     admin_service = get_admin_service()
@@ -136,7 +136,6 @@ async def grant_global_role(request: Request, body: GrantGlobalRoleRequest):
     
     Note: OMNICOMPETENT_OWNER cannot be granted - it's reserved for the platform owner
     """
-    from server import OWNER_USER_ID
     
     user = await require_owner(request)
     admin_service = get_admin_service()
@@ -439,7 +438,7 @@ async def bootstrap_omnicompetent(request: Request, secret: str):
     # Grant Omnicompetent to current user
     now = datetime.now(timezone.utc).isoformat()
     role_doc = {
-        "id": f"ugr_bootstrap",
+        "id": "ugr_bootstrap",
         "user_id": user.user_id,
         "role": GlobalRole.OMNICOMPETENT.value,
         "granted_by": "SYSTEM_BOOTSTRAP",

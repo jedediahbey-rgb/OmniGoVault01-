@@ -1,14 +1,12 @@
 """Billing API Routes"""
-from fastapi import APIRouter, HTTPException, Request, Depends
-from typing import Optional, Dict, Any
+from fastapi import APIRouter, HTTPException, Request
+from typing import Dict
 from datetime import datetime, timezone
 import uuid
 import logging
 
 from models.subscription import (
-    CheckoutRequest,
-    AccountCreate,
-    InviteMemberRequest
+    CheckoutRequest
 )
 from services.entitlement_service import get_entitlement_service, EntitlementKeys
 from services.subscription_service import get_subscription_service
@@ -276,7 +274,6 @@ async def check_feature(feature_key: str, request: Request):
 @router.post("/admin/set-plan/{account_id}/{plan_id}")
 async def admin_set_plan(account_id: str, plan_id: str, request: Request):
     """Admin endpoint to manually set an account's plan (for testing)"""
-    from server import db
     from datetime import timedelta
     
     subscription_service = get_subscription_service()

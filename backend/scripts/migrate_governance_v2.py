@@ -240,7 +240,7 @@ async def run_migration(dry_run: bool = True):
     revisions_count = await db.governance_revisions.count_documents({})
     events_count = await db.governance_events.count_documents({})
     
-    print(f"\nV2 Collections:")
+    print("\nV2 Collections:")
     print(f"  governance_records: {records_count}")
     print(f"  governance_revisions: {revisions_count}")
     print(f"  governance_events: {events_count}")

@@ -12,13 +12,11 @@ Provides a unified audit trail across all system activities:
 Supports filtering, search, export, and compliance reporting.
 """
 
-import os
 from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Optional, Any
 from uuid import uuid4
 from enum import Enum
 from dataclasses import dataclass, asdict
-import json
 
 
 class AuditCategory(str, Enum):

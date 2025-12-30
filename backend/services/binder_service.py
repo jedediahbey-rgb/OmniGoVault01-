@@ -5,12 +5,11 @@ Court/Audit-ready consolidated PDF packet generator.
 Produces single printable PDFs with deterministic ordering.
 """
 
-import io
 import os
 import json
 import hashlib
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from uuid import uuid4
 from enum import Enum
 from dataclasses import dataclass, field, asdict
@@ -911,7 +910,7 @@ class BinderService:
         - PDF Bookmarks for navigation
         - Enhanced section dividers with icons
         """
-        from weasyprint import HTML, CSS
+        from weasyprint import HTML
         from weasyprint.text.fonts import FontConfiguration
         
         font_config = FontConfiguration()
@@ -2408,7 +2407,7 @@ class BinderService:
             
             # Log to audit trail
             try:
-                from services.audit_log_service import create_audit_log_service, AuditCategory, AuditSeverity
+                from services.audit_log_service import create_audit_log_service
                 audit_service = create_audit_log_service(self.db)
                 await audit_service.log_binder_event(
                     event_type="generation_complete",
@@ -2961,7 +2960,7 @@ class BinderService:
                     remediation = f"Ensure document has: {', '.join(self._format_rule_name(r) for r in validation_rules)}"
             else:
                 status = GapStatus.MISSING.value
-                reason = f"Required document not found in portfolio"
+                reason = "Required document not found in portfolio"
                 remediation = f"Upload {check_item['name']} to the portfolio"
             
             # Determine risk level

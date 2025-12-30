@@ -1,5 +1,5 @@
 """Billing Service - Stripe integration for payments"""
-from typing import Optional, Dict, Any
+from typing import Optional, Dict
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging

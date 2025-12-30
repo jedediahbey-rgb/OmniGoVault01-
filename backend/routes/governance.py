@@ -8,9 +8,9 @@ Response Envelope Standard:
 - Error: {ok: false, error: {code, message, details?}}
 """
 
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse
-from typing import Optional, List
+from typing import Optional
 import hashlib
 import json
 import re
@@ -296,7 +296,7 @@ async def get_meetings(
     """Get all meetings with consistent envelope response"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     # Build query
@@ -359,7 +359,7 @@ async def get_meeting(meeting_id: str, request: Request):
     """Get a single meeting by ID - checks both V1 and V2 collections"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     if not meeting_id:
@@ -421,7 +421,7 @@ async def create_meeting(data: dict, request: Request):
     """Create a new meeting"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     portfolio_id = data.get("portfolio_id")
@@ -486,7 +486,7 @@ async def update_meeting(meeting_id: str, data: dict, request: Request):
     """Update a meeting (only if draft/unlocked)"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     if not meeting_id:
@@ -543,7 +543,7 @@ async def delete_meeting(meeting_id: str, request: Request, hard: bool = Query(F
     """Delete a meeting - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     if not meeting_id:
@@ -605,7 +605,7 @@ async def add_agenda_item(meeting_id: str, data: dict, request: Request):
     """Add an agenda item to a meeting"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -654,7 +654,7 @@ async def update_agenda_item(meeting_id: str, item_id: str, data: dict, request:
     """Update an agenda item"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -707,7 +707,7 @@ async def delete_agenda_item(meeting_id: str, item_id: str, request: Request):
     """Delete an agenda item"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -811,7 +811,7 @@ async def finalize_meeting(meeting_id: str, data: dict, request: Request):
     """Finalize meeting minutes - locks content, generates hash, and creates ledger entry"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -886,7 +886,7 @@ async def add_attestation(meeting_id: str, data: dict, request: Request):
     """Add attestation to finalized meeting"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -940,7 +940,7 @@ async def create_amendment(meeting_id: str, data: dict, request: Request):
     """
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1036,7 +1036,7 @@ async def get_meeting_versions(meeting_id: str, request: Request):
     """
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1131,7 +1131,7 @@ async def add_attachment(meeting_id: str, data: dict, request: Request):
     """Add an attachment to a meeting"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1175,7 +1175,7 @@ async def delete_attachment(meeting_id: str, attachment_id: str, request: Reques
     """Delete an attachment from a meeting"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1214,7 +1214,7 @@ async def verify_meeting_hash(meeting_id: str, request: Request):
     """Verify the integrity of a finalized meeting"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1274,7 +1274,7 @@ async def get_distributions(
     """Get distributions list"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1318,7 +1318,7 @@ async def get_distributions_summary(
     """Get aggregated distribution summary for charts"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1388,7 +1388,7 @@ async def create_distribution(data: dict, request: Request):
     """Create a distribution record"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     if not data.get("portfolio_id"):
@@ -1460,7 +1460,7 @@ async def get_distribution(distribution_id: str, request: Request):
     """Get a single distribution - checks both V1 and V2 collections"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1517,7 +1517,7 @@ async def update_distribution(distribution_id: str, data: dict, request: Request
     """Update a distribution (only if draft/unlocked)"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1569,7 +1569,7 @@ async def delete_distribution(distribution_id: str, request: Request):
     """Delete a distribution - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1619,7 +1619,7 @@ async def submit_distribution_for_approval(distribution_id: str, request: Reques
     """Submit a distribution for approval"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1658,7 +1658,7 @@ async def approve_distribution(distribution_id: str, data: dict, request: Reques
     """Add approval to a distribution"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1719,7 +1719,7 @@ async def execute_distribution(distribution_id: str, data: dict, request: Reques
     """Mark distribution as executed/completed and create ledger entry"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1789,7 +1789,7 @@ async def finalize_distribution(distribution_id: str, data: dict, request: Reque
     """Finalize a distribution - locks it and creates ledger entry"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1850,7 +1850,7 @@ async def create_distribution_amendment(distribution_id: str, data: dict, reques
     """Create an amendment to a finalized distribution"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1945,7 +1945,7 @@ async def get_disputes(
     """Get disputes list"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -1990,7 +1990,7 @@ async def get_disputes_board(
     """Get disputes in kanban board format"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2050,7 +2050,7 @@ async def get_disputes_summary(
     """Get aggregated disputes summary"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2111,7 +2111,7 @@ async def create_dispute(data: dict, request: Request):
     """Create a dispute record"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     if not data.get("portfolio_id"):
@@ -2181,7 +2181,7 @@ async def get_dispute(dispute_id: str, request: Request):
     """Get a single dispute - checks both V1 and V2 collections"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2239,7 +2239,7 @@ async def update_dispute(dispute_id: str, data: dict, request: Request):
     """Update a dispute (only if not settled/closed)"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2292,7 +2292,7 @@ async def delete_dispute(dispute_id: str, request: Request):
     """Delete a dispute - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2345,7 +2345,7 @@ async def add_dispute_event(dispute_id: str, data: dict, request: Request):
     """Add a timeline event to a dispute"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2391,7 +2391,7 @@ async def add_dispute_party(dispute_id: str, data: dict, request: Request):
     """Add a party to a dispute"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2435,7 +2435,7 @@ async def delete_dispute_party(dispute_id: str, party_id: str, request: Request)
     """Remove a party from a dispute"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2471,7 +2471,7 @@ async def delete_dispute_event(dispute_id: str, event_id: str, request: Request)
     """Remove an event from a dispute timeline"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2507,7 +2507,7 @@ async def resolve_dispute(dispute_id: str, data: dict, request: Request):
     """Resolve/close a dispute and create ledger entry"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2589,7 +2589,7 @@ async def finalize_dispute(dispute_id: str, data: dict, request: Request):
     """Finalize a dispute - locks it permanently"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2654,7 +2654,7 @@ async def set_dispute_outcome(dispute_id: str, data: dict, request: Request):
     """
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2693,7 +2693,7 @@ async def create_dispute_amendment(dispute_id: str, data: dict, request: Request
     """Create an amendment to a finalized dispute"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2779,7 +2779,7 @@ async def get_insurance_policies(
     """Get insurance policies list"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2820,7 +2820,7 @@ async def get_insurance_summary(
     """Get insurance policies summary"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2862,7 +2862,7 @@ async def create_insurance_policy(data: dict, request: Request):
     """Create an insurance policy record"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2926,7 +2926,7 @@ async def get_insurance_policy(policy_id: str, request: Request):
     """Get a single insurance policy - checks both V1 and V2 collections"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -2982,7 +2982,7 @@ async def update_insurance_policy(policy_id: str, data: dict, request: Request):
     """Update an insurance policy"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3026,7 +3026,7 @@ async def delete_insurance_policy(policy_id: str, request: Request):
     """Delete an insurance policy - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3076,7 +3076,7 @@ async def add_insurance_beneficiary(policy_id: str, data: dict, request: Request
     """Add a beneficiary to an insurance policy"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3118,7 +3118,7 @@ async def add_premium_payment(policy_id: str, data: dict, request: Request):
     """Record a premium payment"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3160,7 +3160,7 @@ async def finalize_insurance_policy(policy_id: str, data: dict, request: Request
     """Finalize an insurance policy record - locks it permanently"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3220,7 +3220,7 @@ async def create_insurance_amendment(policy_id: str, data: dict, request: Reques
     """Create an amendment to a finalized insurance policy"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3306,7 +3306,7 @@ async def get_compensation(
     """Get compensation records list"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3356,7 +3356,7 @@ async def get_compensation_summary(
     """Get compensation summary with reasonableness metrics"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3420,7 +3420,7 @@ async def create_compensation_entry(data: dict, request: Request):
     """Create a compensation entry"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     if not data.get("portfolio_id"):
@@ -3490,7 +3490,7 @@ async def get_compensation_entry(compensation_id: str, request: Request):
     """Get a single compensation entry - checks both V1 and V2 collections"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3546,7 +3546,7 @@ async def update_compensation_entry(compensation_id: str, data: dict, request: R
     """Update a compensation entry"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3595,7 +3595,7 @@ async def delete_compensation_entry(compensation_id: str, request: Request):
     """Delete a compensation entry - handles amendment chain cleanup"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3645,7 +3645,7 @@ async def submit_compensation(compensation_id: str, request: Request):
     """Submit compensation for approval"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3681,7 +3681,7 @@ async def approve_compensation(compensation_id: str, data: dict, request: Reques
     """Add approval to compensation entry"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3734,7 +3734,7 @@ async def mark_compensation_paid(compensation_id: str, data: dict, request: Requ
     """Mark compensation as paid"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3775,7 +3775,7 @@ async def finalize_compensation(compensation_id: str, data: dict, request: Reque
     """Finalize a compensation entry - locks it permanently"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3838,7 +3838,7 @@ async def create_compensation_amendment(compensation_id: str, data: dict, reques
     """Create an amendment to a finalized compensation entry"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3921,7 +3921,7 @@ async def get_governance_trash(
     """Get soft-deleted governance items"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3963,7 +3963,7 @@ async def restore_from_trash(item_id: str, request: Request, module: str = Query
     """Restore a soft-deleted item"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:
@@ -3991,7 +3991,7 @@ async def get_governance_status(request: Request):
     """Get status of all governance modules (for enabling/disabling tabs)"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     return success_item({
@@ -4017,7 +4017,7 @@ async def get_activity_feed(
     """Get recent activity across all governance modules for the Signal Feed"""
     try:
         user = await get_current_user(request)
-    except Exception as e:
+    except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
     try:

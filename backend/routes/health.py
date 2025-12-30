@@ -3,7 +3,7 @@ Trust Health API Routes
 Endpoints for the Trust Health scoring system.
 """
 
-from fastapi import APIRouter, Request, HTTPException, Depends
+from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone
 from services.health_scanner import TrustHealthScanner, get_health_history, AuditReadinessChecker

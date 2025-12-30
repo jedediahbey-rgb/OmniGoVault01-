@@ -5,12 +5,10 @@ Specialized binder for dispute evidence compilation.
 Generates court-ready exhibit packets with chronological timelines.
 """
 
-import io
-import os
 import json
 import hashlib
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from uuid import uuid4
 from enum import Enum
 from dataclasses import dataclass, field, asdict
@@ -549,7 +547,7 @@ class EvidenceBinderService:
         Generate the Evidence Binder PDF.
         Returns PDF bytes.
         """
-        from weasyprint import HTML, CSS
+        from weasyprint import HTML
         from weasyprint.text.fonts import FontConfiguration
         
         font_config = FontConfiguration()

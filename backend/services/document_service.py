@@ -1,5 +1,5 @@
 """Document Service - Document lifecycle and workflow management"""
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, List
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
@@ -7,10 +7,9 @@ import uuid
 import hashlib
 
 from models.vault import (
-    Document, DocumentVersion, DocumentStatus, DocumentCategory,
-    DocumentEvent, DocumentEventType,
-    DocumentSignature, SignatureType,
-    DocumentComment, DocumentAffirmation, DocumentObjection,
+    DocumentStatus, DocumentCategory,
+    DocumentEventType,
+    SignatureType,
     VaultPermission, ParticipantRole, BENEFICIARY_SIGNABLE_CATEGORIES
 )
 from services.vault_service import VaultService

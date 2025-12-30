@@ -1,12 +1,11 @@
 """Subscription Service - Manages subscriptions and billing integration"""
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timezone, timedelta
+from typing import Optional, Dict, List
+from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
-import os
 import uuid
 
-from services.entitlement_service import EntitlementService, EntitlementKeys
+from services.entitlement_service import EntitlementService
 
 logger = logging.getLogger(__name__)
 

@@ -6,7 +6,6 @@ Endpoints for viewing, searching, and exporting audit trail data.
 
 from fastapi import APIRouter, Request, Query
 from typing import Optional
-from datetime import datetime, timezone
 
 from services.audit_log_service import (
     create_audit_log_service,

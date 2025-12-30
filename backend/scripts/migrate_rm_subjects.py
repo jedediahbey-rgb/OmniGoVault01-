@@ -20,7 +20,7 @@ import sys
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from models.rm_subject import SubjectCategory, MODULE_TO_CATEGORY, generate_subject_id
+from models.rm_subject import SubjectCategory, generate_subject_id
 
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 DB_NAME = os.environ.get('DB_NAME', 'test_database')
@@ -301,7 +301,7 @@ async def run_migration():
         print("\n" + "=" * 70)
         print("MIGRATION COMPLETE")
         print("=" * 70)
-        print(f"\nStatistics:")
+        print("\nStatistics:")
         print(f"  Subjects created: {stats['subjects_created']}")
         print(f"  Records updated: {stats['records_updated']}")
         print(f"  Records skipped: {stats['records_skipped']}")

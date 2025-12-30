@@ -7,15 +7,14 @@ Provides endpoints for:
 - Executing repair actions
 """
 
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime, timezone
-import json
 
-from services.integrity_checker import create_integrity_checker, IntegrityScanResult
-from services.lifecycle_engine import lifecycle_engine, FinalizeValidation
-from services.integrity_seal import create_integrity_seal_service, SealStatus
+from services.integrity_checker import create_integrity_checker
+from services.lifecycle_engine import lifecycle_engine
+from services.integrity_seal import create_integrity_seal_service
 
 router = APIRouter(prefix="/api/integrity", tags=["integrity"])
 

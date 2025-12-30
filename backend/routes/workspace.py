@@ -1,15 +1,12 @@
 """Workspace API Routes - Shared vault management endpoints"""
 from fastapi import APIRouter, HTTPException, Request
-from typing import Optional, List
-from datetime import datetime, timezone
 import logging
 
 from models.vault import (
     CreateVaultRequest, UpdateVaultRequest, InviteParticipantRequest,
     CreateDocumentRequest, UpdateDocumentRequest,
     SignDocumentRequest, CommentRequest, ObjectionRequest, AffirmationRequest,
-    ResolveObjectionRequest, VaultType, ParticipantRole, DocumentCategory,
-    SignatureType, DocumentStatus
+    ResolveObjectionRequest, ParticipantRole
 )
 from services.vault_service import get_vault_service
 from services.document_service import get_document_service

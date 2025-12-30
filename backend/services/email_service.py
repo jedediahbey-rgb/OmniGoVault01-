@@ -3,7 +3,6 @@ import os
 import asyncio
 import logging
 import resend
-from typing import Optional
 from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)

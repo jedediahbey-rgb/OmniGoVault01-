@@ -11,29 +11,26 @@ Core Rules:
 6. Lifecycle engine enforces status transitions
 """
 
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime, timezone
-import json
 import re
 
 from models.governance_v2 import (
     GovernanceRecord, GovernanceRevision, GovernanceEvent,
-    GovernanceAttachment, GovernanceAttestation,
+    GovernanceAttestation,
     ModuleType, RecordStatus, ChangeType, EventType,
     RecordCreateRequest, RecordAmendRequest, RevisionUpdateRequest,
     RecordVoidRequest, AttestationCreateRequest,
-    RecordSummary, RevisionSummary, RecordDetailResponse,
     MinutesPayload, DistributionPayload, DisputePayload,
     InsurancePayload, CompensationPayload,
-    compute_content_hash, generate_id
+    compute_content_hash
 )
 from models.rm_subject import (
-    RMSubject, SubjectCategory, MODULE_TO_CATEGORY,
-    generate_subject_id
+    RMSubject, SubjectCategory, MODULE_TO_CATEGORY
 )
-from services.lifecycle_engine import lifecycle_engine, LifecycleStatus
+from services.lifecycle_engine import lifecycle_engine
 
 router = APIRouter(prefix="/api/governance/v2", tags=["governance-v2"])
 
@@ -607,7 +604,7 @@ async def create_record(request: Request):
     
     # Step 5: Process the create request
     try:
-        print(f"[CREATE_RECORD] Step 5: Processing create request...")
+        print("[CREATE_RECORD] Step 5: Processing create request...")
         
         # Validate payload
         is_valid, error_msg, normalized_payload = validate_payload(
@@ -617,7 +614,7 @@ async def create_record(request: Request):
             print(f"[CREATE_RECORD] Payload validation failed: {error_msg}")
             return error_response("VALIDATION_ERROR", f"Invalid payload: {error_msg}", status_code=422)
         
-        print(f"[CREATE_RECORD] Payload validated successfully")
+        print("[CREATE_RECORD] Payload validated successfully")
         
         # RM-ID and Subject handling
         rm_id = ""
@@ -667,7 +664,7 @@ async def create_record(request: Request):
                 
         else:
             # Legacy fallback - generate RM-ID without subject linking
-            print(f"[CREATE_RECORD] Using legacy RM-ID generation...")
+            print("[CREATE_RECORD] Using legacy RM-ID generation...")
             try:
                 subject_code, subject_name = MODULE_SUBJECT_CODES.get(
                     data.module_type, ("00", "General")
@@ -680,7 +677,7 @@ async def create_record(request: Request):
                 print(f"[CREATE_RECORD] Warning: Could not generate RM-ID: {e}")
         
         # Create record with RM Subject linking
-        print(f"[CREATE_RECORD] Creating GovernanceRecord...")
+        print("[CREATE_RECORD] Creating GovernanceRecord...")
         record = GovernanceRecord(
             trust_id=data.trust_id,
             portfolio_id=data.portfolio_id,
@@ -694,7 +691,7 @@ async def create_record(request: Request):
         )
         
         # Create initial revision (v1, draft)
-        print(f"[CREATE_RECORD] Creating GovernanceRevision...")
+        print("[CREATE_RECORD] Creating GovernanceRevision...")
         revision = GovernanceRevision(
             record_id=record.id,
             version=1,
@@ -707,7 +704,7 @@ async def create_record(request: Request):
         record.current_revision_id = revision.id
         
         # Save to database
-        print(f"[CREATE_RECORD] Saving to database...")
+        print("[CREATE_RECORD] Saving to database...")
         record_doc = record.model_dump()
         record_doc["created_at"] = record_doc["created_at"].isoformat()
         

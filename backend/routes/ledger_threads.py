@@ -9,18 +9,15 @@ Core Rules:
 4. Categories: trustee_compensation, distribution, dispute, insurance, minutes, policy, misc
 """
 
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime, timezone
-from enum import Enum
 import uuid
 import re
 
 from models.rm_subject import (
-    RMSubject, SubjectCategory, 
-    RMSubjectCreateRequest, RMSubjectSummary, RMSubjectDetail,
-    SubnumberAllocation, generate_subject_id
+    RMSubject, SubjectCategory
 )
 
 router = APIRouter(prefix="/api/ledger-threads", tags=["ledger-threads"])

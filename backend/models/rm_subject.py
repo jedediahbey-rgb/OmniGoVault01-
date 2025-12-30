@@ -11,7 +11,7 @@ Core Purpose:
 
 from pydantic import BaseModel, Field
 from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
+from typing import Optional
 from enum import Enum
 import uuid
 

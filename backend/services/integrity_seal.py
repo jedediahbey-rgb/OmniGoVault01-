@@ -11,7 +11,7 @@ Provides cryptographic integrity seals for finalized records:
 import hashlib
 import json
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from uuid import uuid4
 from enum import Enum
 

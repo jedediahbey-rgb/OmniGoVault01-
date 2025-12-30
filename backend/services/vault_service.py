@@ -1,21 +1,17 @@
 """Vault Service - Core workspace management with permission enforcement"""
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, List
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
 import uuid
-import hashlib
 
 from models.vault import (
-    Vault, VaultStatus, VaultType,
-    VaultParticipant, ParticipantRole,
-    Document, DocumentVersion, DocumentStatus, DocumentCategory,
-    DocumentEvent, DocumentEventType,
-    DocumentSignature, SignatureType,
-    DocumentComment, DocumentAffirmation, DocumentObjection,
+    VaultStatus, VaultType,
+    ParticipantRole,
+    DocumentEventType,
     VaultPermission, DEFAULT_ROLE_PERMISSIONS, BENEFICIARY_SIGNABLE_CATEGORIES
 )
-from services.entitlement_service import EntitlementService, EntitlementKeys
+from services.entitlement_service import EntitlementService
 
 logger = logging.getLogger(__name__)
 

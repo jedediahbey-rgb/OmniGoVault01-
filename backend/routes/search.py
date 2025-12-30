@@ -4,9 +4,7 @@ Provides unified search across all content types.
 """
 
 from fastapi import APIRouter, Request, Query
-from datetime import datetime, timezone
-from typing import List, Dict, Optional
-import re
+from typing import Dict, Optional
 
 router = APIRouter(prefix="/api/search", tags=["Global Search"])
 

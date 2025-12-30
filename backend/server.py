@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends, UploadFile, File
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends
 from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -7,22 +7,19 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 import uuid
 from datetime import datetime, timezone, timedelta
 import httpx
 from io import BytesIO
-import json
 import hashlib
 from bs4 import BeautifulSoup
 import re
-from PyPDF2 import PdfReader
 from reportlab.lib.pagesizes import letter
 import zipfile
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 
 # ============================================================================
@@ -50,7 +47,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ.get('DB_NAME', 'test_database')]
 
 # Import V2 RMID Allocator
-from services.rmid_v2 import RMIDAllocator, init_allocator, allocate_rm_id as allocate_rm_id_v2
+from services.rmid_v2 import RMIDAllocator, init_allocator
 
 # Global V2 allocator instance
 rmid_allocator: Optional[RMIDAllocator] = None
@@ -773,7 +770,6 @@ async def register(request: Request, response: Response):
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # Hash password (simple hash for demo - use bcrypt in production)
-    import hashlib
     password_hash = hashlib.sha256(password.encode()).hexdigest()
     
     # Create user
@@ -823,7 +819,6 @@ async def login(request: Request, response: Response):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     # Verify password
-    import hashlib
     password_hash = hashlib.sha256(password.encode()).hexdigest()
     if user_doc.get("password_hash") != password_hash:
         raise HTTPException(status_code=401, detail="Invalid email or password")

@@ -8,11 +8,10 @@ Provides tools for:
 4. Repair actions (re-link, reconcile, reindex)
 """
 
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any
 from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from enum import Enum
-import asyncio
 
 
 class IssueSeverity(str, Enum):

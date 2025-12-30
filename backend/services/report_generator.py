@@ -4,19 +4,16 @@ Generates comprehensive PDF reports for trust health analysis.
 """
 
 from datetime import datetime, timezone
-from typing import Dict, List, Any
+from typing import Dict, List
 from io import BytesIO
 import hashlib
 
 # Use reportlab for PDF generation
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, HRFlowable
-from reportlab.graphics.shapes import Drawing, Rect, String, Circle
-from reportlab.graphics.charts.piecharts import Pie
-from reportlab.graphics.charts.barcharts import VerticalBarChart
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
 
 
 class TrustHealthReportGenerator:
@@ -133,7 +130,7 @@ class TrustHealthReportGenerator:
         
         # Title
         elements.append(Paragraph(
-            f"Trust Health Report",
+            "Trust Health Report",
             self.styles['ReportTitle']
         ))
         

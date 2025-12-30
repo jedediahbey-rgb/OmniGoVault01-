@@ -1,7 +1,5 @@
 """Vault API Routes - Shared Trust Workspace System"""
-from fastapi import APIRouter, HTTPException, Request, Query
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timezone
+from fastapi import APIRouter, HTTPException, Request
 import logging
 
 from models.vault import (
@@ -9,10 +7,10 @@ from models.vault import (
     CreateDocumentRequest, UpdateDocumentRequest,
     SignDocumentRequest, CommentRequest, ObjectionRequest, 
     AffirmationRequest, ResolveObjectionRequest,
-    VaultType, VaultStatus, ParticipantRole, DocumentStatus, DocumentCategory, SignatureType
+    VaultType, VaultStatus, ParticipantRole, DocumentCategory
 )
-from services.vault_service import get_vault_service, VaultService
-from services.document_service import get_document_service, DocumentService
+from services.vault_service import get_vault_service
+from services.document_service import get_document_service
 
 logger = logging.getLogger(__name__)
 

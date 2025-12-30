@@ -13,7 +13,7 @@ Rules:
 """
 
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Any
 from datetime import datetime, timezone
 from pydantic import BaseModel
 

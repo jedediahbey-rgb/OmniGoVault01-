@@ -10,18 +10,15 @@ Key Operations:
 - Preview next RM-ID
 """
 
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime, timezone
 import random
 import re
 
 from models.rm_subject import (
-    RMSubject, RMSubjectCreateRequest, RMSubjectSuggestRequest,
-    RMSubjectSummary, RMSubjectDetail, SubnumberAllocation,
-    SubjectCategory, CATEGORY_LABELS, MODULE_TO_CATEGORY,
-    generate_subject_id
+    RMSubject, RMSubjectCreateRequest, SubjectCategory, CATEGORY_LABELS, MODULE_TO_CATEGORY
 )
 
 router = APIRouter(prefix="/api/rm", tags=["rm-subjects"])

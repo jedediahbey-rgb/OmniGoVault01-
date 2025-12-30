@@ -3,7 +3,7 @@
 This is the SINGLE SOURCE OF TRUTH for entitlement checks.
 Never check plan names directly - always use this service.
 """
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging

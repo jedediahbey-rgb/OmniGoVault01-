@@ -4,7 +4,7 @@ Portfolio Binder API Routes
 Endpoints for generating court/audit-ready consolidated PDF packets.
 """
 
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse, Response
 from typing import Optional
 from datetime import datetime, timezone
@@ -12,9 +12,7 @@ import base64
 
 from services.binder_service import (
     create_binder_service, 
-    BinderProfile, 
-    BinderStatus,
-    PROFILE_DEFAULTS
+    BinderStatus
 )
 
 router = APIRouter(prefix="/api/binder", tags=["binder"])
