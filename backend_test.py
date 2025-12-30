@@ -976,7 +976,7 @@ class DocumentSigningTester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 BILLING/SUBSCRIPTION FEATURE TEST SUMMARY")
+        self.log("🏁 DOCUMENT SIGNING FEATURE TEST SUMMARY")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
