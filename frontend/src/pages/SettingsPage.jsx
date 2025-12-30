@@ -440,22 +440,50 @@ export default function SettingsPage() {
           </motion.div>
         )}
 
-        {/* Health Rules Tab */}
+        {/* Health Rules Tab - V2 */}
         {activeTab === 'health-rules' && healthConfig && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            {/* Info Banner */}
-            {isDefault && (
-              <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center gap-3">
-                <Info className="w-5 h-5 text-blue-400" />
-                <p className="text-sm text-blue-300">
-                  Using default configuration. Changes will create a custom configuration.
-                </p>
+            {/* V2 Badge + Info Banner */}
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <span className="px-2 py-1 text-xs font-bold bg-vault-gold/20 text-vault-gold rounded border border-vault-gold/30">
+                  V2 ENGINE
+                </span>
+                {isDefault && (
+                  <span className="text-sm text-blue-400">Using defaults</span>
+                )}
               </div>
-            )}
+              
+              {/* Readiness Mode Selector */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-vault-muted">Mode:</span>
+                <Select
+                  value={healthConfig.readiness_mode || 'normal'}
+                  onValueChange={updateReadinessMode}
+                >
+                  <SelectTrigger className="w-[160px] bg-vault-dark border-vault-gold/30">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-vault-dark border-vault-gold/30">
+                    {Object.entries(readinessModes).map(([key, mode]) => {
+                      const Icon = mode.icon;
+                      return (
+                        <SelectItem key={key} value={key} className="text-white">
+                          <div className="flex items-center gap-2">
+                            <Icon className="w-4 h-4" />
+                            <span>{mode.name}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
             {/* Category Weights */}
             <GlassCard>
@@ -490,26 +518,27 @@ export default function SettingsPage() {
                     </div>
                   )}
 
-                  {Object.entries(healthConfig.category_weights).map(([category, weight]) => {
+                  {Object.entries(healthConfig.category_weights || {}).map(([category, weight]) => {
                     const config = categoryConfig[category] || {};
                     const Icon = config.icon || Scales;
                     
                     return (
                       <div key={category} className="flex items-center gap-4">
-                        <div className={`w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center`}>
-                          <Icon className={`w-4 h-4 ${config.color || 'text-white'}`} />
+                        <div className={`w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0`}>
+                          <Icon className={`w-5 h-5 ${config.color || 'text-white'}`} />
                         </div>
-                        <div className="flex-1">
-                          <label className="text-sm text-white">{config.name || category}</label>
+                        <div className="flex-1 min-w-0">
+                          <label className="text-sm text-white font-medium">{config.name || category}</label>
+                          <p className="text-xs text-vault-muted truncate">{config.description}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-shrink-0">
                           <input
                             type="range"
                             min="0"
                             max="50"
                             value={weight}
                             onChange={(e) => updateWeight(category, e.target.value)}
-                            className="w-32 accent-vault-gold"
+                            className="w-24 sm:w-32 accent-vault-gold"
                           />
                           <Input
                             type="number"
@@ -517,7 +546,7 @@ export default function SettingsPage() {
                             max="100"
                             value={weight}
                             onChange={(e) => updateWeight(category, e.target.value)}
-                            className="w-16 text-center bg-vault-dark/50 border-vault-gold/20"
+                            className="w-14 text-center bg-vault-dark/50 border-vault-gold/20"
                           />
                           <span className="text-vault-muted text-sm w-4">%</span>
                         </div>
@@ -528,14 +557,75 @@ export default function SettingsPage() {
               )}
             </GlassCard>
 
-            {/* Blocking Caps */}
+            {/* Severity Multipliers (V2) */}
+            <GlassCard>
+              <button
+                onClick={() => setExpandedSection(expandedSection === 'severity' ? null : 'severity')}
+                className="w-full flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3">
+                  <Lightning className="w-5 h-5 text-amber-400" />
+                  <div className="text-left">
+                    <h3 className="text-lg font-semibold text-white">Severity Multipliers</h3>
+                    <p className="text-sm text-vault-muted">Adjust penalty weight by severity level</p>
+                  </div>
+                </div>
+                {expandedSection === 'severity' ? (
+                  <CaretUp className="w-5 h-5 text-vault-muted" />
+                ) : (
+                  <CaretDown className="w-5 h-5 text-vault-muted" />
+                )}
+              </button>
+
+              {expandedSection === 'severity' && healthConfig.severity_multipliers && (
+                <div className="mt-6 space-y-4">
+                  <p className="text-xs text-vault-muted mb-4">
+                    Multipliers affect how much each finding impacts the score. Higher = more impact.
+                  </p>
+                  
+                  {Object.entries(severityConfig).map(([severity, config]) => {
+                    const currentValue = healthConfig.severity_multipliers[severity] ?? config.default;
+                    
+                    return (
+                      <div key={severity} className="flex items-center gap-4 p-3 bg-vault-dark/30 rounded-lg">
+                        <div className={`w-10 h-10 rounded-lg ${config.bgColor} flex items-center justify-center flex-shrink-0`}>
+                          {severity === 'info' && <Info className={`w-5 h-5 ${config.color}`} />}
+                          {severity === 'warning' && <Warning className={`w-5 h-5 ${config.color}`} />}
+                          {severity === 'critical' && <Lightning className={`w-5 h-5 ${config.color}`} weight="fill" />}
+                        </div>
+                        <div className="flex-1">
+                          <label className={`text-sm font-medium ${config.color}`}>{config.name}</label>
+                          <p className="text-xs text-vault-muted">
+                            Default: ×{config.default.toFixed(1)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-vault-muted">×</span>
+                          <Input
+                            type="number"
+                            min="0"
+                            max="3"
+                            step="0.1"
+                            value={currentValue}
+                            onChange={(e) => updateSeverityMultiplier(severity, e.target.value)}
+                            className="w-20 text-center bg-vault-dark/50 border-vault-gold/20"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </GlassCard>
+
+            {/* Blocking Caps (V2) */}
             <GlassCard>
               <button
                 onClick={() => setExpandedSection(expandedSection === 'caps' ? null : 'caps')}
                 className="w-full flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
-                  <Warning className="w-5 h-5 text-amber-400" />
+                  <Lock className="w-5 h-5 text-red-400" />
                   <div className="text-left">
                     <h3 className="text-lg font-semibold text-white">Blocking Conditions</h3>
                     <p className="text-sm text-vault-muted">Critical issues that cap the maximum score</p>
@@ -548,32 +638,44 @@ export default function SettingsPage() {
                 )}
               </button>
 
-              {expandedSection === 'caps' && (
+              {expandedSection === 'caps' && healthConfig.blocking_caps && (
                 <div className="mt-6 space-y-4">
-                  {Object.entries(healthConfig.blocking_caps).map(([capName, cap]) => (
-                    <div key={capName} className="p-4 bg-vault-dark/30 rounded-lg border border-white/10">
+                  <p className="text-xs text-vault-muted mb-4">
+                    When triggered, these conditions limit your maximum possible score regardless of other factors.
+                  </p>
+                  
+                  {Object.entries(healthConfig.blocking_caps).map(([capId, cap]) => (
+                    <div key={capId} className="p-4 bg-vault-dark/30 rounded-lg border border-white/10">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
                           <Switch
-                            checked={cap.enabled}
-                            onCheckedChange={(checked) => updateBlockingCap(capName, 'enabled', checked)}
+                            checked={cap.enabled !== false}
+                            onCheckedChange={(checked) => updateBlockingCap(capId, 'enabled', checked)}
                           />
-                          <span className="text-white font-medium">{cap.description || capName}</span>
+                          <div>
+                            <span className="text-white font-medium">{cap.name || capId}</span>
+                            <p className="text-xs text-vault-muted">{cap.description}</p>
+                          </div>
                         </div>
                       </div>
                       
-                      {cap.enabled && (
-                        <div className="flex items-center gap-4 ml-12">
+                      {cap.enabled !== false && (
+                        <div className="flex items-center gap-4 ml-12 mt-2">
                           <span className="text-sm text-vault-muted">Cap score at:</span>
                           <Input
                             type="number"
                             min="0"
                             max="100"
-                            value={cap.cap}
-                            onChange={(e) => updateBlockingCap(capName, 'cap', parseInt(e.target.value) || 0)}
+                            value={cap.cap_value ?? cap.cap ?? 60}
+                            onChange={(e) => updateBlockingCap(capId, 'cap_value', parseInt(e.target.value) || 0)}
                             className="w-20 text-center bg-vault-dark/50 border-vault-gold/20"
                           />
-                          <span className="text-vault-muted text-sm">/ 100</span>
+                          <div className="flex-1 h-2 bg-vault-dark/50 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-red-500 to-amber-500 rounded-full transition-all"
+                              style={{ width: `${cap.cap_value ?? cap.cap ?? 60}%` }}
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
@@ -582,8 +684,61 @@ export default function SettingsPage() {
               )}
             </GlassCard>
 
+            {/* Checks Preview (V2) - Collapsed by default */}
+            {healthConfig.checks && Object.keys(healthConfig.checks).length > 0 && (
+              <GlassCard>
+                <button
+                  onClick={() => setExpandedSection(expandedSection === 'checks' ? null : 'checks')}
+                  className="w-full flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <Eye className="w-5 h-5 text-cyan-400" />
+                    <div className="text-left">
+                      <h3 className="text-lg font-semibold text-white">Active Checks</h3>
+                      <p className="text-sm text-vault-muted">{Object.keys(healthConfig.checks).length} checks configured</p>
+                    </div>
+                  </div>
+                  {expandedSection === 'checks' ? (
+                    <CaretUp className="w-5 h-5 text-vault-muted" />
+                  ) : (
+                    <CaretDown className="w-5 h-5 text-vault-muted" />
+                  )}
+                </button>
+
+                {expandedSection === 'checks' && (
+                  <div className="mt-6 space-y-3 max-h-[400px] overflow-y-auto">
+                    {Object.entries(healthConfig.checks).map(([checkId, check]) => {
+                      const catConfig = categoryConfig[check.category] || {};
+                      const sevConfig = severityConfig[check.severity] || severityConfig.warning;
+                      
+                      return (
+                        <div key={checkId} className="p-3 bg-vault-dark/30 rounded-lg border border-white/5 text-sm">
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className={`px-1.5 py-0.5 text-xs rounded ${sevConfig.bgColor} ${sevConfig.color}`}>
+                                {check.severity?.toUpperCase()}
+                              </span>
+                              <span className="text-white font-medium">{check.name}</span>
+                            </div>
+                            <span className="text-xs text-vault-muted">{checkId}</span>
+                          </div>
+                          <p className="text-vault-muted text-xs mb-2">{check.description}</p>
+                          <div className="flex items-center gap-4 text-xs text-vault-muted">
+                            <span className={catConfig.color}>{catConfig.name}</span>
+                            <span>Base: -{check.base_deduction}</span>
+                            <span>Max: -{check.max_penalty}</span>
+                            <span>Effort: {check.effort}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </GlassCard>
+            )}
+
             {/* Action Buttons */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-4">
               <Button
                 variant="outline"
                 onClick={resetHealthRules}
