@@ -42,6 +42,11 @@ const PortfolioPage = ({ user, logout }) => {
   const [showAssetDialog, setShowAssetDialog] = useState(false);
   const [showNoticeDialog, setShowNoticeDialog] = useState(false);
   const [showDocDialog, setShowDocDialog] = useState(false);
+  const [showPortraitSelector, setShowPortraitSelector] = useState(false);
+  
+  // User profile state for portrait
+  const [userProfile, setUserProfile] = useState(null);
+  const [userPlanTier, setUserPlanTier] = useState(0);
   
   // Form states
   const [newAsset, setNewAsset] = useState({ asset_type: "", description: "", value: "", notes: "" });
