@@ -675,10 +675,11 @@ export default function TrustHealthDashboard() {
                                 Auto Fix
                               </Button>
                             )}
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               )}
             </GlassCard>
