@@ -447,29 +447,29 @@ export default function DiagramsPage() {
 
   if (selectedDiagram) {
     return (
-      <div className="h-[calc(100vh-2rem)] flex flex-col p-4">
-        <div className="flex items-center justify-between mb-4">
+      <div className="h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-2rem)] flex flex-col p-2 sm:p-4 overflow-hidden">
+        <div className="flex items-center justify-between mb-2 sm:mb-4 gap-2">
           <button
             onClick={() => setSelectedDiagram(null)}
-            className="flex items-center gap-2 text-vault-gold hover:underline"
+            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base shrink-0"
           >
-            ← Back to Diagrams
+            ← Back
           </button>
-          <div className="flex items-center gap-4">
-            <h2 className="text-xl font-heading text-white">{selectedDiagram.title}</h2>
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <h2 className="text-sm sm:text-xl font-heading text-white truncate">{selectedDiagram.title}</h2>
             <Button
               onClick={() => setShowInfo(!showInfo)}
               variant="outline"
               size="sm"
-              className="btn-secondary"
+              className="btn-secondary h-7 sm:h-9 text-xs sm:text-sm px-2 sm:px-3 shrink-0"
             >
-              <Info className="w-4 h-4 mr-2" weight="duotone" />
-              {showInfo ? 'Hide' : 'Show'} Info
+              <Info className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" weight="duotone" />
+              <span className="hidden sm:inline">{showInfo ? 'Hide' : 'Show'} Info</span>
             </Button>
           </div>
         </div>
 
-        <div className="flex-1 relative rounded-xl overflow-hidden border border-white/10">
+        <div className="flex-1 relative rounded-lg sm:rounded-xl overflow-hidden border border-white/10 min-h-0">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -483,8 +483,9 @@ export default function DiagramsPage() {
             <Controls 
               position="bottom-right"
               showInteractive={false}
-              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-3 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-8 [&>button]:!h-8"
+              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-2 sm:!m-3 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-6 [&>button]:!h-6 sm:[&>button]:!w-8 sm:[&>button]:!h-8"
             />
+            {/* Hide MiniMap on mobile */}
             <MiniMap 
               style={{ 
                 backgroundColor: 'rgba(11, 18, 33, 0.95)',
@@ -504,36 +505,37 @@ export default function DiagramsPage() {
               position="top-right"
               pannable={false}
               zoomable={false}
+              className="hidden sm:block"
             />
             <Background color="rgba(255,255,255,0.05)" gap={20} />
           </ReactFlow>
 
-          {/* Info Panel */}
+          {/* Info Panel - immediate appearance with high z-index */}
           {showInfo && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="absolute right-4 top-4 w-80 max-h-[80%] overflow-y-auto"
+            <div
+              className="absolute right-2 sm:right-4 top-2 sm:top-4 w-[calc(100%-1rem)] sm:w-80 max-h-[60%] sm:max-h-[80%] overflow-y-auto z-50"
+              style={{ zIndex: 1000 }}
             >
-              <GlassCard className="relative">
+              <GlassCard className="relative !bg-vault-dark/98 backdrop-blur-xl shadow-2xl border-vault-gold/30">
                 <button
                   onClick={() => setShowInfo(false)}
-                  className="absolute top-2 right-2 text-white/40 hover:text-white"
+                  className="absolute top-2 right-2 text-white/40 hover:text-white p-1"
                 >
                   <X className="w-4 h-4" weight="duotone" />
                 </button>
-                <h3 className="font-heading text-lg text-white mb-4">{selectedDiagram.title}</h3>
+                <h3 className="font-heading text-base sm:text-lg text-white mb-3 sm:mb-4 pr-6">{selectedDiagram.title}</h3>
                 <div className="prose prose-sm prose-invert">
                   {selectedDiagram.info.split('\n\n').map((para, idx) => (
-                    <p key={idx} className="text-white/70 text-sm whitespace-pre-line">{parseBoldText(para)}</p>
+                    <p key={idx} className="text-white/70 text-xs sm:text-sm whitespace-pre-line">{parseBoldText(para)}</p>
                   ))}
                 </div>
               </GlassCard>
-            </motion.div>
+            </div>
           )}
         </div>
 
-        <div className="mt-4 text-center text-white/40 text-sm">
+        {/* Footer hint - hidden on mobile */}
+        <div className="hidden sm:block mt-2 text-center text-white/40 text-sm">
           Drag nodes to rearrange • Scroll to zoom • Click and drag to pan
         </div>
       </div>
