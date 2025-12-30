@@ -357,7 +357,14 @@ export default function CommandPalette({ isOpen, onClose, onAction }) {
             <p className="text-xs text-vault-muted truncate">{item.subtitle}</p>
           )}
         </div>
-        <CaretRight className={`w-4 h-4 text-vault-muted transition-colors ${isSelected ? 'text-vault-gold' : ''}`} />
+        {/* Show keyboard shortcut if available */}
+        {item.shortcut ? (
+          <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-vault-muted bg-white/5 rounded border border-white/10">
+            {item.shortcut}
+          </kbd>
+        ) : (
+          <CaretRight className={`w-4 h-4 text-vault-muted transition-colors ${isSelected ? 'text-vault-gold' : ''}`} />
+        )}
       </button>
     );
   };
