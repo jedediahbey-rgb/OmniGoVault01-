@@ -136,7 +136,7 @@ export default function AssistantPage({ user }) {
               {messages.length === 0 ? (
                 <motion.div 
                   {...fadeInUp}
-                  className="h-full flex flex-col items-center justify-center text-center"
+                  className="h-full flex flex-col items-center pt-8 text-center"
                 >
                   <IconBadge icon={Sparkle} size="xl" variant="gold" className="mb-6" />
                   <h3 className="text-2xl font-heading text-white mb-3">
