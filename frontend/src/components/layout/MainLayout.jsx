@@ -388,6 +388,19 @@ export default function MainLayout({ children, user, onLogout }) {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Portrait Style Selector Dialog */}
+      <PortraitStyleSelector
+        isOpen={showPortraitSelector}
+        onClose={() => setShowPortraitSelector(false)}
+        currentStyleId={userProfile?.portrait_style || 'standard'}
+        userTier={userPlanTier}
+        userPicture={user?.picture}
+        userName={user?.name}
+        onStyleChange={(newStyle) => {
+          setUserProfile(prev => ({ ...prev, portrait_style: newStyle }));
+        }}
+      />
     </div>
   );
 }
