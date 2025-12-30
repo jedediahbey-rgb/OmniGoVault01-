@@ -518,6 +518,352 @@ async def check_binder_stale(
 
 
 
+
+# ============ V2: SCHEDULED BINDERS ============
+
+@router.post("/schedule")
+async def create_schedule(request: Request):
+    """
+    Create a scheduled binder generation.
+    V2 Feature: Auto-generate binders on schedule.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        
+        portfolio_id = body.get("portfolio_id")
+        profile_id = body.get("profile_id")
+        schedule_type = body.get("schedule_type", "weekly")  # daily, weekly, monthly
+        schedule_day = body.get("schedule_day")  # 0-6 for weekly, 1-28 for monthly
+        schedule_time = body.get("schedule_time", "09:00")  # HH:MM format
+        notify_emails = body.get("notify_emails", [])  # List of emails to notify
+        auto_export = body.get("auto_export", True)  # Auto-generate PDF
+        enabled = body.get("enabled", True)
+        
+        if not portfolio_id or not profile_id:
+            return error_response("MISSING_FIELD", "portfolio_id and profile_id are required")
+        
+        if schedule_type not in ["daily", "weekly", "monthly"]:
+            return error_response("VALIDATION_ERROR", "schedule_type must be daily, weekly, or monthly")
+        
+        schedule_id = f"sched_{uuid4().hex[:12]}"
+        now = datetime.now(timezone.utc).isoformat()
+        
+        schedule = {
+            "id": schedule_id,
+            "portfolio_id": portfolio_id,
+            "profile_id": profile_id,
+            "user_id": user.user_id,
+            "schedule_type": schedule_type,
+            "schedule_day": schedule_day,
+            "schedule_time": schedule_time,
+            "notify_emails": notify_emails,
+            "auto_export": auto_export,
+            "enabled": enabled,
+            "created_at": now,
+            "updated_at": now,
+            "last_run_at": None,
+            "next_run_at": None,  # Calculated by scheduler
+            "run_count": 0
+        }
+        
+        await db.binder_schedules.insert_one(schedule)
+        schedule.pop("_id", None)
+        
+        return success_response({
+            "schedule": schedule,
+            "message": f"Scheduled binder created - runs {schedule_type}"
+        })
+        
+    except Exception as e:
+        return error_response("CREATE_ERROR", str(e), status_code=500)
+
+
+@router.get("/schedules")
+async def get_schedules(
+    request: Request,
+    portfolio_id: Optional[str] = Query(None)
+):
+    """Get all scheduled binders for user or specific portfolio."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        query = {"user_id": user.user_id}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        
+        schedules = await db.binder_schedules.find(
+            query,
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(100)
+        
+        return success_response({
+            "schedules": schedules,
+            "total": len(schedules)
+        })
+        
+    except Exception as e:
+        return error_response("FETCH_ERROR", str(e), status_code=500)
+
+
+@router.put("/schedule/{schedule_id}")
+async def update_schedule(schedule_id: str, request: Request):
+    """Update a scheduled binder configuration."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        
+        # Only allow updating certain fields
+        allowed_fields = ["schedule_type", "schedule_day", "schedule_time", 
+                         "notify_emails", "auto_export", "enabled"]
+        
+        update_data = {k: v for k, v in body.items() if k in allowed_fields}
+        update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        
+        result = await db.binder_schedules.update_one(
+            {"id": schedule_id, "user_id": user.user_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            return error_response("NOT_FOUND", "Schedule not found", status_code=404)
+        
+        schedule = await db.binder_schedules.find_one(
+            {"id": schedule_id},
+            {"_id": 0}
+        )
+        
+        return success_response({
+            "schedule": schedule,
+            "message": "Schedule updated"
+        })
+        
+    except Exception as e:
+        return error_response("UPDATE_ERROR", str(e), status_code=500)
+
+
+@router.delete("/schedule/{schedule_id}")
+async def delete_schedule(schedule_id: str, request: Request):
+    """Delete a scheduled binder."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        result = await db.binder_schedules.delete_one(
+            {"id": schedule_id, "user_id": user.user_id}
+        )
+        
+        if result.deleted_count == 0:
+            return error_response("NOT_FOUND", "Schedule not found", status_code=404)
+        
+        return success_response({"message": "Schedule deleted"})
+        
+    except Exception as e:
+        return error_response("DELETE_ERROR", str(e), status_code=500)
+
+
+# ============ V2: BINDER TEMPLATES ============
+
+@router.post("/templates")
+async def create_binder_template(request: Request):
+    """
+    Save current binder configuration as a reusable template.
+    V2 Feature: Save and reuse binder configurations.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        
+        template_name = body.get("name")
+        description = body.get("description", "")
+        profile_type = body.get("profile_type", "custom")
+        rules = body.get("rules", {})
+        is_public = body.get("is_public", False)  # Share with workspace
+        
+        if not template_name:
+            return error_response("MISSING_FIELD", "Template name is required")
+        
+        template_id = f"btpl_{uuid4().hex[:12]}"
+        now = datetime.now(timezone.utc).isoformat()
+        
+        template = {
+            "id": template_id,
+            "name": template_name,
+            "description": description,
+            "profile_type": profile_type,
+            "rules": rules,
+            "user_id": user.user_id,
+            "is_public": is_public,
+            "use_count": 0,
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        await db.binder_templates.insert_one(template)
+        template.pop("_id", None)
+        
+        return success_response({
+            "template": template,
+            "message": "Binder template saved"
+        })
+        
+    except Exception as e:
+        return error_response("CREATE_ERROR", str(e), status_code=500)
+
+
+@router.get("/templates")
+async def get_binder_templates(
+    request: Request,
+    include_public: bool = Query(True)
+):
+    """Get all binder templates available to user."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        if include_public:
+            query = {"$or": [
+                {"user_id": user.user_id},
+                {"is_public": True}
+            ]}
+        else:
+            query = {"user_id": user.user_id}
+        
+        templates = await db.binder_templates.find(
+            query,
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(100)
+        
+        return success_response({
+            "templates": templates,
+            "total": len(templates)
+        })
+        
+    except Exception as e:
+        return error_response("FETCH_ERROR", str(e), status_code=500)
+
+
+@router.delete("/templates/{template_id}")
+async def delete_binder_template(template_id: str, request: Request):
+    """Delete a binder template."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        result = await db.binder_templates.delete_one(
+            {"id": template_id, "user_id": user.user_id}
+        )
+        
+        if result.deleted_count == 0:
+            return error_response("NOT_FOUND", "Template not found or not owned by you", status_code=404)
+        
+        return success_response({"message": "Template deleted"})
+        
+    except Exception as e:
+        return error_response("DELETE_ERROR", str(e), status_code=500)
+
+
+# ============ V2: COURT-GRADE ENHANCEMENTS ============
+
+@router.post("/generate/court-packet")
+async def generate_court_packet(request: Request):
+    """
+    Generate a court-grade evidence packet with enhanced features.
+    V2 Feature: Includes certification page, exhibit markers, chain of custody.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        
+        portfolio_id = body.get("portfolio_id")
+        case_number = body.get("case_number", "")
+        court_name = body.get("court_name", "")
+        case_title = body.get("case_title", "")
+        party_name = body.get("party_name", "")
+        attorney_info = body.get("attorney_info", {})
+        exhibit_prefix = body.get("exhibit_prefix", "EX")
+        include_certification = body.get("include_certification", True)
+        include_chain_of_custody = body.get("include_chain_of_custody", True)
+        include_exhibit_index = body.get("include_exhibit_index", True)
+        selected_documents = body.get("selected_documents", [])  # Specific doc IDs
+        
+        if not portfolio_id:
+            return error_response("MISSING_FIELD", "portfolio_id is required")
+        
+        run_id = f"court_{uuid4().hex[:12]}"
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Create court packet run record
+        court_run = {
+            "id": run_id,
+            "portfolio_id": portfolio_id,
+            "user_id": user.user_id,
+            "run_type": "court_packet",
+            "status": "queued",
+            "case_info": {
+                "case_number": case_number,
+                "court_name": court_name,
+                "case_title": case_title,
+                "party_name": party_name,
+                "attorney_info": attorney_info
+            },
+            "exhibit_prefix": exhibit_prefix,
+            "options": {
+                "include_certification": include_certification,
+                "include_chain_of_custody": include_chain_of_custody,
+                "include_exhibit_index": include_exhibit_index
+            },
+            "selected_documents": selected_documents,
+            "created_at": now,
+            "started_at": None,
+            "finished_at": None,
+            "total_exhibits": 0,
+            "total_pages": 0
+        }
+        
+        await db.binder_runs.insert_one(court_run)
+        court_run.pop("_id", None)
+        
+        # In production, this would trigger async PDF generation
+        # For now, return the queued status
+        
+        return success_response({
+            "run": court_run,
+            "message": "Court packet generation queued"
+        })
+        
+    except Exception as e:
+        return error_response("GENERATE_ERROR", str(e), status_code=500)
+
+
+from uuid import uuid4
+
+
 # ============ SCHEDULE ENDPOINTS ============
 
 @router.get("/schedules")
