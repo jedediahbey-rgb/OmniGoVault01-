@@ -589,7 +589,8 @@ export default function DiagramsPage() {
         ))}
       </div>
 
-      <div className="mt-12">
+      {/* About section - Hidden on mobile to prevent scrolling */}
+      <div className="hidden sm:block mt-12">
         <GlassCard>
           <h3 className="font-heading text-lg text-white mb-4">About Interactive Diagrams</h3>
           <p className="text-white/60 text-sm mb-4">
