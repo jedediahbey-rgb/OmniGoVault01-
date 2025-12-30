@@ -21,34 +21,22 @@ class OmniBinderV2Tester:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'GlobalSearchV2-Tester/1.0'
+            'User-Agent': 'OmniBinderV2-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_results = []
         
-        # Expected V2 navigation items with shortcuts
-        self.expected_navigation = [
-            {"title": "Dashboard", "shortcut": "G D"},
-            {"title": "Governance", "shortcut": "G G"},
-            {"title": "Trust Health", "shortcut": "G H"},
-            {"title": "Settings", "shortcut": "G S"},
-            {"title": "Billing", "shortcut": "G B"},
-        ]
-        
-        # Expected V2 quick actions
-        self.expected_quick_actions = [
-            "New Portfolio",
-            "New Meeting Minutes", 
-            "New Distribution",
-            "New Document",
-            "Export Binder"
-        ]
-        
         # Test user details
         self.test_user_email = "jedediah.bey@gmail.com"
         self.test_user_role = "OMNICOMPETENT_OWNER"
+        
+        # Test data for OmniBinder V2
+        self.test_portfolio_id = None
+        self.test_profile_id = None
+        self.test_schedule_id = None
+        self.test_template_id = None
         
         # Try to get a valid session token
         self.session_token = self.get_valid_session_token()
