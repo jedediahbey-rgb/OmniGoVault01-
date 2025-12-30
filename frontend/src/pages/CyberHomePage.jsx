@@ -965,6 +965,21 @@ export default function CyberHomePage() {
       }, 2500);
     }
   };
+
+  // Handle plan selection from landing page - redirect to billing
+  const handleSelectPlan = (planTier) => (e) => {
+    e.preventDefault();
+    
+    if (isLoggedIn) {
+      // User is logged in - go directly to billing page
+      navigate('/billing');
+    } else {
+      // User not logged in - redirect to Google Auth with billing as return URL
+      sessionStorage.setItem('show_vault_loading', 'true');
+      const redirectUrl = window.location.origin + '/billing';
+      window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+    }
+  };
   
   // Handle Google Auth - Create Account (only for logged-out users)
   // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
