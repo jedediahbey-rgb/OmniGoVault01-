@@ -654,21 +654,21 @@ C/o: <strong>[ADDRESS]</strong><br/>
             )}
           </div>
           
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="ghost" onClick={() => setShowCreateDialog(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2">
+            <Button variant="ghost" onClick={() => setShowCreateDialog(false)} className="w-full sm:w-auto">
               Cancel
             </Button>
             <Button 
               variant="outline" 
               onClick={handleAiGenerate}
               disabled={!selectedPortfolio || selectedPortfolio === '__none__'}
-              className="btn-secondary"
+              className="btn-secondary w-full sm:w-auto"
             >
               <Sparkle className="w-4 h-4 mr-2" weight="duotone" />
               Generate with AI
             </Button>
-            <Button onClick={createDocument} disabled={creating} className="btn-primary">
-              {creating ? 'Creating...' : 'Create Blank Document'}
+            <Button onClick={createDocument} disabled={creating} className="btn-primary w-full sm:w-auto">
+              {creating ? 'Creating...' : 'Create Blank Doc'}
             </Button>
           </DialogFooter>
         </DialogContent>
