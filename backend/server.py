@@ -1168,7 +1168,7 @@ async def logout(request: Request, response: Response):
 
 @api_router.get("/user/profile")
 async def get_user_profile(user: User = Depends(get_current_user)):
-    """Get user profile including display name and roles"""
+    """Get user profile including display name, roles, and portrait style"""
     # Get user document
     user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
     
@@ -1184,6 +1184,7 @@ async def get_user_profile(user: User = Depends(get_current_user)):
         "email": user.email,
         "name": user.name,
         "display_name": user_doc.get("display_name") if user_doc else None,
+        "portrait_style": user_doc.get("portrait_style", "standard") if user_doc else "standard",
         "picture": user.picture,
         "global_roles": global_roles,
         "is_omnicompetent": "OMNICOMPETENT" in global_roles or "OMNICOMPETENT_OWNER" in global_roles
@@ -1191,7 +1192,7 @@ async def get_user_profile(user: User = Depends(get_current_user)):
 
 @api_router.put("/user/profile")
 async def update_user_profile(request: Request, user: User = Depends(get_current_user)):
-    """Update user profile including display name"""
+    """Update user profile including display name and portrait style"""
     body = await request.json()
     
     now = datetime.now(timezone.utc).isoformat()
@@ -1204,6 +1205,14 @@ async def update_user_profile(request: Request, user: User = Depends(get_current
         if display_name and len(display_name) > 50:
             raise HTTPException(status_code=400, detail="Display name must be 50 characters or less")
         update_data["display_name"] = display_name
+    
+    if "portrait_style" in body:
+        # Validate portrait style
+        valid_styles = ["standard", "gold", "emerald", "sapphire", "amethyst", "obsidian", "dynasty", "crown"]
+        portrait_style = body["portrait_style"]
+        if portrait_style and portrait_style not in valid_styles:
+            raise HTTPException(status_code=400, detail=f"Invalid portrait style. Must be one of: {', '.join(valid_styles)}")
+        update_data["portrait_style"] = portrait_style or "standard"
     
     await db.users.update_one(
         {"user_id": user.user_id},
