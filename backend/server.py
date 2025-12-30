@@ -4760,6 +4760,11 @@ init_vault_routes(db, get_current_user)
 
 app.include_router(vault_router)
 
+# Initialize and include Real-time Collaboration routes (V2)
+from routes.realtime import router as realtime_router, init_realtime_routes
+init_realtime_routes(db, get_current_user)
+app.include_router(realtime_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
