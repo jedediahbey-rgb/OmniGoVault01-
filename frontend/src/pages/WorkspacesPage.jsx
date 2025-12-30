@@ -311,7 +311,7 @@ export default function WorkspacesPage({ user }) {
           <DialogContent className="bg-vault-dark border-vault-gold/20 max-w-lg">
             <DialogHeader>
               <DialogTitle className="text-white flex items-center gap-2">
-                <Vault className="w-5 h-5 text-vault-gold" />
+                <Lock className="w-5 h-5 text-vault-gold" />
                 Create New Vault
               </DialogTitle>
               <DialogDescription className="text-vault-muted">
