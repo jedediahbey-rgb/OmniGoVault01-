@@ -52,17 +52,22 @@ const AnimatedTierIcon = ({ tier }) => {
       animationClass: 'animate-pulse'
     },
     2: {
-      // Irrevocable - Shield with protective glow
-      icon: <Shield className="w-6 h-6" />,
-      bgClass: 'bg-gradient-to-br from-blue-400 via-cyan-500 to-blue-600',
+      // Irrevocable - Diamond/Gem (precious, unchangeable)
+      icon: <Gem className="w-6 h-6" />,
+      bgClass: 'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600',
       glowClass: 'shadow-blue-500/50',
       animationClass: ''
     },
     3: {
-      // Dynasty - EPIC Castle/Gem with animated gradient
-      icon: <Castle className="w-6 h-6" />,
-      bgClass: 'bg-gradient-to-br from-purple-500 via-pink-500 to-amber-400',
-      glowClass: 'shadow-purple-500/50',
+      // Dynasty - Crown with flames (ultimate power)
+      icon: (
+        <div className="relative">
+          <Crown className="w-6 h-6" />
+          <Flame className="w-3 h-3 absolute -top-1 -right-1 text-amber-300 animate-pulse" />
+        </div>
+      ),
+      bgClass: 'bg-gradient-to-br from-amber-400 via-purple-500 to-pink-600',
+      glowClass: 'shadow-purple-500/60',
       animationClass: ''
     }
   };
@@ -71,25 +76,19 @@ const AnimatedTierIcon = ({ tier }) => {
 
   return (
     <motion.div
-      className={`p-3 rounded-xl ${config.bgClass} shadow-lg ${config.glowClass} ${config.animationClass}`}
+      className={`relative p-3 rounded-xl ${config.bgClass} shadow-lg ${config.glowClass} ${config.animationClass}`}
       whileHover={{ 
         scale: 1.15, 
         rotate: tier === 3 ? [0, -5, 5, 0] : 0,
-        boxShadow: tier === 3 ? '0 0 30px rgba(168, 85, 247, 0.6)' : undefined
       }}
-      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+      animate={tier === 3 ? {
+        boxShadow: ['0 0 20px rgba(168, 85, 247, 0.4)', '0 0 35px rgba(168, 85, 247, 0.7)', '0 0 20px rgba(168, 85, 247, 0.4)']
+      } : {}}
+      transition={tier === 3 ? { duration: 2, repeat: Infinity } : { type: "spring", stiffness: 400, damping: 10 }}
     >
       <div className="text-white drop-shadow-lg">
         {config.icon}
       </div>
-      {/* Dynasty special glow ring */}
-      {tier === 3 && (
-        <motion.div 
-          className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-amber-400/20"
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-      )}
     </motion.div>
   );
 };
