@@ -143,20 +143,6 @@ const AnimatedTierIcon = ({ tier }) => {
     </motion.div>
   );
 }; 
-        scale: 1.15, 
-        rotate: tier === 3 ? [0, -5, 5, 0] : 0,
-      }}
-      animate={tier === 3 ? {
-        boxShadow: ['0 0 20px rgba(168, 85, 247, 0.4)', '0 0 35px rgba(168, 85, 247, 0.7)', '0 0 20px rgba(168, 85, 247, 0.4)']
-      } : {}}
-      transition={tier === 3 ? { duration: 2, repeat: Infinity } : { type: "spring", stiffness: 400, damping: 10 }}
-    >
-      <div className="text-white drop-shadow-lg">
-        {config.icon}
-      </div>
-    </motion.div>
-  );
-};
 
 // Background gradient for each tier card
 const tierCardBg = {
