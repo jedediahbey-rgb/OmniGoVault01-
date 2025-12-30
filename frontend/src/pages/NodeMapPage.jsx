@@ -648,7 +648,10 @@ export default function NodeMapPage() {
           <div>
             <h1 className="text-2xl font-heading text-white">Trust Node Map</h1>
             <p className="text-white/50 text-xs sm:text-sm mt-1">
-              Visual representation of trust <span style={{ whiteSpace: 'nowrap' }}>relationships.&nbsp;<span className="inline-flex align-middle"><PageHelpTooltip pageKey="nodeMap" /></span></span>
+              Visual representation of trust{' '}
+              <span style={{ whiteSpace: 'nowrap' }}>
+                relationships. <span className="inline-flex align-middle"><PageHelpTooltip pageKey="nodeMap" /></span>
+              </span>
             </p>
           </div>
         </div>
