@@ -476,7 +476,7 @@ const BillingPage = () => {
             </Tabs>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-4">
             {plans.map((plan) => (
               <PlanCard
                 key={plan.plan_id}
