@@ -88,15 +88,25 @@ const pageVariants = {
 
 // Gold particles effect
 const GoldParticles = () => {
+  // Pre-generate stable random values to avoid impure function calls during render
+  const particleData = React.useMemo(() => 
+    [...Array(12)].map(() => ({
+      initialX: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1920),
+      duration: 1.5 + Math.random() * 0.5,
+      delay: Math.random() * 0.3,
+      leftPercent: 10 + Math.random() * 80,
+    })), []
+  );
+  
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(12)].map((_, i) => (
+      {particleData.map((particle, i) => (
         <motion.div
           key={i}
           className="absolute w-1 h-1 rounded-full bg-vault-gold"
           initial={{
-            x: Math.random() * window.innerWidth,
-            y: window.innerHeight + 10,
+            x: particle.initialX,
+            y: typeof window !== 'undefined' ? window.innerHeight + 10 : 810,
             opacity: 0,
           }}
           animate={{
@@ -105,12 +115,12 @@ const GoldParticles = () => {
             scale: [0.5, 1, 0.5],
           }}
           transition={{
-            duration: 1.5 + Math.random() * 0.5,
-            delay: Math.random() * 0.3,
+            duration: particle.duration,
+            delay: particle.delay,
             ease: 'easeOut',
           }}
           style={{
-            left: `${10 + Math.random() * 80}%`,
+            left: `${particle.leftPercent}%`,
           }}
         />
       ))}
