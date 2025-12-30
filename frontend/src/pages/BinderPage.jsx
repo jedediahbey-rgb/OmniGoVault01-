@@ -1044,7 +1044,13 @@ export default function BinderPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                if (portfolioId) {
+                  navigate(`/vault/portfolio/${portfolioId}`);
+                } else {
+                  navigate('/vault');
+                }
+              }}
               className="text-vault-muted hover:text-white shrink-0 p-2"
             >
               <ArrowLeft className="w-4 h-4" />
