@@ -431,10 +431,28 @@ All fiduciaries share common duties: loyalty, care, and accountability.`
 ];
 
 export default function DiagramsPage() {
+  return (
+    <ReactFlowProvider>
+      <DiagramsContent />
+    </ReactFlowProvider>
+  );
+}
+
+function DiagramsContent() {
   const [selectedDiagram, setSelectedDiagram] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const reactFlowWrapper = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
+  // Detect mobile
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Inject custom styles to hide React Flow attribution
   useEffect(() => {
@@ -451,6 +469,60 @@ export default function DiagramsPage() {
     };
   }, []);
 
+  // Lock body scroll on mobile when diagram is selected
+  useEffect(() => {
+    if (selectedDiagram && isMobile) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [selectedDiagram, isMobile]);
+
+  // Fit view handler
+  const fitViewTimeoutRef = useRef(null);
+  const fitView = useCallback(() => {
+    if (!reactFlowInstance) return;
+    
+    if (fitViewTimeoutRef.current) {
+      clearTimeout(fitViewTimeoutRef.current);
+    }
+    
+    fitViewTimeoutRef.current = setTimeout(() => {
+      reactFlowInstance.fitView({
+        padding: isMobile ? 0.1 : 0.15,
+        includeHiddenNodes: true,
+        duration: 150,
+      });
+    }, 100);
+  }, [reactFlowInstance, isMobile]);
+
+  // Fit view when nodes change
+  useEffect(() => {
+    if (nodes.length > 0 && reactFlowInstance) {
+      fitView();
+    }
+  }, [nodes.length, reactFlowInstance, fitView]);
+
+  // ResizeObserver for container
+  useEffect(() => {
+    if (!reactFlowWrapper.current || !selectedDiagram) return;
+    
+    const resizeObserver = new ResizeObserver(() => {
+      fitView();
+    });
+    
+    resizeObserver.observe(reactFlowWrapper.current);
+    
+    return () => {
+      resizeObserver.disconnect();
+      if (fitViewTimeoutRef.current) {
+        clearTimeout(fitViewTimeoutRef.current);
+      }
+    };
+  }, [fitView, selectedDiagram]);
+
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
@@ -461,12 +533,19 @@ export default function DiagramsPage() {
     setNodes(diagram.nodes);
     setEdges(diagram.edges);
     setShowInfo(false);
+    setReactFlowInstance(null); // Reset instance for new diagram
   };
 
   if (selectedDiagram) {
     return (
-      <div className="h-full flex flex-col p-2 sm:p-4 overflow-hidden">
-        <div className="flex items-center justify-between mb-2 sm:mb-4 gap-2 shrink-0">
+      <div 
+        className="h-full flex flex-col overflow-hidden"
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
+      >
+        <div className="flex items-center justify-between p-2 sm:p-4 pb-1 sm:pb-2 gap-2 shrink-0">
           <button
             onClick={() => setSelectedDiagram(null)}
             className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base shrink-0"
