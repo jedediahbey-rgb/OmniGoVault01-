@@ -294,11 +294,11 @@ export default function LedgerTimelinePage() {
               </SelectTrigger>
               <SelectContent className="!bg-[#0a0a0f] bg-opacity-100 border-vault-gold/30 backdrop-blur-none z-50">
                 <SelectItem value="all">All Modules</SelectItem>
-                <SelectItem value="minutes">Meeting Minutes</SelectItem>
-                <SelectItem value="distribution">Distributions</SelectItem>
                 <SelectItem value="dispute">Disputes</SelectItem>
                 <SelectItem value="insurance">Insurance</SelectItem>
                 <SelectItem value="compensation">Compensation</SelectItem>
+                <SelectItem value="distribution">Distributions</SelectItem>
+                <SelectItem value="minutes">Meeting Minutes</SelectItem>
               </SelectContent>
             </Select>
 
