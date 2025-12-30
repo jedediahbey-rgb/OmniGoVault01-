@@ -601,9 +601,9 @@ C/o: <strong>[ADDRESS]</strong><br/>
 
       {/* Create Document Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="bg-vault-navy border-white/10 w-[90vw] max-w-md sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-white font-heading text-base sm:text-lg text-center">
+        <DialogContent className="bg-vault-navy border-white/10 w-[88vw] max-w-[360px] sm:max-w-md p-5 sm:p-6">
+          <DialogHeader className="space-y-1">
+            <DialogTitle className="text-white font-heading text-base sm:text-lg text-center pr-6">
               Create {selectedTemplate?.name}
             </DialogTitle>
             <DialogDescription className="text-white/50 text-xs sm:text-sm text-center">
@@ -611,7 +611,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-2">
+          <div className="space-y-4 py-3">
             <div>
               <label className="text-white/60 text-xs sm:text-sm mb-1.5 block">Document Title</label>
               <Input
@@ -619,7 +619,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
                 placeholder="Enter document title"
                 value={documentTitle}
                 onChange={(e) => setDocumentTitle(e.target.value)}
-                className="bg-white/5 border-white/10 focus:border-vault-gold text-sm"
+                className="bg-white/5 border-white/10 focus:border-vault-gold text-sm w-full"
               />
             </div>
             
@@ -632,19 +632,19 @@ C/o: <strong>[ADDRESS]</strong><br/>
                 >
                   <SelectTrigger 
                     ref={triggerRef}
-                    className="bg-white/5 border-white/10 text-sm"
+                    className="bg-white/5 border-white/10 text-sm w-full"
                     onPointerDown={handlePortfolioPointerDown}
                   >
                     <SelectValue placeholder="Select a portfolio" />
                   </SelectTrigger>
                   <SelectContent 
-                    className="bg-vault-navy border-white/10 z-[9999]"
+                    className="bg-vault-navy border-white/10 z-[9999] max-w-[320px]"
                     position="popper"
                     sideOffset={4}
                   >
                     <SelectItem value="__none__" className="text-white/70">No Portfolio</SelectItem>
                     {portfolios.map(p => (
-                      <SelectItem key={p.portfolio_id} value={p.portfolio_id} className="text-white/70">
+                      <SelectItem key={p.portfolio_id} value={p.portfolio_id} className="text-white/70 truncate">
                         {p.name}
                       </SelectItem>
                     ))}
@@ -654,20 +654,20 @@ C/o: <strong>[ADDRESS]</strong><br/>
             )}
           </div>
           
-          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end pt-2">
-            <Button onClick={createDocument} disabled={creating} className="btn-primary w-full sm:w-auto">
+          <DialogFooter className="flex flex-col gap-2 pt-2">
+            <Button onClick={createDocument} disabled={creating} className="btn-primary w-full">
               {creating ? 'Creating...' : 'Create'}
             </Button>
             <Button 
               variant="outline" 
               onClick={handleAiGenerate}
               disabled={!selectedPortfolio || selectedPortfolio === '__none__'}
-              className="btn-secondary w-full sm:w-auto text-xs sm:text-sm"
+              className="btn-secondary w-full text-xs sm:text-sm"
             >
-              <Sparkle className="w-4 h-4 mr-1 sm:mr-2" weight="duotone" />
-              Generate with AI
+              <Sparkle className="w-4 h-4 mr-1.5 flex-shrink-0" weight="duotone" />
+              <span className="truncate">Generate with AI</span>
             </Button>
-            <Button variant="ghost" onClick={() => setShowCreateDialog(false)} className="w-full sm:w-auto">
+            <Button variant="ghost" onClick={() => setShowCreateDialog(false)} className="w-full">
               Cancel
             </Button>
           </DialogFooter>
