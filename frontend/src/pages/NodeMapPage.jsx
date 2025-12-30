@@ -720,7 +720,7 @@ export default function NodeMapPage() {
             <Controls 
               position="bottom-right"
               showInteractive={false}
-              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-7 [&>button]:!h-7 sm:[&>button]:!w-8 sm:[&>button]:!h-8"
+              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-3 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-7 [&>button]:!h-7 sm:[&>button]:!w-8 sm:[&>button]:!h-8"
             />
             {/* MiniMap - smaller and positioned to avoid overlap */}
             {!isMobile && (
@@ -731,6 +731,7 @@ export default function NodeMapPage() {
                   borderRadius: '6px',
                   width: 100,
                   height: 70,
+                  margin: '12px',
                 }}
                 nodeColor={(node) => {
                   const colors = {
