@@ -23,12 +23,20 @@ class V2TrustHealthTester:
         self.session.cookies.set('session_token', 'signing_test_1767059099')
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'UIFixes-Tester/1.0'
+            'User-Agent': 'V2TrustHealth-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_results = []
+        
+        # Expected V2 features
+        self.expected_v2_features = {
+            "category_weights": ["governance_hygiene", "financial_integrity", "compliance_recordkeeping", "risk_exposure", "data_integrity"],
+            "severity_multipliers": ["info", "warning", "critical"],
+            "readiness_modes": ["normal", "audit", "court"],
+            "blocking_caps": ["CAP_ORPHANS", "CAP_MISSING_FINALIZER", "CAP_LEDGER_IMBALANCE", "CAP_DRAFT_ACTIVE"]
+        }
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
