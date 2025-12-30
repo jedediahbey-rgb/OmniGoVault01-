@@ -678,15 +678,28 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
 };
 
 // Entitlement Item Component
-const EntitlementItem = ({ label, included }) => (
-  <li className={`flex items-center gap-2 ${included ? 'text-vault-light' : 'text-vault-muted'}`}>
-    {included ? (
-      <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
-    ) : (
-      <X className="w-4 h-4 text-vault-muted/50 flex-shrink-0" />
-    )}
-    {label}
-  </li>
-);
+const EntitlementItem = ({ label, included, tier = 0 }) => {
+  const checkColors = {
+    0: 'text-gray-400',
+    1: 'text-emerald-400',
+    2: 'text-blue-400',
+    3: 'text-purple-400'
+  };
+  
+  return (
+    <motion.li 
+      className={`flex items-center gap-2 ${included ? 'text-vault-light' : 'text-vault-muted/60'}`}
+      whileHover={{ x: included ? 3 : 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      {included ? (
+        <Check className={`w-4 h-4 ${checkColors[tier]} flex-shrink-0`} />
+      ) : (
+        <X className="w-4 h-4 text-vault-muted/30 flex-shrink-0" />
+      )}
+      <span className={!included ? 'line-through' : ''}>{label}</span>
+    </motion.li>
+  );
+};
 
 export default BillingPage;
