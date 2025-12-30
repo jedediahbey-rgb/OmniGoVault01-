@@ -5248,6 +5248,14 @@ async def startup_init():
     except Exception as e:
         logger.error(f"❌ Failed to initialize RM-ID V2 Allocator: {e}")
     
+    # Initialize Email Service with database for audit logging
+    try:
+        from services.email_service import set_email_db
+        set_email_db(db)
+        logger.info("✅ Email Service initialized with database for audit logging")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize Email Service: {e}")
+    
     # Initialize RM Subject indexes
     try:
         await ensure_rm_subject_indexes(db)
