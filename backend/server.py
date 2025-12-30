@@ -4769,7 +4769,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
-        "https://trusthealth-update.preview.emergentagent.com",
+        "https://omnidev-central.preview.emergentagent.com",
         "http://localhost:3000",
         "http://127.0.0.1:3000"
     ],
