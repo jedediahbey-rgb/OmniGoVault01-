@@ -22,7 +22,8 @@ import {
   Bank,
   Briefcase,
   House,
-  Handshake
+  Handshake,
+  Clock
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
