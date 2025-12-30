@@ -349,7 +349,7 @@ async def global_search(
 async def get_search_suggestions(request: Request):
     """
     Get search suggestions for empty state.
-    Returns recent items and popular actions.
+    Returns recent items, recent searches, and popular actions.
     """
     try:
         user = await get_current_user(request)
@@ -373,11 +373,60 @@ async def get_search_suggestions(request: Request):
             "icon": get_module_icon(record.get("module_type"))
         })
     
+    # Get recent searches
+    recent_searches = await db.search_history.find(
+        {"user_id": user.user_id},
+        {"_id": 0, "display_query": 1, "result_count": 1, "last_searched": 1}
+    ).sort("last_searched", -1).to_list(5)
+    
     return success_response({
         "recent": recent,
-        "quick_actions": QUICK_ACTIONS[:5],
-        "navigation": NAVIGATION_ITEMS[:6]
+        "recent_searches": [
+            {"query": s.get("display_query"), "result_count": s.get("result_count", 0)}
+            for s in recent_searches
+        ],
+        "quick_actions": QUICK_ACTIONS[:6],
+        "navigation": NAVIGATION_ITEMS[:8]
     })
+
+
+@router.get("/recent")
+async def get_recent_searches(request: Request):
+    """Get user's recent search queries."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return {"ok": False, "error": {"code": "AUTH_ERROR", "message": "Authentication required"}}
+    
+    recent_searches = await db.search_history.find(
+        {"user_id": user.user_id},
+        {"_id": 0, "display_query": 1, "result_count": 1, "last_searched": 1, "search_count": 1}
+    ).sort("last_searched", -1).to_list(10)
+    
+    return success_response({
+        "searches": [
+            {
+                "query": s.get("display_query"),
+                "result_count": s.get("result_count", 0),
+                "search_count": s.get("search_count", 1),
+                "last_searched": s.get("last_searched")
+            }
+            for s in recent_searches
+        ]
+    })
+
+
+@router.delete("/recent")
+async def clear_recent_searches(request: Request):
+    """Clear user's recent search history."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return {"ok": False, "error": {"code": "AUTH_ERROR", "message": "Authentication required"}}
+    
+    await db.search_history.delete_many({"user_id": user.user_id})
+    
+    return success_response(None, "Search history cleared")
 
 
 def get_module_icon(module_type: str) -> str:
