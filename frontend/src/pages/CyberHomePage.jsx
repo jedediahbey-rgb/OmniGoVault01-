@@ -1772,8 +1772,9 @@ export default function CyberHomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#05080F]/95 backdrop-blur-xl border-b border-white/5 pt-1.5 sm:pt-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Vault Icon - Left side - Only clickable when logged in (bypasses transition) */}
-            <div className="w-10">
+            {/* Left side - Vault Icon + Logo grouped together */}
+            <div className="flex items-center gap-3">
+              {/* Vault Icon */}
               {isLoggedIn ? (
                 <button
                   onClick={() => window.location.href = '/vault'}
@@ -1806,15 +1807,15 @@ export default function CyberHomePage() {
                   </div>
                 </div>
               )}
-            </div>
-            
-            {/* Logo - Private Equity & Trusts - Centered - NO link */}
-            <div className="flex items-center gap-2 shrink-0">
-              <Key className="w-5 h-5 text-[#C6A87C] shrink-0" weight="duotone" />
-              <span className="text-sm sm:text-base font-medium whitespace-nowrap">
-                <span className="text-white">Private Equity</span>
-                <span className="text-[#C6A87C]/80"> & Trusts</span>
-              </span>
+              
+              {/* Logo - Private Equity & Trusts - Left aligned next to vault */}
+              <div className="flex items-center gap-2">
+                <Key className="w-5 h-5 text-[#C6A87C] shrink-0" weight="duotone" />
+                <span className="text-sm sm:text-base font-medium whitespace-nowrap">
+                  <span className="text-white">Private Equity</span>
+                  <span className="text-[#C6A87C]/80"> & Trusts</span>
+                </span>
+              </div>
             </div>
             
             {/* User Avatar/Name when logged in - Right side */}
