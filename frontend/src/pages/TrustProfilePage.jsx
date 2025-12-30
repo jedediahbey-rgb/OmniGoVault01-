@@ -206,62 +206,62 @@ export default function TrustProfilePage({ user }) {
         </div>
 
         {/* General Tab */}
-        <TabsContent value="general" className="mt-6">
-          <GlassCard>
-            <h3 className="font-heading text-lg text-white mb-6">Trust Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <TabsContent value="general" className="mt-4 sm:mt-6">
+          <GlassCard className="!p-3 sm:!p-6">
+            <h3 className="font-heading text-base sm:text-lg text-white mb-4 sm:mb-6">Trust Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
               <div className="min-w-0">
-                <Label className="text-white/60">Trust Name *</Label>
+                <Label className="text-white/60 text-xs sm:text-sm">Trust Name *</Label>
                 <Input
                   value={form.trust_name}
                   onChange={e => handleChange('trust_name', e.target.value)}
                   placeholder="e.g., Smith Family Trust"
-                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full h-9 sm:h-10 text-sm"
                 />
               </div>
               <div className="min-w-0">
-                <Label className="text-white/60">Trust Identifier</Label>
+                <Label className="text-white/60 text-xs sm:text-sm">Trust Identifier</Label>
                 <Input
                   value={form.trust_identifier}
                   onChange={e => handleChange('trust_identifier', e.target.value)}
                   placeholder="Internal reference"
-                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full h-9 sm:h-10 text-sm"
                 />
               </div>
               <div className="min-w-0">
-                <Label className="text-white/60">Creation Date</Label>
+                <Label className="text-white/60 text-xs sm:text-sm">Creation Date</Label>
                 <Input
                   type="date"
                   value={form.creation_date}
                   onChange={e => handleChange('creation_date', e.target.value)}
-                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full h-9 sm:h-10 text-sm"
                 />
               </div>
               <div className="min-w-0">
-                <Label className="text-white/60">Trust Term</Label>
+                <Label className="text-white/60 text-xs sm:text-sm">Trust Term</Label>
                 <Input
                   value={form.trust_term}
                   onChange={e => handleChange('trust_term', e.target.value)}
                   placeholder="e.g., 21 years, Perpetual"
-                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full h-9 sm:h-10 text-sm"
                 />
               </div>
               <div className="md:col-span-2 min-w-0">
-                <Label className="text-white/60">Governing Statements</Label>
+                <Label className="text-white/60 text-xs sm:text-sm">Governing Statements</Label>
                 <Textarea
                   value={form.governing_statements}
                   onChange={e => handleChange('governing_statements', e.target.value)}
                   placeholder="Key governing principles..."
-                  className="mt-1 bg-white/5 border-white/10 text-white min-h-[100px] w-full"
+                  className="mt-1 bg-white/5 border-white/10 text-white min-h-[80px] sm:min-h-[100px] w-full text-sm"
                 />
               </div>
               <div className="md:col-span-2 min-w-0">
-                <Label className="text-white/60">Additional Notes</Label>
+                <Label className="text-white/60 text-xs sm:text-sm">Additional Notes</Label>
                 <Textarea
                   value={form.additional_notes}
                   onChange={e => handleChange('additional_notes', e.target.value)}
                   placeholder="Any additional notes..."
-                  className="mt-1 bg-white/5 border-white/10 text-white w-full"
+                  className="mt-1 bg-white/5 border-white/10 text-white w-full text-sm"
                 />
               </div>
             </div>
