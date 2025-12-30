@@ -447,6 +447,17 @@ function DiagramsContent() {
   const reactFlowWrapper = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
+  // Suppress ResizeObserver loop error (benign in React)
+  useEffect(() => {
+    const errorHandler = (e) => {
+      if (e.message?.includes('ResizeObserver loop')) {
+        e.stopImmediatePropagation();
+      }
+    };
+    window.addEventListener('error', errorHandler);
+    return () => window.removeEventListener('error', errorHandler);
+  }, []);
+
   // Detect mobile
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 640);
@@ -469,59 +480,29 @@ function DiagramsContent() {
     };
   }, []);
 
-  // Lock body scroll on mobile when diagram is selected
-  useEffect(() => {
-    if (selectedDiagram && isMobile) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [selectedDiagram, isMobile]);
-
-  // Fit view handler
-  const fitViewTimeoutRef = useRef(null);
-  const fitView = useCallback(() => {
-    if (!reactFlowInstance) return;
-    
-    if (fitViewTimeoutRef.current) {
-      clearTimeout(fitViewTimeoutRef.current);
-    }
-    
-    fitViewTimeoutRef.current = setTimeout(() => {
-      reactFlowInstance.fitView({
-        padding: isMobile ? 0.1 : 0.15,
+  // Handle React Flow init
+  const handleInit = useCallback((instance) => {
+    setReactFlowInstance(instance);
+    // Fit view after a brief delay
+    setTimeout(() => {
+      instance.fitView({
+        padding: isMobile ? 0.08 : 0.12,
         includeHiddenNodes: true,
-        duration: 150,
       });
     }, 100);
-  }, [reactFlowInstance, isMobile]);
+  }, [isMobile]);
 
   // Fit view when nodes change
   useEffect(() => {
     if (nodes.length > 0 && reactFlowInstance) {
-      fitView();
+      setTimeout(() => {
+        reactFlowInstance.fitView({
+          padding: isMobile ? 0.08 : 0.12,
+          includeHiddenNodes: true,
+        });
+      }, 50);
     }
-  }, [nodes.length, reactFlowInstance, fitView]);
-
-  // ResizeObserver for container
-  useEffect(() => {
-    if (!reactFlowWrapper.current || !selectedDiagram) return;
-    
-    const resizeObserver = new ResizeObserver(() => {
-      fitView();
-    });
-    
-    resizeObserver.observe(reactFlowWrapper.current);
-    
-    return () => {
-      resizeObserver.disconnect();
-      if (fitViewTimeoutRef.current) {
-        clearTimeout(fitViewTimeoutRef.current);
-      }
-    };
-  }, [fitView, selectedDiagram]);
+  }, [nodes.length, reactFlowInstance, isMobile]);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -538,13 +519,7 @@ function DiagramsContent() {
 
   if (selectedDiagram) {
     return (
-      <div 
-        className="h-full flex flex-col overflow-hidden"
-        style={{
-          paddingTop: 'env(safe-area-inset-top, 0px)',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        }}
-      >
+      <div className="h-full flex flex-col overflow-hidden">
         <div className="flex items-center justify-between p-2 sm:p-4 pb-1 sm:pb-2 gap-2 shrink-0">
           <button
             onClick={() => setSelectedDiagram(null)}
