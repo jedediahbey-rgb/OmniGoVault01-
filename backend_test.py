@@ -1019,6 +1019,6 @@ class V2TrustHealthTester:
 
 
 if __name__ == "__main__":
-    tester = DocumentSigningTester()
-    success = tester.run_document_signing_tests()
+    tester = V2TrustHealthTester()
+    success = tester.run_v2_trust_health_tests()
     sys.exit(0 if success else 1)
