@@ -366,32 +366,32 @@ export default function TrustProfilePage({ user }) {
         </TabsContent>
 
         {/* RM-ID System Tab */}
-        <TabsContent value="rm-id" className="mt-6">
-          <GlassCard>
-            <div className="flex items-start gap-3 mb-6">
-              <Envelope className="w-6 h-6 text-vault-gold flex-shrink-0" weight="duotone" />
+        <TabsContent value="rm-id" className="mt-4 sm:mt-6">
+          <GlassCard className="!p-3 sm:!p-6">
+            <div className="flex items-start gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <Envelope className="w-5 h-5 sm:w-6 sm:h-6 text-vault-gold flex-shrink-0" weight="duotone" />
               <div>
-                <h3 className="font-heading text-lg text-white">Registered Envelope ID System</h3>
-                <p className="text-white/50 text-sm">
-                  Internal recordkeeping identifier using registered mail sticker numbers.
+                <h3 className="font-heading text-base sm:text-lg text-white">Registered Envelope ID System</h3>
+                <p className="text-white/50 text-xs sm:text-sm">
+                  Internal recordkeeping ID using registered mail sticker numbers.
                 </p>
               </div>
             </div>
 
             {/* Placeholder Warning */}
             {form.rm_id_is_placeholder && (
-              <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                <p className="text-yellow-400 text-sm font-medium">⚠️ Placeholder RM-ID</p>
-                <p className="text-white/60 text-sm mt-1">
+              <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <p className="text-yellow-400 text-xs sm:text-sm font-medium">⚠️ Placeholder RM-ID</p>
+                <p className="text-white/60 text-xs sm:text-sm mt-1">
                   This is a temporary placeholder. Replace with your actual registered mail sticker number when available.
                 </p>
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6">
+              <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <Label className="text-white/60">Main RM-ID (User Entered)</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Main RM-ID (User Entered)</Label>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -403,18 +403,18 @@ export default function TrustProfilePage({ user }) {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Input
                     value={form.rm_id_raw}
                     onChange={e => handleChange('rm_id_raw', e.target.value)}
                     placeholder="e.g., RF 123 456 789 US"
-                    className="flex-1 bg-white/5 border-white/10 font-mono text-lg"
+                    className="flex-1 bg-white/5 border-white/10 font-mono text-sm sm:text-lg h-9 sm:h-10"
                   />
                   <Button 
                     variant="outline" 
                     onClick={generatePlaceholderRmId}
                     disabled={generatingPlaceholder}
-                    className="btn-secondary whitespace-nowrap"
+                    className="btn-secondary whitespace-nowrap h-9 sm:h-10 text-xs sm:text-sm"
                   >
                     {generatingPlaceholder ? 'Generating...' : 'Generate Placeholder'}
                   </Button>
@@ -425,39 +425,39 @@ export default function TrustProfilePage({ user }) {
               </div>
 
               {form.rm_id_normalized && (
-                <div className="md:col-span-2 p-3 bg-vault-gold/10 rounded-lg">
-                  <Label className="text-white/40 text-xs uppercase">Normalized ID (Used for Sub-Records)</Label>
-                  <p className="text-vault-gold font-mono text-lg">{form.rm_id_normalized}</p>
+                <div className="p-3 bg-vault-gold/10 rounded-lg">
+                  <Label className="text-white/40 text-[10px] sm:text-xs uppercase">Normalized ID (Used for Sub-Records)</Label>
+                  <p className="text-vault-gold font-mono text-sm sm:text-lg break-all">{form.rm_id_normalized}</p>
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <Label className="text-white/60">Series Start</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Series Start</Label>
                   <Input
                     value={form.rm_series_start}
                     onChange={e => handleChange('rm_series_start', e.target.value)}
                     placeholder="01.001"
-                    className="mt-1 bg-white/5 border-white/10 font-mono"
+                    className="mt-1 bg-white/5 border-white/10 font-mono h-9 sm:h-10 text-sm"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/60">Series End</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Series End</Label>
                   <Input
                     value={form.rm_series_end}
                     onChange={e => handleChange('rm_series_end', e.target.value)}
                     placeholder="99.999"
-                    className="mt-1 bg-white/5 border-white/10 font-mono"
+                    className="mt-1 bg-white/5 border-white/10 font-mono h-9 sm:h-10 text-sm"
                   />
                 </div>
               </div>
 
-              <div className="md:col-span-2">
-                <Label className="text-white/60">Evidence Files</Label>
-                <div className="mt-2 border-2 border-dashed border-white/10 rounded-lg p-6 text-center hover:border-vault-gold/30 transition-colors cursor-pointer">
-                  <Upload className="w-8 h-8 text-white/30 mx-auto mb-2" weight="duotone" />
-                  <p className="text-white/40 text-sm">Upload sticker photo or receipt</p>
-                  <p className="text-white/20 text-xs">Click or drag files here</p>
+              <div>
+                <Label className="text-white/60 text-xs sm:text-sm">Evidence Files</Label>
+                <div className="mt-2 border-2 border-dashed border-white/10 rounded-lg p-4 sm:p-6 text-center hover:border-vault-gold/30 transition-colors cursor-pointer">
+                  <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-white/30 mx-auto mb-2" weight="duotone" />
+                  <p className="text-white/40 text-xs sm:text-sm">Upload sticker photo or receipt</p>
+                  <p className="text-white/20 text-[10px] sm:text-xs">Click or drag files here</p>
                 </div>
               </div>
             </div>
