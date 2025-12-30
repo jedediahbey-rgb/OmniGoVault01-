@@ -38,9 +38,25 @@ const tierIcons = {
 // Plan tier colors
 const tierColors = {
   0: 'text-gray-400 bg-gray-400/10',
-  1: 'text-blue-400 bg-blue-400/10',
-  2: 'text-vault-gold bg-vault-gold/10',
+  1: 'text-emerald-400 bg-emerald-400/10',
+  2: 'text-blue-400 bg-blue-400/10',
   3: 'text-purple-400 bg-purple-400/10'
+};
+
+// Plan tier border colors for cards
+const tierBorderColors = {
+  0: 'border-gray-500/30',
+  1: 'border-emerald-500/40 hover:border-emerald-500/60',
+  2: 'border-blue-500/40 hover:border-blue-500/60',
+  3: 'border-purple-500/40 hover:border-purple-500/60'
+};
+
+// Plan tier button colors
+const tierButtonColors = {
+  0: 'bg-gray-600/50 text-gray-300 cursor-default',
+  1: 'bg-emerald-600 hover:bg-emerald-700 text-white',
+  2: 'bg-blue-600 hover:bg-blue-700 text-white',
+  3: 'bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white'
 };
 
 const BillingPage = () => {
