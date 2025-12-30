@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for OMNIGOVAULT Application
-V2 Trust Health Feature - Comprehensive Testing
+Portrait Customization Feature - Comprehensive Testing
 """
 
 import requests
