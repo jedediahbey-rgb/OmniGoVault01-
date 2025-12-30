@@ -256,16 +256,41 @@ const PortfolioPage = ({ user, logout }) => {
 
         <div className="border-t border-vault-gold/10 pt-6">
           <div className="flex items-center gap-3 mb-4">
-            {user?.picture ? (
-              <img src={user.picture} alt="" className="w-10 h-10 rounded-full" />
-            ) : (
-              <div className="w-10 h-10 bg-vault-gold/20 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-vault-gold" weight="duotone" />
-              </div>
-            )}
+            <StyledPortrait
+              src={user?.picture}
+              alt={user?.name || 'User'}
+              fallbackText={user?.name || user?.email || 'U'}
+              styleId={userProfile?.portrait_style || 'standard'}
+              size="md"
+              showAccent={true}
+            />
             <div className="flex-1 min-w-0">
-              <p className="font-sans text-sm font-medium text-white truncate">{user?.name}</p>
+              <p className="font-sans text-sm font-medium text-white truncate">{userProfile?.display_name || user?.name}</p>
             </div>
+            {/* Portrait Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1.5 text-white/30 hover:text-white rounded-lg transition-colors">
+                  <DotsThreeVertical className="w-5 h-5" weight="bold" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-vault-navy border-white/10 min-w-[160px]">
+                <DropdownMenuItem 
+                  onClick={() => setShowPortraitSelector(true)}
+                  className="text-vault-gold hover:text-vault-gold focus:text-vault-gold cursor-pointer"
+                >
+                  <PaintBrush className="w-4 h-4 mr-2" weight="duotone" />
+                  Customize Portrait
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuItem 
+                  onClick={() => navigate('/settings')}
+                  className="text-white/70 hover:text-white focus:text-white cursor-pointer"
+                >
+                  Settings
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <Button onClick={handleLogout} variant="ghost" className="w-full justify-start text-vault-muted hover:text-white">
             <SignOut className="w-4 h-4 mr-2" weight="duotone" />
