@@ -271,9 +271,7 @@ const BillingPage = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${tierColors[subscription?.plan_tier || 0]}`}>
-                  {tierIcons[subscription?.plan_tier || 0]}
-                </div>
+                <AnimatedTierIcon tier={subscription?.plan_tier || 0} />
                 <div>
                   <CardTitle className="text-vault-light">
                     {subscription?.plan_name || 'Free'} Plan
