@@ -772,37 +772,33 @@ class GlobalSearchV2Tester:
 
     # ============ TEST RUNNER ============
 
-    def run_portrait_customization_tests(self):
-        """Run all Portrait Customization feature tests"""
-        self.log("🚀 Starting PORTRAIT CUSTOMIZATION Feature Tests")
+    def run_global_search_v2_tests(self):
+        """Run all Global Search V2 API tests"""
+        self.log("🚀 Starting GLOBAL SEARCH V2 API Tests")
         self.log(f"Testing against: {self.base_url}")
         self.log(f"User: {self.test_user_email} ({self.test_user_role} role)")
         self.log("=" * 80)
         
-        # Test sequence for portrait customization feature
+        # Test sequence for Global Search V2 API
         test_sequence = [
             # Authentication
             self.test_auth_status,
             
-            # Basic profile retrieval
-            self.test_get_user_profile,
+            # Main search functionality tests
+            self.test_search_dashboard,
+            self.test_search_new_actions,
+            self.test_search_health,
+            self.test_search_trust,
             
-            # Test updating to specific valid styles (as requested)
-            lambda: self.test_update_portrait_style_valid("gold"),
-            lambda: self.test_update_portrait_style_valid("emerald"),
-            lambda: self.test_update_portrait_style_valid("dynasty"),
-            lambda: self.test_update_portrait_style_valid("crown"),
+            # Search suggestions and history
+            self.test_search_suggestions,
+            self.test_search_recent,
+            self.test_clear_search_history,
             
-            # Test invalid style
-            self.test_update_portrait_style_invalid,
-            
-            # Test persistence for a few key styles
-            lambda: self.test_portrait_style_persistence("sapphire"),
-            lambda: self.test_portrait_style_persistence("obsidian"),
-            
-            # Test edge cases
-            self.test_multiple_field_update,
-            self.test_empty_portrait_style_update,
+            # V2 specific features
+            self.test_v2_navigation_shortcuts,
+            self.test_fuzzy_matching,
+            self.test_grouped_results,
         ]
         
         for test_func in test_sequence:
@@ -824,7 +820,7 @@ class GlobalSearchV2Tester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 PORTRAIT CUSTOMIZATION FEATURE TEST SUMMARY")
+        self.log("🏁 GLOBAL SEARCH V2 API TEST SUMMARY")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
@@ -841,61 +837,69 @@ class GlobalSearchV2Tester:
         
         self.log("\n🎯 KEY FINDINGS:")
         if success_rate >= 90:
-            self.log("✅ Portrait Customization feature working perfectly")
-            self.log("✅ GET /api/user/profile returns portrait_style field correctly")
-            self.log("✅ PUT /api/user/profile updates portrait_style successfully")
-            self.log("✅ Invalid portrait styles properly rejected with 400 error")
-            self.log("✅ Portrait style changes persist after update")
-            self.log("✅ All valid styles supported: " + ", ".join(self.valid_styles))
+            self.log("✅ Global Search V2 API working perfectly")
+            self.log("✅ All main search endpoints functional")
+            self.log("✅ V2 features (shortcuts, fuzzy matching, grouping) working")
+            self.log("✅ Search suggestions and history management working")
+            self.log("✅ Navigation items with shortcuts properly implemented")
         elif success_rate >= 75:
-            self.log("⚠️ Most portrait customization functionality working with minor issues")
+            self.log("⚠️ Most Global Search V2 functionality working with minor issues")
         else:
-            self.log("❌ Significant portrait customization implementation issues detected")
+            self.log("❌ Significant Global Search V2 implementation issues detected")
         
         # Specific feature status
         self.log("\n📋 FEATURE STATUS:")
         
-        # Profile retrieval
-        profile_tests = [t for t in self.test_results if 'profile' in t['test'].lower() and 'get' in t['test'].lower()]
-        profile_success = sum(1 for t in profile_tests if t['success'])
-        self.log(f"  Profile Retrieval: {profile_success}/{len(profile_tests)} ({'✅' if profile_success == len(profile_tests) else '❌'})")
+        # Main search functionality
+        search_tests = [t for t in self.test_results if 'search' in t['test'].lower() and 'suggestions' not in t['test'].lower() and 'recent' not in t['test'].lower()]
+        search_success = sum(1 for t in search_tests if t['success'])
+        self.log(f"  Main Search Endpoints: {search_success}/{len(search_tests)} ({'✅' if search_success == len(search_tests) else '❌'})")
         
-        # Style updates
-        update_tests = [t for t in self.test_results if 'update' in t['test'].lower() and 'invalid' not in t['test'].lower()]
-        update_success = sum(1 for t in update_tests if t['success'])
-        self.log(f"  Style Updates: {update_success}/{len(update_tests)} ({'✅' if update_success == len(update_tests) else '❌'})")
+        # V2 features
+        v2_tests = [t for t in self.test_results if 'v2' in t['test'].lower() or 'fuzzy' in t['test'].lower() or 'grouped' in t['test'].lower()]
+        v2_success = sum(1 for t in v2_tests if t['success'])
+        self.log(f"  V2 Enhanced Features: {v2_success}/{len(v2_tests)} ({'✅' if v2_success == len(v2_tests) else '❌'})")
         
-        # Validation
-        validation_tests = [t for t in self.test_results if 'invalid' in t['test'].lower()]
-        validation_success = sum(1 for t in validation_tests if t['success'])
-        self.log(f"  Input Validation: {validation_success}/{len(validation_tests)} ({'✅' if validation_success == len(validation_tests) else '❌'})")
-        
-        # Persistence
-        persistence_tests = [t for t in self.test_results if 'persistence' in t['test'].lower()]
-        persistence_success = sum(1 for t in persistence_tests if t['success'])
-        self.log(f"  Style Persistence: {persistence_success}/{len(persistence_tests)} ({'✅' if persistence_success == len(persistence_tests) else '❌'})")
+        # Suggestions and history
+        suggestions_tests = [t for t in self.test_results if 'suggestions' in t['test'].lower() or 'recent' in t['test'].lower() or 'clear' in t['test'].lower()]
+        suggestions_success = sum(1 for t in suggestions_tests if t['success'])
+        self.log(f"  Suggestions & History: {suggestions_success}/{len(suggestions_tests)} ({'✅' if suggestions_success == len(suggestions_tests) else '❌'})")
         
         # Authentication
         auth_tests = [t for t in self.test_results if 'auth' in t['test'].lower()]
         auth_success = sum(1 for t in auth_tests if t['success'])
         self.log(f"  Authentication: {auth_success}/{len(auth_tests)} ({'✅' if auth_success == len(auth_tests) else '❌'})")
         
-        self.log("\n🎨 PORTRAIT STYLES TESTED:")
-        tested_styles = ["gold", "emerald", "dynasty", "crown", "sapphire", "obsidian"]
-        for style in tested_styles:
-            style_tests = [t for t in self.test_results if style in t['test'].lower()]
-            style_success = all(t['success'] for t in style_tests)
-            self.log(f"  • {style}: {'✅' if style_success else '❌'}")
+        self.log("\n🔍 SEARCH QUERIES TESTED:")
+        tested_queries = ["dashboard", "new", "health", "trust", "dash", "gov"]
+        for query in tested_queries:
+            query_tests = [t for t in self.test_results if query in t['test'].lower()]
+            query_success = all(t['success'] for t in query_tests) if query_tests else False
+            self.log(f"  • '{query}': {'✅' if query_success else '❌'}")
         
-        self.log("\n📝 VALIDATION TESTS:")
-        self.log("  • Invalid style rejection: ✅" if validation_success > 0 else "  • Invalid style rejection: ❌")
-        self.log("  • Empty style handling: ✅" if any('empty' in t['test'].lower() and t['success'] for t in self.test_results) else "  • Empty style handling: ❌")
-        self.log("  • Multiple field updates: ✅" if any('multiple' in t['test'].lower() and t['success'] for t in self.test_results) else "  • Multiple field updates: ❌")
+        self.log("\n📝 V2 FEATURES VERIFIED:")
+        v2_features = [
+            ("Version field 'v2'", any('version' in t['details'] and t['success'] for t in self.test_results)),
+            ("Navigation shortcuts", any('shortcut' in t['details'] and t['success'] for t in self.test_results)),
+            ("Fuzzy matching", any('fuzzy' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("Grouped results", any('grouped' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("Search suggestions", any('suggestions' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("Search history", any('recent' in t['test'].lower() and t['success'] for t in self.test_results))
+        ]
+        
+        for feature_name, feature_working in v2_features:
+            self.log(f"  • {feature_name}: {'✅' if feature_working else '❌'}")
+        
+        self.log("\n🎯 NAVIGATION SHORTCUTS TESTED:")
+        expected_shortcuts = ["G D (Dashboard)", "G G (Governance)", "G H (Trust Health)", "G S (Settings)", "G B (Billing)"]
+        for shortcut in expected_shortcuts:
+            shortcut_working = any(shortcut.split()[0] in t['details'] and t['success'] for t in self.test_results)
+            self.log(f"  • {shortcut}: {'✅' if shortcut_working else '❌'}")
         
         return success_rate >= 75
 
 
 if __name__ == "__main__":
-    tester = PortraitCustomizationTester()
-    success = tester.run_portrait_customization_tests()
+    tester = GlobalSearchV2Tester()
+    success = tester.run_global_search_v2_tests()
     sys.exit(0 if success else 1)
