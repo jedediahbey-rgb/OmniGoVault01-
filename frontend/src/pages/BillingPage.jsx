@@ -34,50 +34,115 @@ import { motion } from 'framer-motion';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Animated tier icons with unique, impressive themes
+// Animated tier icons with unique, impressive themes and dynamic effects
 const AnimatedTierIcon = ({ tier }) => {
   const iconConfig = {
     0: {
-      // Testamentary - Simple document/scroll
-      icon: <FileText className="w-6 h-6" />,
-      bgClass: 'bg-gradient-to-br from-slate-500 to-slate-700',
-      glowClass: 'shadow-slate-500/30',
-      animationClass: ''
+      // Testamentary - Thunder/Zap with pulse animation
+      icon: <Zap className="w-6 h-6" />,
+      bgClass: 'bg-gradient-to-br from-slate-400 via-slate-500 to-slate-700',
+      glowClass: 'shadow-slate-400/50',
     },
     1: {
       // Revocable - Sparkle/Growth with animation
       icon: <Sparkle className="w-6 h-6" />,
       bgClass: 'bg-gradient-to-br from-emerald-400 to-emerald-600',
-      glowClass: 'shadow-emerald-500/40',
-      animationClass: 'animate-pulse'
+      glowClass: 'shadow-emerald-500/50',
     },
     2: {
       // Irrevocable - Diamond/Gem (precious, unchangeable)
       icon: <Gem className="w-6 h-6" />,
       bgClass: 'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600',
-      glowClass: 'shadow-blue-500/50',
-      animationClass: ''
+      glowClass: 'shadow-blue-500/60',
     },
     3: {
       // Dynasty - Crown with flames (ultimate power)
-      icon: (
-        <div className="relative">
-          <Crown className="w-6 h-6" />
-          <Flame className="w-3 h-3 absolute -top-1 -right-1 text-amber-300 animate-pulse" />
-        </div>
-      ),
+      icon: <Crown className="w-6 h-6" />,
       bgClass: 'bg-gradient-to-br from-amber-400 via-purple-500 to-pink-600',
-      glowClass: 'shadow-purple-500/60',
-      animationClass: ''
+      glowClass: 'shadow-purple-500/70',
     }
   };
 
   const config = iconConfig[tier];
 
+  // Animation variants for each tier
+  const pulseAnimation = {
+    scale: [1, 1.05, 1],
+    opacity: [0.9, 1, 0.9],
+  };
+
+  const glowAnimation = {
+    0: { // Testamentary - electric pulse
+      boxShadow: [
+        '0 0 15px rgba(148, 163, 184, 0.3)',
+        '0 0 25px rgba(148, 163, 184, 0.6)',
+        '0 0 15px rgba(148, 163, 184, 0.3)'
+      ]
+    },
+    1: { // Revocable - emerald glow
+      boxShadow: [
+        '0 0 15px rgba(52, 211, 153, 0.3)',
+        '0 0 30px rgba(52, 211, 153, 0.6)',
+        '0 0 15px rgba(52, 211, 153, 0.3)'
+      ]
+    },
+    2: { // Irrevocable - blue shimmer
+      boxShadow: [
+        '0 0 15px rgba(59, 130, 246, 0.3)',
+        '0 0 30px rgba(59, 130, 246, 0.7)',
+        '0 0 15px rgba(59, 130, 246, 0.3)'
+      ]
+    },
+    3: { // Dynasty - purple-gold epic glow
+      boxShadow: [
+        '0 0 20px rgba(168, 85, 247, 0.4)',
+        '0 0 40px rgba(251, 191, 36, 0.6)',
+        '0 0 20px rgba(168, 85, 247, 0.4)'
+      ]
+    }
+  };
+
   return (
     <motion.div
-      className={`relative p-3 rounded-xl ${config.bgClass} shadow-lg ${config.glowClass} ${config.animationClass}`}
+      className={`relative p-3 rounded-xl ${config.bgClass} shadow-lg ${config.glowClass}`}
+      animate={{
+        ...pulseAnimation,
+        ...glowAnimation[tier]
+      }}
+      transition={{
+        duration: tier === 3 ? 2 : 1.5,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
       whileHover={{ 
+        scale: 1.15, 
+        rotate: tier === 3 ? [0, -5, 5, 0] : 0,
+      }}
+    >
+      {/* Inner glow effect */}
+      <motion.div 
+        className="absolute inset-0 rounded-xl"
+        animate={{
+          opacity: [0.3, 0.6, 0.3]
+        }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          background: tier === 0 ? 'radial-gradient(circle, rgba(148,163,184,0.3) 0%, transparent 70%)' :
+                      tier === 1 ? 'radial-gradient(circle, rgba(52,211,153,0.3) 0%, transparent 70%)' :
+                      tier === 2 ? 'radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%)' :
+                      'radial-gradient(circle, rgba(251,191,36,0.4) 0%, transparent 70%)'
+        }}
+      />
+      <div className="relative text-white drop-shadow-lg">
+        {config.icon}
+      </div>
+    </motion.div>
+  );
+}; 
         scale: 1.15, 
         rotate: tier === 3 ? [0, -5, 5, 0] : 0,
       }}
