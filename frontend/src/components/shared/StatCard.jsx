@@ -1,7 +1,7 @@
 import { motion, useSpring, useTransform } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import IconChip from '../ui/icon-chip';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 
 // Define which stats have finite limits (show progress bar with max)
 const FINITE_STATS = {
