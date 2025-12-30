@@ -66,13 +66,13 @@ const CATEGORY_COLORS = {
 };
 
 const CATEGORY_LABELS = {
-  minutes: 'Meeting Minutes',
-  distribution: 'Distributions',
   dispute: 'Disputes',
-  insurance: 'Insurance',
-  trustee_compensation: 'Compensation',
   policy: 'Policies',
-  misc: 'Miscellaneous'
+  insurance: 'Insurance',
+  misc: 'Miscellaneous',
+  distribution: 'Distributions',
+  trustee_compensation: 'Compensation',
+  minutes: 'Meeting Minutes'
 };
 
 export default function LedgerThreadsPage() {
