@@ -152,7 +152,12 @@ export default function PortraitStyleSelector({
               return (
                 <motion.button
                   key={style.id}
-                  onClick={() => handleStyleClick(style)}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleStyleClick(style);
+                  }}
                   className={`
                     relative p-3 rounded-xl border-2 transition-all duration-200
                     ${selected 
