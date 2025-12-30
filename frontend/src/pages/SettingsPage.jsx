@@ -395,7 +395,7 @@ export default function SettingsPage() {
                             filter: 'drop-shadow(0 1px 2px rgba(198, 168, 124, 0.4))'
                           }}
                         >
-                          "{displayName}"
+                          &ldquo;{displayName}&rdquo;
                         </span>
                         <style>{`
                           @keyframes shimmer {
