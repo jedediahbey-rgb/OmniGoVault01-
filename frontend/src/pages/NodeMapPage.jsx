@@ -209,6 +209,17 @@ function NodeMapContent() {
   const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   
+  // Suppress ResizeObserver loop error (benign in React)
+  useEffect(() => {
+    const errorHandler = (e) => {
+      if (e.message?.includes('ResizeObserver loop')) {
+        e.stopImmediatePropagation();
+      }
+    };
+    window.addEventListener('error', errorHandler);
+    return () => window.removeEventListener('error', errorHandler);
+  }, []);
+
   // Inject custom styles to hide React Flow attribution
   useEffect(() => {
     const styleId = 'react-flow-custom-styles';
@@ -222,18 +233,6 @@ function NodeMapContent() {
       const existingStyle = document.getElementById(styleId);
       if (existingStyle) existingStyle.remove();
     };
-  }, []);
-
-  // Lock body scroll on mobile for this page
-  useEffect(() => {
-    const isMobileDevice = window.innerWidth < 768;
-    if (isMobileDevice) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
   }, []);
 
   // Detect mobile for responsive layout
@@ -261,58 +260,29 @@ function NodeMapContent() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  // Fit view handler with debouncing
-  const fitViewTimeoutRef = useRef(null);
-  const fitView = useCallback(() => {
-    if (!reactFlowInstance) return;
-    
-    if (fitViewTimeoutRef.current) {
-      clearTimeout(fitViewTimeoutRef.current);
-    }
-    
-    fitViewTimeoutRef.current = setTimeout(() => {
-      reactFlowInstance.fitView({
-        padding: isMobile ? 0.15 : 0.2,
+  // Simple fit view on instance ready
+  const handleInit = useCallback((instance) => {
+    setReactFlowInstance(instance);
+    // Fit view after a brief delay to ensure nodes are rendered
+    setTimeout(() => {
+      instance.fitView({
+        padding: isMobile ? 0.12 : 0.18,
         includeHiddenNodes: true,
-        duration: 200,
       });
     }, 100);
-  }, [reactFlowInstance, isMobile]);
+  }, [isMobile]);
 
-  // Fit view when nodes change or container resizes
+  // Fit view when nodes change
   useEffect(() => {
     if (nodes.length > 0 && reactFlowInstance) {
-      fitView();
+      setTimeout(() => {
+        reactFlowInstance.fitView({
+          padding: isMobile ? 0.12 : 0.18,
+          includeHiddenNodes: true,
+        });
+      }, 50);
     }
-  }, [nodes.length, reactFlowInstance, fitView]);
-
-  // ResizeObserver for container
-  useEffect(() => {
-    if (!reactFlowWrapper.current) return;
-    
-    const resizeObserver = new ResizeObserver(() => {
-      fitView();
-    });
-    
-    resizeObserver.observe(reactFlowWrapper.current);
-    
-    return () => {
-      resizeObserver.disconnect();
-      if (fitViewTimeoutRef.current) {
-        clearTimeout(fitViewTimeoutRef.current);
-      }
-    };
-  }, [fitView]);
-
-  // Handle orientation changes
-  useEffect(() => {
-    const handleOrientationChange = () => {
-      setTimeout(fitView, 300);
-    };
-    
-    window.addEventListener('orientationchange', handleOrientationChange);
-    return () => window.removeEventListener('orientationchange', handleOrientationChange);
-  }, [fitView]);
+  }, [nodes.length, reactFlowInstance, isMobile]);
 
   // Fetch portfolios
   useEffect(() => {
