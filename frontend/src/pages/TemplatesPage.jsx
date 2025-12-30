@@ -601,7 +601,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
 
       {/* Create Document Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="bg-vault-navy border-white/10 w-[95vw] max-w-xl">
+        <DialogContent className="bg-vault-navy border-white/10 w-[95vw] max-w-xl max-h-none overflow-visible">
           <DialogHeader>
             <DialogTitle className="text-white font-heading text-lg">
               Create {selectedTemplate?.name}
