@@ -384,18 +384,25 @@ export default function SettingsPage() {
                       <span className="inline-flex items-center gap-1">
                         Current:{' '}
                         <span 
-                          className="font-semibold tracking-wide"
+                          className="font-semibold tracking-wide relative overflow-hidden"
                           style={{
-                            background: 'linear-gradient(135deg, #C6A87C 0%, #8B7355 50%, #C6A87C 100%)',
+                            background: 'linear-gradient(90deg, #C6A87C 0%, #E8D5B7 25%, #C6A87C 50%, #8B7355 75%, #C6A87C 100%)',
+                            backgroundSize: '200% 100%',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',
-                            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                            filter: 'drop-shadow(0 1px 1px rgba(198, 168, 124, 0.3))'
+                            animation: 'shimmer 2.5s ease-in-out infinite',
+                            filter: 'drop-shadow(0 1px 2px rgba(198, 168, 124, 0.4))'
                           }}
                         >
                           "{displayName}"
                         </span>
+                        <style>{`
+                          @keyframes shimmer {
+                            0% { background-position: 200% 0; }
+                            100% { background-position: -200% 0; }
+                          }
+                        `}</style>
                       </span>
                     ) : (
                       `Using default: "${userProfile?.name || 'User'}"`
