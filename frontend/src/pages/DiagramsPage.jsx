@@ -572,7 +572,7 @@ function DiagramsContent() {
   // Diagram view with "Luxury Scroll" layout - uses MainLayout header
   if (selectedDiagram) {
     return (
-      <div className="h-full flex flex-col overflow-hidden">
+      <div className="flex flex-col overflow-hidden" style={{ height: 'calc(100dvh - 64px)' }}>
         {/* Page Controls - matches vault page inner content style */}
         <div className="flex items-center justify-between p-3 sm:p-4 pb-2 gap-2 shrink-0">
           <button

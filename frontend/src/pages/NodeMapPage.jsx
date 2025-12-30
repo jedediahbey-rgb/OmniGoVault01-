@@ -756,7 +756,7 @@ function NodeMapContent() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="flex flex-col overflow-hidden" style={{ height: 'calc(100dvh - 64px)' }}>
       {/* Page Controls - matches vault page inner header style */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 p-3 sm:p-4 lg:p-6 pb-2 shrink-0">
         <div className="flex items-center gap-2 sm:gap-4">
