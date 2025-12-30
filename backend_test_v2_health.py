@@ -76,7 +76,7 @@ class V2TrustHealthTester:
                 email = data.get("email")
                 user_id = data.get("user_id")
                 
-                if email == "jedediah.bey@gmail.com":
+                if email == "test@example.com":  # Updated for our test user
                     details += f", Authenticated as: {email}"
                 else:
                     success = False
