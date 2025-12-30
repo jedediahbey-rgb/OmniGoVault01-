@@ -743,7 +743,7 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
 // Entitlement Item Component
 const EntitlementItem = ({ label, included, tier = 0 }) => {
   const checkColors = {
-    0: 'text-gray-400',
+    0: 'text-slate-400',
     1: 'text-emerald-400',
     2: 'text-blue-400',
     3: 'text-purple-400'
@@ -751,16 +751,18 @@ const EntitlementItem = ({ label, included, tier = 0 }) => {
   
   return (
     <motion.li 
-      className={`flex items-center gap-2 ${included ? 'text-vault-light' : 'text-vault-muted/60'}`}
-      whileHover={{ x: included ? 3 : 0 }}
-      transition={{ duration: 0.2 }}
+      className={`flex items-center gap-2.5 ${included ? 'text-vault-light' : 'text-vault-muted/50'}`}
+      whileHover={{ x: included ? 2 : 0 }}
+      transition={{ duration: 0.15 }}
     >
-      {included ? (
-        <Check className={`w-4 h-4 ${checkColors[tier]} flex-shrink-0`} />
-      ) : (
-        <X className="w-4 h-4 text-vault-muted/30 flex-shrink-0" />
-      )}
-      <span className={!included ? 'line-through' : ''}>{label}</span>
+      <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+        {included ? (
+          <Check className={`w-4 h-4 ${checkColors[tier]}`} />
+        ) : (
+          <X className="w-3.5 h-3.5 text-vault-muted/30" />
+        )}
+      </div>
+      <span className={`text-[13px] ${!included ? 'line-through opacity-50' : ''}`}>{label}</span>
     </motion.li>
   );
 };
