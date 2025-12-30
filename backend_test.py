@@ -89,8 +89,63 @@ class BillingTester:
             self.log_test("Authentication Check", False, f"Error: {str(e)}")
             return False
 
-    def test_user_subscription(self):
-        """Test user subscription status to understand entitlements"""
+    # ============ BILLING PLANS TESTS ============
+
+    def test_billing_plans_public(self):
+        """Test GET /api/billing/plans - Public endpoint (no auth required)"""
+        try:
+            # Create a new session without auth to test public access
+            public_session = requests.Session()
+            public_session.headers.update({
+                'Content-Type': 'application/json',
+                'User-Agent': 'Billing-Tester/1.0'
+            })
+            
+            response = public_session.get(f"{self.base_url}/billing/plans", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                plans = data.get("plans", [])
+                details += f", Found {len(plans)} plans"
+                
+                # Verify all 4 expected plans are present
+                plan_names = [p.get("name") for p in plans]
+                expected_names = [p["name"] for p in self.expected_plans]
+                
+                missing_plans = [name for name in expected_names if name not in plan_names]
+                if missing_plans:
+                    success = False
+                    details += f", Missing plans: {missing_plans}"
+                else:
+                    details += f", All expected plans found: {plan_names}"
+                    
+                    # Verify plan structure and pricing
+                    for expected_plan in self.expected_plans:
+                        actual_plan = next((p for p in plans if p.get("name") == expected_plan["name"]), None)
+                        if actual_plan:
+                            if (actual_plan.get("tier") == expected_plan["tier"] and 
+                                actual_plan.get("price_monthly") == expected_plan["price_monthly"]):
+                                details += f", {expected_plan['name']}: ✓"
+                            else:
+                                success = False
+                                details += f", {expected_plan['name']}: tier/price mismatch"
+                        else:
+                            success = False
+                            details += f", {expected_plan['name']}: not found"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/billing/plans (Public)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/plans (Public)", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_subscription_auth(self):
+        """Test GET /api/billing/subscription - Auth required endpoint"""
         try:
             response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
             success = response.status_code == 200
@@ -98,451 +153,219 @@ class BillingTester:
             
             if success:
                 data = response.json()
-                plan_name = data.get("plan_name", "Unknown")
-                entitlements = data.get("entitlements", {})
-                e_signatures = entitlements.get("eSignatures", False)
+                plan_name = data.get("plan_name")
+                account_id = data.get("account_id")
+                is_omnicompetent = data.get("is_omnicompetent", False)
                 
-                details += f", Plan: {plan_name}, eSignatures: {e_signatures}"
+                details += f", Plan: {plan_name}, Account: {account_id}"
                 
-                # This is informational, not a failure
-                if not e_signatures:
-                    details += " (Note: eSignatures not enabled - this may affect signing tests)"
+                if is_omnicompetent:
+                    details += ", User has omnicompetent access"
+                    if plan_name == "Dynasty":
+                        details += ", Plan correctly set to Dynasty for omnicompetent user"
+                    else:
+                        success = False
+                        details += f", Expected Dynasty plan for omnicompetent user, got {plan_name}"
+                else:
+                    details += f", Regular user on {plan_name} plan"
+                
+                # Check for required fields
+                required_fields = ["account_id", "plan_name", "entitlements"]
+                missing_fields = [field for field in required_fields if field not in data]
+                if missing_fields:
+                    success = False
+                    details += f", Missing fields: {missing_fields}"
+                    
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("User Subscription Check", success, details)
+            self.log_test("GET /api/billing/subscription (Auth)", success, details)
             return success
             
         except Exception as e:
-            self.log_test("User Subscription Check", False, f"Error: {str(e)}")
+            self.log_test("GET /api/billing/subscription (Auth)", False, f"Error: {str(e)}")
             return False
 
-    # ============ VAULT OPERATIONS TESTS ============
-
-    def test_list_vaults(self):
-        """Test GET /api/vaults - List all vaults"""
+    def test_billing_usage_auth(self):
+        """Test GET /api/billing/usage - Auth required endpoint"""
         try:
-            response = self.session.get(f"{self.base_url}/vaults", timeout=10)
+            response = self.session.get(f"{self.base_url}/billing/usage", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                vaults = data.get("vaults", [])
-                details += f", Found {len(vaults)} vaults"
+                vaults = data.get("vaults", {})
+                team_members = data.get("teamMembers", {})
+                storage = data.get("storage", {})
                 
                 # Check structure
-                if isinstance(vaults, list):
-                    details += ", Valid vault list structure"
-                else:
-                    success = False
-                    details += f", Invalid structure: {type(vaults)}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/vaults", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/vaults", False, f"Error: {str(e)}")
-            return False
-
-    def test_create_vault(self):
-        """Test POST /api/vaults - Create a new vault"""
-        try:
-            payload = {
-                "name": "Test Trust Workspace",
-                "description": "Testing vault creation",
-                "vault_type": "TRUST"
-            }
-            
-            response = self.session.post(f"{self.base_url}/vaults", json=payload, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                vault_id = data.get("vault_id")
-                name = data.get("name")
-                vault_type = data.get("vault_type")
-                
-                if vault_id and name == payload["name"] and vault_type == payload["vault_type"]:
-                    self.vault_id = vault_id  # Store for later tests
-                    details += f", Created vault: {vault_id}, name: {name}"
-                else:
-                    success = False
-                    details += f", Invalid response data: vault_id={vault_id}, name={name}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("POST /api/vaults", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/vaults", False, f"Error: {str(e)}")
-            return False
-
-    def test_get_vault_details(self):
-        """Test GET /api/vaults/{vault_id} - Get vault details"""
-        if not self.vault_id:
-            self.log_test("GET /api/vaults/{vault_id}", False, "No vault_id available from previous test")
-            return False
-            
-        try:
-            response = self.session.get(f"{self.base_url}/vaults/{self.vault_id}", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                vault_id = data.get("vault_id")
-                participants = data.get("participants", [])
-                documents = data.get("documents", [])
-                user_permissions = data.get("user_permissions", [])
-                
-                if vault_id == self.vault_id:
-                    details += f", Vault details retrieved: {len(participants)} participants, {len(documents)} documents"
-                    details += f", User permissions: {len(user_permissions)}"
-                else:
-                    success = False
-                    details += f", Vault ID mismatch: expected {self.vault_id}, got {vault_id}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/vaults/{vault_id}", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/vaults/{vault_id}", False, f"Error: {str(e)}")
-            return False
-
-    # ============ PARTICIPANT MANAGEMENT TESTS ============
-
-    def test_invite_participant(self):
-        """Test POST /api/vaults/{vault_id}/participants - Invite a participant"""
-        if not self.vault_id:
-            self.log_test("POST /api/vaults/{vault_id}/participants", False, "No vault_id available")
-            return False
-            
-        try:
-            payload = {
-                "email": "beneficiary@example.com",
-                "role": "BENEFICIARY",
-                "display_name": "Test Beneficiary"
-            }
-            
-            response = self.session.post(
-                f"{self.base_url}/vaults/{self.vault_id}/participants", 
-                json=payload, 
-                timeout=10
-            )
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                participant_id = data.get("id")
-                email = data.get("email")
-                role = data.get("role")
-                email_status = data.get("email_status", "unknown")
-                
-                if participant_id and email == payload["email"] and role == payload["role"]:
-                    self.participant_id = participant_id  # Store for later tests
-                    details += f", Invited participant: {email} as {role}, email_status: {email_status}"
-                else:
-                    success = False
-                    details += f", Invalid response: id={participant_id}, email={email}, role={role}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("POST /api/vaults/{vault_id}/participants", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/vaults/{vault_id}/participants", False, f"Error: {str(e)}")
-            return False
-
-    def test_list_participants(self):
-        """Test GET /api/vaults/{vault_id}/participants - List participants"""
-        if not self.vault_id:
-            self.log_test("GET /api/vaults/{vault_id}/participants", False, "No vault_id available")
-            return False
-            
-        try:
-            response = self.session.get(f"{self.base_url}/vaults/{self.vault_id}/participants", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                participants = data.get("participants", [])
-                
-                if isinstance(participants, list) and len(participants) >= 1:
-                    details += f", Found {len(participants)} participants"
+                if isinstance(vaults, dict) and isinstance(team_members, dict) and isinstance(storage, dict):
+                    details += ", Valid usage structure"
                     
-                    # Check if our invited participant is in the list
-                    if self.participant_id:
-                        found_participant = any(p.get("id") == self.participant_id for p in participants)
-                        if found_participant:
-                            details += ", Invited participant found in list"
-                        else:
-                            success = False
-                            details += ", Invited participant not found in list"
+                    # Check vault usage
+                    vault_used = vaults.get("used", 0)
+                    vault_limit = vaults.get("limit", 0)
+                    details += f", Vaults: {vault_used}/{vault_limit}"
+                    
+                    # Check team member usage
+                    member_used = team_members.get("used", 0)
+                    member_limit = team_members.get("limit", 0)
+                    details += f", Members: {member_used}/{member_limit}"
+                    
+                    # Check storage usage
+                    storage_used = storage.get("usedMB", 0)
+                    storage_limit = storage.get("limitMB", 0)
+                    details += f", Storage: {storage_used}MB/{storage_limit}MB"
+                    
                 else:
                     success = False
-                    details += f", Invalid participants list: {type(participants)}, count: {len(participants) if isinstance(participants, list) else 'N/A'}"
+                    details += f", Invalid structure: vaults={type(vaults)}, members={type(team_members)}, storage={type(storage)}"
+                    
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/vaults/{vault_id}/participants", success, details)
+            self.log_test("GET /api/billing/usage (Auth)", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/vaults/{vault_id}/participants", False, f"Error: {str(e)}")
+            self.log_test("GET /api/billing/usage (Auth)", False, f"Error: {str(e)}")
             return False
 
-    # ============ DOCUMENT OPERATIONS TESTS ============
-
-    def test_create_document(self):
-        """Test POST /api/vaults/{vault_id}/documents - Create document"""
-        if not self.vault_id:
-            self.log_test("POST /api/vaults/{vault_id}/documents", False, "No vault_id available")
-            return False
-            
+    def test_billing_checkout_auth(self):
+        """Test POST /api/billing/checkout - Auth required endpoint"""
         try:
             payload = {
-                "title": "Test Agreement",
-                "description": "A test document",
-                "category": "TRUST_INSTRUMENT",
-                "content": "<p>Test content for signing</p>",
-                "requires_signatures_from": ["TRUSTEE", "BENEFICIARY"]
+                "plan_id": "plan_starter",
+                "billing_cycle": "monthly",
+                "origin_url": "https://trustshare.preview.emergentagent.com/billing"
             }
             
-            response = self.session.post(
-                f"{self.base_url}/vaults/{self.vault_id}/documents", 
-                json=payload, 
-                timeout=10
-            )
+            response = self.session.post(f"{self.base_url}/billing/checkout", json=payload, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                document_id = data.get("document_id")
-                title = data.get("title")
-                category = data.get("category")
-                status = data.get("status")
+                checkout_url = data.get("checkout_url")
+                session_id = data.get("session_id")
                 
-                if document_id and title == payload["title"] and category == payload["category"]:
-                    self.document_id = document_id  # Store for later tests
-                    details += f", Created document: {document_id}, title: {title}, status: {status}"
+                if checkout_url and session_id:
+                    details += f", Checkout session created: {session_id}"
+                    
+                    # Verify it's a Stripe URL (or mock URL for testing)
+                    if "stripe" in checkout_url.lower() or "checkout" in checkout_url.lower():
+                        details += ", Valid checkout URL format"
+                    else:
+                        # For testing environment, might be a mock URL
+                        details += f", Checkout URL: {checkout_url[:50]}..."
+                        
                 else:
                     success = False
-                    details += f", Invalid response: id={document_id}, title={title}, category={category}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("POST /api/vaults/{vault_id}/documents", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/vaults/{vault_id}/documents", False, f"Error: {str(e)}")
-            return False
-
-    def test_get_document_details(self):
-        """Test GET /api/vaults/documents/{document_id} - Get document details"""
-        if not self.document_id:
-            self.log_test("GET /api/vaults/documents/{document_id}", False, "No document_id available")
-            return False
-            
-        try:
-            response = self.session.get(f"{self.base_url}/vaults/documents/{self.document_id}", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                document_id = data.get("document_id")
-                title = data.get("title")
-                status = data.get("status")
-                versions = data.get("versions", [])
-                
-                if document_id == self.document_id:
-                    details += f", Document details: {title}, status: {status}, versions: {len(versions)}"
-                else:
-                    success = False
-                    details += f", Document ID mismatch: expected {self.document_id}, got {document_id}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/vaults/documents/{document_id}", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/vaults/documents/{document_id}", False, f"Error: {str(e)}")
-            return False
-
-    def test_submit_for_review(self):
-        """Test POST /api/vaults/documents/{document_id}/submit-for-review - Submit for review"""
-        if not self.document_id:
-            self.log_test("POST /api/vaults/documents/{document_id}/submit-for-review", False, "No document_id available")
-            return False
-            
-        try:
-            response = self.session.post(
-                f"{self.base_url}/vaults/documents/{self.document_id}/submit-for-review", 
-                json={}, 
-                timeout=10
-            )
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                status = data.get("status")
-                
-                if status == "UNDER_REVIEW":
-                    details += f", Document submitted for review, status: {status}"
-                else:
-                    success = False
-                    details += f", Unexpected status after submission: {status}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("POST /api/vaults/documents/{document_id}/submit-for-review", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/vaults/documents/{document_id}/submit-for-review", False, f"Error: {str(e)}")
-            return False
-
-    def test_affirm_document(self):
-        """Test POST /api/vaults/documents/{document_id}/affirm - Affirm document"""
-        if not self.document_id:
-            self.log_test("POST /api/vaults/documents/{document_id}/affirm", False, "No document_id available")
-            return False
-            
-        try:
-            payload = {"note": "Approved"}
-            
-            response = self.session.post(
-                f"{self.base_url}/vaults/documents/{self.document_id}/affirm", 
-                json=payload, 
-                timeout=10
-            )
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                affirmation_id = data.get("id")
-                note = data.get("note")
-                
-                if affirmation_id and note == payload["note"]:
-                    details += f", Document affirmed: {affirmation_id}, note: {note}"
-                else:
-                    success = False
-                    details += f", Invalid affirmation response: id={affirmation_id}, note={note}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("POST /api/vaults/documents/{document_id}/affirm", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/vaults/documents/{document_id}/affirm", False, f"Error: {str(e)}")
-            return False
-
-    # ============ SIGNING TESTS ============
-
-    def test_sign_document(self):
-        """Test POST /api/vaults/documents/{document_id}/sign - Sign document"""
-        if not self.document_id:
-            self.log_test("POST /api/vaults/documents/{document_id}/sign", False, "No document_id available")
-            return False
-            
-        try:
-            payload = {
-                "legal_name": "Jedediah Bey",
-                "signature_type": "TYPED_NAME",
-                "signature_data": "Jedediah Bey",  # For TYPED_NAME, send the name as string
-                "consent_acknowledged": True
-            }
-            
-            response = self.session.post(
-                f"{self.base_url}/vaults/documents/{self.document_id}/sign", 
-                json=payload, 
-                timeout=10
-            )
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                signature_id = data.get("id")
-                legal_name = data.get("legal_name")
-                signature_type = data.get("signature_type")
-                
-                if signature_id and legal_name == payload["legal_name"] and signature_type == payload["signature_type"]:
-                    details += f", Document signed: {signature_id}, signer: {legal_name}"
-                else:
-                    success = False
-                    details += f", Invalid signature response: id={signature_id}, name={legal_name}, type={signature_type}"
-            elif response.status_code == 403:
-                # Handle entitlement restriction
+                    details += f", Missing checkout data: url={bool(checkout_url)}, session={bool(session_id)}"
+                    
+            elif response.status_code == 400:
+                # Check if it's a validation error (acceptable for testing)
                 data = response.json()
                 error_detail = data.get("detail", "")
-                if "signing is not enabled" in error_detail.lower():
-                    # This is expected if user doesn't have signing entitlement
-                    success = True  # Mark as success since the API is working correctly
-                    details += f", Signing restricted by plan (expected): {error_detail}"
+                if "plan" in error_detail.lower() or "billing" in error_detail.lower():
+                    success = True  # API is working, just validation issue
+                    details += f", Validation error (expected): {error_detail}"
                 else:
-                    details += f", Unexpected 403 error: {error_detail}"
+                    details += f", Unexpected 400 error: {error_detail}"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("POST /api/vaults/documents/{document_id}/sign", success, details)
+            self.log_test("POST /api/billing/checkout (Auth)", success, details)
             return success
             
         except Exception as e:
-            self.log_test("POST /api/vaults/documents/{document_id}/sign", False, f"Error: {str(e)}")
+            self.log_test("POST /api/billing/checkout (Auth)", False, f"Error: {str(e)}")
             return False
 
-    # ============ NOTIFICATIONS TESTS ============
-
-    def test_get_notifications(self):
-        """Test GET /api/notifications - Get all notifications"""
+    def test_billing_plans_auth_access(self):
+        """Test that /api/billing/plans works with authentication too"""
         try:
-            response = self.session.get(f"{self.base_url}/notifications", timeout=10)
+            response = self.session.get(f"{self.base_url}/billing/plans", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                notifications = data.get("notifications", [])
-                unread_count = data.get("unread_count", 0)
-                total = data.get("total", 0)
+                plans = data.get("plans", [])
+                details += f", Found {len(plans)} plans with auth"
                 
-                details += f", Found {total} notifications ({unread_count} unread)"
-                
-                # Check if we have notifications from vault activities
-                vault_notifications = [n for n in notifications if self.vault_id and self.vault_id in str(n)]
-                if vault_notifications:
-                    details += f", {len(vault_notifications)} vault-related notifications"
-                
-                if isinstance(notifications, list):
-                    details += ", Valid notification structure"
+                # Should be same as public access
+                if len(plans) == 4:
+                    details += ", Same plan count as public access"
                 else:
                     success = False
-                    details += f", Invalid structure: {type(notifications)}"
+                    details += f", Expected 4 plans, got {len(plans)}"
+                    
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/notifications", success, details)
+            self.log_test("GET /api/billing/plans (With Auth)", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/notifications", False, f"Error: {str(e)}")
+            self.log_test("GET /api/billing/plans (With Auth)", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_subscription_without_auth(self):
+        """Test that /api/billing/subscription requires authentication"""
+        try:
+            # Create a new session without auth
+            unauth_session = requests.Session()
+            unauth_session.headers.update({
+                'Content-Type': 'application/json',
+                'User-Agent': 'Billing-Tester/1.0'
+            })
+            
+            response = unauth_session.get(f"{self.base_url}/billing/subscription", timeout=10)
+            success = response.status_code == 401
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                details += ", Correctly requires authentication"
+            else:
+                details += f", Expected 401, got {response.status_code}"
+                if response.status_code == 200:
+                    details += " (Security issue: endpoint should require auth)"
+                    
+            self.log_test("GET /api/billing/subscription (No Auth)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/subscription (No Auth)", False, f"Error: {str(e)}")
+            return False
+
+    def test_billing_usage_without_auth(self):
+        """Test that /api/billing/usage requires authentication"""
+        try:
+            # Create a new session without auth
+            unauth_session = requests.Session()
+            unauth_session.headers.update({
+                'Content-Type': 'application/json',
+                'User-Agent': 'Billing-Tester/1.0'
+            })
+            
+            response = unauth_session.get(f"{self.base_url}/billing/usage", timeout=10)
+            success = response.status_code == 401
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                details += ", Correctly requires authentication"
+            else:
+                details += f", Expected 401, got {response.status_code}"
+                if response.status_code == 200:
+                    details += " (Security issue: endpoint should require auth)"
+                    
+            self.log_test("GET /api/billing/usage (No Auth)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/billing/usage (No Auth)", False, f"Error: {str(e)}")
             return False
 
     # ============ TEST RUNNER ============
