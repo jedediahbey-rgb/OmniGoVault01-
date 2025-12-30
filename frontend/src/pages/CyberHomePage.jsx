@@ -2489,7 +2489,7 @@ export default function CyberHomePage() {
                   </ul>
                   <Button 
                     className="w-full bg-gradient-to-r from-purple-600 to-[#C6A87C] hover:from-purple-700 hover:to-[#B5976D] text-white font-semibold"
-                    onClick={handleEnterVault}
+                    onClick={handleSelectPlan(3)}
                   >
                     Contact Sales
                   </Button>
