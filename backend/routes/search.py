@@ -268,13 +268,35 @@ async def global_search(
         "records": [r for r in results if r.get("type") == "record"],
         "portfolios": [r for r in results if r.get("type") == "portfolio"],
         "templates": [r for r in results if r.get("type") == "template"],
+        "documents": [r for r in results if r.get("type") == "document"],
+        "parties": [r for r in results if r.get("type") == "party"],
     }
+    
+    # Save search to history (async, don't wait)
+    try:
+        await db.search_history.update_one(
+            {"user_id": user.user_id, "query": query.lower()},
+            {
+                "$set": {
+                    "query": query.lower(),
+                    "display_query": query,
+                    "user_id": user.user_id,
+                    "last_searched": datetime.now(timezone.utc).isoformat(),
+                    "result_count": len(results)
+                },
+                "$inc": {"search_count": 1}
+            },
+            upsert=True
+        )
+    except Exception:
+        pass  # Don't fail if search history save fails
     
     return success_response({
         "query": query,
         "total": len(results),
         "results": results,
-        "grouped": grouped
+        "grouped": grouped,
+        "version": "v2"
     })
 
 
