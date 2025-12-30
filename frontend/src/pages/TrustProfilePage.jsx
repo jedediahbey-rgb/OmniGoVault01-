@@ -164,10 +164,10 @@ export default function TrustProfilePage({ user }) {
   }
 
   return (
-    <div className="p-4 sm:p-6 md:p-8">
+    <div className="p-3 sm:p-6 md:p-8 max-w-full overflow-x-hidden">
       <button
         onClick={() => navigate(`/vault/portfolio/${portfolioId}`)}
-        className="flex items-center gap-2 text-white/40 hover:text-white mb-4 transition-colors"
+        className="flex items-center gap-2 text-white/40 hover:text-white mb-3 sm:mb-4 transition-colors text-sm sm:text-base"
       >
         <ArrowLeft className="w-4 h-4" weight="duotone" /> Back to Portfolio
       </button>
@@ -175,33 +175,35 @@ export default function TrustProfilePage({ user }) {
       <PageHeader
         icon={FileText}
         title={profile ? 'Edit Trust Profile' : 'Create Trust Profile'}
-        subtitle="Configure trust details, RM-ID tracking, and tax identifiers"
+        subtitle="Configure trust details, RM-ID tracking, and tax identifiers."
         actions={
-          <Button onClick={saveProfile} disabled={saving} className="btn-primary">
-            <FloppyDisk className="w-4 h-4 mr-2" weight="duotone" />
+          <Button onClick={saveProfile} disabled={saving} className="btn-primary h-8 sm:h-10 text-xs sm:text-sm px-3 sm:px-4">
+            <FloppyDisk className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" weight="duotone" />
             {saving ? 'Saving...' : 'Save Profile'}
           </Button>
         }
       />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-        <TabsList className="bg-white/5 border border-white/10 p-1">
-          <TabsTrigger value="general" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            General
-          </TabsTrigger>
-          <TabsTrigger value="parties" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            Parties
-          </TabsTrigger>
-          <TabsTrigger value="rm-id" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            RM-ID System
-          </TabsTrigger>
-          <TabsTrigger value="tax-ids" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            Tax IDs
-          </TabsTrigger>
-          <TabsTrigger value="mail-log" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold">
-            Envelope Log
-          </TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4 sm:mt-6">
+        <div className="overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+          <TabsList className="bg-white/5 border border-white/10 p-1 inline-flex min-w-max sm:flex sm:min-w-0 sm:flex-wrap gap-1">
+            <TabsTrigger value="general" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold text-xs sm:text-sm px-2 sm:px-3">
+              General
+            </TabsTrigger>
+            <TabsTrigger value="parties" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold text-xs sm:text-sm px-2 sm:px-3">
+              Parties
+            </TabsTrigger>
+            <TabsTrigger value="rm-id" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold text-xs sm:text-sm px-2 sm:px-3 whitespace-nowrap">
+              RM-ID
+            </TabsTrigger>
+            <TabsTrigger value="tax-ids" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold text-xs sm:text-sm px-2 sm:px-3 whitespace-nowrap">
+              Tax IDs
+            </TabsTrigger>
+            <TabsTrigger value="mail-log" className="data-[state=active]:bg-vault-gold/20 data-[state=active]:text-vault-gold text-xs sm:text-sm px-2 sm:px-3 whitespace-nowrap">
+              Envelope
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* General Tab */}
         <TabsContent value="general" className="mt-6">
