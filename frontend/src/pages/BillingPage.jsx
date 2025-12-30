@@ -664,18 +664,6 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
     </motion.div>
   );
 };
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>Upgrade <ChevronRight className="w-4 h-4 ml-1" /></>
-            )}
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
-  );
-};
 
 // Entitlement Item Component
 const EntitlementItem = ({ label, included, tier = 0 }) => {
