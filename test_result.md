@@ -589,3 +589,87 @@ The V2 Trust Health system includes:
 ### Agent Communication:
 - **Agent**: testing
 - **Message**: Completed comprehensive backend testing of V2 Trust Health feature. All 7 API endpoints tested successfully. V2 ruleset configuration system working perfectly with proper validation (weights must sum to 100%). V2 health scanning operational with all enhanced features: bounded penalties with max caps, severity multipliers (info/warning/critical), category weights, blocking conditions, and next actions with estimated gains. All V2-specific response fields present and properly structured. Ready for production use.
+
+---
+
+## Test Date: 2025-12-30
+## Test Focus: V2 Trust Health Feature - Frontend UI Testing
+
+### Test Request:
+Test the V2 Trust Health Feature - comprehensive frontend UI testing for Settings Page Health Score Tab and Trust Health Dashboard.
+
+### Frontend Test Results (2025-12-30 06:40):
+**Test Summary: 6/10 tests passed (60% success rate)**
+
+#### Settings Page - Health Score Tab Testing:
+- ✅ Settings page loads correctly at /settings route
+- ✅ Health Score tab found and clickable
+- ❌ V2 ENGINE badge not found
+- ❌ Readiness Mode dropdown not found
+- ❌ Category Weights section not found
+- ❌ Severity Multipliers section not found
+- ❌ Blocking Conditions section not found
+- ❌ Save Changes button not found
+
+#### Trust Health Dashboard Testing (/health):
+- ✅ Trust Health Dashboard loads correctly
+- ✅ Health score display working (shows "0")
+- ✅ Next Best Actions section found with potential points display
+- ✅ Scan Summary section with all statistics (Records, Portfolios, Documents, Issues)
+- ✅ Run Scan button functional
+- ✅ Download PDF Report button found
+- ✅ All dashboard tabs present (Health Score, Timeline, Audit Readiness)
+- ⚠️ Live Score indicator not found (expected "LIVE SCORE" text)
+- ⚠️ Limited V2 category breakdown (only found "Governance")
+- ⚠️ Timeline tab content not loading properly
+
+#### V2-Specific Features Status:
+- ❌ V2 ENGINE badge not visible in Settings
+- ❌ Readiness Mode selector (Normal/Audit/Court) not found
+- ❌ Category Weights editor not accessible
+- ❌ Severity Multipliers configuration not found
+- ❌ Blocking Conditions toggles not found
+- ⚠️ Next Actions with estimated gains working but shows "All clear!" (no actions to test)
+- ⚠️ Category breakdown partially working (limited categories visible)
+
+### Issues Found:
+1. **Settings Health Tab Not Loading V2 Configuration**: The Health Score tab in Settings shows empty content instead of V2 configuration UI
+   - Expected: V2 ENGINE badge, category weights, severity multipliers, blocking conditions
+   - Actual: Empty tab with no V2 configuration options visible
+
+2. **Limited Category Display**: Dashboard shows limited category breakdown
+   - Expected: All 5 V2 categories (governance_hygiene, financial_integrity, compliance_recordkeeping, risk_exposure, data_integrity)
+   - Actual: Only "Governance" category found
+
+3. **Timeline Tab Issues**: Timeline tab not loading content properly
+   - Expected: Score history and events timeline
+   - Actual: Content not loading after tab click
+
+### Technical Notes:
+- User tested with jedediah.bey@gmail.com (OMNICOMPETENT_OWNER role)
+- Backend V2 APIs are working (100% success rate from previous tests)
+- Frontend dashboard basic functionality working
+- Health score shows 0 with "All clear!" status (no issues to display)
+- No console errors detected during testing
+
+### Root Cause Analysis:
+The V2 Trust Health configuration UI in Settings is not loading properly, suggesting either:
+1. Frontend not properly calling V2 health rules API
+2. V2 health rules not being returned for this user
+3. Frontend conditional rendering not showing V2 features
+4. User permissions or feature flags preventing V2 access
+
+### Test Scenarios Completed:
+1. ✅ Settings page navigation and Health tab access
+2. ❌ V2 configuration UI verification (not loading)
+3. ✅ Trust Health Dashboard basic functionality
+4. ⚠️ V2 dashboard features (partially working)
+5. ✅ Scan functionality and PDF download
+6. ⚠️ Dashboard tabs navigation (Timeline issues)
+
+### Status Summary:
+**Frontend V2 Trust Health: 60% Working** - Dashboard basic functionality working, but V2 configuration UI in Settings not loading. Core health scanning and display functional.
+
+### Agent Communication:
+- **Agent**: testing
+- **Message**: Completed comprehensive frontend testing of V2 Trust Health feature. Dashboard basic functionality working well - health score display, scan functionality, PDF download, and Next Actions all functional. However, critical issue found: V2 configuration UI in Settings Health tab is not loading - no V2 ENGINE badge, category weights, severity multipliers, or blocking conditions visible. This suggests frontend may not be properly calling V2 health rules API or user lacks V2 access. Backend V2 APIs are confirmed working from previous tests. Recommend investigating V2 health rules API integration in Settings page and user permissions for V2 features.
