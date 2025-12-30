@@ -727,18 +727,22 @@ function NodeMapContent() {
 
   if (loading && !portfolios.length) {
     return (
-      <div className="h-full flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden">
-        {/* Header - More compact on mobile */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 mb-1 sm:mb-4 shrink-0">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link
-              to="/vault"
-              className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
-            >
-              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
-            </Link>
-            <h1 className="text-base sm:text-2xl font-heading text-white">Trust Node Map</h1>
-          </div>
+      <div 
+        className="h-full flex flex-col overflow-hidden"
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center gap-2 sm:gap-4 p-2 sm:p-4 lg:p-6 pb-1 sm:pb-2 shrink-0">
+          <Link
+            to="/vault"
+            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
+          >
+            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
+          </Link>
+          <h1 className="text-base sm:text-2xl font-heading text-white">Trust Node Map</h1>
         </div>
 
         {/* Loading state */}
