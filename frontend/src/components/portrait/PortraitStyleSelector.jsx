@@ -3,7 +3,7 @@
  * Allows users to customize their portrait style based on subscription tier
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
@@ -55,6 +55,13 @@ export default function PortraitStyleSelector({
 }) {
   const [selectedStyle, setSelectedStyle] = useState(currentStyleId);
   const [saving, setSaving] = useState(false);
+  
+  // Sync selectedStyle when dialog opens or currentStyleId changes
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedStyle(currentStyleId);
+    }
+  }, [isOpen, currentStyleId]);
   
   const availableStyles = getAvailableStyles(userTier);
   const allStyles = Object.values(PORTRAIT_STYLES);
