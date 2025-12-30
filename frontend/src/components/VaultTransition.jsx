@@ -239,14 +239,14 @@ const VaultTransition = ({
     return () => timers.forEach(clearTimeout);
   }, [isActive, onComplete, prefersReducedMotion]);
 
-  // Generate particles
-  const particles = Array.from({ length: 20 }, (_, i) => ({
+  // Generate particles - memoized to prevent re-generation on each render
+  const particles = useMemo(() => Array.from({ length: 20 }, (_, i) => ({
     id: i,
-    x: 30 + Math.random() * 40,
-    y: 40 + Math.random() * 30,
-    size: 2 + Math.random() * 4,
-    delay: 0.8 + Math.random() * 0.6,
-  }));
+    x: 30 + (Math.sin(i * 0.5) * 20 + 20), // Deterministic pattern
+    y: 40 + (Math.cos(i * 0.7) * 15 + 15),
+    size: 2 + ((i % 5) * 0.8),
+    delay: 0.8 + (i * 0.03),
+  })), []);
 
   // Generate document silhouettes
   const documents = [
