@@ -269,94 +269,94 @@ export default function TrustProfilePage({ user }) {
         </TabsContent>
 
         {/* Parties Tab */}
-        <TabsContent value="parties" className="mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <GlassCard>
-              <h3 className="font-heading text-lg text-white mb-4">Grantor / Settlor</h3>
-              <div className="space-y-4">
+        <TabsContent value="parties" className="mt-4 sm:mt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <GlassCard className="!p-3 sm:!p-6">
+              <h3 className="font-heading text-base sm:text-lg text-white mb-3 sm:mb-4">Grantor / Settlor</h3>
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <Label className="text-white/60">Name</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Name</Label>
                   <Input
                     value={form.grantor_name}
                     onChange={e => handleChange('grantor_name', e.target.value)}
-                    className="mt-1 bg-white/5 border-white/10"
+                    className="mt-1 bg-white/5 border-white/10 h-9 sm:h-10 text-sm"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/60">Address</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Address</Label>
                   <Textarea
                     value={form.grantor_address}
                     onChange={e => handleChange('grantor_address', e.target.value)}
-                    className="mt-1 bg-white/5 border-white/10"
+                    className="mt-1 bg-white/5 border-white/10 text-sm"
                     rows={2}
                   />
                 </div>
               </div>
             </GlassCard>
 
-            <GlassCard>
-              <h3 className="font-heading text-lg text-white mb-4">Trustee</h3>
-              <div className="space-y-4">
+            <GlassCard className="!p-3 sm:!p-6">
+              <h3 className="font-heading text-base sm:text-lg text-white mb-3 sm:mb-4">Trustee</h3>
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <Label className="text-white/60">Name</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Name</Label>
                   <Input
                     value={form.trustee_name}
                     onChange={e => handleChange('trustee_name', e.target.value)}
-                    className="mt-1 bg-white/5 border-white/10"
+                    className="mt-1 bg-white/5 border-white/10 h-9 sm:h-10 text-sm"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/60">Address</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Address</Label>
                   <Textarea
                     value={form.trustee_address}
                     onChange={e => handleChange('trustee_address', e.target.value)}
-                    className="mt-1 bg-white/5 border-white/10"
+                    className="mt-1 bg-white/5 border-white/10 text-sm"
                     rows={2}
                   />
                 </div>
               </div>
             </GlassCard>
 
-            <GlassCard>
-              <h3 className="font-heading text-lg text-white mb-4">Co-Trustee (Optional)</h3>
-              <div className="space-y-4">
+            <GlassCard className="!p-3 sm:!p-6">
+              <h3 className="font-heading text-base sm:text-lg text-white mb-3 sm:mb-4">Co-Trustee (Optional)</h3>
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <Label className="text-white/60">Name</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Name</Label>
                   <Input
                     value={form.co_trustee_name}
                     onChange={e => handleChange('co_trustee_name', e.target.value)}
-                    className="mt-1 bg-white/5 border-white/10"
+                    className="mt-1 bg-white/5 border-white/10 h-9 sm:h-10 text-sm"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/60">Address</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Address</Label>
                   <Textarea
                     value={form.co_trustee_address}
                     onChange={e => handleChange('co_trustee_address', e.target.value)}
-                    className="mt-1 bg-white/5 border-white/10"
+                    className="mt-1 bg-white/5 border-white/10 text-sm"
                     rows={2}
                   />
                 </div>
               </div>
             </GlassCard>
 
-            <GlassCard>
-              <h3 className="font-heading text-lg text-white mb-4">Beneficiary</h3>
-              <div className="space-y-4">
+            <GlassCard className="!p-3 sm:!p-6">
+              <h3 className="font-heading text-base sm:text-lg text-white mb-3 sm:mb-4">Beneficiary</h3>
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <Label className="text-white/60">Name</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Name</Label>
                   <Input
                     value={form.beneficiary_name}
                     onChange={e => handleChange('beneficiary_name', e.target.value)}
-                    className="mt-1 bg-white/5 border-white/10"
+                    className="mt-1 bg-white/5 border-white/10 h-9 sm:h-10 text-sm"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/60">Address</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Address</Label>
                   <Textarea
                     value={form.beneficiary_address}
                     onChange={e => handleChange('beneficiary_address', e.target.value)}
-                    className="mt-1 bg-white/5 border-white/10"
+                    className="mt-1 bg-white/5 border-white/10 text-sm"
                     rows={2}
                   />
                 </div>
