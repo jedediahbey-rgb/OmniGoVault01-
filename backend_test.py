@@ -23,17 +23,12 @@ class UIFixesTester:
         self.session.cookies.set('session_token', 'signing_test_1767059099')
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'DocumentSigning-Tester/1.0'
+            'User-Agent': 'UIFixes-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_results = []
-        
-        # Test data storage
-        self.vault_id = None
-        self.document_id = None
-        self.participant_id = None
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
