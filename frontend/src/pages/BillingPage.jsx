@@ -398,38 +398,55 @@ const FeatureBadge = ({ enabled, label, icon }) => (
 );
 
 // Plan Card Component
-const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnterprise, loading }) => {
+const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnterprise, loading, isAuthenticated }) => {
   const price = billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly;
   const isEnterprise = plan.tier === 3;
   const isFree = plan.tier === 0;
 
+  const handleUpgradeClick = () => {
+    if (!isAuthenticated) {
+      toast.error('Please sign in to upgrade your plan');
+      return;
+    }
+    onUpgrade();
+  };
+
   return (
-    <Card className={`bg-vault-dark border relative ${
+    <Card className={`bg-vault-dark border relative flex flex-col h-full ${
       isCurrentPlan 
-        ? 'border-vault-gold shadow-lg shadow-vault-gold/10' 
-        : 'border-vault-gold/20 hover:border-vault-gold/40'
-    } transition-all`}>
+        ? 'border-vault-gold shadow-lg shadow-vault-gold/20 ring-2 ring-vault-gold/30' 
+        : tierBorderColors[plan.tier]
+    } transition-all duration-300`}>
       {isCurrentPlan && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <Badge className="bg-vault-gold text-vault-navy font-semibold">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+          <Badge className="bg-vault-gold text-vault-navy font-semibold shadow-lg">
             Current Plan
           </Badge>
         </div>
       )}
       
-      <CardHeader className="pb-4">
+      {/* Popular badge for tier 1 */}
+      {plan.tier === 1 && !isCurrentPlan && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+          <Badge className="bg-emerald-500 text-white font-semibold shadow-lg">
+            Popular
+          </Badge>
+        </div>
+      )}
+      
+      <CardHeader className="pb-4 pt-6">
         <div className="flex items-center gap-2">
           <div className={`p-2 rounded-lg ${tierColors[plan.tier]}`}>
             {tierIcons[plan.tier]}
           </div>
           <CardTitle className="text-vault-light">{plan.name}</CardTitle>
         </div>
-        <CardDescription className="text-vault-muted text-sm">
+        <CardDescription className="text-vault-muted text-sm min-h-[40px]">
           {plan.description}
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex-1">
         {/* Price */}
         <div className="text-center py-2">
           {isEnterprise ? (
@@ -446,6 +463,9 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
             <div>
               <span className="text-3xl font-bold text-vault-light">${price}</span>
               <span className="text-vault-muted text-sm">/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
+              {billingCycle === 'yearly' && (
+                <p className="text-emerald-400 text-xs mt-1">Save 17% annually</p>
+              )}
             </div>
           )}
         </div>
@@ -485,27 +505,28 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
         </ul>
       </CardContent>
 
-      <CardFooter>
+      {/* Fixed height footer for button alignment */}
+      <CardFooter className="mt-auto pt-4">
         {isCurrentPlan ? (
-          <Button disabled className="w-full bg-vault-gold/20 text-vault-gold">
+          <Button disabled className="w-full bg-vault-gold/20 text-vault-gold border border-vault-gold/30">
             Current Plan
           </Button>
         ) : isEnterprise ? (
           <Button 
             onClick={onContactEnterprise}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            className={`w-full ${tierButtonColors[3]}`}
           >
             Contact Sales <ExternalLink className="w-4 h-4 ml-2" />
           </Button>
         ) : isFree ? (
-          <Button disabled variant="outline" className="w-full border-vault-gold/30 text-vault-muted">
+          <Button disabled variant="outline" className="w-full border-gray-500/30 text-gray-400">
             Free Forever
           </Button>
         ) : (
           <Button 
-            onClick={onUpgrade}
+            onClick={handleUpgradeClick}
             disabled={loading}
-            className="w-full bg-vault-gold hover:bg-vault-gold/90 text-vault-navy font-semibold"
+            className={`w-full ${tierButtonColors[plan.tier]} font-semibold`}
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
