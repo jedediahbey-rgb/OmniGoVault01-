@@ -1057,6 +1057,8 @@ async def get_me(user: User = Depends(get_current_user)):
     # Check if this is a first login that needs welcome flow
     user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
     is_first_login = user_doc.get("first_login", False) if user_doc else False
+    portrait_style = user_doc.get("portrait_style", "standard") if user_doc else "standard"
+    display_name = user_doc.get("display_name") if user_doc else None
     
     # Check if user is dev admin
     is_dev_admin = user.user_id == OWNER_USER_ID
@@ -1066,6 +1068,8 @@ async def get_me(user: User = Depends(get_current_user)):
         "email": user.email, 
         "name": user.name, 
         "picture": user.picture,
+        "display_name": display_name,
+        "portrait_style": portrait_style,
         "is_first_login": is_first_login,
         "is_dev_admin": is_dev_admin,
         "dev_bypass_enabled": DEV_BYPASS_ENABLED
