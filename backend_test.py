@@ -165,263 +165,609 @@ class GlobalSearchV2Tester:
             self.log_test("Authentication Check", False, f"Error: {str(e)}")
             return False
 
-    # ============ PORTRAIT CUSTOMIZATION TESTS ============
+    # ============ GLOBAL SEARCH V2 TESTS ============
 
-    def test_get_user_profile(self):
-        """Test GET /api/user/profile - Should return user profile including portrait_style field"""
+    def test_search_dashboard(self):
+        """Test GET /api/search?q=dashboard - Should return navigation items"""
         try:
-            response = self.session.get(f"{self.base_url}/user/profile", timeout=10)
+            response = self.session.get(f"{self.base_url}/search?q=dashboard", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 
-                # Check required fields
-                required_fields = ["user_id", "email", "name", "portrait_style", "global_roles"]
-                missing_fields = [field for field in required_fields if field not in data]
-                
-                if missing_fields:
+                # Check V2 response structure
+                if not data.get("ok"):
                     success = False
-                    details += f", Missing fields: {missing_fields}"
+                    details += ", Missing 'ok' field"
                 else:
-                    details += ", All required fields present"
+                    search_data = data.get("data", {})
                     
-                    # Check portrait_style field specifically
-                    portrait_style = data.get("portrait_style")
-                    if portrait_style:
-                        if portrait_style in self.valid_styles:
-                            details += f", Portrait style: {portrait_style} (valid)"
+                    # Check V2 version
+                    version = search_data.get("version")
+                    if version != "v2":
+                        success = False
+                        details += f", Expected version 'v2', got '{version}'"
+                    else:
+                        details += ", V2 version confirmed"
+                    
+                    # Check for Dashboard in results
+                    results = search_data.get("results", [])
+                    grouped = search_data.get("grouped", {})
+                    
+                    dashboard_found = False
+                    dashboard_shortcut = None
+                    
+                    for result in results:
+                        if "dashboard" in result.get("title", "").lower():
+                            dashboard_found = True
+                            dashboard_shortcut = result.get("shortcut")
+                            break
+                    
+                    if dashboard_found:
+                        details += ", Dashboard found in results"
+                        if dashboard_shortcut == "G D":
+                            details += ", Correct shortcut 'G D'"
                         else:
                             success = False
-                            details += f", Invalid portrait style: {portrait_style}"
+                            details += f", Expected shortcut 'G D', got '{dashboard_shortcut}'"
                     else:
-                        # Should default to "standard" if not set
-                        if portrait_style == "standard":
-                            details += ", Portrait style defaults to 'standard'"
+                        success = False
+                        details += ", Dashboard not found in results"
+                    
+                    # Check grouped results
+                    navigation_items = grouped.get("navigation", [])
+                    if navigation_items:
+                        details += f", {len(navigation_items)} navigation items"
+                    else:
+                        success = False
+                        details += ", No navigation items in grouped results"
+                        
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/search?q=dashboard", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/search?q=dashboard", False, f"Error: {str(e)}")
+            return False
+
+    def test_search_new_actions(self):
+        """Test GET /api/search?q=new - Should return action items"""
+        try:
+            response = self.session.get(f"{self.base_url}/search?q=new", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if not data.get("ok"):
+                    success = False
+                    details += ", Missing 'ok' field"
+                else:
+                    search_data = data.get("data", {})
+                    results = search_data.get("results", [])
+                    grouped = search_data.get("grouped", {})
+                    
+                    # Check for "New" actions
+                    new_actions_found = []
+                    for result in results:
+                        title = result.get("title", "")
+                        if title.startswith("New "):
+                            new_actions_found.append(title)
+                    
+                    if len(new_actions_found) >= 3:
+                        details += f", Found {len(new_actions_found)} 'New' actions: {', '.join(new_actions_found[:3])}"
+                        
+                        # Check for specific expected actions
+                        expected_found = 0
+                        for expected in ["New Portfolio", "New Meeting", "New Distribution", "New Document"]:
+                            for found in new_actions_found:
+                                if expected.lower() in found.lower():
+                                    expected_found += 1
+                                    break
+                        
+                        if expected_found >= 2:
+                            details += f", {expected_found} expected actions found"
                         else:
                             success = False
-                            details += f", Expected default 'standard', got: {portrait_style}"
-                    
-                    # Check user details
-                    email = data.get("email")
-                    global_roles = data.get("global_roles", [])
-                    is_omnicompetent = data.get("is_omnicompetent", False)
-                    
-                    if email == self.test_user_email:
-                        details += f", Correct user: {email}"
+                            details += f", Only {expected_found} expected actions found"
                     else:
                         success = False
-                        details += f", Wrong user: {email}"
+                        details += f", Only {len(new_actions_found)} 'New' actions found"
                     
-                    if self.test_user_role in global_roles:
-                        details += f", Has {self.test_user_role} role"
+                    # Check grouped actions
+                    action_items = grouped.get("actions", [])
+                    if action_items:
+                        details += f", {len(action_items)} action items in grouped results"
                     else:
-                        success = False
-                        details += f", Missing {self.test_user_role} role, has: {global_roles}"
-                        
-                    if is_omnicompetent:
-                        details += ", Omnicompetent access confirmed"
-                    else:
-                        success = False
-                        details += ", Should have omnicompetent access"
+                        details += ", No action items in grouped results"
                         
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/user/profile", success, details)
-            return success, data if success else None
-            
-        except Exception as e:
-            self.log_test("GET /api/user/profile", False, f"Error: {str(e)}")
-            return False, None
-
-    def test_update_portrait_style_valid(self, style):
-        """Test PUT /api/user/profile - Update Portrait Style with valid value"""
-        try:
-            payload = {"portrait_style": style}
-            
-            response = self.session.put(f"{self.base_url}/user/profile", json=payload, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}, Style: {style}"
-            
-            if success:
-                data = response.json()
-                
-                # Check that the style was updated
-                updated_style = data.get("portrait_style")
-                if updated_style == style:
-                    details += f", Successfully updated to '{style}'"
-                else:
-                    success = False
-                    details += f", Expected '{style}', got '{updated_style}'"
-                
-                # Verify the response structure
-                required_fields = ["user_id", "email", "portrait_style"]
-                missing_fields = [field for field in required_fields if field not in data]
-                if missing_fields:
-                    success = False
-                    details += f", Missing fields in response: {missing_fields}"
-                else:
-                    details += ", Complete response structure"
-                    
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            test_name = f"PUT /api/user/profile - Update to '{style}'"
-            self.log_test(test_name, success, details)
+            self.log_test("GET /api/search?q=new", success, details)
             return success
             
         except Exception as e:
-            test_name = f"PUT /api/user/profile - Update to '{style}'"
-            self.log_test(test_name, False, f"Error: {str(e)}")
+            self.log_test("GET /api/search?q=new", False, f"Error: {str(e)}")
             return False
 
-    def test_update_portrait_style_invalid(self):
-        """Test PUT /api/user/profile - Invalid Style (should return 400 error)"""
+    def test_search_health(self):
+        """Test GET /api/search?q=health - Should return health-related items"""
         try:
-            invalid_style = "invalid_style"
-            payload = {"portrait_style": invalid_style}
-            
-            response = self.session.put(f"{self.base_url}/user/profile", json=payload, timeout=10)
-            success = response.status_code == 400  # Should return 400 error
-            details = f"Status: {response.status_code}, Style: {invalid_style}"
-            
-            if success:
-                data = response.json()
-                error_detail = data.get("detail", "")
-                
-                # Check that error message mentions valid styles
-                if "Invalid portrait style" in error_detail and "Must be one of:" in error_detail:
-                    details += ", Correct error message format"
-                    
-                    # Check that all valid styles are mentioned in error
-                    valid_styles_mentioned = all(style in error_detail for style in self.valid_styles)
-                    if valid_styles_mentioned:
-                        details += ", All valid styles listed in error"
-                    else:
-                        success = False
-                        details += ", Not all valid styles listed in error"
-                        
-                else:
-                    success = False
-                    details += f", Unexpected error message: {error_detail}"
-                    
-            else:
-                details += f", Expected 400 error, got {response.status_code}"
-                if response.status_code == 200:
-                    details += " (Should have rejected invalid style)"
-                else:
-                    details += f", Response: {response.text[:200]}"
-            
-            self.log_test("PUT /api/user/profile - Invalid Style", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("PUT /api/user/profile - Invalid Style", False, f"Error: {str(e)}")
-            return False
-
-    def test_portrait_style_persistence(self, style):
-        """Test that portrait style persists after update by fetching profile again"""
-        try:
-            # First update the style
-            update_success = self.test_update_portrait_style_valid(style)
-            if not update_success:
-                self.log_test(f"Portrait Style Persistence - {style}", False, "Update failed")
-                return False
-            
-            # Wait a moment for database update
-            time.sleep(0.5)
-            
-            # Then fetch the profile to verify persistence
-            response = self.session.get(f"{self.base_url}/user/profile", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}, Style: {style}"
-            
-            if success:
-                data = response.json()
-                persisted_style = data.get("portrait_style")
-                
-                if persisted_style == style:
-                    details += f", Style '{style}' persisted correctly"
-                else:
-                    success = False
-                    details += f", Expected '{style}', got '{persisted_style}'"
-                    
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            test_name = f"Portrait Style Persistence - {style}"
-            self.log_test(test_name, success, details)
-            return success
-            
-        except Exception as e:
-            test_name = f"Portrait Style Persistence - {style}"
-            self.log_test(test_name, False, f"Error: {str(e)}")
-            return False
-
-    def test_multiple_field_update(self):
-        """Test updating portrait_style along with other profile fields"""
-        try:
-            payload = {
-                "portrait_style": "emerald",
-                "display_name": "Portrait Test User"
-            }
-            
-            response = self.session.put(f"{self.base_url}/user/profile", json=payload, timeout=10)
+            response = self.session.get(f"{self.base_url}/search?q=health", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 
-                # Check both fields were updated
-                updated_style = data.get("portrait_style")
-                updated_display_name = data.get("display_name")
-                
-                if updated_style == "emerald" and updated_display_name == "Portrait Test User":
-                    details += ", Both portrait_style and display_name updated correctly"
-                else:
+                if not data.get("ok"):
                     success = False
-                    details += f", Style: {updated_style}, Display name: {updated_display_name}"
+                    details += ", Missing 'ok' field"
+                else:
+                    search_data = data.get("data", {})
+                    results = search_data.get("results", [])
                     
+                    # Check for health-related items
+                    health_items_found = []
+                    for result in results:
+                        title = result.get("title", "")
+                        subtitle = result.get("subtitle", "")
+                        if "health" in title.lower() or "health" in subtitle.lower():
+                            health_items_found.append(title)
+                    
+                    if health_items_found:
+                        details += f", Found health items: {', '.join(health_items_found)}"
+                        
+                        # Check for Trust Health specifically
+                        trust_health_found = any("trust health" in item.lower() for item in health_items_found)
+                        if trust_health_found:
+                            details += ", Trust Health found"
+                            
+                            # Check for shortcut
+                            for result in results:
+                                if "trust health" in result.get("title", "").lower():
+                                    shortcut = result.get("shortcut")
+                                    if shortcut == "G H":
+                                        details += ", Correct shortcut 'G H'"
+                                    else:
+                                        success = False
+                                        details += f", Expected shortcut 'G H', got '{shortcut}'"
+                                    break
+                        else:
+                            success = False
+                            details += ", Trust Health not found"
+                    else:
+                        success = False
+                        details += ", No health-related items found"
+                        
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("Multiple Field Update", success, details)
+            self.log_test("GET /api/search?q=health", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Multiple Field Update", False, f"Error: {str(e)}")
+            self.log_test("GET /api/search?q=health", False, f"Error: {str(e)}")
             return False
 
-    def test_empty_portrait_style_update(self):
-        """Test updating with empty/null portrait_style (should default to 'standard')"""
+    def test_search_trust(self):
+        """Test GET /api/search?q=trust - Should return trust-related items"""
         try:
-            payload = {"portrait_style": ""}
-            
-            response = self.session.put(f"{self.base_url}/user/profile", json=payload, timeout=10)
+            response = self.session.get(f"{self.base_url}/search?q=trust", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                updated_style = data.get("portrait_style")
                 
-                if updated_style == "standard":
-                    details += ", Empty style correctly defaults to 'standard'"
-                else:
+                if not data.get("ok"):
                     success = False
-                    details += f", Expected 'standard', got '{updated_style}'"
+                    details += ", Missing 'ok' field"
+                else:
+                    search_data = data.get("data", {})
+                    results = search_data.get("results", [])
                     
+                    # Check for trust-related items
+                    trust_items_found = []
+                    for result in results:
+                        title = result.get("title", "")
+                        subtitle = result.get("subtitle", "")
+                        keywords = result.get("keywords", [])
+                        
+                        if ("trust" in title.lower() or 
+                            "trust" in subtitle.lower() or 
+                            any("trust" in str(k).lower() for k in keywords)):
+                            trust_items_found.append(title)
+                    
+                    if trust_items_found:
+                        details += f", Found {len(trust_items_found)} trust items"
+                        
+                        # Check for specific trust-related items
+                        expected_items = ["Trust Health", "Declaration of Trust", "Certificate of Trust"]
+                        found_expected = 0
+                        for expected in expected_items:
+                            for found in trust_items_found:
+                                if expected.lower() in found.lower():
+                                    found_expected += 1
+                                    break
+                        
+                        if found_expected >= 1:
+                            details += f", {found_expected} expected trust items found"
+                        else:
+                            success = False
+                            details += ", No expected trust items found"
+                    else:
+                        success = False
+                        details += ", No trust-related items found"
+                        
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("Empty Portrait Style Update", success, details)
+            self.log_test("GET /api/search?q=trust", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Empty Portrait Style Update", False, f"Error: {str(e)}")
+            self.log_test("GET /api/search?q=trust", False, f"Error: {str(e)}")
+            return False
+
+    def test_search_suggestions(self):
+        """Test GET /api/search/suggestions - Get search suggestions for empty state"""
+        try:
+            response = self.session.get(f"{self.base_url}/search/suggestions", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if not data.get("ok"):
+                    success = False
+                    details += ", Missing 'ok' field"
+                else:
+                    suggestions_data = data.get("data", {})
+                    
+                    # Check required fields
+                    required_fields = ["recent", "recent_searches", "quick_actions", "navigation"]
+                    missing_fields = [field for field in required_fields if field not in suggestions_data]
+                    
+                    if missing_fields:
+                        success = False
+                        details += f", Missing fields: {missing_fields}"
+                    else:
+                        details += ", All required fields present"
+                        
+                        # Check quick_actions (should have 6 items)
+                        quick_actions = suggestions_data.get("quick_actions", [])
+                        if len(quick_actions) == 6:
+                            details += f", {len(quick_actions)} quick actions (correct)"
+                        else:
+                            success = False
+                            details += f", Expected 6 quick actions, got {len(quick_actions)}"
+                        
+                        # Check navigation (should have 8 items)
+                        navigation = suggestions_data.get("navigation", [])
+                        if len(navigation) == 8:
+                            details += f", {len(navigation)} navigation items (correct)"
+                        else:
+                            success = False
+                            details += f", Expected 8 navigation items, got {len(navigation)}"
+                        
+                        # Check recent_searches structure
+                        recent_searches = suggestions_data.get("recent_searches", [])
+                        details += f", {len(recent_searches)} recent searches"
+                        
+                        # Check recent items structure
+                        recent = suggestions_data.get("recent", [])
+                        details += f", {len(recent)} recent items"
+                        
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/search/suggestions", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/search/suggestions", False, f"Error: {str(e)}")
+            return False
+
+    def test_search_recent(self):
+        """Test GET /api/search/recent - Get user's recent search queries"""
+        try:
+            response = self.session.get(f"{self.base_url}/search/recent", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if not data.get("ok"):
+                    success = False
+                    details += ", Missing 'ok' field"
+                else:
+                    recent_data = data.get("data", {})
+                    
+                    # Check searches field
+                    if "searches" not in recent_data:
+                        success = False
+                        details += ", Missing 'searches' field"
+                    else:
+                        searches = recent_data.get("searches", [])
+                        details += f", {len(searches)} recent searches"
+                        
+                        # Check structure of search items
+                        if searches:
+                            first_search = searches[0]
+                            required_search_fields = ["query", "result_count", "search_count", "last_searched"]
+                            missing_search_fields = [field for field in required_search_fields if field not in first_search]
+                            
+                            if missing_search_fields:
+                                success = False
+                                details += f", Missing search fields: {missing_search_fields}"
+                            else:
+                                details += ", Correct search item structure"
+                        else:
+                            details += ", No recent searches (expected for new user)"
+                        
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/search/recent", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/search/recent", False, f"Error: {str(e)}")
+            return False
+
+    def test_clear_search_history(self):
+        """Test DELETE /api/search/recent - Clear search history"""
+        try:
+            response = self.session.delete(f"{self.base_url}/search/recent", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if not data.get("ok"):
+                    success = False
+                    details += ", Missing 'ok' field"
+                else:
+                    message = data.get("message")
+                    if "cleared" in message.lower():
+                        details += ", Correct success message"
+                    else:
+                        success = False
+                        details += f", Unexpected message: {message}"
+                    
+                    # Verify history is cleared by checking recent searches
+                    time.sleep(0.5)  # Brief pause
+                    verify_response = self.session.get(f"{self.base_url}/search/recent", timeout=10)
+                    if verify_response.status_code == 200:
+                        verify_data = verify_response.json()
+                        if verify_data.get("ok"):
+                            searches = verify_data.get("data", {}).get("searches", [])
+                            if len(searches) == 0:
+                                details += ", History successfully cleared"
+                            else:
+                                success = False
+                                details += f", History not cleared, still has {len(searches)} searches"
+                        else:
+                            success = False
+                            details += ", Failed to verify history clearing"
+                    else:
+                        success = False
+                        details += ", Failed to verify history clearing"
+                        
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("DELETE /api/search/recent", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("DELETE /api/search/recent", False, f"Error: {str(e)}")
+            return False
+
+    def test_v2_navigation_shortcuts(self):
+        """Test V2 Navigation Items with Shortcuts"""
+        try:
+            response = self.session.get(f"{self.base_url}/search?q=dashboard", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if not data.get("ok"):
+                    success = False
+                    details += ", Missing 'ok' field"
+                else:
+                    search_data = data.get("data", {})
+                    results = search_data.get("results", [])
+                    
+                    # Check for V2 navigation items with shortcuts
+                    shortcuts_found = {}
+                    for result in results:
+                        if result.get("type") == "navigation":
+                            title = result.get("title")
+                            shortcut = result.get("shortcut")
+                            if title and shortcut:
+                                shortcuts_found[title] = shortcut
+                    
+                    if shortcuts_found:
+                        details += f", Found shortcuts: {shortcuts_found}"
+                        
+                        # Verify expected shortcuts
+                        expected_shortcuts = {
+                            "Dashboard": "G D",
+                            "Governance": "G G", 
+                            "Trust Health": "G H",
+                            "Settings": "G S",
+                            "Billing": "G B"
+                        }
+                        
+                        correct_shortcuts = 0
+                        for title, expected_shortcut in expected_shortcuts.items():
+                            if title in shortcuts_found:
+                                if shortcuts_found[title] == expected_shortcut:
+                                    correct_shortcuts += 1
+                                else:
+                                    success = False
+                                    details += f", Wrong shortcut for {title}: expected {expected_shortcut}, got {shortcuts_found[title]}"
+                        
+                        if correct_shortcuts >= 3:
+                            details += f", {correct_shortcuts} correct shortcuts verified"
+                        else:
+                            success = False
+                            details += f", Only {correct_shortcuts} correct shortcuts found"
+                    else:
+                        success = False
+                        details += ", No navigation shortcuts found"
+                        
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("V2 Navigation Items with Shortcuts", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("V2 Navigation Items with Shortcuts", False, f"Error: {str(e)}")
+            return False
+
+    def test_fuzzy_matching(self):
+        """Test V2 Fuzzy Matching (partial matches work)"""
+        try:
+            # Test partial match with "dash" for "Dashboard"
+            response = self.session.get(f"{self.base_url}/search?q=dash", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if not data.get("ok"):
+                    success = False
+                    details += ", Missing 'ok' field"
+                else:
+                    search_data = data.get("data", {})
+                    results = search_data.get("results", [])
+                    
+                    # Check if Dashboard is found with partial match "dash"
+                    dashboard_found = False
+                    for result in results:
+                        if "dashboard" in result.get("title", "").lower():
+                            dashboard_found = True
+                            break
+                    
+                    if dashboard_found:
+                        details += ", Fuzzy matching works: 'dash' found 'Dashboard'"
+                        
+                        # Test another fuzzy match
+                        response2 = self.session.get(f"{self.base_url}/search?q=gov", timeout=10)
+                        if response2.status_code == 200:
+                            data2 = response2.json()
+                            if data2.get("ok"):
+                                results2 = data2.get("data", {}).get("results", [])
+                                governance_found = False
+                                for result in results2:
+                                    if "governance" in result.get("title", "").lower():
+                                        governance_found = True
+                                        break
+                                
+                                if governance_found:
+                                    details += ", 'gov' found 'Governance'"
+                                else:
+                                    success = False
+                                    details += ", 'gov' did not find 'Governance'"
+                            else:
+                                success = False
+                                details += ", Second fuzzy test failed"
+                        else:
+                            success = False
+                            details += ", Second fuzzy test request failed"
+                    else:
+                        success = False
+                        details += ", Fuzzy matching failed: 'dash' did not find 'Dashboard'"
+                        
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("V2 Fuzzy Matching", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("V2 Fuzzy Matching", False, f"Error: {str(e)}")
+            return False
+
+    def test_grouped_results(self):
+        """Test V2 Grouped Results by Type"""
+        try:
+            response = self.session.get(f"{self.base_url}/search?q=new", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                if not data.get("ok"):
+                    success = False
+                    details += ", Missing 'ok' field"
+                else:
+                    search_data = data.get("data", {})
+                    grouped = search_data.get("grouped", {})
+                    
+                    # Check grouped structure
+                    expected_groups = ["navigation", "actions", "records", "portfolios", "templates", "documents", "parties"]
+                    missing_groups = [group for group in expected_groups if group not in grouped]
+                    
+                    if missing_groups:
+                        success = False
+                        details += f", Missing groups: {missing_groups}"
+                    else:
+                        details += ", All expected groups present"
+                        
+                        # Check that groups contain appropriate items
+                        actions = grouped.get("actions", [])
+                        navigation = grouped.get("navigation", [])
+                        
+                        if actions:
+                            details += f", {len(actions)} actions grouped"
+                            # Check that actions are actually action type
+                            action_types_correct = all(item.get("type") == "action" for item in actions)
+                            if action_types_correct:
+                                details += ", Action types correct"
+                            else:
+                                success = False
+                                details += ", Some action items have wrong type"
+                        
+                        if navigation:
+                            details += f", {len(navigation)} navigation items grouped"
+                            # Check that navigation items are actually navigation type
+                            nav_types_correct = all(item.get("type") == "navigation" for item in navigation)
+                            if nav_types_correct:
+                                details += ", Navigation types correct"
+                            else:
+                                success = False
+                                details += ", Some navigation items have wrong type"
+                        
+                        if not actions and not navigation:
+                            success = False
+                            details += ", No items in main groups"
+                        
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("V2 Grouped Results by Type", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("V2 Grouped Results by Type", False, f"Error: {str(e)}")
             return False
 
     # ============ TEST RUNNER ============
