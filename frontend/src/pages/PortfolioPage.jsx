@@ -301,13 +301,62 @@ const PortfolioPage = ({ user, logout }) => {
 
       {/* Main Content */}
       <main className="ml-64 p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-vault-muted text-sm mb-4">
+        {/* Top Header Bar with Avatar */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2 text-vault-muted text-sm">
             <Link to="/vault" className="hover:text-vault-gold">Dashboard</Link>
             <CaretRight className="w-4 h-4" weight="duotone" />
             <span className="text-vault-gold">{portfolio?.name}</span>
           </div>
+          
+          {/* Right side - User Avatar with Customize Menu */}
+          <div className="flex items-center gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="focus:outline-none">
+                  <StyledPortrait
+                    src={user?.picture}
+                    alt={user?.name || 'User'}
+                    fallbackText={user?.name || user?.email || 'U'}
+                    styleId={userProfile?.portrait_style || 'standard'}
+                    size="sm"
+                    showAccent={true}
+                  />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-vault-navy border-white/10 min-w-[180px]">
+                <div className="px-3 py-2 border-b border-white/10">
+                  <p className="text-sm text-white font-medium truncate">{userProfile?.display_name || user?.name}</p>
+                  <p className="text-xs text-white/40 truncate">{user?.email}</p>
+                </div>
+                <DropdownMenuItem 
+                  onClick={() => setShowPortraitSelector(true)}
+                  className="text-vault-gold hover:text-vault-gold focus:text-vault-gold cursor-pointer"
+                >
+                  <PaintBrush className="w-4 h-4 mr-2" weight="duotone" />
+                  Customize Portrait
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuItem 
+                  onClick={() => navigate('/settings')}
+                  className="text-white/70 hover:text-white focus:text-white cursor-pointer"
+                >
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={handleLogout}
+                  className="text-red-400 hover:text-red-300 focus:text-red-300 cursor-pointer"
+                >
+                  <SignOut className="w-4 h-4 mr-2" weight="duotone" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        
+        {/* Page Title */}
+        <div className="mb-8">
           <h1 className="font-heading text-3xl text-white" data-testid="portfolio-title">
             {portfolio?.name}
           </h1>
