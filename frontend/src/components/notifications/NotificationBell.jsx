@@ -85,10 +85,26 @@ export default function NotificationBell() {
   };
 
   useEffect(() => {
-    fetchNotifications();
+    // Fetch on mount
+    const controller = new AbortController();
+    const doFetch = async () => {
+      try {
+        const response = await axios.get(`${API}/notifications`, { signal: controller.signal });
+        setNotifications(response.data.notifications || []);
+        setUnreadCount(response.data.unread_count || 0);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.debug('Failed to fetch notifications:', error);
+        }
+      }
+    };
+    doFetch();
     // Poll for new notifications every 30 seconds
     const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
   }, []);
 
   // Close dropdown when clicking outside

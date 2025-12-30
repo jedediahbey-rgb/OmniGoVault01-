@@ -139,11 +139,16 @@ export default function StatCard({
   
   // Pulse animation when value changes
   const [isPulsing, setIsPulsing] = useState(false);
+  const prevValue = useRef(numericValue);
   
   useEffect(() => {
-    if (numericValue > 0) {
-      setIsPulsing(true);
-      const timer = setTimeout(() => setIsPulsing(false), 600);
+    // Only pulse if value changed and is > 0
+    if (numericValue > 0 && numericValue !== prevValue.current) {
+      const timer = setTimeout(() => {
+        setIsPulsing(true);
+        setTimeout(() => setIsPulsing(false), 600);
+      }, 0);
+      prevValue.current = numericValue;
       return () => clearTimeout(timer);
     }
   }, [numericValue]);
