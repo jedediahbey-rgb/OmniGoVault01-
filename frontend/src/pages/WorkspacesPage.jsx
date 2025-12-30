@@ -173,8 +173,9 @@ export default function WorkspacesPage({ user }) {
               <Vault className="w-6 h-6 sm:w-7 sm:h-7 text-vault-gold" weight="duotone" />
               Shared Workspaces
             </h1>
-            <p className="text-vault-muted text-sm mt-1">
-              Collaborative vaults for trust governance and document management
+            <p className="text-vault-muted text-xs sm:text-sm mt-1">
+              Collaborative vaults for trust governance and document{' '}
+              <span style={{ whiteSpace: 'nowrap' }}>management.</span>
             </p>
           </div>
           

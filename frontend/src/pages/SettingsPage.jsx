@@ -327,7 +327,26 @@ export default function SettingsPage() {
                     </Button>
                   </div>
                   <p className="text-xs text-vault-muted">
-                    {displayName ? `Current: "${displayName}"` : `Using default: "${userProfile?.name || 'User'}"`}
+                    {displayName ? (
+                      <span className="inline-flex items-center gap-1">
+                        Current:{' '}
+                        <span 
+                          className="font-semibold tracking-wide"
+                          style={{
+                            background: 'linear-gradient(135deg, #C6A87C 0%, #8B7355 50%, #C6A87C 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                            filter: 'drop-shadow(0 1px 1px rgba(198, 168, 124, 0.3))'
+                          }}
+                        >
+                          "{displayName}"
+                        </span>
+                      </span>
+                    ) : (
+                      `Using default: "${userProfile?.name || 'User'}"`
+                    )}
                   </p>
                 </div>
 

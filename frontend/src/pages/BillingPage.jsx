@@ -316,7 +316,10 @@ const BillingPage = () => {
               <CreditCard className="w-6 h-6" />
               Billing & Subscription
             </h1>
-            <p className="text-vault-muted mt-1">Manage your subscription and view usage</p>
+            <p className="text-vault-muted text-xs sm:text-sm mt-1">
+              Manage your subscription and view{' '}
+              <span style={{ whiteSpace: 'nowrap' }}>usage.</span>
+            </p>
           </div>
           
           {/* OMNICOMPETENT Badge */}

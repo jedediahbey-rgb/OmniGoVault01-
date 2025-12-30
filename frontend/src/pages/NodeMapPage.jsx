@@ -671,7 +671,13 @@ export default function NodeMapPage() {
           </Select>
           
           <Button
-            onClick={() => navigate(`/vault/trust-profile?portfolio=${selectedPortfolio}`)}
+            onClick={() => {
+              if (selectedPortfolio) {
+                navigate(`/trust-profile?portfolio=${selectedPortfolio}`);
+              } else {
+                navigate('/trust-profile');
+              }
+            }}
             variant="outline"
             className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10"
           >
