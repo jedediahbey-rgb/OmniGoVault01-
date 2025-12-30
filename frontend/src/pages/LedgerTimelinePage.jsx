@@ -308,10 +308,10 @@ export default function LedgerTimelinePage() {
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent className="!bg-[#0a0a0f] bg-opacity-100 border-vault-gold/30 backdrop-blur-none z-50">
-                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="draft">Draft</SelectItem>
                 <SelectItem value="voided">Voided</SelectItem>
                 <SelectItem value="finalized">Finalized</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
               </SelectContent>
             </Select>
 
