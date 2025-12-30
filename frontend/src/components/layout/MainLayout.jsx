@@ -7,12 +7,18 @@ import {
   Key,
   SignOut,
   User,
-  Gear
+  Gear,
+  PaintBrush
 } from '@phosphor-icons/react';
 import Sidebar from './Sidebar';
 import { pageTransition } from '../../lib/motion';
 import { useBilling } from '../../contexts/BillingContext';
 import NotificationBell from '../notifications/NotificationBell';
+import PortraitStyleSelector from '../portrait/PortraitStyleSelector';
+import StyledPortrait from '../portrait/StyledPortrait';
+import axios from 'axios';
+
+const API = process.env.REACT_APP_BACKEND_URL;
 
 // Set theme color for browser chrome
 const setThemeColor = (color) => {
