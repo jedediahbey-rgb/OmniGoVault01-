@@ -541,7 +541,7 @@ function DiagramsContent() {
           </div>
         </div>
 
-        <div ref={reactFlowWrapper} className="flex-1 relative mx-2 sm:mx-4 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10 min-h-0">
+        <div ref={reactFlowWrapper} className="flex-1 relative mx-2 sm:mx-4 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10" style={{ minHeight: '300px' }}>
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -559,7 +559,7 @@ function DiagramsContent() {
             panOnDrag={true}
             preventScrolling={true}
             proOptions={{ hideAttribution: true }}
-            style={{ background: 'rgba(11, 18, 33, 0.95)' }}
+            style={{ width: '100%', height: '100%', background: 'rgba(11, 18, 33, 0.95)' }}
           >
             <Controls 
               position="bottom-right"
