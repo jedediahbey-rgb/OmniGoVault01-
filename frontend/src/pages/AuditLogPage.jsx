@@ -222,8 +222,7 @@ export default function AuditLogPage() {
               Audit Log
             </h1>
             <p className="text-white/60 text-xs sm:text-sm mt-1 flex items-center gap-1.5">
-              <span>Track all trust activities and maintain compliance records</span>
-              <PageHelpTooltip pageKey="auditLog" />
+              <span style={{ whiteSpace: 'nowrap' }}>Track all trust activities and maintain compliance records. <PageHelpTooltip pageKey="auditLog" /></span>
             </p>
           </div>
           

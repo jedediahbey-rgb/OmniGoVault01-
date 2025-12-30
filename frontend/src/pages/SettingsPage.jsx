@@ -231,7 +231,7 @@ export default function SettingsPage() {
         {/* Header */}
         <PageHeader
           title="Settings"
-          subtitle={<span className="text-xs sm:text-sm md:text-base">Configure trust health rules and governance checklists</span>}
+          subtitle="Configure trust health rules and governance checklists."
           subtitleAction={<PageHelpTooltip pageKey="settings" />}
           breadcrumbs={[
             { label: 'Dashboard', href: '/vault' },

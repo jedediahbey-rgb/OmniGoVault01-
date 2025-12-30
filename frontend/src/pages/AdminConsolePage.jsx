@@ -295,7 +295,10 @@ const AdminConsolePage = () => {
               <Cog className="w-5 h-5 sm:w-7 sm:h-7 text-purple-400 flex-shrink-0" />
               Admin Console
             </h1>
-            <p className="text-vault-muted mt-1 text-sm">Platform administration and oversight</p>
+            <p className="text-vault-muted mt-1 text-xs sm:text-sm">
+              Platform administration and{' '}
+              <span style={{ whiteSpace: 'nowrap' }}>oversight.</span>
+            </p>
           </div>
           
           {/* Admin Role Badges */}
