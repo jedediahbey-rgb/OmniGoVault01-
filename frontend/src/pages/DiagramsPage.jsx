@@ -566,44 +566,54 @@ function DiagramsContent() {
           </div>
         </div>
 
-        <div className="flex-1 relative rounded-lg sm:rounded-xl overflow-hidden border border-white/10 min-h-0">
+        <div ref={reactFlowWrapper} className="flex-1 relative mx-2 sm:mx-4 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10 min-h-0">
           <ReactFlow
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onInit={setReactFlowInstance}
             fitView
+            fitViewOptions={{ padding: isMobile ? 0.08 : 0.12, includeHiddenNodes: true }}
+            minZoom={isMobile ? 0.08 : 0.15}
+            maxZoom={isMobile ? 1.0 : 1.2}
+            panOnScroll={false}
+            zoomOnScroll={false}
+            zoomOnPinch={true}
+            panOnDrag={true}
+            preventScrolling={true}
             proOptions={{ hideAttribution: true }}
             style={{ background: 'rgba(11, 18, 33, 0.95)' }}
           >
             <Controls 
               position="bottom-right"
               showInteractive={false}
-              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-2 sm:!m-3 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-6 [&>button]:!h-6 sm:[&>button]:!w-8 sm:[&>button]:!h-8"
+              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-1 sm:!m-2 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-5 [&>button]:!h-5 sm:[&>button]:!w-7 sm:[&>button]:!h-7"
             />
             {/* Hide MiniMap on mobile */}
-            <MiniMap 
-              style={{ 
-                backgroundColor: 'rgba(11, 18, 33, 0.95)',
-                border: '1px solid rgba(198, 168, 124, 0.3)',
-                borderRadius: '6px',
-                width: 100,
-                height: 70,
-                margin: '12px',
-              }}
-              nodeColor={(node) => {
-                if (node.style?.borderColor?.includes('C6A87C')) return '#C6A87C';
-                if (node.style?.borderColor?.includes('3B82F6')) return '#3B82F6';
-                if (node.style?.borderColor?.includes('22C55E')) return '#22C55E';
-                if (node.style?.borderColor?.includes('A855F7')) return '#A855F7';
-                return '#EF4444';
-              }}
-              position="top-right"
-              pannable={false}
-              zoomable={false}
-              className="hidden sm:block"
-            />
+            {!isMobile && (
+              <MiniMap 
+                style={{ 
+                  backgroundColor: 'rgba(11, 18, 33, 0.95)',
+                  border: '1px solid rgba(198, 168, 124, 0.3)',
+                  borderRadius: '6px',
+                  width: 90,
+                  height: 60,
+                  margin: '8px',
+                }}
+                nodeColor={(node) => {
+                  if (node.style?.borderColor?.includes('C6A87C')) return '#C6A87C';
+                  if (node.style?.borderColor?.includes('3B82F6')) return '#3B82F6';
+                  if (node.style?.borderColor?.includes('22C55E')) return '#22C55E';
+                  if (node.style?.borderColor?.includes('A855F7')) return '#A855F7';
+                  return '#EF4444';
+                }}
+                position="top-right"
+                pannable={false}
+                zoomable={false}
+              />
+            )}
             <Background color="rgba(255,255,255,0.05)" gap={20} />
           </ReactFlow>
 
