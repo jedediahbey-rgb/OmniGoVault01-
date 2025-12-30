@@ -566,7 +566,7 @@ export default function NodeMapPage() {
             </div>
           )}
           <Link 
-            to={`/vault/trust-profile?portfolio=${selectedPortfolio}`}
+            to={`/vault/portfolio/${selectedPortfolio}/trust-profile`}
             className="inline-flex items-center gap-2 text-vault-gold hover:underline text-sm mt-2"
           >
             <Eye className="w-4 h-4" /> View Full Profile
