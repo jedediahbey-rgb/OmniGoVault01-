@@ -884,6 +884,7 @@ export default function CyberHomePage() {
       const response = await axios.get(`${API}/billing/subscription`, { withCredentials: true });
       if (response.data && response.data.plan_name) {
         setUserTier(response.data.plan_name);
+        setUserPlanTier(response.data.plan_tier || 0);
       }
     } catch (error) {
       // If can't fetch subscription, check if omnicompetent owner
@@ -891,9 +892,11 @@ export default function CyberHomePage() {
         const profileRes = await axios.get(`${API}/user/profile`, { withCredentials: true });
         if (profileRes.data?.global_roles?.includes('OMNICOMPETENT_OWNER')) {
           setUserTier('Dynasty');
+          setUserPlanTier(3);
         }
       } catch {
         setUserTier('Testamentary'); // Default tier for logged-in users
+        setUserPlanTier(0);
       }
     }
   };
