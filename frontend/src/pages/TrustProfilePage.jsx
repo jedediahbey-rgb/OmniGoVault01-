@@ -465,32 +465,32 @@ export default function TrustProfilePage({ user }) {
         </TabsContent>
 
         {/* Tax IDs Tab */}
-        <TabsContent value="tax-ids" className="mt-6">
-          <GlassCard>
-            <h3 className="font-heading text-lg text-white mb-4">Tax Identifiers</h3>
+        <TabsContent value="tax-ids" className="mt-4 sm:mt-6">
+          <GlassCard className="!p-3 sm:!p-6">
+            <h3 className="font-heading text-base sm:text-lg text-white mb-3 sm:mb-4">Tax Identifiers</h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
               <div>
-                <Label className="text-white/60">Trust EIN (Optional)</Label>
+                <Label className="text-white/60 text-xs sm:text-sm">Trust EIN (Optional)</Label>
                 <Input
                   value={form.trust_ein}
                   onChange={e => handleChange('trust_ein', e.target.value)}
                   placeholder="XX-XXXXXXX"
-                  className="mt-1 bg-white/5 border-white/10 font-mono"
+                  className="mt-1 bg-white/5 border-white/10 font-mono h-9 sm:h-10 text-sm"
                 />
               </div>
               <div>
-                <Label className="text-white/60">Estate EIN (Optional)</Label>
+                <Label className="text-white/60 text-xs sm:text-sm">Estate EIN (Optional)</Label>
                 <Input
                   value={form.estate_ein}
                   onChange={e => handleChange('estate_ein', e.target.value)}
                   placeholder="XX-XXXXXXX"
-                  className="mt-1 bg-white/5 border-white/10 font-mono"
+                  className="mt-1 bg-white/5 border-white/10 font-mono h-9 sm:h-10 text-sm"
                 />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <Label className="text-white/60">Classification</Label>
+                  <Label className="text-white/60 text-xs sm:text-sm">Classification</Label>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -505,7 +505,7 @@ export default function TrustProfilePage({ user }) {
                 <select
                   value={form.tax_classification}
                   onChange={e => handleChange('tax_classification', e.target.value)}
-                  className="mt-1 w-full bg-white/5 border border-white/10 rounded-md p-2 text-white"
+                  className="mt-1 w-full bg-white/5 border border-white/10 rounded-md p-2 text-white h-9 sm:h-10 text-sm"
                 >
                   <option value="" className="bg-vault-navy">Select...</option>
                   <option value="domestic" className="bg-vault-navy">Domestic Trust</option>
@@ -514,46 +514,46 @@ export default function TrustProfilePage({ user }) {
                 </select>
               </div>
               <div className="md:col-span-2">
-                <Label className="text-white/60">Tax Notes</Label>
+                <Label className="text-white/60 text-xs sm:text-sm">Tax Notes</Label>
                 <Textarea
                   value={form.tax_notes}
                   onChange={e => handleChange('tax_notes', e.target.value)}
                   placeholder="Your notes about tax classification..."
-                  className="mt-1 bg-white/5 border-white/10"
+                  className="mt-1 bg-white/5 border-white/10 text-sm"
                   rows={3}
                 />
-                <p className="text-white/30 text-xs mt-1">User-entered notes for reference</p>
+                <p className="text-white/30 text-[10px] sm:text-xs mt-1">User-entered notes for reference</p>
               </div>
             </div>
           </GlassCard>
         </TabsContent>
 
         {/* Envelope Log Tab */}
-        <TabsContent value="mail-log" className="mt-6">
-          <GlassCard>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-lg text-white">Envelope Event Log</h3>
-              <Button className="btn-secondary" disabled={!profile}>
-                <Plus className="w-4 h-4 mr-2" weight="duotone" /> Log Event
+        <TabsContent value="mail-log" className="mt-4 sm:mt-6">
+          <GlassCard className="!p-3 sm:!p-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h3 className="font-heading text-base sm:text-lg text-white">Envelope Event Log</h3>
+              <Button className="btn-secondary h-8 sm:h-10 text-xs sm:text-sm px-2 sm:px-4" disabled={!profile}>
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" weight="duotone" /> Log Event
               </Button>
             </div>
 
             {!profile && (
-              <p className="text-white/40">Save the trust profile first to enable mail event logging.</p>
+              <p className="text-white/40 text-xs sm:text-sm">Save the trust profile first to enable mail event logging.</p>
             )}
 
             {profile && mailEvents.length === 0 && (
-              <p className="text-white/40">No mail events logged yet.</p>
+              <p className="text-white/40 text-xs sm:text-sm">No mail events logged yet.</p>
             )}
 
             {mailEvents.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {mailEvents.map(event => (
-                  <div key={event.event_id} className="p-4 bg-white/5 rounded-lg">
+                  <div key={event.event_id} className="p-3 sm:p-4 bg-white/5 rounded-lg">
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="text-white font-medium">{event.purpose}</p>
-                        <p className="text-white/40 text-sm">
+                        <p className="text-white font-medium text-sm sm:text-base">{event.purpose}</p>
+                        <p className="text-white/40 text-xs sm:text-sm">
                           {event.event_type} • {event.date}
                         </p>
                         <MonoChip variant="muted" size="xs" className="mt-1">{event.rm_id}</MonoChip>
