@@ -74,12 +74,30 @@ export default function MainLayout({ children, user, onLogout }) {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [showPortraitSelector, setShowPortraitSelector] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
   const scrollContainerRef = useRef(null);
   const userMenuRef = useRef(null);
   
   // Get user's subscription tier for logout screen
   const { subscription } = useBilling();
   const userTier = subscription?.plan_name || 'Free';
+  const userPlanTier = subscription?.plan_tier || 0;
+
+  // Fetch user profile for portrait style
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const res = await axios.get(`${API}/api/user/profile`, { withCredentials: true });
+        setUserProfile(res.data);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user]);
 
   // Set theme color on mount to match app background
   useEffect(() => {
