@@ -10,7 +10,8 @@ import {
   PaperPlaneTilt,
   Robot,
   Sparkle,
-  User
+  User,
+  Warning
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import PageHelpTooltip from '../components/shared/PageHelpTooltip';
