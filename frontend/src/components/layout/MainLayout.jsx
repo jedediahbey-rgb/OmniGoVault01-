@@ -173,21 +173,16 @@ export default function MainLayout({ children, user, onLogout }) {
                   <div className="relative">
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      className="w-8 h-8 rounded-full overflow-hidden border border-[#C6A87C]/30 hover:border-[#C6A87C]/60 transition-colors"
+                      className="focus:outline-none"
                     >
-                      {user.picture ? (
-                        <img 
-                          src={user.picture} 
-                          alt={user.name || 'User'} 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-[#C6A87C]/20 flex items-center justify-center">
-                          <span className="text-[#C6A87C] text-sm font-medium">
-                            {(user.name || user.email || 'U').charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
+                      <StyledPortrait
+                        src={user.picture}
+                        alt={user.name || 'User'}
+                        fallbackText={user.name || user.email || 'U'}
+                        styleId={userProfile?.portrait_style || 'standard'}
+                        size="sm"
+                        showAccent={true}
+                      />
                     </button>
                   
                     {/* Dropdown Menu */}
@@ -202,12 +197,25 @@ export default function MainLayout({ children, user, onLogout }) {
                       >
                         {/* User Info */}
                         <div className="px-4 py-3 border-b border-white/10">
-                          <p className="text-sm text-white font-medium truncate">{user.name}</p>
+                          <p className="text-sm text-white font-medium truncate">{userProfile?.display_name || user.name}</p>
                           <p className="text-xs text-white/40 truncate">{user.email}</p>
                         </div>
                         
                         {/* Menu Items */}
                         <div className="py-1">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setUserMenuOpen(false);
+                              setShowPortraitSelector(true);
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-vault-gold hover:text-vault-gold hover:bg-vault-gold/10 transition-colors text-left"
+                          >
+                            <PaintBrush className="w-4 h-4" weight="duotone" />
+                            Customize Portrait
+                          </button>
                           <button
                             type="button"
                             onClick={(e) => {
@@ -228,6 +236,20 @@ export default function MainLayout({ children, user, onLogout }) {
                               e.stopPropagation();
                               setUserMenuOpen(false);
                               onLogout(userTier);
+                            }}
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors text-left"
+                          >
+                            <SignOut className="w-4 h-4" weight="duotone" />
+                            Sign Out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  </div>
+                </>
+              )}
+            </div>
                             }}
                             className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors text-left"
                           >
