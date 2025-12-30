@@ -683,9 +683,10 @@ export default function NodeMapPage() {
           <Button
             onClick={() => {
               if (selectedPortfolio) {
-                navigate(`/trust-profile?portfolio=${selectedPortfolio}`);
+                navigate(`/vault/portfolio/${selectedPortfolio}/trust-profile`);
               } else {
-                navigate('/trust-profile');
+                // Navigate to vault to select a portfolio first
+                navigate('/vault');
               }
             }}
             variant="outline"
