@@ -84,6 +84,7 @@ class HealthCheck:
     effort: Effort = Effort.MEDIUM
     fix_route: Optional[str] = None
     enabled: bool = True
+    auto_fixable: bool = False
     
     def calculate_penalty(self, count: int = 1, multiplier: float = 1.0) -> float:
         """Calculate bounded penalty with severity multiplier."""
