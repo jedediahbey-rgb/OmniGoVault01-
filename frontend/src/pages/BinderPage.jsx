@@ -258,9 +258,9 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
           <div className="py-4 space-y-3">
             <p className="text-white text-sm">To print your binder:</p>
             <ol className="text-vault-muted text-sm space-y-2 list-decimal list-inside">
-              <li>Tap <span className="text-vault-gold font-medium">"Open PDF"</span> below</li>
+              <li>Tap <span className="text-vault-gold font-medium">&ldquo;Open PDF&rdquo;</span> below</li>
               <li>Tap your browser menu <span className="text-white font-mono">⋮</span></li>
-              <li>Select <span className="text-vault-gold font-medium">"Print"</span> or <span className="text-vault-gold font-medium">"Share"</span></li>
+              <li>Select <span className="text-vault-gold font-medium">&ldquo;Print&rdquo;</span> or <span className="text-vault-gold font-medium">&ldquo;Share&rdquo;</span></li>
             </ol>
           </div>
 
