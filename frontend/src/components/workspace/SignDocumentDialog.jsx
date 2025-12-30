@@ -63,7 +63,7 @@ export default function SignDocumentDialog({
         `${API}/api/vaults/documents/${document.document_id}/sign`,
         {
           legal_name: legalName,
-          signature_type: 'ELECTRONIC_CONSENT',
+          signature_type: 'TYPED_NAME',
           signature_data: JSON.stringify({
             consent_text: 'I agree to the terms of this document and consent to electronic records and signatures.',
             typed_name: legalName,
