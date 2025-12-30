@@ -460,8 +460,8 @@ export default function DiagramsPage() {
 
   if (selectedDiagram) {
     return (
-      <div className="h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-2rem)] flex flex-col p-2 sm:p-4 overflow-hidden">
-        <div className="flex items-center justify-between mb-2 sm:mb-4 gap-2">
+      <div className="fixed inset-0 top-14 flex flex-col p-2 sm:p-4 overflow-hidden bg-vault-dark">
+        <div className="flex items-center justify-between mb-2 sm:mb-4 gap-2 shrink-0">
           <button
             onClick={() => setSelectedDiagram(null)}
             className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base shrink-0"
@@ -545,11 +545,6 @@ export default function DiagramsPage() {
               </GlassCard>
             </div>
           )}
-        </div>
-
-        {/* Footer hint - hidden on mobile */}
-        <div className="hidden sm:block mt-2 text-center text-white/40 text-sm">
-          Drag nodes to rearrange • Scroll to zoom • Click and drag to pan
         </div>
       </div>
     );
