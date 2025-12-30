@@ -653,30 +653,22 @@ export default function NodeMapPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] sm:h-[calc(100vh-2rem)] flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden">
+    <div className="h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-2rem)] flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden">
       {/* Header - More compact on mobile */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 mb-2 sm:mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 mb-1 sm:mb-4">
         <div className="flex items-center gap-2 sm:gap-4">
           <Link
             to="/vault"
-            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-sm sm:text-base"
+            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
           >
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
           </Link>
-          <div>
-            <h1 className="text-lg sm:text-2xl font-heading text-white">Trust Node Map</h1>
-            <p className="text-white/50 text-[10px] sm:text-sm mt-0.5 sm:mt-1 hidden sm:block">
-              Visual representation of trust{' '}
-              <span style={{ whiteSpace: 'nowrap' }}>
-                relationships. <span className="inline-flex align-middle"><PageHelpTooltip pageKey="nodeMap" /></span>
-              </span>
-            </p>
-          </div>
+          <h1 className="text-base sm:text-2xl font-heading text-white">Trust Node Map</h1>
         </div>
         
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
-            <SelectTrigger className="flex-1 sm:flex-none sm:w-[200px] bg-vault-dark border-vault-gold/30 h-8 sm:h-10 text-xs sm:text-sm">
+            <SelectTrigger className="flex-1 sm:flex-none sm:w-[200px] bg-vault-dark border-vault-gold/30 h-7 sm:h-10 text-xs sm:text-sm">
               <SelectValue placeholder="Select Portfolio" />
             </SelectTrigger>
             <SelectContent className="bg-vault-dark border-vault-gold/30">
@@ -698,7 +690,7 @@ export default function NodeMapPage() {
             }}
             variant="outline"
             size="sm"
-            className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10 h-8 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
+            className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10 h-7 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
           >
             <Plus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
             <span className="hidden sm:inline">Add Party</span>
