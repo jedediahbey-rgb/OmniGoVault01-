@@ -633,7 +633,9 @@ export default function BinderPage() {
   const fetchCourtModeConfig = useCallback(async () => {
     if (!portfolioId) return;
     try {
-      const res = await fetch(`${API_URL}/api/binder/court-mode/config?portfolio_id=${portfolioId}`);
+      const res = await fetch(`${API_URL}/api/binder/court-mode/config?portfolio_id=${portfolioId}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       if (data.ok) {
         setCourtModeInfo(data.data);
@@ -654,7 +656,9 @@ export default function BinderPage() {
   const fetchRedactionSummary = useCallback(async () => {
     if (!portfolioId) return;
     try {
-      const res = await fetch(`${API_URL}/api/binder/redactions/summary?portfolio_id=${portfolioId}`);
+      const res = await fetch(`${API_URL}/api/binder/redactions/summary?portfolio_id=${portfolioId}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       if (data.ok) {
         setRedactionSummary(data.data);
@@ -669,7 +673,9 @@ export default function BinderPage() {
     if (!portfolioId) return;
     setGapsLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/binder/gaps/analyze?portfolio_id=${portfolioId}`);
+      const res = await fetch(`${API_URL}/api/binder/gaps/analyze?portfolio_id=${portfolioId}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       if (data.ok) {
         setGapsAnalysis(data.data);
@@ -685,7 +691,9 @@ export default function BinderPage() {
   const fetchDisputes = useCallback(async () => {
     if (!portfolioId) return;
     try {
-      const res = await fetch(`${API_URL}/api/evidence-binder/disputes?portfolio_id=${portfolioId}`);
+      const res = await fetch(`${API_URL}/api/evidence-binder/disputes?portfolio_id=${portfolioId}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       if (data.ok) {
         setDisputes(data.data.disputes || []);
@@ -701,7 +709,8 @@ export default function BinderPage() {
     setEvidenceLoading(true);
     try {
       const res = await fetch(
-        `${API_URL}/api/evidence-binder/preview?portfolio_id=${portfolioId}&dispute_id=${selectedDispute}&include_linked_only=${evidenceConfig.include_linked_only}&include_date_range=${evidenceConfig.include_date_range_items}`
+        `${API_URL}/api/evidence-binder/preview?portfolio_id=${portfolioId}&dispute_id=${selectedDispute}&include_linked_only=${evidenceConfig.include_linked_only}&include_date_range=${evidenceConfig.include_date_range_items}`,
+        { credentials: 'include' }
       );
       const data = await res.json();
       if (data.ok) {
@@ -718,7 +727,9 @@ export default function BinderPage() {
   const fetchEvidenceRuns = useCallback(async () => {
     if (!portfolioId) return;
     try {
-      const res = await fetch(`${API_URL}/api/evidence-binder/runs?portfolio_id=${portfolioId}&limit=5`);
+      const res = await fetch(`${API_URL}/api/evidence-binder/runs?portfolio_id=${portfolioId}&limit=5`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       if (data.ok) {
         setEvidenceRuns(data.data.runs || []);
