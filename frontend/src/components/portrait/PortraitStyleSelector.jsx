@@ -76,7 +76,7 @@ export default function PortraitStyleSelector({
     try {
       const res = await axios.put(`${API}/api/user/profile`, {
         portrait_style: selectedStyle,
-      });
+      }, { withCredentials: true });
       
       toast.success('Portrait style updated!');
       onStyleChange?.(selectedStyle);
