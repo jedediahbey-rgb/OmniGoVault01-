@@ -24,6 +24,36 @@ const safeString = (value) => {
   return String(value);
 };
 
+// Helper to render subtitle with help icon attached to last word
+const renderSubtitleWithHelp = (subtitle, helpComponent) => {
+  if (!subtitle || typeof subtitle !== 'string') {
+    return (
+      <>
+        {subtitle}
+        {helpComponent && <span className="inline-flex align-middle ml-1.5">{helpComponent}</span>}
+      </>
+    );
+  }
+  
+  const words = subtitle.trim().split(' ');
+  if (words.length === 0) {
+    return helpComponent;
+  }
+  
+  const lastWord = words.pop();
+  const restOfText = words.join(' ');
+  
+  return (
+    <>
+      {restOfText && <>{restOfText} </>}
+      <span className="whitespace-nowrap">
+        {lastWord}
+        {helpComponent && <span className="inline-flex align-middle ml-1.5">{helpComponent}</span>}
+      </span>
+    </>
+  );
+};
+
 /**
  * PageHeader Component
  * 
@@ -84,6 +114,9 @@ export default function PageHeader({
   // Safely render title and subtitle
   const safeTitle = safeString(title);
   const safeSubtitle = subtitle ? safeString(subtitle) : null;
+  
+  // Build the help component if needed
+  const helpComponent = subtitleAction || (helpKey && <PageHelpTooltip pageKey={helpKey} />);
 
   return (
     <motion.div 
@@ -115,15 +148,9 @@ export default function PageHeader({
               </h1>
               {titleAction && <div className="shrink-0">{titleAction}</div>}
             </div>
-            {(safeSubtitle || helpKey || subtitleAction) && (
+            {(safeSubtitle || helpComponent) && (
               <p className="text-white/60 text-sm sm:text-base mt-1">
-                {safeSubtitle}
-                {(subtitleAction || helpKey) && (
-                  <span className="inline-flex align-middle ml-1.5">
-                    {subtitleAction}
-                    {helpKey && <PageHelpTooltip pageKey={helpKey} />}
-                  </span>
-                )}
+                {renderSubtitleWithHelp(safeSubtitle, helpComponent)}
               </p>
             )}
           </div>
