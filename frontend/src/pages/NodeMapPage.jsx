@@ -196,8 +196,18 @@ const roleIcons = {
 };
 
 export default function NodeMapPage() {
+  return (
+    <ReactFlowProvider>
+      <NodeMapContent />
+    </ReactFlowProvider>
+  );
+}
+
+function NodeMapContent() {
   const navigate = useNavigate();
   const { portfolioId } = useParams();
+  const reactFlowWrapper = useRef(null);
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
   
   // Inject custom styles to hide React Flow attribution
   useEffect(() => {
@@ -212,6 +222,18 @@ export default function NodeMapPage() {
       const existingStyle = document.getElementById(styleId);
       if (existingStyle) existingStyle.remove();
     };
+  }, []);
+
+  // Lock body scroll on mobile for this page
+  useEffect(() => {
+    const isMobileDevice = window.innerWidth < 768;
+    if (isMobileDevice) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
   }, []);
 
   // Detect mobile for responsive layout
@@ -238,6 +260,59 @@ export default function NodeMapPage() {
   
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  // Fit view handler with debouncing
+  const fitViewTimeoutRef = useRef(null);
+  const fitView = useCallback(() => {
+    if (!reactFlowInstance) return;
+    
+    if (fitViewTimeoutRef.current) {
+      clearTimeout(fitViewTimeoutRef.current);
+    }
+    
+    fitViewTimeoutRef.current = setTimeout(() => {
+      reactFlowInstance.fitView({
+        padding: isMobile ? 0.15 : 0.2,
+        includeHiddenNodes: true,
+        duration: 200,
+      });
+    }, 100);
+  }, [reactFlowInstance, isMobile]);
+
+  // Fit view when nodes change or container resizes
+  useEffect(() => {
+    if (nodes.length > 0 && reactFlowInstance) {
+      fitView();
+    }
+  }, [nodes.length, reactFlowInstance, fitView]);
+
+  // ResizeObserver for container
+  useEffect(() => {
+    if (!reactFlowWrapper.current) return;
+    
+    const resizeObserver = new ResizeObserver(() => {
+      fitView();
+    });
+    
+    resizeObserver.observe(reactFlowWrapper.current);
+    
+    return () => {
+      resizeObserver.disconnect();
+      if (fitViewTimeoutRef.current) {
+        clearTimeout(fitViewTimeoutRef.current);
+      }
+    };
+  }, [fitView]);
+
+  // Handle orientation changes
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      setTimeout(fitView, 300);
+    };
+    
+    window.addEventListener('orientationchange', handleOrientationChange);
+    return () => window.removeEventListener('orientationchange', handleOrientationChange);
+  }, [fitView]);
 
   // Fetch portfolios
   useEffect(() => {
