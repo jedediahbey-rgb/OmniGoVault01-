@@ -2346,7 +2346,7 @@ export default function CyberHomePage() {
                   <Button 
                     variant="outline" 
                     className="w-full border-slate-600 text-slate-300 hover:bg-slate-800"
-                    onClick={handleCreateAccount}
+                    onClick={handleSelectPlan(0)}
                   >
                     Get Started Free
                   </Button>
