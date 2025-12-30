@@ -128,10 +128,156 @@ async def run_health_scan(request: Request, version: str = Query(default=None)):
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
-    scanner = TrustHealthScanner(db)
+    # Determine version to use
+    use_version = version or await get_user_health_version(user.user_id)
+    
+    if use_version == "v2":
+        scanner = TrustHealthScannerV2(db)
+    else:
+        scanner = TrustHealthScanner(db)
+    
     result = await scanner.run_full_scan(user.user_id)
     
     return success_response(result, "Health scan completed")
+
+
+@router.get("/v2/ruleset")
+async def get_v2_ruleset(request: Request):
+    """
+    Get the V2 health rules configuration for the current user.
+    Returns user's custom config or default V2 ruleset.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    # Try to get user's custom config
+    config = await db.system_config.find_one(
+        {"config_type": "health_rules_v2", "user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if config and config.get("config"):
+        return success_response(config["config"])
+    
+    # Return default ruleset
+    default = await get_default_v2_ruleset()
+    return success_response(default)
+
+
+@router.put("/v2/ruleset")
+async def update_v2_ruleset(request: Request):
+    """
+    Update the V2 health rules configuration.
+    Allows customizing weights, caps, severity multipliers, and mode.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+    except:
+        return error_response("INVALID_JSON", "Invalid JSON body")
+    
+    # Validate weights sum to 100
+    weights = body.get("category_weights", {})
+    if weights:
+        total = sum(weights.values())
+        if abs(total - 100) > 0.1:
+            return error_response("INVALID_WEIGHTS", f"Category weights must sum to 100, got {total}")
+    
+    # Merge with existing or default
+    existing = await db.system_config.find_one(
+        {"config_type": "health_rules_v2", "user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if existing and existing.get("config"):
+        config = {**existing["config"], **body}
+    else:
+        default = await get_default_v2_ruleset()
+        config = {**default, **body}
+    
+    # Save
+    await db.system_config.update_one(
+        {"config_type": "health_rules_v2", "user_id": user.user_id},
+        {
+            "$set": {
+                "config": config,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            },
+            "$setOnInsert": {
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+        },
+        upsert=True
+    )
+    
+    return success_response(config, "V2 health rules updated")
+
+
+@router.post("/v2/ruleset/reset")
+async def reset_v2_ruleset(request: Request):
+    """
+    Reset V2 health rules to defaults.
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    default = await get_default_v2_ruleset()
+    
+    await db.system_config.update_one(
+        {"config_type": "health_rules_v2", "user_id": user.user_id},
+        {
+            "$set": {
+                "config": default,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            },
+            "$setOnInsert": {
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+        },
+        upsert=True
+    )
+    
+    return success_response(default, "V2 health rules reset to defaults")
+
+
+@router.put("/version")
+async def set_health_version(request: Request):
+    """
+    Set user's preferred health rules version (v1 or v2).
+    """
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        version = body.get("version", "v2")
+        if version not in ["v1", "v2"]:
+            return error_response("INVALID_VERSION", "Version must be 'v1' or 'v2'")
+    except:
+        return error_response("INVALID_JSON", "Invalid JSON body")
+    
+    await db.system_config.update_one(
+        {"config_type": "health_rules_version", "user_id": user.user_id},
+        {
+            "$set": {
+                "version": version,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        },
+        upsert=True
+    )
+    
+    return success_response({"version": version}, f"Health rules version set to {version}")
 
 
 @router.get("/history")
