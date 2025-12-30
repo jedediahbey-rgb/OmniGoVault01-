@@ -13,7 +13,7 @@ import uuid
 import hashlib
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://trustshare.preview.emergentagent.com/api"
+BASE_URL = "https://trustdoc-enhance.preview.emergentagent.com/api"
 
 class DocumentSigningTester:
     def __init__(self):
@@ -800,7 +800,7 @@ class DocumentSigningTester:
             payload = {
                 "plan_id": "plan_starter",
                 "billing_cycle": "monthly",
-                "origin_url": "https://trustshare.preview.emergentagent.com/billing"
+                "origin_url": "https://trustdoc-enhance.preview.emergentagent.com/billing"
             }
             
             response = self.session.post(f"{self.base_url}/billing/checkout", json=payload, timeout=10)

@@ -6,7 +6,7 @@ Test generation without redaction mode
 import requests
 import json
 
-BASE_URL = "https://trustshare.preview.emergentagent.com/api"
+BASE_URL = "https://trustdoc-enhance.preview.emergentagent.com/api"
 PORTFOLIO_ID = "port_0e9a783c1a71"
 
 def test_without_redaction():

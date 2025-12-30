@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 # Initialize Resend with API key
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-APP_URL = os.environ.get("APP_URL", "https://trustshare.preview.emergentagent.com")
+APP_URL = os.environ.get("APP_URL", "https://trustdoc-enhance.preview.emergentagent.com")
 
 if RESEND_API_KEY:
     resend.api_key = RESEND_API_KEY
