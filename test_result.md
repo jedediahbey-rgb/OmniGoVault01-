@@ -394,3 +394,28 @@ Test the document signing functionality in the Shared Workspace feature.
 - **Agent**: testing
 - **Message**: Completed comprehensive frontend testing of Billing/Subscription feature. All 8 test scenarios passed successfully. Landing page "Choose Your Trust Tier" section displays all 4 plans correctly with proper visual effects. "Start Free Trial" button correctly redirects non-authenticated users to Google Auth. Billing page shows complete plan comparison with animated tier icons, color-coded elements, and premium visual effects. Monthly/Yearly toggle working with "Save 17%" indication. Button functionality proper with authentication requirements enforced. Mobile responsiveness verified. No critical issues found - ready for production use.
 
+
+---
+
+## Test Date: 2025-12-30
+## Test Focus: UI Fixes - Settings Shimmer Effect & Billing Dynasty Icon
+
+### Changes Made (2025-12-30):
+
+#### 1. Settings Page - Display Name Shimmer Effect
+- **File**: `/app/frontend/src/pages/SettingsPage.jsx`
+- **Change**: Added animated shimmer effect to the user's current display name
+- **How it works**: When a user has set a custom display name, the "Current: [name]" text will have a gold-gradient shimmer animation that continuously flows across the text
+- **Technical**: Uses CSS @keyframes animation with background-position to create the shimmer effect
+
+#### 2. Billing Page - Dynasty Plan Icon Fix  
+- **File**: `/app/backend/routes/billing.py`
+- **Issue**: When user has OMNICOMPETENT role, the "Current Plan" card showed Testamentary (Zap) icon instead of Dynasty (Crown) icon
+- **Root Cause**: Backend was setting `plan_name: "Dynasty"` for OMNICOMPETENT users but NOT setting `plan_tier: 3`
+- **Fix**: Added `overview["plan_tier"] = 3` when user is OMNICOMPETENT
+
+### Test Requirements:
+1. **Settings Shimmer**: Log in, set a display name, verify the "Current: [name]" text has animated shimmer effect
+2. **Billing Icon**: Log in with OMNICOMPETENT role, verify Dynasty Crown icon appears on Current Plan card (not Zap icon)
+
+### User: jedediah.bey@gmail.com (OMNICOMPETENT_OWNER)
