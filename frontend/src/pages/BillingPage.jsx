@@ -521,7 +521,7 @@ const FeatureBadge = ({ enabled, label, icon }) => (
   </div>
 );
 
-// Plan Card Component with Premium Visual Effects
+// Plan Card Component with Premium Visual Effects - STRICT ALIGNMENT
 const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnterprise, loading, isAuthenticated }) => {
   const price = billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly;
   const isEnterprise = plan.tier === 3;
@@ -535,15 +535,18 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
     onUpgrade();
   };
 
+  // Check if this card should show a badge
+  const hasBadge = isCurrentPlan || plan.tier === 1 || plan.tier === 3;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: plan.tier * 0.1 }}
-      whileHover={{ y: -8, transition: { duration: 0.2 } }}
+      whileHover={{ y: -6, transition: { duration: 0.2 } }}
       className="group h-full"
     >
-      <Card className={`relative flex flex-col h-full overflow-hidden transition-all duration-300 border-2
+      <Card className={`relative flex flex-col h-full overflow-visible transition-all duration-300 border-2
         ${isCurrentPlan 
           ? 'border-vault-gold shadow-lg shadow-vault-gold/30 ring-2 ring-vault-gold/30' 
           : tierBorderColors[plan.tier]
@@ -552,159 +555,103 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
         ${tierGlowColors[plan.tier]}
         group-hover:shadow-2xl
       `}>
-        {/* Animated background glow for all tiers */}
-        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none
-          ${plan.tier === 0 ? 'bg-gradient-to-br from-slate-500/5 via-transparent to-slate-500/5' : ''}
-          ${plan.tier === 1 ? 'bg-gradient-to-br from-emerald-500/10 via-transparent to-emerald-500/10' : ''}
-          ${plan.tier === 2 ? 'bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-blue-500/10' : ''}
-          ${plan.tier === 3 ? 'bg-gradient-to-br from-purple-500/15 via-pink-500/10 to-amber-500/15' : ''}
-        `} />
-
-        {/* Top glow line - colored per tier */}
-        <div className={`absolute top-0 left-0 right-0 h-1 transition-all duration-300
+        {/* Top glow line */}
+        <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-lg
           ${plan.tier === 0 ? 'bg-gradient-to-r from-slate-600 via-slate-400 to-slate-600' : ''}
           ${plan.tier === 1 ? 'bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600' : ''}
           ${plan.tier === 2 ? 'bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600' : ''}
           ${plan.tier === 3 ? 'bg-gradient-to-r from-purple-500 via-pink-400 to-amber-400' : ''}
         `} />
 
+        {/* Badge - Absolutely positioned ABOVE the card */}
         {isCurrentPlan && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10">
-            <Badge className="bg-vault-gold text-vault-navy font-semibold shadow-lg">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+            <Badge className="bg-vault-gold text-vault-navy font-semibold shadow-lg whitespace-nowrap">
               ✓ Current Plan
             </Badge>
           </div>
         )}
-        
-        {/* Popular badge for tier 1 */}
         {plan.tier === 1 && !isCurrentPlan && (
-          <motion.div 
-            className="absolute top-3 left-1/2 -translate-x-1/2 z-10"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 500, delay: 0.3 }}
-          >
-            <Badge className="bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-semibold shadow-lg shadow-emerald-500/50">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+            <Badge className="bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-semibold shadow-lg shadow-emerald-500/50 whitespace-nowrap">
               ✨ Most Popular
             </Badge>
-          </motion.div>
+          </div>
         )}
-
-        {/* Elite badge for Dynasty */}
         {plan.tier === 3 && !isCurrentPlan && (
-          <motion.div 
-            className="absolute top-3 left-1/2 -translate-x-1/2 z-10"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 500, delay: 0.4 }}
-          >
-            <Badge className="bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 text-white font-semibold shadow-lg shadow-purple-500/50">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+            <Badge className="bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 text-white font-semibold shadow-lg shadow-purple-500/50 whitespace-nowrap">
               👑 Elite
             </Badge>
-          </motion.div>
-        )}
-        
-        <CardHeader className={`relative z-10 text-center ${isCurrentPlan || plan.tier === 1 || plan.tier === 3 ? 'pt-10' : 'pt-5'} pb-2`}>
-          {/* Centered Icon */}
-          <div className="flex justify-center mb-3">
-            <AnimatedTierIcon tier={plan.tier} />
           </div>
-          
-          {/* Centered Title */}
-          <CardTitle className={`text-xl font-bold mb-1
+        )}
+
+        {/* SECTION 1: Icon - Fixed height 80px */}
+        <div className="h-20 flex items-center justify-center pt-5">
+          <AnimatedTierIcon tier={plan.tier} />
+        </div>
+
+        {/* SECTION 2: Title & Description - Fixed height 70px */}
+        <div className="h-[70px] px-4 text-center">
+          <h3 className={`text-xl font-bold mb-1
             ${plan.tier === 0 ? 'text-slate-200' : ''}
             ${plan.tier === 1 ? 'text-emerald-100' : ''}
             ${plan.tier === 2 ? 'text-blue-100' : ''}
             ${plan.tier === 3 ? 'text-purple-100' : ''}
-          `}>{plan.name}</CardTitle>
-          
-          {/* Centered Description */}
-          <CardDescription className="text-vault-muted text-xs min-h-[32px]">
-            {plan.description}
-          </CardDescription>
-        </CardHeader>
+          `}>{plan.name}</h3>
+          <p className="text-vault-muted text-xs line-clamp-2">{plan.description}</p>
+        </div>
 
-        <CardContent className="space-y-4 flex-1 relative z-10 px-5">
-          {/* Price - Centered */}
-          <div className="text-center py-3">
-            {isEnterprise ? (
-              <div>
-                <span className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
-                  Custom
-                </span>
-                <p className="text-sm text-purple-300/70 mt-1">Contact for pricing</p>
-              </div>
-            ) : isFree ? (
-              <div>
-                <span className="text-4xl font-bold text-slate-200">$0</span>
-                <span className="text-slate-400 text-sm ml-1">/month</span>
-              </div>
-            ) : (
-              <div>
-                <span className={`text-4xl font-bold
-                  ${plan.tier === 1 ? 'text-emerald-300' : ''}
-                  ${plan.tier === 2 ? 'text-blue-300' : ''}
-                `}>${price}</span>
-                <span className="text-vault-muted text-sm ml-1">/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
-                {billingCycle === 'yearly' && (
-                  <p className="text-emerald-400 text-xs mt-1 font-medium">
-                    🎉 Save 17% annually
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
+        {/* SECTION 3: Price - Fixed height 70px */}
+        <div className="h-[70px] flex items-center justify-center">
+          {isEnterprise ? (
+            <div className="text-center">
+              <span className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
+                Custom
+              </span>
+              <p className="text-xs text-purple-300/70 mt-1">Contact for pricing</p>
+            </div>
+          ) : (
+            <div className="text-center">
+              <span className={`text-4xl font-bold
+                ${plan.tier === 0 ? 'text-slate-200' : ''}
+                ${plan.tier === 1 ? 'text-emerald-300' : ''}
+                ${plan.tier === 2 ? 'text-blue-300' : ''}
+              `}>${price}</span>
+              <span className="text-vault-muted text-sm ml-1">/{billingCycle === 'yearly' ? 'yr' : 'mo'}</span>
+              {billingCycle === 'yearly' && !isFree && (
+                <p className="text-emerald-400 text-xs mt-0.5 font-medium">Save 17%</p>
+              )}
+            </div>
+          )}
+        </div>
 
+        {/* SECTION 4: Separator */}
+        <div className="px-4">
           <Separator className={`
             ${plan.tier === 0 ? 'bg-slate-600/40' : ''}
             ${plan.tier === 1 ? 'bg-emerald-500/30' : ''}
             ${plan.tier === 2 ? 'bg-blue-500/30' : ''}
             ${plan.tier === 3 ? 'bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-amber-500/30' : ''}
           `} />
+        </div>
 
-          {/* Entitlements - Left aligned with consistent spacing */}
-          <ul className="space-y-2.5 text-sm pl-1">
-            <EntitlementItem 
-              label={`${plan.entitlements['vaults.max'] === -1 ? 'Unlimited' : plan.entitlements['vaults.max']} Vaults`}
-              included={true}
-              tier={plan.tier}
-            />
-            <EntitlementItem 
-              label={`${plan.entitlements['teamMembers.max'] === -1 ? 'Unlimited' : plan.entitlements['teamMembers.max']} Team Members`}
-              included={true}
-              tier={plan.tier}
-            />
-            <EntitlementItem 
-              label={plan.entitlements['storage.maxMB'] === -1 ? 'Unlimited Storage' : `${plan.entitlements['storage.maxMB'] / 1000} GB Storage`}
-              included={true}
-              tier={plan.tier}
-            />
-            <EntitlementItem 
-              label="Analytics"
-              included={plan.entitlements['features.analytics.enabled']}
-              tier={plan.tier}
-            />
-            <EntitlementItem 
-              label="API Access"
-              included={plan.entitlements['features.api.enabled']}
-              tier={plan.tier}
-            />
-            <EntitlementItem 
-              label="Templates"
-              included={plan.entitlements['features.templates.enabled']}
-              tier={plan.tier}
-            />
-            <EntitlementItem 
-              label="Priority Support"
-              included={plan.entitlements['features.prioritySupport.enabled']}
-              tier={plan.tier}
-            />
+        {/* SECTION 5: Features - Flex grow to fill space */}
+        <div className="flex-1 px-4 py-4">
+          <ul className="space-y-2">
+            <EntitlementItem label={`${plan.entitlements['vaults.max'] === -1 ? 'Unlimited' : plan.entitlements['vaults.max']} Vaults`} included={true} tier={plan.tier} />
+            <EntitlementItem label={`${plan.entitlements['teamMembers.max'] === -1 ? 'Unlimited' : plan.entitlements['teamMembers.max']} Members`} included={true} tier={plan.tier} />
+            <EntitlementItem label={plan.entitlements['storage.maxMB'] === -1 ? 'Unlimited Storage' : `${plan.entitlements['storage.maxMB'] / 1000} GB Storage`} included={true} tier={plan.tier} />
+            <EntitlementItem label="Analytics" included={plan.entitlements['features.analytics.enabled']} tier={plan.tier} />
+            <EntitlementItem label="API Access" included={plan.entitlements['features.api.enabled']} tier={plan.tier} />
+            <EntitlementItem label="Templates" included={plan.entitlements['features.templates.enabled']} tier={plan.tier} />
+            <EntitlementItem label="Priority Support" included={plan.entitlements['features.prioritySupport.enabled']} tier={plan.tier} />
           </ul>
-        </CardContent>
+        </div>
 
-        {/* Footer with aligned buttons */}
-        <CardFooter className="mt-auto pt-3 pb-5 relative z-10">
-          <motion.div className="w-full" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        {/* SECTION 6: Button - Fixed height */}
+        <div className="p-4 pt-0">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             {isCurrentPlan ? (
               <Button disabled className="w-full h-11 bg-vault-gold/20 text-vault-gold border border-vault-gold/40 font-semibold">
                 ✓ Current Plan
@@ -712,7 +659,7 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
             ) : isEnterprise ? (
               <Button 
                 onClick={onContactEnterprise}
-                className="w-full h-11 bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 hover:from-purple-500 hover:via-pink-400 hover:to-amber-400 text-white font-bold shadow-lg shadow-purple-500/40 transition-all"
+                className="w-full h-11 bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 hover:from-purple-500 hover:via-pink-400 hover:to-amber-400 text-white font-bold shadow-lg shadow-purple-500/40"
               >
                 Contact Sales <ExternalLink className="w-4 h-4 ml-2" />
               </Button>
@@ -724,17 +671,13 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
               <Button 
                 onClick={handleUpgradeClick}
                 disabled={loading}
-                className={`w-full h-11 ${tierButtonColors[plan.tier]} font-bold transition-all`}
+                className={`w-full h-11 ${tierButtonColors[plan.tier]} font-bold`}
               >
-                {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>Upgrade <ChevronRight className="w-4 h-4 ml-1" /></>
-                )}
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Upgrade <ChevronRight className="w-4 h-4 ml-1" /></>}
               </Button>
             )}
           </motion.div>
-        </CardFooter>
+        </div>
       </Card>
     </motion.div>
   );
