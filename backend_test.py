@@ -21,15 +21,30 @@ class GlobalSearchV2Tester:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'PortraitCustomization-Tester/1.0'
+            'User-Agent': 'GlobalSearchV2-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_results = []
         
-        # Valid portrait styles as per backend implementation
-        self.valid_styles = ["standard", "gold", "emerald", "sapphire", "amethyst", "obsidian", "dynasty", "crown"]
+        # Expected V2 navigation items with shortcuts
+        self.expected_navigation = [
+            {"title": "Dashboard", "shortcut": "G D"},
+            {"title": "Governance", "shortcut": "G G"},
+            {"title": "Trust Health", "shortcut": "G H"},
+            {"title": "Settings", "shortcut": "G S"},
+            {"title": "Billing", "shortcut": "G B"},
+        ]
+        
+        # Expected V2 quick actions
+        self.expected_quick_actions = [
+            "New Portfolio",
+            "New Meeting Minutes", 
+            "New Distribution",
+            "New Document",
+            "Export Binder"
+        ]
         
         # Test user details
         self.test_user_email = "jedediah.bey@gmail.com"
