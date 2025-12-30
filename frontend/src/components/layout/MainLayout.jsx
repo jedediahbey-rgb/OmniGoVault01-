@@ -165,7 +165,7 @@ export default function MainLayout({ children, user, onLogout }) {
             </Link>
             
             {/* User Menu - Right */}
-            <div className="flex items-center gap-2" ref={userMenuRef}>
+            <div className="flex items-center gap-2 min-w-[40px] justify-end" ref={userMenuRef}>
               {user && (
                 <>
                   {/* Notification Bell */}
