@@ -17,9 +17,12 @@ import {
   FolderOpen,
   HardDrive,
   Sparkle,
+  Sparkles,
   ExternalLink,
   Flame,
-  Star
+  Star,
+  Zap,
+  Crown
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../components/ui/card';
 import { Button } from '../components/ui/button';
