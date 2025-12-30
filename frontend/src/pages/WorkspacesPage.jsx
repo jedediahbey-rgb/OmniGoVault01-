@@ -354,7 +354,7 @@ export default function WorkspacesPage({ user }) {
                       <SelectItem key={type.value} value={type.value}>
                         <span className="flex items-center gap-2">
                           {(() => {
-                            const Icon = vaultTypeIcons[type.value] || Vault;
+                            const Icon = vaultTypeIcons[type.value] || Lock;
                             return <Icon className="w-4 h-4" />;
                           })()}
                           {type.label}
