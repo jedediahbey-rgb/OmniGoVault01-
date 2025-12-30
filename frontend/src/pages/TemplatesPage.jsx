@@ -601,8 +601,8 @@ C/o: <strong>[ADDRESS]</strong><br/>
 
       {/* Create Document Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="bg-vault-navy border-white/10 w-[92vw] max-w-md sm:max-w-xl px-4 sm:px-6 py-5 sm:py-6">
-          <DialogHeader className="text-center">
+        <DialogContent className="bg-vault-navy border-white/10 w-[90vw] max-w-md sm:max-w-lg">
+          <DialogHeader>
             <DialogTitle className="text-white font-heading text-base sm:text-lg text-center">
               Create {selectedTemplate?.name}
             </DialogTitle>
@@ -611,21 +611,21 @@ C/o: <strong>[ADDRESS]</strong><br/>
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-3 sm:space-y-4 py-2 sm:py-4">
+          <div className="space-y-4 py-2">
             <div>
-              <label className="text-white/60 text-xs sm:text-sm mb-1.5 sm:mb-2 block text-center">Document Title</label>
+              <label className="text-white/60 text-xs sm:text-sm mb-1.5 block">Document Title</label>
               <Input
                 ref={titleInputRef}
                 placeholder="Enter document title"
                 value={documentTitle}
                 onChange={(e) => setDocumentTitle(e.target.value)}
-                className="bg-white/5 border-white/10 focus:border-vault-gold text-sm text-center"
+                className="bg-white/5 border-white/10 focus:border-vault-gold text-sm"
               />
             </div>
             
             {portfolios.length > 0 && (
               <div>
-                <label className="text-white/60 text-xs sm:text-sm mb-1.5 sm:mb-2 block text-center">Portfolio (Optional)</label>
+                <label className="text-white/60 text-xs sm:text-sm mb-1.5 block">Portfolio (Optional)</label>
                 <Select 
                   value={selectedPortfolio} 
                   onValueChange={setSelectedPortfolio}
@@ -654,8 +654,7 @@ C/o: <strong>[ADDRESS]</strong><br/>
             )}
           </div>
           
-          {/* Mobile: Stack buttons vertically centered, Desktop: Row layout */}
-          <DialogFooter className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-3 pt-3 sm:pt-4">
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end pt-2">
             <Button onClick={createDocument} disabled={creating} className="btn-primary w-full sm:w-auto">
               {creating ? 'Creating...' : 'Create'}
             </Button>
