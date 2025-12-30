@@ -436,6 +436,12 @@ def get_module_icon(module_type: str) -> str:
         "distribution": "CurrencyDollar",
         "insurance": "Shield",
         "compensation": "Users",
-        "dispute": "Gavel"
+        "dispute": "Gavel",
+        "document": "FileText",
+        "party": "User",
+        "portfolio": "FolderSimple",
+        "template": "FileText",
+        "ledger": "Scroll",
+        "trust": "Scales"
     }
     return icons.get(module_type, "FileText")
