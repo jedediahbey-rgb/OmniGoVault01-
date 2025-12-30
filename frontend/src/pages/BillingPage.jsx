@@ -337,7 +337,7 @@ const BillingPage = () => {
 
         {/* Plans Section */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <h2 className="text-xl font-semibold text-vault-light">Available Plans</h2>
             
             {/* Billing Cycle Toggle */}
@@ -353,7 +353,7 @@ const BillingPage = () => {
             </Tabs>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
             {plans.map((plan) => (
               <PlanCard
                 key={plan.plan_id}
@@ -363,6 +363,7 @@ const BillingPage = () => {
                 onUpgrade={() => handleUpgrade(plan.plan_id)}
                 onContactEnterprise={handleContactEnterprise}
                 loading={checkoutLoading === plan.plan_id}
+                isAuthenticated={!!subscription}
               />
             ))}
           </div>
