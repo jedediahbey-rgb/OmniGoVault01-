@@ -83,392 +83,95 @@ class UIFixesTester:
             self.log_test("Authentication Check", False, f"Error: {str(e)}")
             return False
 
-    # ============ SETUP TESTS ============
+    # ============ DYNASTY PLAN TIER FIX TEST ============
 
-    def test_create_vault(self):
-        """Create a test vault for document signing tests"""
+    def test_billing_subscription_dynasty_tier(self):
+        """Test GET /api/billing/subscription - Dynasty Plan Tier Fix for OMNICOMPETENT users"""
         try:
-            payload = {
-                "name": "Document Signing Test Vault",
-                "description": "Test vault for document signing functionality",
-                "vault_type": "TRUST"
-            }
-            
-            response = self.session.post(f"{self.base_url}/vaults", json=payload, timeout=10)
+            response = self.session.get(f"{self.base_url}/billing/subscription", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                self.vault_id = data.get("vault_id")
-                vault_name = data.get("name")
-                details += f", Created vault: {self.vault_id}, Name: {vault_name}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("Create Test Vault", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Create Test Vault", False, f"Error: {str(e)}")
-            return False
-
-    def test_create_document(self):
-        """Create a test document for signing"""
-        if not self.vault_id:
-            self.log_test("Create Test Document", False, "No vault_id available")
-            return False
-            
-        try:
-            payload = {
-                "title": "Test Trust Agreement",
-                "description": "Test document for signing functionality",
-                "category": "TRUST_INSTRUMENT",
-                "content": "<h1>Test Trust Agreement</h1><p>This is a test document for signing functionality.</p>",
-                "requires_signatures_from": ["TRUSTEE", "BENEFICIARY"]
-            }
-            
-            response = self.session.post(f"{self.base_url}/vaults/{self.vault_id}/documents", json=payload, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                self.document_id = data.get("document_id")
-                doc_title = data.get("title")
-                doc_status = data.get("status")
-                details += f", Created document: {self.document_id}, Title: {doc_title}, Status: {doc_status}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("Create Test Document", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Create Test Document", False, f"Error: {str(e)}")
-            return False
-
-    def test_submit_document_for_review(self):
-        """Submit document for review to enable signing"""
-        if not self.document_id:
-            self.log_test("Submit Document for Review", False, "No document_id available")
-            return False
-            
-        try:
-            response = self.session.post(f"{self.base_url}/vaults/documents/{self.document_id}/submit-for-review", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                doc_status = data.get("status")
-                details += f", Document status: {doc_status}"
+                plan_name = data.get("plan_name")
+                plan_tier = data.get("plan_tier")
+                is_omnicompetent = data.get("is_omnicompetent", False)
+                global_roles = data.get("global_roles", [])
                 
-                if doc_status == "UNDER_REVIEW":
-                    details += ", Successfully submitted for review"
+                details += f", Plan: {plan_name}, Tier: {plan_tier}, Omnicompetent: {is_omnicompetent}"
+                
+                # Check if user has OMNICOMPETENT role
+                has_omnicompetent_role = any(role in ["OMNICOMPETENT", "OMNICOMPETENT_OWNER"] for role in global_roles)
+                
+                if has_omnicompetent_role:
+                    # For OMNICOMPETENT users, verify Dynasty plan with tier 3
+                    if plan_name == "Dynasty" and plan_tier == 3 and is_omnicompetent:
+                        details += " ✅ OMNICOMPETENT user correctly has Dynasty plan with tier 3"
+                    else:
+                        success = False
+                        if plan_name != "Dynasty":
+                            details += f" ❌ Expected Dynasty plan for OMNICOMPETENT user, got {plan_name}"
+                        if plan_tier != 3:
+                            details += f" ❌ Expected tier 3 for Dynasty plan, got {plan_tier}"
+                        if not is_omnicompetent:
+                            details += f" ❌ Expected is_omnicompetent=true, got {is_omnicompetent}"
+                else:
+                    details += " ℹ️ User does not have OMNICOMPETENT role, testing regular user flow"
+                    # For regular users, just verify the response structure
+                    if plan_name and isinstance(plan_tier, int):
+                        details += f" ✅ Regular user has valid plan structure"
+                    else:
+                        success = False
+                        details += f" ❌ Invalid plan structure for regular user"
+                
+                # Verify required fields are present
+                required_fields = ["account_id", "plan_name", "plan_tier"]
+                missing_fields = [field for field in required_fields if field not in data]
+                if missing_fields:
+                    success = False
+                    details += f", Missing required fields: {missing_fields}"
+                    
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("Billing API - Dynasty Plan Tier Fix", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Billing API - Dynasty Plan Tier Fix", False, f"Error: {str(e)}")
+            return False
+
+    def test_user_subscription_check(self):
+        """Test user subscription details for OMNICOMPETENT role verification"""
+        try:
+            response = self.session.get(f"{self.base_url}/auth/me", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                email = data.get("email")
+                user_id = data.get("user_id")
+                
+                details += f", User: {email}"
+                
+                # Verify this is the expected test user
+                if email == "jedediah.bey@gmail.com":
+                    details += " ✅ Correct test user authenticated"
                 else:
                     success = False
-                    details += f", Expected UNDER_REVIEW status, got {doc_status}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("Submit Document for Review", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Submit Document for Review", False, f"Error: {str(e)}")
-            return False
-
-    def test_affirm_document(self):
-        """Affirm document to make it ready for execution"""
-        if not self.document_id:
-            self.log_test("Affirm Document", False, "No document_id available")
-            return False
-            
-        try:
-            payload = {
-                "note": "Approved for execution"
-            }
-            
-            response = self.session.post(f"{self.base_url}/vaults/documents/{self.document_id}/affirm", json=payload, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                affirmation_id = data.get("id")
-                note = data.get("note")
-                details += f", Affirmation created: {affirmation_id}, Note: {note}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("Affirm Document", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Affirm Document", False, f"Error: {str(e)}")
-            return False
-
-    def test_sign_document_valid_payload(self):
-        """Test signing document with valid payload"""
-        if not self.document_id:
-            self.log_test("Sign Document (Valid Payload)", False, "No document_id available")
-            return False
-            
-        try:
-            payload = {
-                "legal_name": "Test User",
-                "signature_type": "TYPED_NAME",
-                "signature_data": json.dumps({"consent": "I agree to the terms"}),
-                "consent_acknowledged": True
-            }
-            
-            response = self.session.post(f"{self.base_url}/vaults/documents/{self.document_id}/sign", json=payload, timeout=10)
-            success = response.status_code in [200, 403]  # 403 expected if plan doesn't allow signing
-            details = f"Status: {response.status_code}"
-            
-            if response.status_code == 200:
-                data = response.json()
-                signature_id = data.get("id")
-                legal_name = data.get("legal_name")
-                signature_type = data.get("signature_type")
-                details += f", Signature created: {signature_id}, Legal name: {legal_name}, Type: {signature_type}"
-            elif response.status_code == 403:
-                data = response.json()
-                error_detail = data.get("detail", "")
-                if "signing" in error_detail.lower() and "plan" in error_detail.lower():
-                    details += f", Signing restricted by plan (expected): {error_detail}"
-                else:
-                    success = False
-                    details += f", Unexpected 403 error: {error_detail}"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("Sign Document (Valid Payload)", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Sign Document (Valid Payload)", False, f"Error: {str(e)}")
-            return False
-
-    def test_sign_document_invalid_signature_type(self):
-        """Test signing document with invalid signature_type"""
-        if not self.document_id:
-            self.log_test("Sign Document (Invalid Signature Type)", False, "No document_id available")
-            return False
-            
-        try:
-            payload = {
-                "legal_name": "Test User",
-                "signature_type": "INVALID_TYPE",  # Invalid enum value
-                "signature_data": json.dumps({"consent": "I agree to the terms"}),
-                "consent_acknowledged": True
-            }
-            
-            response = self.session.post(f"{self.base_url}/vaults/documents/{self.document_id}/sign", json=payload, timeout=10)
-            success = response.status_code == 422  # Validation error expected
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                error_detail = data.get("detail", [])
-                if isinstance(error_detail, list) and len(error_detail) > 0:
-                    error_msg = error_detail[0].get("msg", "")
-                    details += f", Validation error (expected): {error_msg}"
-                else:
-                    details += ", Validation error format as expected"
-            else:
-                details += f", Expected 422 validation error, got {response.status_code}"
-                if response.status_code != 422:
-                    details += f", Response: {response.text[:200]}"
-            
-            self.log_test("Sign Document (Invalid Signature Type)", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Sign Document (Invalid Signature Type)", False, f"Error: {str(e)}")
-            return False
-
-    def test_sign_document_missing_legal_name(self):
-        """Test signing document with missing legal_name"""
-        if not self.document_id:
-            self.log_test("Sign Document (Missing Legal Name)", False, "No document_id available")
-            return False
-            
-        try:
-            payload = {
-                "signature_type": "TYPED_NAME",
-                "signature_data": json.dumps({"consent": "I agree to the terms"}),
-                "consent_acknowledged": True
-                # Missing legal_name
-            }
-            
-            response = self.session.post(f"{self.base_url}/vaults/documents/{self.document_id}/sign", json=payload, timeout=10)
-            success = response.status_code == 422  # Validation error expected
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                error_detail = data.get("detail", [])
-                if isinstance(error_detail, list) and len(error_detail) > 0:
-                    error_msg = error_detail[0].get("msg", "")
-                    details += f", Validation error (expected): {error_msg}"
-                else:
-                    details += ", Validation error format as expected"
-            else:
-                details += f", Expected 422 validation error, got {response.status_code}"
-                if response.status_code != 422:
-                    details += f", Response: {response.text[:200]}"
-            
-            self.log_test("Sign Document (Missing Legal Name)", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Sign Document (Missing Legal Name)", False, f"Error: {str(e)}")
-            return False
-
-    def test_sign_document_without_auth(self):
-        """Test that signing endpoint requires authentication"""
-        if not self.document_id:
-            self.log_test("Sign Document (No Auth)", False, "No document_id available")
-            return False
-            
-        try:
-            # Create a new session without auth
-            unauth_session = requests.Session()
-            unauth_session.headers.update({
-                'Content-Type': 'application/json',
-                'User-Agent': 'DocumentSigning-Tester/1.0'
-            })
-            
-            payload = {
-                "legal_name": "Test User",
-                "signature_type": "TYPED_NAME",
-                "signature_data": json.dumps({"consent": "I agree to the terms"}),
-                "consent_acknowledged": True
-            }
-            
-            response = unauth_session.post(f"{self.base_url}/vaults/documents/{self.document_id}/sign", json=payload, timeout=10)
-            success = response.status_code == 401
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                details += ", Correctly requires authentication"
-            else:
-                details += f", Expected 401, got {response.status_code}"
-                if response.status_code == 200:
-                    details += " (Security issue: endpoint should require auth)"
-                    
-            self.log_test("Sign Document (No Auth)", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Sign Document (No Auth)", False, f"Error: {str(e)}")
-            return False
-
-    def test_get_document_signatures(self):
-        """Test getting signatures for a document"""
-        if not self.document_id:
-            self.log_test("Get Document Signatures", False, "No document_id available")
-            return False
-            
-        try:
-            response = self.session.get(f"{self.base_url}/vaults/documents/{self.document_id}/signatures", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                signatures = data.get("signatures", [])
-                details += f", Found {len(signatures)} signatures"
-                
-                # Check structure
-                if isinstance(signatures, list):
-                    details += ", Valid signatures structure"
-                else:
-                    success = False
-                    details += f", Invalid structure: signatures={type(signatures)}"
+                    details += f" ❌ Expected jedediah.bey@gmail.com, got {email}"
                     
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("Get Document Signatures", success, details)
+            self.log_test("User Subscription Check", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Get Document Signatures", False, f"Error: {str(e)}")
+            self.log_test("User Subscription Check", False, f"Error: {str(e)}")
             return False
-
-    def test_get_signatures_without_auth(self):
-        """Test that signatures endpoint requires authentication"""
-        if not self.document_id:
-            self.log_test("Get Signatures (No Auth)", False, "No document_id available")
-            return False
-            
-        try:
-            # Create a new session without auth
-            unauth_session = requests.Session()
-            unauth_session.headers.update({
-                'Content-Type': 'application/json',
-                'User-Agent': 'DocumentSigning-Tester/1.0'
-            })
-            
-            response = unauth_session.get(f"{self.base_url}/vaults/documents/{self.document_id}/signatures", timeout=10)
-            success = response.status_code == 401
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                details += ", Correctly requires authentication"
-            else:
-                details += f", Expected 401, got {response.status_code}"
-                if response.status_code == 200:
-                    details += " (Security issue: endpoint should require auth)"
-                    
-            self.log_test("Get Signatures (No Auth)", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Get Signatures (No Auth)", False, f"Error: {str(e)}")
-            return False
-
-    def test_sign_with_different_signature_types(self):
-        """Test signing with different valid signature types"""
-        if not self.document_id:
-            self.log_test("Sign with Different Types", False, "No document_id available")
-            return False
-            
-        signature_types = ["CLICK", "TYPED_NAME", "DRAWN"]
-        success_count = 0
-        total_tests = len(signature_types)
-        
-        for sig_type in signature_types:
-            try:
-                payload = {
-                    "legal_name": f"Test User {sig_type}",
-                    "signature_type": sig_type,
-                    "signature_data": json.dumps({"consent": f"I agree via {sig_type}"}),
-                    "consent_acknowledged": True
-                }
-                
-                response = self.session.post(f"{self.base_url}/vaults/documents/{self.document_id}/sign", json=payload, timeout=10)
-                
-                # Accept both 200 (success) and 403 (plan restriction)
-                if response.status_code in [200, 403]:
-                    success_count += 1
-                    
-            except Exception as e:
-                self.log(f"Error testing {sig_type}: {str(e)}")
-        
-        success = success_count == total_tests
-        details = f"Tested {total_tests} signature types, {success_count} successful"
-        
-        if success:
-            details += ", All signature types handled correctly"
-        else:
-            details += f", {total_tests - success_count} signature types failed"
-        
-        self.log_test("Sign with Different Types", success, details)
-        return success
 
     # ============ TEST RUNNER ============
 
