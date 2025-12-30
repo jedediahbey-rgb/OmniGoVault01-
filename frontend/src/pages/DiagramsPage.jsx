@@ -477,17 +477,13 @@ export default function DiagramsPage() {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             fitView
-            attributionPosition="bottom-left"
+            proOptions={{ hideAttribution: true }}
             style={{ background: 'rgba(11, 18, 33, 0.95)' }}
           >
             <Controls 
-              style={{ 
-                button: { 
-                  backgroundColor: 'rgba(198, 168, 124, 0.2)', 
-                  borderColor: 'rgba(198, 168, 124, 0.3)',
-                  color: '#C6A87C'
-                } 
-              }}
+              position="bottom-right"
+              showInteractive={false}
+              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-3 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-8 [&>button]:!h-8"
             />
             <MiniMap 
               style={{ 
