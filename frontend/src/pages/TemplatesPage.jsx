@@ -601,38 +601,38 @@ C/o: <strong>[ADDRESS]</strong><br/>
 
       {/* Create Document Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="bg-vault-navy border-white/10 w-[95vw] max-w-xl max-h-none overflow-visible">
-          <DialogHeader>
-            <DialogTitle className="text-white font-heading text-lg">
+        <DialogContent className="bg-vault-navy border-white/10 w-[92vw] max-w-md sm:max-w-xl p-4 sm:p-6">
+          <DialogHeader className="pr-8">
+            <DialogTitle className="text-white font-heading text-base sm:text-lg">
               Create {selectedTemplate?.name}
             </DialogTitle>
-            <DialogDescription className="text-white/50 text-sm">
+            <DialogDescription className="text-white/50 text-xs sm:text-sm">
               Customize your document settings before creating
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
+          <div className="space-y-3 sm:space-y-4 py-2 sm:py-4">
             <div>
-              <label className="text-white/60 text-sm mb-2 block">Document Title</label>
+              <label className="text-white/60 text-xs sm:text-sm mb-1.5 sm:mb-2 block">Document Title</label>
               <Input
                 ref={titleInputRef}
                 placeholder="Enter document title"
                 value={documentTitle}
                 onChange={(e) => setDocumentTitle(e.target.value)}
-                className="bg-white/5 border-white/10 focus:border-vault-gold"
+                className="bg-white/5 border-white/10 focus:border-vault-gold text-sm"
               />
             </div>
             
             {portfolios.length > 0 && (
               <div>
-                <label className="text-white/60 text-sm mb-2 block">Portfolio (Optional)</label>
+                <label className="text-white/60 text-xs sm:text-sm mb-1.5 sm:mb-2 block">Portfolio (Optional)</label>
                 <Select 
                   value={selectedPortfolio} 
                   onValueChange={setSelectedPortfolio}
                 >
                   <SelectTrigger 
                     ref={triggerRef}
-                    className="bg-white/5 border-white/10"
+                    className="bg-white/5 border-white/10 text-sm"
                     onPointerDown={handlePortfolioPointerDown}
                   >
                     <SelectValue placeholder="Select a portfolio" />
@@ -654,21 +654,25 @@ C/o: <strong>[ADDRESS]</strong><br/>
             )}
           </div>
           
-          <DialogFooter className="flex flex-row gap-3 pt-4 justify-end">
-            <Button variant="ghost" onClick={() => setShowCreateDialog(false)}>
+          {/* Mobile: Stack buttons vertically, Desktop: Row layout */}
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:gap-3 pt-3 sm:pt-4">
+            {/* On mobile, show primary actions first (reverse order for column-reverse) */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+              <Button onClick={createDocument} disabled={creating} className="btn-primary w-full sm:w-auto order-1 sm:order-3">
+                {creating ? 'Creating...' : 'Create'}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={handleAiGenerate}
+                disabled={!selectedPortfolio || selectedPortfolio === '__none__'}
+                className="btn-secondary w-full sm:w-auto order-2 text-xs sm:text-sm"
+              >
+                <Sparkle className="w-4 h-4 mr-1 sm:mr-2" weight="duotone" />
+                Generate with AI
+              </Button>
+            </div>
+            <Button variant="ghost" onClick={() => setShowCreateDialog(false)} className="w-full sm:w-auto order-3 sm:order-1">
               Cancel
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={handleAiGenerate}
-              disabled={!selectedPortfolio || selectedPortfolio === '__none__'}
-              className="btn-secondary"
-            >
-              <Sparkle className="w-4 h-4 mr-2" weight="duotone" />
-              Generate with AI
-            </Button>
-            <Button onClick={createDocument} disabled={creating} className="btn-primary">
-              {creating ? 'Creating...' : 'Create Blank Doc'}
             </Button>
           </DialogFooter>
         </DialogContent>
