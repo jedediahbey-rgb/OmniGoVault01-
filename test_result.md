@@ -230,3 +230,80 @@ Test the Billing/Subscription functionality for the Shared Trust Workspace appli
 - **Agent**: testing
 - **Message**: Completed comprehensive frontend testing of Billing/Subscription page. Core functionality working perfectly - all plan cards display correctly with proper tier colors, responsive design works, Monthly/Yearly toggle functional, button alignment proper. Found one minor issue: toast notifications not appearing due to next-themes dependency incompatibility in React app (useTheme hook). This doesn't affect core billing functionality but prevents user feedback messages. Recommend fixing Toaster component dependency issue.
 
+---
+
+## Test Date: 2025-12-30
+## Test Focus: Document Signing Feature Testing - Shared Workspace
+
+### Test Request:
+Test the document signing functionality in the Shared Workspace feature.
+
+**Key Endpoints Tested:**
+- POST /api/vaults/documents/{document_id}/sign - Document signing with various signature types
+- GET /api/vaults/documents/{document_id}/signatures - Retrieve document signatures
+
+**Test Scenarios:**
+1. ✅ Valid signing payload with TYPED_NAME signature type
+2. ✅ Invalid signature_type validation (422 error expected)
+3. ✅ Missing legal_name validation (422 error expected)
+4. ✅ All signature types (CLICK, TYPED_NAME, DRAWN) supported
+5. ✅ Authentication required for signing endpoints
+6. ✅ Signatures retrieval endpoint working
+
+### Backend Test Results (2025-12-30 01:46):
+**Test Summary: 12/12 tests passed (100% success rate)**
+
+#### Authentication & Setup:
+- ✅ Authentication Check - User: jedediah.bey@gmail.com authenticated successfully
+- ✅ Create Test Vault - Created vault for document signing tests
+- ✅ Create Test Document - Created "Test Trust Agreement" document
+- ✅ Submit Document for Review - Status changed to UNDER_REVIEW
+- ✅ Affirm Document - Document approved and ready for execution
+
+#### Document Signing Tests:
+- ✅ Sign Document (Valid Payload) - Successfully signed with TYPED_NAME signature type
+- ✅ Sign Document (Invalid Signature Type) - Proper 422 validation error for invalid enum
+- ✅ Sign Document (Missing Legal Name) - Proper 422 validation error for missing required field
+- ✅ Sign with Different Types - All signature types (CLICK, TYPED_NAME, DRAWN) handled correctly
+
+#### Signatures Retrieval:
+- ✅ Get Document Signatures - Successfully retrieved signatures list with proper structure
+
+#### Security Validation:
+- ✅ Sign Document (No Auth) - Correctly requires authentication (401)
+- ✅ Get Signatures (No Auth) - Correctly requires authentication (401)
+
+### Key Findings:
+1. **Document Signing Fully Functional** - All signing operations work correctly with proper validation
+2. **Complete Signature Type Support** - CLICK, TYPED_NAME, and DRAWN signature types all supported
+3. **Proper Validation** - Invalid signature types and missing required fields properly rejected with 422 errors
+4. **Authentication Security** - All signing endpoints properly require authentication
+5. **Document Workflow** - Complete workflow from creation → review → affirmation → signing works correctly
+6. **Signatures Retrieval** - Can successfully retrieve all signatures on a document
+
+### Technical Notes:
+- Document must be in READY_FOR_EXECUTION status before signing (achieved through affirmation)
+- SignDocumentRequest model properly validates legal_name (required), signature_type (enum), signature_data (optional string), consent_acknowledged (boolean)
+- All API endpoints return proper HTTP status codes and structured JSON responses
+- Signature data properly stored as JSON string format
+- User authentication via session tokens working correctly
+
+### Test Scenarios Completed:
+1. ✅ Create vault and document for signing tests
+2. ✅ Submit document for review and affirm for execution
+3. ✅ Sign document with valid TYPED_NAME signature type
+4. ✅ Test validation errors for invalid signature_type
+5. ✅ Test validation errors for missing legal_name
+6. ✅ Test all signature types (CLICK, TYPED_NAME, DRAWN)
+7. ✅ Retrieve document signatures
+8. ✅ Verify authentication required for all signing endpoints
+
+### User: jedediah.bey@gmail.com (OMNICOMPETENT_OWNER)
+
+### Status Summary:
+**Backend Document Signing APIs: 100% Working** - All tested endpoints functional with proper validation, authentication, and signature type support.
+
+### Agent Communication:
+- **Agent**: testing
+- **Message**: Completed comprehensive backend testing of Document Signing feature in Shared Workspace. All 12 API endpoints and scenarios tested successfully. Document signing workflow fully functional: create vault → create document → submit for review → affirm → sign. All signature types (CLICK, TYPED_NAME, DRAWN) supported with proper validation. Authentication security working correctly. SignDocumentRequest model validates all required fields. Signatures retrieval endpoint working. Ready for production use.
+
