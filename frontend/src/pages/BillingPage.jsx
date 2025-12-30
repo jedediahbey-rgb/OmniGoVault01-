@@ -624,9 +624,9 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-3 flex-1 relative z-10 pb-2">
-          {/* Price with tier-specific coloring */}
-          <div className="text-center py-2">
+        <CardContent className="space-y-4 flex-1 relative z-10 px-5">
+          {/* Price - Centered */}
+          <div className="text-center py-3">
             {isEnterprise ? (
               <div>
                 <span className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
@@ -637,7 +637,7 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
             ) : isFree ? (
               <div>
                 <span className="text-4xl font-bold text-slate-200">$0</span>
-                <span className="text-slate-400 text-sm">/month</span>
+                <span className="text-slate-400 text-sm ml-1">/month</span>
               </div>
             ) : (
               <div>
@@ -645,7 +645,7 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
                   ${plan.tier === 1 ? 'text-emerald-300' : ''}
                   ${plan.tier === 2 ? 'text-blue-300' : ''}
                 `}>${price}</span>
-                <span className="text-vault-muted text-sm">/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
+                <span className="text-vault-muted text-sm ml-1">/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                 {billingCycle === 'yearly' && (
                   <p className="text-emerald-400 text-xs mt-1 font-medium">
                     🎉 Save 17% annually
@@ -662,8 +662,8 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
             ${plan.tier === 3 ? 'bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-amber-500/30' : ''}
           `} />
 
-          {/* Entitlements */}
-          <ul className="space-y-2 text-sm">
+          {/* Entitlements - Left aligned with consistent spacing */}
+          <ul className="space-y-2.5 text-sm pl-1">
             <EntitlementItem 
               label={`${plan.entitlements['vaults.max'] === -1 ? 'Unlimited' : plan.entitlements['vaults.max']} Vaults`}
               included={true}
@@ -690,7 +690,7 @@ const PlanCard = ({ plan, isCurrentPlan, billingCycle, onUpgrade, onContactEnter
               tier={plan.tier}
             />
             <EntitlementItem 
-              label="Premium Templates"
+              label="Templates"
               included={plan.entitlements['features.templates.enabled']}
               tier={plan.tier}
             />
