@@ -296,8 +296,8 @@ export default function LedgerTimelinePage() {
                 <SelectItem value="all">All Modules</SelectItem>
                 <SelectItem value="dispute">Disputes</SelectItem>
                 <SelectItem value="insurance">Insurance</SelectItem>
-                <SelectItem value="compensation">Compensation</SelectItem>
                 <SelectItem value="distribution">Distributions</SelectItem>
+                <SelectItem value="compensation">Compensation</SelectItem>
                 <SelectItem value="minutes">Meeting Minutes</SelectItem>
               </SelectContent>
             </Select>
