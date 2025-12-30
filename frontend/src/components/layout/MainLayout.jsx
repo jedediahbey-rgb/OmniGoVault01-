@@ -87,17 +87,19 @@ export default function MainLayout({ children, user, onLogout }) {
   // Fetch user profile for portrait style
   useEffect(() => {
     const fetchUserProfile = async () => {
+      if (!user?.user_id) return;
       try {
         const res = await axios.get(`${API}/api/user/profile`, { withCredentials: true });
-        setUserProfile(res.data);
+        if (res.data) {
+          setUserProfile(res.data);
+        }
       } catch (error) {
-        console.error('Error fetching user profile:', error);
+        // Silently fail - portrait style is non-essential
+        console.debug('Could not fetch user profile for portrait:', error?.message);
       }
     };
-    if (user) {
-      fetchUserProfile();
-    }
-  }, [user]);
+    fetchUserProfile();
+  }, [user?.user_id]);
 
   // Set theme color on mount to match app background
   useEffect(() => {
