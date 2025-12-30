@@ -653,9 +653,9 @@ export default function NodeMapPage() {
   }
 
   return (
-    <div className="h-[calc(100dvh-3.5rem)] sm:h-[calc(100vh-2rem)] flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden">
+    <div className="fixed inset-0 top-14 flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden bg-vault-dark">
       {/* Header - More compact on mobile */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 mb-1 sm:mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 mb-1 sm:mb-4 shrink-0">
         <div className="flex items-center gap-2 sm:gap-4">
           <Link
             to="/vault"
