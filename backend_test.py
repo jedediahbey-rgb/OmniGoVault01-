@@ -23,15 +23,18 @@ class BillingTester:
         self.session.cookies.set('session_token', 'IcKDtBmAaY65JQz99DHwiV-NkRpcnqJFDFvh4WfIsCI')
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'SharedWorkspace-Tester/1.0'
+            'User-Agent': 'Billing-Tester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_results = []
-        self.vault_id = None
-        self.document_id = None
-        self.participant_id = None
+        self.expected_plans = [
+            {"name": "Testamentary", "plan_id": "plan_free", "tier": 0, "price_monthly": 0},
+            {"name": "Revocable", "plan_id": "plan_starter", "tier": 1, "price_monthly": 29},
+            {"name": "Irrevocable", "plan_id": "plan_pro", "tier": 2, "price_monthly": 79},
+            {"name": "Dynasty", "plan_id": "plan_enterprise", "tier": 3, "price_monthly": 199}
+        ]
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
