@@ -146,17 +146,17 @@ export default function MainLayout({ children, user, onLogout }) {
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#05080F]/95 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center h-16">
             {/* Menu Toggle - Left */}
-            <div className="w-10">
+            <div className="w-10 shrink-0">
               <VaultToggle 
                 isOpen={sidebarOpen} 
                 onClick={() => setSidebarOpen(!sidebarOpen)} 
               />
             </div>
             
-            {/* Logo - Centered - Links to landing page - MATCHES landing page exactly */}
-            <Link to="/" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
+            {/* Logo - Left aligned after menu toggle */}
+            <Link to="/" className="flex items-center gap-2 ml-2 hover:opacity-80 transition-opacity">
               <Key className="w-5 h-5 text-[#C6A87C] shrink-0" weight="duotone" />
               <span className="text-sm sm:text-base font-medium whitespace-nowrap">
                 <span className="text-white">Private Equity</span>
@@ -164,8 +164,11 @@ export default function MainLayout({ children, user, onLogout }) {
               </span>
             </Link>
             
+            {/* Spacer to push user menu to right */}
+            <div className="flex-1" />
+            
             {/* User Menu - Right */}
-            <div className="flex items-center gap-2 min-w-[40px] justify-end" ref={userMenuRef}>
+            <div className="flex items-center gap-2" ref={userMenuRef}>
               {user && (
                 <>
                   {/* Notification Bell */}
