@@ -86,23 +86,21 @@ const pageVariants = {
   },
 };
 
-// Gold particles effect
+// Gold particles effect - pre-generated stable values
+const PARTICLE_DATA = Array.from({ length: 12 }, (_, i) => ({
+  id: i,
+  initialX: (i * 160 + 80) % 1920, // Deterministic spread
+  duration: 1.5 + (i % 5) * 0.1,
+  delay: (i % 4) * 0.075,
+  leftPercent: 10 + (i * 7) % 70,
+}));
+
 const GoldParticles = () => {
-  // Pre-generate stable random values to avoid impure function calls during render
-  const particleData = React.useMemo(() => 
-    [...Array(12)].map(() => ({
-      initialX: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1920),
-      duration: 1.5 + Math.random() * 0.5,
-      delay: Math.random() * 0.3,
-      leftPercent: 10 + Math.random() * 80,
-    })), []
-  );
-  
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particleData.map((particle, i) => (
+      {PARTICLE_DATA.map((particle) => (
         <motion.div
-          key={i}
+          key={particle.id}
           className="absolute w-1 h-1 rounded-full bg-vault-gold"
           initial={{
             x: particle.initialX,
