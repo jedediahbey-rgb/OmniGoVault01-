@@ -356,18 +356,18 @@ export default function SettingsPage() {
                   <p className="text-xs text-vault-muted mb-2">
                     This name will appear in &quot;Welcome back&quot; messages and throughout the app
                   </p>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <Input
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder={userProfile?.name || "Enter your preferred name or title"}
-                      className="bg-vault-dark border-vault-gold/20 text-white flex-1"
+                      className="bg-vault-dark border-vault-gold/20 text-white flex-1 w-full"
                       maxLength={50}
                     />
                     <Button
                       onClick={saveDisplayName}
                       disabled={profileSaving}
-                      className="bg-vault-gold hover:bg-vault-gold/80 text-vault-dark"
+                      className="bg-vault-gold hover:bg-vault-gold/80 text-vault-dark w-full sm:w-auto flex-shrink-0"
                     >
                       {profileSaving ? (
                         <ArrowClockwise className="w-4 h-4 animate-spin" />
