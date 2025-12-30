@@ -601,12 +601,12 @@ C/o: <strong>[ADDRESS]</strong><br/>
 
       {/* Create Document Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="bg-vault-navy border-white/10 max-w-md sm:max-w-lg">
+        <DialogContent className="bg-vault-navy border-white/10 w-[95vw] max-w-xl">
           <DialogHeader>
-            <DialogTitle className="text-white font-heading">
+            <DialogTitle className="text-white font-heading text-lg">
               Create {selectedTemplate?.name}
             </DialogTitle>
-            <DialogDescription className="text-white/50">
+            <DialogDescription className="text-white/50 text-sm">
               Customize your document settings before creating
             </DialogDescription>
           </DialogHeader>
