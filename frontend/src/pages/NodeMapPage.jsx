@@ -776,7 +776,7 @@ function NodeMapContent() {
       </div>
 
       {/* ReactFlow Canvas - Takes remaining space */}
-      <div ref={reactFlowWrapper} className="flex-1 relative mx-2 sm:mx-4 lg:mx-6 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10 min-h-0">
+      <div ref={reactFlowWrapper} className="flex-1 relative mx-2 sm:mx-4 lg:mx-6 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10" style={{ minHeight: '300px' }}>
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
@@ -799,7 +799,7 @@ function NodeMapContent() {
             panOnDrag={true}
             preventScrolling={true}
             proOptions={{ hideAttribution: true }}
-            style={{ background: 'rgba(11, 18, 33, 0.95)' }}
+            style={{ width: '100%', height: '100%', background: 'rgba(11, 18, 33, 0.95)' }}
           >
             <Controls 
               position="bottom-right"
