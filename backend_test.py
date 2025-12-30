@@ -20,7 +20,7 @@ class BillingTester:
         self.base_url = BASE_URL
         self.session = requests.Session()
         # Set the session cookie for authentication
-        self.session.cookies.set('session_token', 'IcKDtBmAaY65JQz99DHwiV-NkRpcnqJFDFvh4WfIsCI')
+        self.session.cookies.set('session_token', 'test_sess_2bbfdc0c350c4d31b67e1d3f7599e928')
         self.session.headers.update({
             'Content-Type': 'application/json',
             'User-Agent': 'Billing-Tester/1.0'
