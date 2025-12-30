@@ -82,6 +82,24 @@
 - **Agent**: testing
 - **Message**: Completed comprehensive backend testing of Shared Workspace feature. All 13 API endpoints tested successfully. Core functionality (vaults, participants, documents, notifications) working perfectly. Signing feature properly restricted by entitlement system. Email service in simulation mode. Ready for frontend testing or production use.
 
+---
+
+## Test Date: 2025-12-30
+## Test Focus: Subscription Cards Review
+
+### Bug Fixed:
+1. **BillingPage Plan Cards Not Showing** - Fixed issue where plan cards weren't rendering for unauthenticated users
+   - **Root Cause**: `Promise.all` was failing because auth-protected endpoints (`/subscription`, `/usage`) returned 401, causing the entire fetch to fail
+   - **Fix**: Separated plans fetch (public endpoint) from authenticated data fetch, with individual error handling
+   - **File Modified**: `/app/frontend/src/pages/BillingPage.jsx`
+
+### Verified Working:
+1. ✅ Landing page pricing cards display correctly (4 plans: Testamentary, Revocable, Irrevocable, Dynasty)
+2. ✅ Billing page now shows plan cards even when not logged in
+3. ✅ Backend `/api/billing/plans` endpoint returns correct plan data
+4. ✅ Monthly/Yearly toggle present on BillingPage
+5. ✅ CTA buttons present on all plan cards
+
 ### Frontend UI Testing Results (2025-12-29 10:18):
 
 #### Authentication & Landing Page:
