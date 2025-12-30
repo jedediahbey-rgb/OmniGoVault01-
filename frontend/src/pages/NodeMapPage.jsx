@@ -750,9 +750,15 @@ function NodeMapContent() {
   }
 
   return (
-    <div className="h-full flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden">
+    <div 
+      className="h-full flex flex-col overflow-hidden"
+      style={{
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      }}
+    >
       {/* Header - More compact on mobile */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 mb-1 sm:mb-4 shrink-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 p-2 sm:p-4 lg:p-6 pb-1 sm:pb-2 shrink-0">
         <div className="flex items-center gap-2 sm:gap-4">
           <Link
             to="/vault"
@@ -782,7 +788,6 @@ function NodeMapContent() {
               if (selectedPortfolio) {
                 navigate(`/vault/portfolio/${selectedPortfolio}/trust-profile`);
               } else {
-                // Navigate to vault to select a portfolio first
                 navigate('/vault');
               }
             }}
@@ -797,7 +802,7 @@ function NodeMapContent() {
       </div>
 
       {/* ReactFlow Canvas - Takes remaining space */}
-      <div ref={reactFlowWrapper} className="flex-1 relative rounded-lg sm:rounded-xl overflow-hidden border border-white/10 min-h-0">
+      <div ref={reactFlowWrapper} className="flex-1 relative mx-2 sm:mx-4 lg:mx-6 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10 min-h-0">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
