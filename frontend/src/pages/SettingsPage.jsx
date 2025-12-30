@@ -1,6 +1,7 @@
 /**
  * Settings Page - System Configuration
- * Includes Trust Score Rules Editor and Checklist Configuration
+ * Includes Trust Score Rules Editor V2 and Checklist Configuration
+ * V2 features: Bounded penalties, severity multipliers, readiness modes
  */
 
 import React, { useState, useEffect } from 'react';
@@ -26,7 +27,12 @@ import {
   Users,
   Gavel,
   User,
-  PencilSimple
+  PencilSimple,
+  Lightning,
+  ShieldCheck,
+  Gauge,
+  Eye,
+  Lock
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import PageHeader from '../components/shared/PageHeader';
@@ -36,16 +42,37 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Category display config
+// Category display config (V2)
 const categoryConfig = {
-  governance_hygiene: { name: 'Governance Hygiene', color: 'text-blue-400', icon: Scales },
-  financial_integrity: { name: 'Financial Integrity', color: 'text-emerald-400', icon: CurrencyDollar },
-  compliance_recordkeeping: { name: 'Compliance & Records', color: 'text-purple-400', icon: CheckCircle },
-  risk_exposure: { name: 'Risk & Exposure', color: 'text-amber-400', icon: Warning },
-  data_integrity: { name: 'Data Integrity', color: 'text-cyan-400', icon: Info }
+  governance_hygiene: { name: 'Governance Hygiene', color: 'text-blue-400', icon: Scales, description: 'Minutes, finalization, attestations' },
+  financial_integrity: { name: 'Financial Integrity', color: 'text-emerald-400', icon: CurrencyDollar, description: 'Ledger, distributions, reconciliation' },
+  compliance_recordkeeping: { name: 'Compliance & Records', color: 'text-purple-400', icon: CheckCircle, description: 'Essential docs, audit trails' },
+  risk_exposure: { name: 'Risk & Exposure', color: 'text-amber-400', icon: Warning, description: 'Disputes, insurance coverage' },
+  data_integrity: { name: 'Data Integrity', color: 'text-cyan-400', icon: Shield, description: 'Orphans, RM-IDs, lifecycle' }
+};
+
+// Severity config (V2)
+const severityConfig = {
+  info: { name: 'Info', color: 'text-blue-400', bgColor: 'bg-blue-500/20', default: 0.5 },
+  warning: { name: 'Warning', color: 'text-amber-400', bgColor: 'bg-amber-500/20', default: 1.0 },
+  critical: { name: 'Critical', color: 'text-red-400', bgColor: 'bg-red-500/20', default: 1.5 }
+};
+
+// Readiness modes (V2)
+const readinessModes = {
+  normal: { name: 'Normal', description: 'Standard scoring', icon: Gauge },
+  audit: { name: 'Audit Ready', description: 'Strict checks for audit compliance', icon: ShieldCheck },
+  court: { name: 'Court Ready', description: 'Litigation-grade requirements', icon: Gavel }
 };
 
 // Module icons
