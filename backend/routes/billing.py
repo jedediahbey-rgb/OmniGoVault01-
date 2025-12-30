@@ -85,6 +85,7 @@ async def get_subscription(request: Request):
     # If user is omnicompetent, override plan to Dynasty with unlimited access
     if is_omnicompetent:
         overview["plan_name"] = "Dynasty"
+        overview["plan_tier"] = 3  # Dynasty tier
         overview["is_omnicompetent"] = True
         overview["has_unlimited_access"] = True
     else:
