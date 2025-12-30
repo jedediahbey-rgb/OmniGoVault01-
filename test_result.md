@@ -1,3 +1,31 @@
+# Test Results - OmniGoVault Application
+
+## Test Date: 2025-12-31
+## Test Focus: UI Bug Fixes Testing
+
+### Changes Made (2025-12-31):
+1. **Binder Page** - Added `credentials: 'include'` to all fetch calls to fix authentication issues preventing binder generation
+2. **Workspace Settings Button** - Added onClick handler with toast notification for the settings dropdown item
+3. **DiagramsPage** - Fixed ReactFlow controls overlap by:
+   - Adding custom CSS to hide attribution
+   - Using proOptions to hide attribution
+   - Repositioning Controls to bottom-right with proper styling
+   - Repositioning MiniMap to top-right with proper styling
+4. **NodeMapPage MiniMap** - Improved design with:
+   - Better symmetry and positioning
+   - Enhanced styling (larger size, better border, shadow)
+   - Added maskColor for better visual appearance
+
+### Test Scenarios:
+1. **Binder Page** - Test that binders generate successfully when logged in
+2. **Workspace Settings** - Test that Settings dropdown item shows a toast
+3. **DiagramsPage** - Test that controls don't overlap with ReactFlow text
+4. **NodeMapPage** - Test that mini-map looks well-designed and aligned
+
+### User: jedediah.bey@gmail.com (OMNICOMPETENT_OWNER)
+
+---
+
 # Test Results - Shared Workspace Feature
 
 ## Test Date: 2025-12-29
