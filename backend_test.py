@@ -153,609 +153,500 @@ class OmniBinderV2Tester:
             self.log_test("Authentication Check", False, f"Error: {str(e)}")
             return False
 
-    # ============ GLOBAL SEARCH V2 TESTS ============
+    # ============ OMNIBINDER V2 TESTS ============
 
-    def test_search_dashboard(self):
-        """Test GET /api/search?q=dashboard - Should return navigation items"""
+    def test_create_test_portfolio(self):
+        """Create a test portfolio for OmniBinder testing"""
         try:
-            response = self.session.get(f"{self.base_url}/search?q=dashboard", timeout=10)
+            portfolio_data = {
+                "name": "OmniBinder V2 Test Portfolio",
+                "description": "Test portfolio for OmniBinder V2 API testing"
+            }
+            
+            response = self.session.post(f"{self.base_url}/portfolios", json=portfolio_data, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                
-                # Check V2 response structure
-                if not data.get("ok"):
-                    success = False
-                    details += ", Missing 'ok' field"
-                else:
-                    search_data = data.get("data", {})
-                    
-                    # Check V2 version
-                    version = search_data.get("version")
-                    if version != "v2":
-                        success = False
-                        details += f", Expected version 'v2', got '{version}'"
-                    else:
-                        details += ", V2 version confirmed"
-                    
-                    # Check for Dashboard in results
-                    results = search_data.get("results", [])
-                    grouped = search_data.get("grouped", {})
-                    
-                    dashboard_found = False
-                    dashboard_shortcut = None
-                    
-                    for result in results:
-                        if "dashboard" in result.get("title", "").lower():
-                            dashboard_found = True
-                            dashboard_shortcut = result.get("shortcut")
-                            break
-                    
-                    if dashboard_found:
-                        details += ", Dashboard found in results"
-                        if dashboard_shortcut == "G D":
-                            details += ", Correct shortcut 'G D'"
-                        else:
-                            success = False
-                            details += f", Expected shortcut 'G D', got '{dashboard_shortcut}'"
-                    else:
-                        success = False
-                        details += ", Dashboard not found in results"
-                    
-                    # Check grouped results
-                    navigation_items = grouped.get("navigation", [])
-                    if navigation_items:
-                        details += f", {len(navigation_items)} navigation items"
-                    else:
-                        success = False
-                        details += ", No navigation items in grouped results"
-                        
+                self.test_portfolio_id = data.get("portfolio_id")
+                details += f", Portfolio ID: {self.test_portfolio_id}"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/search?q=dashboard", success, details)
+            self.log_test("Create Test Portfolio", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/search?q=dashboard", False, f"Error: {str(e)}")
+            self.log_test("Create Test Portfolio", False, f"Error: {str(e)}")
             return False
 
-    def test_search_new_actions(self):
-        """Test GET /api/search?q=new - Should return action items"""
+    def test_scheduled_binders_create(self):
+        """Test POST /api/binder/schedule - Create a scheduled binder"""
+        if not self.test_portfolio_id:
+            self.log_test("POST /api/binder/schedule", False, "No test portfolio available")
+            return False
+            
         try:
-            response = self.session.get(f"{self.base_url}/search?q=new", timeout=10)
+            schedule_data = {
+                "portfolio_id": self.test_portfolio_id,
+                "profile_id": "default_profile",  # Assuming default profile exists
+                "schedule_type": "weekly",
+                "schedule_time": "09:00",
+                "notify_emails": ["test@example.com"],
+                "enabled": True
+            }
+            
+            response = self.session.post(f"{self.base_url}/binder/schedule", json=schedule_data, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                
-                if not data.get("ok"):
+                if data.get("ok"):
+                    schedule = data.get("data", {}).get("schedule", {})
+                    self.test_schedule_id = schedule.get("id")
+                    details += f", Schedule ID: {self.test_schedule_id}"
+                    details += f", Type: {schedule.get('schedule_type')}"
+                    details += f", Time: {schedule.get('schedule_time')}"
+                else:
                     success = False
                     details += ", Missing 'ok' field"
-                else:
-                    search_data = data.get("data", {})
-                    results = search_data.get("results", [])
-                    grouped = search_data.get("grouped", {})
-                    
-                    # Check for "New" actions
-                    new_actions_found = []
-                    for result in results:
-                        title = result.get("title", "")
-                        if title.startswith("New "):
-                            new_actions_found.append(title)
-                    
-                    if len(new_actions_found) >= 3:
-                        details += f", Found {len(new_actions_found)} 'New' actions: {', '.join(new_actions_found[:3])}"
-                        
-                        # Check for specific expected actions
-                        expected_found = 0
-                        for expected in ["New Portfolio", "New Meeting", "New Distribution", "New Document"]:
-                            for found in new_actions_found:
-                                if expected.lower() in found.lower():
-                                    expected_found += 1
-                                    break
-                        
-                        if expected_found >= 2:
-                            details += f", {expected_found} expected actions found"
-                        else:
-                            success = False
-                            details += f", Only {expected_found} expected actions found"
-                    else:
-                        success = False
-                        details += f", Only {len(new_actions_found)} 'New' actions found"
-                    
-                    # Check grouped actions
-                    action_items = grouped.get("actions", [])
-                    if action_items:
-                        details += f", {len(action_items)} action items in grouped results"
-                    else:
-                        details += ", No action items in grouped results"
-                        
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/search?q=new", success, details)
+            self.log_test("POST /api/binder/schedule", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/search?q=new", False, f"Error: {str(e)}")
+            self.log_test("POST /api/binder/schedule", False, f"Error: {str(e)}")
             return False
 
-    def test_search_health(self):
-        """Test GET /api/search?q=health - Should return health-related items"""
+    def test_scheduled_binders_get(self):
+        """Test GET /api/binder/schedules - Get all user's scheduled binders"""
         try:
-            response = self.session.get(f"{self.base_url}/search?q=health", timeout=10)
+            response = self.session.get(f"{self.base_url}/binder/schedules", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                
-                if not data.get("ok"):
-                    success = False
-                    details += ", Missing 'ok' field"
-                else:
-                    search_data = data.get("data", {})
-                    results = search_data.get("results", [])
+                if data.get("ok"):
+                    schedules_data = data.get("data", {})
+                    schedules = schedules_data.get("schedules", [])
+                    total = schedules_data.get("total", 0)
+                    details += f", Found {total} schedules"
                     
-                    # Check for health-related items
-                    health_items_found = []
-                    for result in results:
-                        title = result.get("title", "")
-                        subtitle = result.get("subtitle", "")
-                        if "health" in title.lower() or "health" in subtitle.lower():
-                            health_items_found.append(title)
-                    
-                    if health_items_found:
-                        details += f", Found health items: {', '.join(health_items_found)}"
-                        
-                        # Check for Trust Health specifically
-                        trust_health_found = any("trust health" in item.lower() for item in health_items_found)
-                        if trust_health_found:
-                            details += ", Trust Health found"
-                            
-                            # Check for shortcut
-                            for result in results:
-                                if "trust health" in result.get("title", "").lower():
-                                    shortcut = result.get("shortcut")
-                                    if shortcut == "G H":
-                                        details += ", Correct shortcut 'G H'"
-                                    else:
-                                        success = False
-                                        details += f", Expected shortcut 'G H', got '{shortcut}'"
-                                    break
+                    if self.test_schedule_id:
+                        # Check if our created schedule is in the list
+                        found_schedule = any(s.get("id") == self.test_schedule_id for s in schedules)
+                        if found_schedule:
+                            details += ", Created schedule found in list"
                         else:
                             success = False
-                            details += ", Trust Health not found"
-                    else:
-                        success = False
-                        details += ", No health-related items found"
-                        
+                            details += ", Created schedule not found in list"
+                else:
+                    success = False
+                    details += ", Missing 'ok' field"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/search?q=health", success, details)
+            self.log_test("GET /api/binder/schedules", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/search?q=health", False, f"Error: {str(e)}")
+            self.log_test("GET /api/binder/schedules", False, f"Error: {str(e)}")
             return False
 
-    def test_search_trust(self):
-        """Test GET /api/search?q=trust - Should return trust-related items"""
+    def test_scheduled_binders_update(self):
+        """Test PUT /api/binder/schedule/{schedule_id} - Update a schedule"""
+        if not self.test_schedule_id:
+            self.log_test("PUT /api/binder/schedule/{schedule_id}", False, "No test schedule available")
+            return False
+            
         try:
-            response = self.session.get(f"{self.base_url}/search?q=trust", timeout=10)
+            update_data = {
+                "schedule_type": "daily",
+                "schedule_time": "10:00",
+                "enabled": False
+            }
+            
+            response = self.session.put(f"{self.base_url}/binder/schedule/{self.test_schedule_id}", json=update_data, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                
-                if not data.get("ok"):
-                    success = False
-                    details += ", Missing 'ok' field"
-                else:
-                    search_data = data.get("data", {})
-                    results = search_data.get("results", [])
+                if data.get("ok"):
+                    schedule = data.get("data", {}).get("schedule", {})
+                    details += f", Updated type: {schedule.get('schedule_type')}"
+                    details += f", Updated time: {schedule.get('schedule_time')}"
+                    details += f", Enabled: {schedule.get('enabled')}"
                     
-                    # Check for trust-related items
-                    trust_items_found = []
-                    for result in results:
-                        title = result.get("title", "")
-                        subtitle = result.get("subtitle", "")
-                        keywords = result.get("keywords", [])
-                        
-                        if ("trust" in title.lower() or 
-                            "trust" in subtitle.lower() or 
-                            any("trust" in str(k).lower() for k in keywords)):
-                            trust_items_found.append(title)
-                    
-                    if trust_items_found:
-                        details += f", Found {len(trust_items_found)} trust items"
-                        
-                        # Check for specific trust-related items
-                        expected_items = ["Trust Health", "Declaration of Trust", "Certificate of Trust"]
-                        found_expected = 0
-                        for expected in expected_items:
-                            for found in trust_items_found:
-                                if expected.lower() in found.lower():
-                                    found_expected += 1
-                                    break
-                        
-                        if found_expected >= 1:
-                            details += f", {found_expected} expected trust items found"
-                        else:
-                            success = False
-                            details += ", No expected trust items found"
+                    # Verify updates were applied
+                    if (schedule.get('schedule_type') == 'daily' and 
+                        schedule.get('schedule_time') == '10:00' and 
+                        schedule.get('enabled') == False):
+                        details += ", All updates applied correctly"
                     else:
                         success = False
-                        details += ", No trust-related items found"
-                        
+                        details += ", Updates not applied correctly"
+                else:
+                    success = False
+                    details += ", Missing 'ok' field"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/search?q=trust", success, details)
+            self.log_test("PUT /api/binder/schedule/{schedule_id}", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/search?q=trust", False, f"Error: {str(e)}")
+            self.log_test("PUT /api/binder/schedule/{schedule_id}", False, f"Error: {str(e)}")
             return False
 
-    def test_search_suggestions(self):
-        """Test GET /api/search/suggestions - Get search suggestions for empty state"""
+    def test_binder_templates_create(self):
+        """Test POST /api/binder/templates - Save binder configuration as template"""
         try:
-            response = self.session.get(f"{self.base_url}/search/suggestions", timeout=10)
+            template_data = {
+                "name": "Test Court Template",
+                "description": "Template for court-grade evidence packets",
+                "profile_type": "court",
+                "rules": {
+                    "include_drafts": False,
+                    "include_bates": True,
+                    "bates_prefix": "COURT-",
+                    "redaction_mode": "standard"
+                },
+                "is_public": False
+            }
+            
+            response = self.session.post(f"{self.base_url}/binder/templates", json=template_data, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                
-                if not data.get("ok"):
+                if data.get("ok"):
+                    template = data.get("data", {}).get("template", {})
+                    self.test_template_id = template.get("id")
+                    details += f", Template ID: {self.test_template_id}"
+                    details += f", Name: {template.get('name')}"
+                    details += f", Type: {template.get('profile_type')}"
+                    details += f", Public: {template.get('is_public')}"
+                else:
                     success = False
                     details += ", Missing 'ok' field"
-                else:
-                    suggestions_data = data.get("data", {})
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/binder/templates", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/binder/templates", False, f"Error: {str(e)}")
+            return False
+
+    def test_binder_templates_get(self):
+        """Test GET /api/binder/templates - Get all templates (user's + public)"""
+        try:
+            response = self.session.get(f"{self.base_url}/binder/templates", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    templates_data = data.get("data", {})
+                    templates = templates_data.get("templates", [])
+                    total = templates_data.get("total", 0)
+                    details += f", Found {total} templates"
                     
-                    # Check required fields
-                    required_fields = ["recent", "recent_searches", "quick_actions", "navigation"]
-                    missing_fields = [field for field in required_fields if field not in suggestions_data]
+                    if self.test_template_id:
+                        # Check if our created template is in the list
+                        found_template = any(t.get("id") == self.test_template_id for t in templates)
+                        if found_template:
+                            details += ", Created template found in list"
+                        else:
+                            success = False
+                            details += ", Created template not found in list"
+                    
+                    # Check for public templates
+                    public_templates = [t for t in templates if t.get("is_public")]
+                    details += f", {len(public_templates)} public templates"
+                else:
+                    success = False
+                    details += ", Missing 'ok' field"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/binder/templates", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/binder/templates", False, f"Error: {str(e)}")
+            return False
+
+    def test_court_packet_generate(self):
+        """Test POST /api/binder/generate/court-packet - Generate court-grade evidence packet"""
+        if not self.test_portfolio_id:
+            self.log_test("POST /api/binder/generate/court-packet", False, "No test portfolio available")
+            return False
+            
+        try:
+            court_packet_data = {
+                "portfolio_id": self.test_portfolio_id,
+                "case_number": "CV-2024-001234",
+                "court_name": "Superior Court of California",
+                "case_title": "Test Trust v. Example Party",
+                "exhibit_prefix": "EX"
+            }
+            
+            response = self.session.post(f"{self.base_url}/binder/generate/court-packet", json=court_packet_data, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    run = data.get("data", {}).get("run", {})
+                    details += f", Run ID: {run.get('id')}"
+                    details += f", Status: {run.get('status')}"
+                    details += f", Case: {run.get('case_info', {}).get('case_number')}"
+                    details += f", Court: {run.get('case_info', {}).get('court_name')}"
+                else:
+                    success = False
+                    details += ", Missing 'ok' field"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/binder/generate/court-packet", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/binder/generate/court-packet", False, f"Error: {str(e)}")
+            return False
+
+    # ============ REAL-TIME COLLABORATION V2 TESTS ============
+
+    def test_realtime_presence(self):
+        """Test GET /api/realtime/presence/{room_id} - Get users in a room"""
+        try:
+            room_id = "workspace_test_room"
+            response = self.session.get(f"{self.base_url}/realtime/presence/{room_id}", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    presence_data = data.get("data", {})
+                    users = presence_data.get("users", [])
+                    count = presence_data.get("count", 0)
+                    room_id_returned = presence_data.get("room_id")
+                    
+                    details += f", Room: {room_id_returned}"
+                    details += f", Users: {count}"
+                    
+                    if room_id_returned == room_id:
+                        details += ", Correct room ID returned"
+                    else:
+                        success = False
+                        details += f", Expected room {room_id}, got {room_id_returned}"
+                else:
+                    success = False
+                    details += ", Missing 'ok' field"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/realtime/presence/{room_id}", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/realtime/presence/{room_id}", False, f"Error: {str(e)}")
+            return False
+
+    def test_realtime_document_lock(self):
+        """Test GET /api/realtime/document/{document_id}/lock - Check document lock status"""
+        try:
+            document_id = "doc_test_document"
+            response = self.session.get(f"{self.base_url}/realtime/document/{document_id}/lock", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    lock_data = data.get("data", {})
+                    document_id_returned = lock_data.get("document_id")
+                    is_locked = lock_data.get("is_locked")
+                    locked_by = lock_data.get("locked_by")
+                    
+                    details += f", Document: {document_id_returned}"
+                    details += f", Locked: {is_locked}"
+                    if locked_by:
+                        details += f", Locked by: {locked_by}"
+                    
+                    if document_id_returned == document_id:
+                        details += ", Correct document ID returned"
+                    else:
+                        success = False
+                        details += f", Expected document {document_id}, got {document_id_returned}"
+                else:
+                    success = False
+                    details += ", Missing 'ok' field"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("GET /api/realtime/document/{document_id}/lock", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("GET /api/realtime/document/{document_id}/lock", False, f"Error: {str(e)}")
+            return False
+
+    def test_realtime_broadcast(self):
+        """Test POST /api/realtime/broadcast - Broadcast an event"""
+        try:
+            broadcast_data = {
+                "event_type": "document_updated",
+                "payload": {
+                    "document_id": "doc_test_document",
+                    "changes": ["title", "content"],
+                    "version": 2
+                },
+                "room_id": "workspace_test_room"
+            }
+            
+            response = self.session.post(f"{self.base_url}/realtime/broadcast", json=broadcast_data, timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    broadcast_result = data.get("data", {})
+                    event_type = broadcast_result.get("event_type")
+                    room_id = broadcast_result.get("room_id")
+                    
+                    details += f", Event: {event_type}"
+                    details += f", Room: {room_id}"
+                    details += ", Broadcast successful"
+                else:
+                    success = False
+                    details += ", Missing 'ok' field"
+            else:
+                details += f", Response: {response.text[:200]}"
+            
+            self.log_test("POST /api/realtime/broadcast", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("POST /api/realtime/broadcast", False, f"Error: {str(e)}")
+            return False
+
+    def test_realtime_stats(self):
+        """Test GET /api/realtime/stats - Get real-time system stats"""
+        try:
+            response = self.session.get(f"{self.base_url}/realtime/stats", timeout=10)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    stats = data.get("data", {})
+                    total_connections = stats.get("total_connections", 0)
+                    total_users = stats.get("total_users", 0)
+                    total_rooms = stats.get("total_rooms", 0)
+                    active_locks = stats.get("active_document_locks", 0)
+                    rooms = stats.get("rooms", {})
+                    
+                    details += f", Connections: {total_connections}"
+                    details += f", Users: {total_users}"
+                    details += f", Rooms: {total_rooms}"
+                    details += f", Locks: {active_locks}"
+                    details += f", Room details: {len(rooms)} rooms"
+                    
+                    # Verify stats structure
+                    required_fields = ["total_connections", "total_users", "total_rooms", "active_document_locks", "rooms"]
+                    missing_fields = [field for field in required_fields if field not in stats]
                     
                     if missing_fields:
                         success = False
                         details += f", Missing fields: {missing_fields}"
                     else:
                         details += ", All required fields present"
-                        
-                        # Check quick_actions (should have 6 items)
-                        quick_actions = suggestions_data.get("quick_actions", [])
-                        if len(quick_actions) == 6:
-                            details += f", {len(quick_actions)} quick actions (correct)"
-                        else:
-                            success = False
-                            details += f", Expected 6 quick actions, got {len(quick_actions)}"
-                        
-                        # Check navigation (should have 8 items)
-                        navigation = suggestions_data.get("navigation", [])
-                        if len(navigation) == 8:
-                            details += f", {len(navigation)} navigation items (correct)"
-                        else:
-                            success = False
-                            details += f", Expected 8 navigation items, got {len(navigation)}"
-                        
-                        # Check recent_searches structure
-                        recent_searches = suggestions_data.get("recent_searches", [])
-                        details += f", {len(recent_searches)} recent searches"
-                        
-                        # Check recent items structure
-                        recent = suggestions_data.get("recent", [])
-                        details += f", {len(recent)} recent items"
-                        
+                else:
+                    success = False
+                    details += ", Missing 'ok' field"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/search/suggestions", success, details)
+            self.log_test("GET /api/realtime/stats", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/search/suggestions", False, f"Error: {str(e)}")
+            self.log_test("GET /api/realtime/stats", False, f"Error: {str(e)}")
             return False
 
-    def test_search_recent(self):
-        """Test GET /api/search/recent - Get user's recent search queries"""
+    def test_scheduled_binders_delete(self):
+        """Test DELETE /api/binder/schedule/{schedule_id} - Delete a schedule (cleanup)"""
+        if not self.test_schedule_id:
+            self.log_test("DELETE /api/binder/schedule/{schedule_id}", True, "No test schedule to delete")
+            return True
+            
         try:
-            response = self.session.get(f"{self.base_url}/search/recent", timeout=10)
+            response = self.session.delete(f"{self.base_url}/binder/schedule/{self.test_schedule_id}", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                
-                if not data.get("ok"):
+                if data.get("ok"):
+                    message = data.get("data", {}).get("message", "")
+                    details += f", Message: {message}"
+                    details += ", Schedule deleted successfully"
+                else:
                     success = False
                     details += ", Missing 'ok' field"
-                else:
-                    recent_data = data.get("data", {})
-                    
-                    # Check searches field
-                    if "searches" not in recent_data:
-                        success = False
-                        details += ", Missing 'searches' field"
-                    else:
-                        searches = recent_data.get("searches", [])
-                        details += f", {len(searches)} recent searches"
-                        
-                        # Check structure of search items
-                        if searches:
-                            first_search = searches[0]
-                            required_search_fields = ["query", "result_count", "search_count", "last_searched"]
-                            missing_search_fields = [field for field in required_search_fields if field not in first_search]
-                            
-                            if missing_search_fields:
-                                success = False
-                                details += f", Missing search fields: {missing_search_fields}"
-                            else:
-                                details += ", Correct search item structure"
-                        else:
-                            details += ", No recent searches (expected for new user)"
-                        
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/search/recent", success, details)
+            self.log_test("DELETE /api/binder/schedule/{schedule_id}", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/search/recent", False, f"Error: {str(e)}")
+            self.log_test("DELETE /api/binder/schedule/{schedule_id}", False, f"Error: {str(e)}")
             return False
 
-    def test_clear_search_history(self):
-        """Test DELETE /api/search/recent - Clear search history"""
+    def test_binder_templates_delete(self):
+        """Test DELETE /api/binder/templates/{template_id} - Delete a template (cleanup)"""
+        if not self.test_template_id:
+            self.log_test("DELETE /api/binder/templates/{template_id}", True, "No test template to delete")
+            return True
+            
         try:
-            response = self.session.delete(f"{self.base_url}/search/recent", timeout=10)
+            response = self.session.delete(f"{self.base_url}/binder/templates/{self.test_template_id}", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                
-                if not data.get("ok"):
+                if data.get("ok"):
+                    message = data.get("data", {}).get("message", "")
+                    details += f", Message: {message}"
+                    details += ", Template deleted successfully"
+                else:
                     success = False
                     details += ", Missing 'ok' field"
-                else:
-                    message = data.get("message")
-                    if "cleared" in message.lower():
-                        details += ", Correct success message"
-                    else:
-                        success = False
-                        details += f", Unexpected message: {message}"
-                    
-                    # Verify history is cleared by checking recent searches
-                    time.sleep(0.5)  # Brief pause
-                    verify_response = self.session.get(f"{self.base_url}/search/recent", timeout=10)
-                    if verify_response.status_code == 200:
-                        verify_data = verify_response.json()
-                        if verify_data.get("ok"):
-                            searches = verify_data.get("data", {}).get("searches", [])
-                            if len(searches) == 0:
-                                details += ", History successfully cleared"
-                            else:
-                                success = False
-                                details += f", History not cleared, still has {len(searches)} searches"
-                        else:
-                            success = False
-                            details += ", Failed to verify history clearing"
-                    else:
-                        success = False
-                        details += ", Failed to verify history clearing"
-                        
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("DELETE /api/search/recent", success, details)
+            self.log_test("DELETE /api/binder/templates/{template_id}", success, details)
             return success
             
         except Exception as e:
-            self.log_test("DELETE /api/search/recent", False, f"Error: {str(e)}")
-            return False
-
-    def test_v2_navigation_shortcuts(self):
-        """Test V2 Navigation Items with Shortcuts"""
-        try:
-            response = self.session.get(f"{self.base_url}/search?q=dashboard", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                
-                if not data.get("ok"):
-                    success = False
-                    details += ", Missing 'ok' field"
-                else:
-                    search_data = data.get("data", {})
-                    results = search_data.get("results", [])
-                    
-                    # Check for V2 navigation items with shortcuts
-                    shortcuts_found = {}
-                    for result in results:
-                        if result.get("type") == "navigation":
-                            title = result.get("title")
-                            shortcut = result.get("shortcut")
-                            if title and shortcut:
-                                shortcuts_found[title] = shortcut
-                    
-                    if shortcuts_found:
-                        details += f", Found shortcuts: {shortcuts_found}"
-                        
-                        # Verify expected shortcuts
-                        expected_shortcuts = {
-                            "Dashboard": "G D",
-                            "Governance": "G G", 
-                            "Trust Health": "G H",
-                            "Settings": "G S",
-                            "Billing": "G B"
-                        }
-                        
-                        correct_shortcuts = 0
-                        for title, expected_shortcut in expected_shortcuts.items():
-                            if title in shortcuts_found:
-                                if shortcuts_found[title] == expected_shortcut:
-                                    correct_shortcuts += 1
-                                else:
-                                    success = False
-                                    details += f", Wrong shortcut for {title}: expected {expected_shortcut}, got {shortcuts_found[title]}"
-                        
-                        if correct_shortcuts >= 3:
-                            details += f", {correct_shortcuts} correct shortcuts verified"
-                        else:
-                            success = False
-                            details += f", Only {correct_shortcuts} correct shortcuts found"
-                    else:
-                        success = False
-                        details += ", No navigation shortcuts found"
-                        
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("V2 Navigation Items with Shortcuts", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("V2 Navigation Items with Shortcuts", False, f"Error: {str(e)}")
-            return False
-
-    def test_fuzzy_matching(self):
-        """Test V2 Fuzzy Matching (partial matches work)"""
-        try:
-            # Test partial match with "dash" for "Dashboard"
-            response = self.session.get(f"{self.base_url}/search?q=dash", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                
-                if not data.get("ok"):
-                    success = False
-                    details += ", Missing 'ok' field"
-                else:
-                    search_data = data.get("data", {})
-                    results = search_data.get("results", [])
-                    
-                    # Check if Dashboard is found with partial match "dash"
-                    dashboard_found = False
-                    for result in results:
-                        if "dashboard" in result.get("title", "").lower():
-                            dashboard_found = True
-                            break
-                    
-                    if dashboard_found:
-                        details += ", Fuzzy matching works: 'dash' found 'Dashboard'"
-                        
-                        # Test another fuzzy match
-                        response2 = self.session.get(f"{self.base_url}/search?q=gov", timeout=10)
-                        if response2.status_code == 200:
-                            data2 = response2.json()
-                            if data2.get("ok"):
-                                results2 = data2.get("data", {}).get("results", [])
-                                governance_found = False
-                                for result in results2:
-                                    if "governance" in result.get("title", "").lower():
-                                        governance_found = True
-                                        break
-                                
-                                if governance_found:
-                                    details += ", 'gov' found 'Governance'"
-                                else:
-                                    success = False
-                                    details += ", 'gov' did not find 'Governance'"
-                            else:
-                                success = False
-                                details += ", Second fuzzy test failed"
-                        else:
-                            success = False
-                            details += ", Second fuzzy test request failed"
-                    else:
-                        success = False
-                        details += ", Fuzzy matching failed: 'dash' did not find 'Dashboard'"
-                        
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("V2 Fuzzy Matching", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("V2 Fuzzy Matching", False, f"Error: {str(e)}")
-            return False
-
-    def test_grouped_results(self):
-        """Test V2 Grouped Results by Type"""
-        try:
-            response = self.session.get(f"{self.base_url}/search?q=new", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                
-                if not data.get("ok"):
-                    success = False
-                    details += ", Missing 'ok' field"
-                else:
-                    search_data = data.get("data", {})
-                    grouped = search_data.get("grouped", {})
-                    
-                    # Check grouped structure
-                    expected_groups = ["navigation", "actions", "records", "portfolios", "templates", "documents", "parties"]
-                    missing_groups = [group for group in expected_groups if group not in grouped]
-                    
-                    if missing_groups:
-                        success = False
-                        details += f", Missing groups: {missing_groups}"
-                    else:
-                        details += ", All expected groups present"
-                        
-                        # Check that groups contain appropriate items
-                        actions = grouped.get("actions", [])
-                        navigation = grouped.get("navigation", [])
-                        
-                        if actions:
-                            details += f", {len(actions)} actions grouped"
-                            # Check that actions are actually action type
-                            action_types_correct = all(item.get("type") == "action" for item in actions)
-                            if action_types_correct:
-                                details += ", Action types correct"
-                            else:
-                                success = False
-                                details += ", Some action items have wrong type"
-                        
-                        if navigation:
-                            details += f", {len(navigation)} navigation items grouped"
-                            # Check that navigation items are actually navigation type
-                            nav_types_correct = all(item.get("type") == "navigation" for item in navigation)
-                            if nav_types_correct:
-                                details += ", Navigation types correct"
-                            else:
-                                success = False
-                                details += ", Some navigation items have wrong type"
-                        
-                        if not actions and not navigation:
-                            success = False
-                            details += ", No items in main groups"
-                        
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("V2 Grouped Results by Type", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("V2 Grouped Results by Type", False, f"Error: {str(e)}")
+            self.log_test("DELETE /api/binder/templates/{template_id}", False, f"Error: {str(e)}")
             return False
 
     # ============ TEST RUNNER ============
