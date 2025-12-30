@@ -100,9 +100,20 @@ export default function PortraitStyleSelector({
   const isStyleLocked = (style) => style.tier > userTier;
   const isStyleSelected = (style) => selectedStyle === style.id;
   
+  // Handle dialog open state change - only close when explicitly requested
+  const handleOpenChange = (open) => {
+    if (!open) {
+      onClose();
+    }
+  };
+  
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-vault-dark border-vault-gold/20 max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent 
+        className="bg-vault-dark border-vault-gold/20 max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2 text-white text-xl">
             <Sparkle className="w-5 h-5 text-vault-gold" weight="fill" />
