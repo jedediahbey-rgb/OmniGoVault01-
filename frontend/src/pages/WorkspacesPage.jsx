@@ -243,7 +243,7 @@ export default function WorkspacesPage({ user }) {
             className="text-center py-16"
           >
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center">
-              <Vault className="w-10 h-10 text-vault-gold" weight="duotone" />
+              <Lock className="w-10 h-10 text-vault-gold" weight="duotone" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">No vaults yet</h3>
             <p className="text-vault-muted mb-6 max-w-md mx-auto">
