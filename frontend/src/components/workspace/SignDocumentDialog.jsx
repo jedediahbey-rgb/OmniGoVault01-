@@ -83,7 +83,17 @@ export default function SignDocumentDialog({
       }, 2000);
     } catch (error) {
       console.error('Signing error:', error);
-      toast.error(error.response?.data?.detail || 'Failed to sign document');
+      // Handle Pydantic validation errors which come as an array
+      const detail = error.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        // Pydantic validation error format
+        const errorMessages = detail.map(err => err.msg || err.message || 'Validation error').join(', ');
+        toast.error(errorMessages || 'Failed to sign document');
+      } else if (typeof detail === 'string') {
+        toast.error(detail);
+      } else {
+        toast.error('Failed to sign document');
+      }
     } finally {
       setSigning(false);
     }
