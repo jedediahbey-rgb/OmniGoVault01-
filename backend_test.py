@@ -1007,6 +1007,6 @@ class DocumentSigningTester:
 
 
 if __name__ == "__main__":
-    tester = BillingTester()
-    success = tester.run_billing_tests()
+    tester = DocumentSigningTester()
+    success = tester.run_document_signing_tests()
     sys.exit(0 if success else 1)
