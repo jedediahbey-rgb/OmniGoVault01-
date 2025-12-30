@@ -19,8 +19,6 @@ class PortraitCustomizationTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
-        # Set the session cookie for authentication
-        self.session.cookies.set('session_token', 'signing_test_1767059099')
         self.session.headers.update({
             'Content-Type': 'application/json',
             'User-Agent': 'PortraitCustomization-Tester/1.0'
@@ -36,6 +34,9 @@ class PortraitCustomizationTester:
         # Test user details
         self.test_user_email = "jedediah.bey@gmail.com"
         self.test_user_role = "OMNICOMPETENT_OWNER"
+        
+        # Try to get a valid session token
+        self.session_token = self.get_valid_session_token()
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
