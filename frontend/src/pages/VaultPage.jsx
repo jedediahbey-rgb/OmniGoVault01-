@@ -414,7 +414,7 @@ export default function VaultPage({ user, initialView }) {
         animate={{ x: 0, opacity: 1 }}
         className="hidden lg:flex w-64 border-r border-white/10 flex-col shrink-0"
       >
-        <SidebarContent />
+        <VaultSidebarContent {...sidebarProps} />
       </motion.div>
 
       {/* Main Content - Documents List */}
