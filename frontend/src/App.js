@@ -156,6 +156,15 @@ const AuthCallback = ({ setUser, setLoading, onFirstLogin }) => {
             onFirstLogin();
           }
           
+          // Check for stored post-auth redirect (e.g., /billing from plan selection)
+          const postAuthRedirect = sessionStorage.getItem('post_auth_redirect');
+          if (postAuthRedirect) {
+            sessionStorage.removeItem('post_auth_redirect');
+            sessionStorage.removeItem('show_vault_loading');
+            navigate(postAuthRedirect, { state: { user: response.data.user }, replace: true });
+            return;
+          }
+          
           // Check if user came from "Enter the Vault" flow (should show loading animation)
           const showLoadingScreen = sessionStorage.getItem('show_vault_loading') === 'true';
           if (showLoadingScreen) {
