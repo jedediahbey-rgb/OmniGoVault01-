@@ -25,31 +25,35 @@ const safeString = (value) => {
 };
 
 // Helper to render subtitle with help icon attached to last word
+// Ensures the last word + period + (?) icon never wrap to a new line
 const renderSubtitleWithHelp = (subtitle, helpComponent) => {
   if (!subtitle || typeof subtitle !== 'string') {
     return (
       <>
         {subtitle}
-        {helpComponent && <span className="inline-flex align-middle ml-1.5">{helpComponent}</span>}
+        {helpComponent && <span className="inline align-middle ml-1">{helpComponent}</span>}
       </>
     );
   }
   
-  const words = subtitle.trim().split(' ');
+  // Add period if subtitle doesn't end with punctuation
+  let text = subtitle.trim();
+  if (text && !text.match(/[.!?]$/)) {
+    text = text + '.';
+  }
+  
+  const words = text.split(' ');
   if (words.length === 0) {
     return helpComponent;
   }
   
+  // Get the last word (includes any punctuation)
   const lastWord = words.pop();
   const restOfText = words.join(' ');
   
   return (
     <>
-      {restOfText && <>{restOfText} </>}
-      <span className="whitespace-nowrap">
-        {lastWord}
-        {helpComponent && <span className="inline-flex align-middle ml-1.5">{helpComponent}</span>}
-      </span>
+      {restOfText}{restOfText ? ' ' : ''}<span style={{ whiteSpace: 'nowrap' }}>{lastWord}{helpComponent && <>&nbsp;<span className="inline-flex align-middle">{helpComponent}</span></>}</span>
     </>
   );
 };
@@ -149,7 +153,7 @@ export default function PageHeader({
               {titleAction && <div className="shrink-0">{titleAction}</div>}
             </div>
             {(safeSubtitle || helpComponent) && (
-              <p className="text-white/60 text-sm sm:text-base mt-1">
+              <p className="text-white/60 text-xs sm:text-sm mt-1">
                 {renderSubtitleWithHelp(safeSubtitle, helpComponent)}
               </p>
             )}
