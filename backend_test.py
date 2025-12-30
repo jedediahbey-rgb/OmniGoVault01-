@@ -20,7 +20,7 @@ class DocumentSigningTester:
         self.base_url = BASE_URL
         self.session = requests.Session()
         # Set the session cookie for authentication
-        self.session.cookies.set('session_token', 'billing_test_1865779718394087')
+        self.session.cookies.set('session_token', 'signing_test_1767059099')
         self.session.headers.update({
             'Content-Type': 'application/json',
             'User-Agent': 'DocumentSigning-Tester/1.0'
@@ -553,7 +553,7 @@ class DocumentSigningTester:
         self.base_url = BASE_URL
         self.session = requests.Session()
         # Set the session cookie for authentication
-        self.session.cookies.set('session_token', 'billing_test_1865779718394087')
+        self.session.cookies.set('session_token', 'signing_test_1767059099')
         self.session.headers.update({
             'Content-Type': 'application/json',
             'User-Agent': 'Billing-Tester/1.0'
