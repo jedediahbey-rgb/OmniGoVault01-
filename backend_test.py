@@ -62,14 +62,14 @@ class GlobalSearchV2Tester:
             # Generate a unique test user
             import uuid
             test_suffix = uuid.uuid4().hex[:8]
-            test_email = f"test_portrait_{test_suffix}@example.com"
+            test_email = f"test_search_{test_suffix}@example.com"
             test_password = "testpassword123"
             
             # Try to register a test user
             register_data = {
                 'email': test_email,
                 'password': test_password,
-                'name': f'Portrait Test User {test_suffix}'
+                'name': f'Search Test User {test_suffix}'
             }
             response = requests.post(f'{self.base_url}/auth/register', json=register_data)
             if response.status_code == 200:
@@ -84,7 +84,7 @@ class GlobalSearchV2Tester:
         
         # Method 2: Try some common test session tokens
         test_tokens = [
-            'test_session_portrait_customization',
+            'test_session_search_v2',
             'dev_session_12345',
             'sess_' + '1' * 32,
         ]
