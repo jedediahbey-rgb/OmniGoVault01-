@@ -465,36 +465,27 @@ class V2TrustHealthTester:
 
     # ============ TEST RUNNER ============
 
-    def run_document_signing_tests(self):
-        """Run all Document Signing feature tests"""
-        self.log("🚀 Starting DOCUMENT SIGNING Feature Tests")
+    def run_v2_trust_health_tests(self):
+        """Run all V2 Trust Health feature tests"""
+        self.log("🚀 Starting V2 TRUST HEALTH Feature Tests")
         self.log(f"Testing against: {self.base_url}")
         self.log("User: jedediah.bey@gmail.com (OMNICOMPETENT_OWNER role)")
         self.log("=" * 80)
         
-        # Test sequence for document signing feature
+        # Test sequence for V2 Trust Health feature
         test_sequence = [
             # Authentication
             self.test_auth_status,
             
-            # Setup
-            self.test_create_vault,
-            self.test_create_document,
-            self.test_submit_document_for_review,
-            self.test_affirm_document,
+            # V2 Ruleset Configuration Tests
+            self.test_get_v2_ruleset,
+            self.test_put_v2_ruleset,
+            self.test_put_v2_ruleset_invalid_weights,
+            self.test_post_v2_ruleset_reset,
             
-            # Core signing tests
-            self.test_sign_document_valid_payload,
-            self.test_sign_document_invalid_signature_type,
-            self.test_sign_document_missing_legal_name,
-            self.test_sign_with_different_signature_types,
-            
-            # Signatures retrieval
-            self.test_get_document_signatures,
-            
-            # Security tests
-            self.test_sign_document_without_auth,
-            self.test_get_signatures_without_auth,
+            # V2 Health Scanning Tests
+            self.test_get_health_score_v2,
+            self.test_post_health_scan_v2,
         ]
         
         for test_func in test_sequence:
@@ -515,7 +506,7 @@ class V2TrustHealthTester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 DOCUMENT SIGNING FEATURE TEST SUMMARY")
+        self.log("🏁 V2 TRUST HEALTH FEATURE TEST SUMMARY")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
@@ -532,38 +523,42 @@ class V2TrustHealthTester:
         
         self.log("\n🎯 KEY FINDINGS:")
         if success_rate >= 90:
-            self.log("✅ Document signing feature working perfectly")
-            self.log("✅ All signature types (CLICK, TYPED_NAME, DRAWN) supported")
-            self.log("✅ Proper validation error handling")
-            self.log("✅ Authentication required for signing endpoints")
-            self.log("✅ Entitlement checks working (plan restrictions)")
+            self.log("✅ V2 Trust Health feature working perfectly")
+            self.log("✅ V2 ruleset configuration endpoints functional")
+            self.log("✅ Category weights validation working (must sum to 100%)")
+            self.log("✅ V2 health scanning with bounded penalties operational")
+            self.log("✅ Severity multipliers and blocking caps implemented")
+            self.log("✅ Next actions with estimated gains working")
         elif success_rate >= 75:
-            self.log("⚠️ Most signing functionality working with minor issues")
+            self.log("⚠️ Most V2 Trust Health functionality working with minor issues")
         else:
-            self.log("❌ Significant signing implementation issues detected")
+            self.log("❌ Significant V2 Trust Health implementation issues detected")
         
         # Specific feature status
-        self.log("\n📋 FEATURE STATUS:")
+        self.log("\n📋 V2 FEATURE STATUS:")
         
-        # Setup tests
-        setup_tests = [t for t in self.test_results if any(x in t['test'].lower() for x in ['vault', 'document', 'review'])]
-        setup_success = sum(1 for t in setup_tests if t['success'])
-        self.log(f"  Setup (Vault/Document): {setup_success}/{len(setup_tests)} ({'✅' if setup_success == len(setup_tests) else '❌'})")
+        # Ruleset configuration tests
+        ruleset_tests = [t for t in self.test_results if 'ruleset' in t['test'].lower()]
+        ruleset_success = sum(1 for t in ruleset_tests if t['success'])
+        self.log(f"  V2 Ruleset Configuration: {ruleset_success}/{len(ruleset_tests)} ({'✅' if ruleset_success == len(ruleset_tests) else '❌'})")
         
-        # Signing tests
-        signing_tests = [t for t in self.test_results if 'sign' in t['test'].lower() and 'no auth' not in t['test'].lower()]
-        signing_success = sum(1 for t in signing_tests if t['success'])
-        self.log(f"  Document Signing: {signing_success}/{len(signing_tests)} ({'✅' if signing_success == len(signing_tests) else '❌'})")
+        # Health scanning tests
+        scan_tests = [t for t in self.test_results if 'scan' in t['test'].lower() or 'score' in t['test'].lower()]
+        scan_success = sum(1 for t in scan_tests if t['success'])
+        self.log(f"  V2 Health Scanning: {scan_success}/{len(scan_tests)} ({'✅' if scan_success == len(scan_tests) else '❌'})")
         
-        # Signatures retrieval
-        signatures_tests = [t for t in self.test_results if 'signatures' in t['test'].lower() and 'no auth' not in t['test'].lower()]
-        signatures_success = sum(1 for t in signatures_tests if t['success'])
-        self.log(f"  Signatures Retrieval: {signatures_success}/{len(signatures_tests)} ({'✅' if signatures_success == len(signatures_tests) else '❌'})")
-        
-        # Security
-        auth_tests = [t for t in self.test_results if 'no auth' in t['test'].lower()]
+        # Authentication
+        auth_tests = [t for t in self.test_results if 'auth' in t['test'].lower()]
         auth_success = sum(1 for t in auth_tests if t['success'])
-        self.log(f"  Security (Auth Required): {auth_success}/{len(auth_tests)} ({'✅' if auth_success == len(auth_tests) else '❌'})")
+        self.log(f"  Authentication: {auth_success}/{len(auth_tests)} ({'✅' if auth_success == len(auth_tests) else '❌'})")
+        
+        self.log("\n🔍 V2-SPECIFIC FEATURES TESTED:")
+        self.log("  • Bounded penalties with max caps")
+        self.log("  • Severity multipliers (info: 0.5, warning: 1.0, critical: 1.5)")
+        self.log("  • Category weights that sum to 100%")
+        self.log("  • Blocking conditions (CAP_ORPHANS, CAP_MISSING_FINALIZER, etc.)")
+        self.log("  • Next actions with estimated score gains")
+        self.log("  • Readiness modes (normal, audit, court)")
         
         return success_rate >= 75
     def __init__(self):
