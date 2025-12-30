@@ -422,7 +422,7 @@ function VaultSection({ title, icon, vaults, onVaultClick }) {
 
 // Vault Card Component
 function VaultCard({ vault, onClick }) {
-  const Icon = vaultTypeIcons[vault.vault_type] || Vault;
+  const Icon = vaultTypeIcons[vault.vault_type] || Lock;
   const status = statusConfig[vault.status] || statusConfig.DRAFT;
   
   return (
