@@ -57,14 +57,14 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // Vault type icons
 const vaultTypeIcons = {
-  TRUST: Vault,
+  TRUST: Handshake,
   ESTATE: House,
   LOAN: Bank,
   PRIVATE_EQUITY: Briefcase,
   REAL_ESTATE: Buildings,
   LITIGATION: Scales,
   CORPORATE: Buildings,
-  OTHER: Vault
+  OTHER: UsersThree
 };
 
 // Status colors and labels
