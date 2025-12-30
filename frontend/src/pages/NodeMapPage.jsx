@@ -728,16 +728,17 @@ export default function NodeMapPage() {
               showInteractive={false}
               className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-3 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-7 [&>button]:!h-7 sm:[&>button]:!w-8 sm:[&>button]:!h-8"
             />
-            {/* MiniMap - smaller and positioned to avoid overlap */}
+            {/* MiniMap - redesigned with better symmetry */}
             {!isMobile && (
               <MiniMap 
                 style={{ 
-                  backgroundColor: 'rgba(11, 18, 33, 0.95)',
-                  border: '1px solid rgba(198, 168, 124, 0.3)',
-                  borderRadius: '6px',
-                  width: 100,
-                  height: 70,
+                  backgroundColor: 'rgba(11, 18, 33, 0.98)',
+                  border: '2px solid rgba(198, 168, 124, 0.4)',
+                  borderRadius: '8px',
+                  width: 140,
+                  height: 90,
                   margin: '12px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                 }}
                 nodeColor={(node) => {
                   const colors = {
@@ -751,6 +752,7 @@ export default function NodeMapPage() {
                   };
                   return colors[node.data?.type] || '#666';
                 }}
+                maskColor="rgba(11, 18, 33, 0.7)"
                 position="top-right"
                 pannable={false}
                 zoomable={false}
