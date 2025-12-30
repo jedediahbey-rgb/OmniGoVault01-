@@ -59,18 +59,11 @@ export function FinalizeConfirmationModal({
   const [typedConfirmation, setTypedConfirmation] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Reset typed confirmation when modal opens - using layout effect for immediate reset
-  const prevOpen = React.useRef(open);
-  if (open && !prevOpen.current) {
-    // Reset on transition from closed to open (during render, not in effect)
-    prevOpen.current = open;
-  }
-  React.useEffect(() => {
-    prevOpen.current = open;
+  // Reset typed confirmation when modal opens
+  useEffect(() => {
     if (open) {
-      // Use callback to avoid direct setState in effect
-      const timer = setTimeout(() => setTypedConfirmation(''), 0);
-      return () => clearTimeout(timer);
+      // Reset with a microtask to avoid synchronous setState in effect
+      queueMicrotask(() => setTypedConfirmation(''));
     }
   }, [open]);
 
