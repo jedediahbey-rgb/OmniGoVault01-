@@ -1475,6 +1475,6 @@ class PortraitCustomizationTester:
 
 
 if __name__ == "__main__":
-    tester = V2TrustHealthTester()
-    success = tester.run_v2_trust_health_tests()
+    tester = PortraitCustomizationTester()
+    success = tester.run_portrait_customization_tests()
     sys.exit(0 if success else 1)
