@@ -715,27 +715,27 @@ function DiagramsContent() {
           ))}
         </div>
 
-        {/* About section - Hidden on mobile to prevent excessive scrolling */}
-        <div className="hidden sm:block mt-12">
+        {/* About section */}
+        <div className="mt-6 sm:mt-12">
           <GlassCard>
-            <h3 className="font-heading text-lg text-white mb-4">About Interactive Diagrams</h3>
-            <p className="text-white/60 text-sm mb-4">
+            <h3 className="font-heading text-base sm:text-lg text-white mb-3 sm:mb-4">About Interactive Diagrams</h3>
+            <p className="text-white/60 text-xs sm:text-sm mb-3 sm:mb-4">
               These diagrams are designed to help you visualize complex legal relationships and concepts. 
               Each diagram is interactive—you can drag nodes, zoom in and out, and explore the connections 
               between different elements.
             </p>
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
-              <div className="p-3 bg-white/5 rounded-lg">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-xs sm:text-sm">
+              <div className="p-2 sm:p-3 bg-white/5 rounded-lg">
                 <div className="text-vault-gold mb-1">🖱️ Drag</div>
-                <div className="text-white/40">Move nodes to rearrange the diagram</div>
+                <div className="text-white/40 text-[10px] sm:text-sm">Move nodes to rearrange</div>
               </div>
-              <div className="p-3 bg-white/5 rounded-lg">
+              <div className="p-2 sm:p-3 bg-white/5 rounded-lg">
                 <div className="text-vault-gold mb-1">🔍 Zoom</div>
-                <div className="text-white/40">Scroll or use controls to zoom in/out</div>
+                <div className="text-white/40 text-[10px] sm:text-sm">Pinch or use controls</div>
               </div>
-              <div className="p-3 bg-white/5 rounded-lg">
+              <div className="p-2 sm:p-3 bg-white/5 rounded-lg">
                 <div className="text-vault-gold mb-1">ℹ️ Info</div>
-                <div className="text-white/40">Click info button for explanations</div>
+                <div className="text-white/40 text-[10px] sm:text-sm">Click for explanations</div>
               </div>
             </div>
           </GlassCard>
