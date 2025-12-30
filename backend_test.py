@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for OMNIGOVAULT Application
-Shared Workspace Feature Testing
+Billing/Subscription Feature Testing
 """
 
 import requests
@@ -15,7 +15,7 @@ import hashlib
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://trustshare.preview.emergentagent.com/api"
 
-class SharedWorkspaceTester:
+class BillingTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
