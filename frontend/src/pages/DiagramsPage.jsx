@@ -30,9 +30,22 @@ const reactFlowStyles = `
     display: none !important;
   }
   .react-flow__controls {
-    right: 10px !important;
-    bottom: 10px !important;
+    right: 8px !important;
+    bottom: 8px !important;
     left: auto !important;
+  }
+  @media (max-width: 640px) {
+    .react-flow__minimap {
+      display: none !important;
+    }
+    .react-flow__controls {
+      right: 6px !important;
+      bottom: 6px !important;
+    }
+    .react-flow__controls button {
+      width: 24px !important;
+      height: 24px !important;
+    }
   }
 `;
 
