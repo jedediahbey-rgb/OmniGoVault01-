@@ -7,7 +7,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Lock, LockOpen, ShieldCheck, Vault } from '@phosphor-icons/react';
 
 // Vault door opening animation variants
