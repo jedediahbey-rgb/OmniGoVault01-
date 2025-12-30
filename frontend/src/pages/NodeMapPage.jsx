@@ -14,7 +14,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-// Custom styles for React Flow - mobile optimized
+// Custom styles for React Flow - mobile optimized "Luxury Scroll"
 const reactFlowStyles = `
   .react-flow__attribution {
     display: none !important;
@@ -57,26 +57,9 @@ const reactFlowStyles = `
 import axios from 'axios';
 import {
   ArrowLeft,
-  Buildings,
-  CaretDown,
-  Eye,
-  FileText,
-  Folder,
-  GitBranch,
-  HandCoins,
-  House,
-  Info,
-  MapPin,
-  Newspaper,
   Plus,
-  Scales,
-  ShieldCheck,
-  User,
-  Users,
   X,
 } from '@phosphor-icons/react';
-import PageHeader from '../components/shared/PageHeader';
-import PageHelpTooltip from '../components/shared/PageHelpTooltip';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -260,35 +243,87 @@ function NodeMapContent() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  // Simple fit view on instance ready
+  // Debounced fitView with ResizeObserver integration
+  const fitViewTimeoutRef = useRef(null);
+  const lastFitRef = useRef(0);
+
+  const doFitView = useCallback(() => {
+    if (!reactFlowInstance) return;
+    
+    const now = Date.now();
+    // Prevent fitting more than once per 100ms to avoid jitter
+    if (now - lastFitRef.current < 100) return;
+    lastFitRef.current = now;
+    
+    // Clear any pending fit
+    if (fitViewTimeoutRef.current) {
+      clearTimeout(fitViewTimeoutRef.current);
+    }
+    
+    fitViewTimeoutRef.current = setTimeout(() => {
+      try {
+        reactFlowInstance.fitView({
+          padding: 0.18,
+          includeHiddenNodes: true,
+          duration: 0,
+        });
+      } catch (e) {
+        console.debug('fitView error:', e);
+      }
+    }, 50);
+  }, [reactFlowInstance]);
+
+  // ResizeObserver for container size changes (address bar collapse/expand)
+  useEffect(() => {
+    if (!reactFlowWrapper.current || !reactFlowInstance) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      doFitView();
+    });
+
+    resizeObserver.observe(reactFlowWrapper.current);
+
+    // Also handle orientation changes
+    const handleOrientationChange = () => {
+      setTimeout(doFitView, 300);
+    };
+
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      if (fitViewTimeoutRef.current) {
+        clearTimeout(fitViewTimeoutRef.current);
+      }
+    };
+  }, [reactFlowInstance, doFitView]);
+
+  // Fit view on instance ready
   const handleInit = useCallback((instance) => {
     setReactFlowInstance(instance);
     // Fit view after a brief delay to ensure nodes are rendered
     setTimeout(() => {
       instance.fitView({
-        padding: isMobile ? 0.12 : 0.18,
+        padding: 0.18,
         includeHiddenNodes: true,
+        duration: 0,
       });
     }, 100);
-  }, [isMobile]);
+  }, []);
 
   // Fit view when nodes change
   useEffect(() => {
     if (nodes.length > 0 && reactFlowInstance) {
-      setTimeout(() => {
-        reactFlowInstance.fitView({
-          padding: isMobile ? 0.12 : 0.18,
-          includeHiddenNodes: true,
-        });
-      }, 50);
+      setTimeout(doFitView, 50);
     }
-  }, [nodes.length, reactFlowInstance, isMobile]);
+  }, [nodes.length, reactFlowInstance, doFitView]);
 
   // Fetch portfolios
   useEffect(() => {
     const fetchPortfolios = async () => {
       try {
-        const res = await axios.get(`${API}/portfolios`);
+        const res = await axios.get(`${API}/portfolios`, { withCredentials: true });
         setPortfolios(res.data || []);
         if (!selectedPortfolio && res.data?.length > 0) {
           // Prioritize: URL param > default portfolio > first portfolio
@@ -311,10 +346,10 @@ function NodeMapContent() {
       setLoading(true);
       try {
         const [profileRes, partiesRes, assetsRes, govRes] = await Promise.all([
-          axios.get(`${API}/trust-profiles/${selectedPortfolio}`).catch(() => ({ data: null })),
-          axios.get(`${API}/portfolios/${selectedPortfolio}/parties`).catch(() => ({ data: [] })),
-          axios.get(`${API}/portfolios/${selectedPortfolio}/assets`).catch(() => ({ data: [] })),
-          axios.get(`${API}/governance/v2/records?portfolio_id=${selectedPortfolio}&limit=20`).catch(() => ({ data: { data: { items: [] } } })),
+          axios.get(`${API}/trust-profiles/${selectedPortfolio}`, { withCredentials: true }).catch(() => ({ data: null })),
+          axios.get(`${API}/portfolios/${selectedPortfolio}/parties`, { withCredentials: true }).catch(() => ({ data: [] })),
+          axios.get(`${API}/portfolios/${selectedPortfolio}/assets`, { withCredentials: true }).catch(() => ({ data: [] })),
+          axios.get(`${API}/governance/v2/records?portfolio_id=${selectedPortfolio}&limit=20`, { withCredentials: true }).catch(() => ({ data: { data: { items: [] } } })),
         ]);
 
         setTrustProfile(profileRes.data);
@@ -620,7 +655,7 @@ function NodeMapContent() {
             to={`/vault/portfolio/${selectedPortfolio}/trust-profile`}
             className="inline-flex items-center gap-2 text-vault-gold hover:underline text-sm mt-2"
           >
-            <Eye className="w-4 h-4" /> View Full Profile
+            View Full Profile
           </Link>
         </div>
       );
@@ -686,7 +721,7 @@ function NodeMapContent() {
             to={`/vault/governance?portfolio=${selectedPortfolio}&tab=${data.records[0]?.module_type === 'minutes' ? 'meetings' : data.records[0]?.module_type + 's'}`}
             className="inline-flex items-center gap-2 text-vault-gold hover:underline text-sm"
           >
-            <Eye className="w-4 h-4" /> View All
+            View All
           </Link>
         </div>
       );
@@ -695,25 +730,29 @@ function NodeMapContent() {
     return null;
   };
 
+  // Loading state
   if (loading && !portfolios.length) {
     return (
       <div 
-        className="h-full flex flex-col overflow-hidden"
+        className="flex flex-col overflow-x-hidden"
         style={{
+          minHeight: '100dvh',
           paddingTop: 'env(safe-area-inset-top, 0px)',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
       >
-        {/* Header */}
-        <div className="flex items-center gap-2 sm:gap-4 p-2 sm:p-4 lg:p-6 pb-1 sm:pb-2 shrink-0">
-          <Link
-            to="/vault"
-            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
-          >
-            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
-          </Link>
-          <h1 className="text-base sm:text-2xl font-heading text-white">Trust Node Map</h1>
-        </div>
+        {/* Sticky Header */}
+        <header className="sticky top-0 z-50 bg-vault-dark/95 backdrop-blur-sm border-b border-white/5">
+          <div className="flex items-center gap-2 sm:gap-4 p-2 sm:p-4 lg:p-6">
+            <Link
+              to="/vault"
+              className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
+            >
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
+            </Link>
+            <h1 className="text-base sm:text-2xl font-heading text-white">Trust Node Map</h1>
+          </div>
+        </header>
 
         {/* Loading state */}
         <div className="flex-1 flex items-center justify-center">
@@ -725,206 +764,218 @@ function NodeMapContent() {
 
   return (
     <div 
-      className="h-full flex flex-col overflow-hidden"
+      className="flex flex-col overflow-x-hidden"
       style={{
+        minHeight: '100dvh',
         paddingTop: 'env(safe-area-inset-top, 0px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
-      {/* Header - More compact on mobile */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 p-2 sm:p-4 lg:p-6 pb-1 sm:pb-2 shrink-0">
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Link
-            to="/vault"
-            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
-          >
-            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
-          </Link>
-          <h1 className="text-base sm:text-2xl font-heading text-white">Trust Node Map</h1>
-        </div>
-        
-        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-          <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
-            <SelectTrigger className="flex-1 sm:flex-none sm:w-[200px] bg-vault-dark border-vault-gold/30 h-7 sm:h-10 text-xs sm:text-sm">
-              <SelectValue placeholder="Select Portfolio" />
-            </SelectTrigger>
-            <SelectContent className="bg-vault-dark border-vault-gold/30">
-              {portfolios.map(p => (
-                <SelectItem key={p.portfolio_id} value={p.portfolio_id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 bg-vault-dark/95 backdrop-blur-sm border-b border-white/5">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 p-2 sm:p-4 lg:p-6">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Link
+              to="/vault"
+              className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
+            >
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
+            </Link>
+            <h1 className="text-base sm:text-2xl font-heading text-white">Trust Node Map</h1>
+          </div>
           
-          <Button
-            onClick={() => {
-              if (selectedPortfolio) {
-                navigate(`/vault/portfolio/${selectedPortfolio}/trust-profile`);
-              } else {
-                navigate('/vault');
-              }
-            }}
-            variant="outline"
-            size="sm"
-            className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10 h-7 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
-          >
-            <Plus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Add Party</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* ReactFlow Canvas - Takes remaining space */}
-      <div ref={reactFlowWrapper} className="flex-1 relative mx-2 sm:mx-4 lg:mx-6 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10" style={{ minHeight: '300px' }}>
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : (
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodeClick={onNodeClick}
-            onInit={handleInit}
-            fitView
-            fitViewOptions={{ padding: isMobile ? 0.12 : 0.18, includeHiddenNodes: true }}
-            minZoom={isMobile ? 0.1 : 0.2}
-            maxZoom={isMobile ? 1.0 : 1.5}
-            panOnScroll={false}
-            zoomOnScroll={false}
-            zoomOnPinch={true}
-            panOnDrag={true}
-            preventScrolling={true}
-            proOptions={{ hideAttribution: true }}
-            style={{ width: '100%', height: '100%', background: 'rgba(11, 18, 33, 0.95)' }}
-          >
-            <Controls 
-              position="bottom-right"
-              showInteractive={false}
-              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-2 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-6 [&>button]:!h-6 sm:[&>button]:!w-7 sm:[&>button]:!h-7"
-            />
-            {/* MiniMap - hidden on mobile */}
-            {!isMobile && (
-              <MiniMap 
-                style={{ 
-                  backgroundColor: 'rgba(11, 18, 33, 0.98)',
-                  border: '1px solid rgba(198, 168, 124, 0.4)',
-                  borderRadius: '6px',
-                  width: 100,
-                  height: 65,
-                  margin: '8px',
-                }}
-                nodeColor={(node) => {
-                  const colors = {
-                    trust: '#C6A87C',
-                    grantor: '#A855F7',
-                    trustee: '#22C55E',
-                    beneficiary: '#FBBF24',
-                    party: '#3B82F6',
-                    asset: '#EF4444',
-                    governance: '#0EA5E9',
-                  };
-                  return colors[node.data?.type] || '#666';
-                }}
-                maskColor="rgba(11, 18, 33, 0.7)"
-                position="top-right"
-                pannable={false}
-                zoomable={false}
-              />
-            )}
-            <Background color="rgba(255,255,255,0.05)" gap={isMobile ? 20 : 25} />
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
+              <SelectTrigger className="flex-1 sm:flex-none sm:w-[200px] bg-vault-dark border-vault-gold/30 h-7 sm:h-10 text-xs sm:text-sm">
+                <SelectValue placeholder="Select Portfolio" />
+              </SelectTrigger>
+              <SelectContent className="bg-vault-dark border-vault-gold/30">
+                {portfolios.map(p => (
+                  <SelectItem key={p.portfolio_id} value={p.portfolio_id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             
-            {/* Legend Panel - Only inside ReactFlow on desktop */}
-            {!isMobile && (
-              <Panel position="bottom-left" className="!m-3">
-                <GlassCard className="!p-3 !bg-vault-dark/95 !border-vault-gold/20">
-                  <div className="text-xs text-white/70 mb-2 font-semibold">Legend</div>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-[#C6A87C]" />
-                      <span className="text-white/80">Trust</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-[#A855F7]" />
-                      <span className="text-white/80">Grantor</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-[#22C55E]" />
-                      <span className="text-white/80">Trustee</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-[#FBBF24]" />
-                      <span className="text-white/80">Beneficiary</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-[#EF4444]" />
-                      <span className="text-white/80">Asset</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-[#0EA5E9]" />
-                      <span className="text-white/80">Governance</span>
-                    </div>
-                  </div>
-                </GlassCard>
-              </Panel>
-            )}
-          </ReactFlow>
-        )}
-
-        {/* Info Panel */}
-        {showInfo && selectedNode && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="absolute right-4 top-4 w-72 max-h-[80%] overflow-y-auto z-10"
-          >
-            <GlassCard className="relative">
-              <button
-                onClick={() => setShowInfo(false)}
-                className="absolute top-2 right-2 text-white/40 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              {renderNodeDetails()}
-            </GlassCard>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Mobile Legend - Inside the fixed container */}
-      {isMobile && (
-        <div className="shrink-0 py-1 px-1">
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-[9px]">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded bg-[#C6A87C]" />
-              <span className="text-white/70">Trust</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded bg-[#A855F7]" />
-              <span className="text-white/70">Grantor</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded bg-[#22C55E]" />
-              <span className="text-white/70">Trustee</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded bg-[#FBBF24]" />
-              <span className="text-white/70">Beneficiary</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded bg-[#EF4444]" />
-              <span className="text-white/70">Asset</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded bg-[#0EA5E9]" />
-              <span className="text-white/70">Gov</span>
-            </div>
+            <Button
+              onClick={() => {
+                if (selectedPortfolio) {
+                  navigate(`/vault/portfolio/${selectedPortfolio}/trust-profile`);
+                } else {
+                  navigate('/vault');
+                }
+              }}
+              variant="outline"
+              size="sm"
+              className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10 h-7 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
+            >
+              <Plus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Add Party</span>
+            </Button>
           </div>
         </div>
-      )}
+      </header>
+
+      {/* Scrollable Body */}
+      <div className="flex-1 p-2 sm:p-4 lg:p-6 pt-2 overflow-y-auto">
+        {/* ReactFlow Framed Viewport Section */}
+        <div 
+          ref={reactFlowWrapper} 
+          className="relative rounded-xl overflow-hidden border border-white/10 shadow-lg"
+          style={{ 
+            height: 'clamp(420px, 70dvh, 780px)',
+          }}
+        >
+          {loading ? (
+            <div className="flex items-center justify-center h-full bg-vault-dark/95">
+              <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onNodeClick={onNodeClick}
+              onInit={handleInit}
+              fitView
+              fitViewOptions={{ padding: 0.18, includeHiddenNodes: true, duration: 0 }}
+              minZoom={0.2}
+              maxZoom={1.25}
+              panOnScroll={false}
+              zoomOnScroll={false}
+              zoomOnPinch={true}
+              panOnDrag={true}
+              preventScrolling={true}
+              proOptions={{ hideAttribution: true }}
+              style={{ width: '100%', height: '100%', background: 'rgba(11, 18, 33, 0.95)' }}
+            >
+              <Controls 
+                position="bottom-right"
+                showInteractive={false}
+                className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-2 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-6 [&>button]:!h-6 sm:[&>button]:!w-7 sm:[&>button]:!h-7"
+              />
+              {/* MiniMap - hidden on mobile */}
+              {!isMobile && (
+                <MiniMap 
+                  style={{ 
+                    backgroundColor: 'rgba(11, 18, 33, 0.98)',
+                    border: '1px solid rgba(198, 168, 124, 0.4)',
+                    borderRadius: '6px',
+                    width: 100,
+                    height: 65,
+                    margin: '8px',
+                  }}
+                  nodeColor={(node) => {
+                    const colors = {
+                      trust: '#C6A87C',
+                      grantor: '#A855F7',
+                      trustee: '#22C55E',
+                      beneficiary: '#FBBF24',
+                      party: '#3B82F6',
+                      asset: '#EF4444',
+                      governance: '#0EA5E9',
+                    };
+                    return colors[node.data?.type] || '#666';
+                  }}
+                  maskColor="rgba(11, 18, 33, 0.7)"
+                  position="top-right"
+                  pannable={false}
+                  zoomable={false}
+                />
+              )}
+              <Background color="rgba(255,255,255,0.05)" gap={isMobile ? 20 : 25} />
+              
+              {/* Legend Panel - Only inside ReactFlow on desktop */}
+              {!isMobile && (
+                <Panel position="bottom-left" className="!m-3">
+                  <GlassCard className="!p-3 !bg-vault-dark/95 !border-vault-gold/20">
+                    <div className="text-xs text-white/70 mb-2 font-semibold">Legend</div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-[#C6A87C]" />
+                        <span className="text-white/80">Trust</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-[#A855F7]" />
+                        <span className="text-white/80">Grantor</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-[#22C55E]" />
+                        <span className="text-white/80">Trustee</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-[#FBBF24]" />
+                        <span className="text-white/80">Beneficiary</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-[#EF4444]" />
+                        <span className="text-white/80">Asset</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-[#0EA5E9]" />
+                        <span className="text-white/80">Governance</span>
+                      </div>
+                    </div>
+                  </GlassCard>
+                </Panel>
+              )}
+            </ReactFlow>
+          )}
+
+          {/* Info Panel */}
+          {showInfo && selectedNode && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="absolute right-4 top-4 w-72 max-h-[80%] overflow-y-auto z-10"
+            >
+              <GlassCard className="relative">
+                <button
+                  onClick={() => setShowInfo(false)}
+                  className="absolute top-2 right-2 text-white/40 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                {renderNodeDetails()}
+              </GlassCard>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Mobile Legend - Below the framed section */}
+        {isMobile && (
+          <div className="mt-3 py-2 px-3 bg-vault-dark/50 rounded-lg border border-white/5">
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px]">
+              <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded bg-[#C6A87C]" />
+                <span className="text-white/70">Trust</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded bg-[#A855F7]" />
+                <span className="text-white/70">Grantor</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded bg-[#22C55E]" />
+                <span className="text-white/70">Trustee</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded bg-[#FBBF24]" />
+                <span className="text-white/70">Beneficiary</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded bg-[#EF4444]" />
+                <span className="text-white/70">Asset</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2.5 h-2.5 rounded bg-[#0EA5E9]" />
+                <span className="text-white/70">Governance</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
