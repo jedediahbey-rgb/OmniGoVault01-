@@ -24,15 +24,56 @@ import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Separator } from '../components/ui/separator';
+import { motion } from 'framer-motion';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Plan tier icons
-const tierIcons = {
-  0: <Zap className="w-5 h-5" />,
-  1: <Sparkles className="w-5 h-5" />,
-  2: <Crown className="w-5 h-5" />,
-  3: <Building2 className="w-5 h-5" />
+// Animated tier icons with unique themes
+const AnimatedTierIcon = ({ tier }) => {
+  const iconConfig = {
+    0: {
+      // Testamentary - Document/Scroll theme
+      icon: <Zap className="w-5 h-5" />,
+      gradient: 'from-gray-400 to-gray-600',
+      animation: 'animate-pulse',
+      glow: 'shadow-gray-500/20'
+    },
+    1: {
+      // Revocable - Growth/Sparkle theme
+      icon: <Sparkles className="w-5 h-5" />,
+      gradient: 'from-emerald-400 to-emerald-600',
+      animation: 'animate-bounce',
+      glow: 'shadow-emerald-500/30'
+    },
+    2: {
+      // Irrevocable - Crown/Shield theme
+      icon: <Crown className="w-5 h-5" />,
+      gradient: 'from-blue-400 to-blue-600',
+      animation: '',
+      glow: 'shadow-blue-500/30'
+    },
+    3: {
+      // Dynasty - Building/Empire theme
+      icon: <Building2 className="w-5 h-5" />,
+      gradient: 'from-purple-400 via-pink-500 to-amber-400',
+      animation: '',
+      glow: 'shadow-purple-500/40'
+    }
+  };
+
+  const config = iconConfig[tier];
+
+  return (
+    <motion.div
+      className={`p-2.5 rounded-xl bg-gradient-to-br ${config.gradient} shadow-lg ${config.glow} ${config.animation}`}
+      whileHover={{ scale: 1.1, rotate: tier === 3 ? 5 : 0 }}
+      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+    >
+      <div className="text-white">
+        {config.icon}
+      </div>
+    </motion.div>
+  );
 };
 
 // Plan tier colors
@@ -45,10 +86,10 @@ const tierColors = {
 
 // Plan tier border colors for cards
 const tierBorderColors = {
-  0: 'border-gray-500/30',
-  1: 'border-emerald-500/40 hover:border-emerald-500/60',
-  2: 'border-blue-500/40 hover:border-blue-500/60',
-  3: 'border-purple-500/40 hover:border-purple-500/60'
+  0: 'border-gray-500/30 hover:border-gray-400/50',
+  1: 'border-emerald-500/40 hover:border-emerald-400/60',
+  2: 'border-blue-500/40 hover:border-blue-400/60',
+  3: 'border-purple-500/40 hover:border-purple-400/60'
 };
 
 // Plan tier button colors
@@ -57,6 +98,14 @@ const tierButtonColors = {
   1: 'bg-emerald-600 hover:bg-emerald-700 text-white',
   2: 'bg-blue-600 hover:bg-blue-700 text-white',
   3: 'bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white'
+};
+
+// Card glow colors based on tier
+const tierGlowColors = {
+  0: 'group-hover:shadow-gray-500/10',
+  1: 'group-hover:shadow-emerald-500/20',
+  2: 'group-hover:shadow-blue-500/20',
+  3: 'group-hover:shadow-purple-500/30'
 };
 
 const BillingPage = () => {
