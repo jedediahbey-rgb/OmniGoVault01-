@@ -833,6 +833,7 @@ export default function BinderPage() {
       const res = await fetch(`${API_URL}/api/binder/schedules/${editingSchedule.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(scheduleForm)
       });
       const data = await res.json();
@@ -857,6 +858,7 @@ export default function BinderPage() {
       const res = await fetch(`${API_URL}/api/binder/schedules/${schedule.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ enabled: !schedule.enabled })
       });
       const data = await res.json();
@@ -877,7 +879,8 @@ export default function BinderPage() {
   const handleDeleteSchedule = async (scheduleId) => {
     try {
       const res = await fetch(`${API_URL}/api/binder/schedules/${scheduleId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
       const data = await res.json();
 
@@ -897,14 +900,18 @@ export default function BinderPage() {
     setRefreshingHistory(true);
     try {
       // Fetch runs
-      const runsRes = await fetch(`${API_URL}/api/binder/runs?portfolio_id=${portfolioId}&limit=10`);
+      const runsRes = await fetch(`${API_URL}/api/binder/runs?portfolio_id=${portfolioId}&limit=10`, {
+        credentials: 'include'
+      });
       const runsData = await runsRes.json();
       if (runsData.ok) {
         setRuns(runsData.data.runs || []);
       }
 
       // Fetch latest
-      const latestRes = await fetch(`${API_URL}/api/binder/latest?portfolio_id=${portfolioId}`);
+      const latestRes = await fetch(`${API_URL}/api/binder/latest?portfolio_id=${portfolioId}`, {
+        credentials: 'include'
+      });
       const latestData = await latestRes.json();
       if (latestData.ok) {
         setLatestRun(latestData.data.run);
@@ -922,7 +929,8 @@ export default function BinderPage() {
   const handleDeleteRun = async (runId) => {
     try {
       const res = await fetch(`${API_URL}/api/binder/runs/${runId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
       const data = await res.json();
 
