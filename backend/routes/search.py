@@ -253,6 +253,51 @@ async def global_search(
             if score > 0:
                 results.append({**item, "_score": score})
     
+    # Search documents
+    if "documents" in search_types or "records" in search_types:
+        documents = await db.documents.find(
+            {"user_id": user.user_id},
+            {"_id": 0, "document_id": 1, "title": 1, "rm_id": 1, "document_type": 1, "status": 1, "portfolio_id": 1}
+        ).to_list(200)
+        
+        for doc in documents:
+            item = {
+                "id": doc.get("document_id"),
+                "type": "document",
+                "title": doc.get("title", "Untitled Document"),
+                "subtitle": f"Document • {doc.get('document_type', 'general').title()}",
+                "rm_id": doc.get("rm_id"),
+                "status": doc.get("status"),
+                "path": f"/vault/document/{doc.get('document_id')}",
+                "icon": "FileText",
+                "keywords": ["document", doc.get("document_type", ""), doc.get("status", "")]
+            }
+            score = score_match(query, item)
+            if score > 0:
+                results.append({**item, "_score": score})
+    
+    # Search parties
+    if "parties" in search_types or "records" in search_types:
+        parties = await db.parties.find(
+            {"user_id": user.user_id},
+            {"_id": 0, "id": 1, "name": 1, "role": 1, "portfolio_id": 1, "email": 1}
+        ).to_list(200)
+        
+        for party in parties:
+            item = {
+                "id": party.get("id"),
+                "type": "party",
+                "title": party.get("name", "Unnamed Party"),
+                "subtitle": f"Party • {party.get('role', 'Unknown').title()}",
+                "email": party.get("email"),
+                "path": f"/vault/governance/parties/{party.get('id')}",
+                "icon": "User",
+                "keywords": ["party", "person", party.get("role", ""), party.get("name", "").split()[0] if party.get("name") else ""]
+            }
+            score = score_match(query, item)
+            if score > 0:
+                results.append({**item, "_score": score})
+    
     # Sort by score and limit
     results.sort(key=lambda x: x.get("_score", 0), reverse=True)
     results = results[:limit]
