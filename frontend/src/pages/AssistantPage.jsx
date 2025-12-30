@@ -242,20 +242,20 @@ export default function AssistantPage({ user }) {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-white/10">
-              <div className="flex gap-3">
+            <div className="p-3 sm:p-4 border-t border-white/10">
+              <div className="flex gap-2 sm:gap-3">
                 <Textarea
                   placeholder="Ask about equity, trusts, maxims, or documents..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="flex-1 min-h-[60px] max-h-[120px] bg-white/5 border-white/10 focus:border-vault-gold resize-none"
+                  className="flex-1 min-h-[60px] max-h-[120px] bg-white/5 border-white/10 focus:border-vault-gold resize-none w-full"
                   rows={2}
                 />
                 <Button
                   onClick={() => sendMessage()}
                   disabled={!input.trim() || loading}
-                  className="btn-primary h-auto"
+                  className="btn-primary h-auto flex-shrink-0"
                 >
                   <PaperPlaneTilt className="w-5 h-5" weight="duotone" />
                 </Button>
