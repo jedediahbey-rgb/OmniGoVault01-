@@ -25,7 +25,7 @@ import GlassCard from '../components/shared/GlassCard';
 import IconBadge from '../components/shared/IconBadge';
 import { Button } from '../components/ui/button';
 
-// Custom styles to hide React Flow attribution - mobile optimized
+// Custom styles to hide React Flow attribution - mobile optimized "Luxury Scroll"
 const reactFlowStyles = `
   .react-flow__attribution {
     display: none !important;
@@ -480,29 +480,81 @@ function DiagramsContent() {
     };
   }, []);
 
+  // Debounced fitView with ResizeObserver integration
+  const fitViewTimeoutRef = useRef(null);
+  const lastFitRef = useRef(0);
+
+  const doFitView = useCallback(() => {
+    if (!reactFlowInstance) return;
+    
+    const now = Date.now();
+    // Prevent fitting more than once per 100ms to avoid jitter
+    if (now - lastFitRef.current < 100) return;
+    lastFitRef.current = now;
+    
+    // Clear any pending fit
+    if (fitViewTimeoutRef.current) {
+      clearTimeout(fitViewTimeoutRef.current);
+    }
+    
+    fitViewTimeoutRef.current = setTimeout(() => {
+      try {
+        reactFlowInstance.fitView({
+          padding: 0.18,
+          includeHiddenNodes: true,
+          duration: 0,
+        });
+      } catch (e) {
+        console.debug('fitView error:', e);
+      }
+    }, 50);
+  }, [reactFlowInstance]);
+
+  // ResizeObserver for container size changes (address bar collapse/expand)
+  useEffect(() => {
+    if (!reactFlowWrapper.current || !reactFlowInstance) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      doFitView();
+    });
+
+    resizeObserver.observe(reactFlowWrapper.current);
+
+    // Also handle orientation changes
+    const handleOrientationChange = () => {
+      setTimeout(doFitView, 300);
+    };
+
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      if (fitViewTimeoutRef.current) {
+        clearTimeout(fitViewTimeoutRef.current);
+      }
+    };
+  }, [reactFlowInstance, doFitView]);
+
   // Handle React Flow init
   const handleInit = useCallback((instance) => {
     setReactFlowInstance(instance);
     // Fit view after a brief delay
     setTimeout(() => {
       instance.fitView({
-        padding: isMobile ? 0.08 : 0.12,
+        padding: 0.18,
         includeHiddenNodes: true,
+        duration: 0,
       });
     }, 100);
-  }, [isMobile]);
+  }, []);
 
   // Fit view when nodes change
   useEffect(() => {
     if (nodes.length > 0 && reactFlowInstance) {
-      setTimeout(() => {
-        reactFlowInstance.fitView({
-          padding: isMobile ? 0.08 : 0.12,
-          includeHiddenNodes: true,
-        });
-      }, 50);
+      setTimeout(doFitView, 50);
     }
-  }, [nodes.length, reactFlowInstance, isMobile]);
+  }, [nodes.length, reactFlowInstance, doFitView]);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -517,170 +569,203 @@ function DiagramsContent() {
     setReactFlowInstance(null); // Reset instance for new diagram
   };
 
+  // Diagram view with "Luxury Scroll" layout
   if (selectedDiagram) {
     return (
-      <div className="h-full flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between p-2 sm:p-4 pb-1 sm:pb-2 gap-2 shrink-0">
-          <button
-            onClick={() => setSelectedDiagram(null)}
-            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base shrink-0"
-          >
-            ← Back
-          </button>
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-            <h2 className="text-sm sm:text-xl font-heading text-white truncate">{selectedDiagram.title}</h2>
-            <Button
-              onClick={() => setShowInfo(!showInfo)}
-              variant="outline"
-              size="sm"
-              className="btn-secondary h-7 sm:h-9 text-xs sm:text-sm px-2 sm:px-3 shrink-0"
+      <div 
+        className="flex flex-col overflow-x-hidden"
+        style={{
+          minHeight: '100dvh',
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
+      >
+        {/* Sticky Header */}
+        <header className="sticky top-0 z-50 bg-vault-dark/95 backdrop-blur-sm border-b border-white/5">
+          <div className="flex items-center justify-between p-2 sm:p-4 gap-2">
+            <button
+              onClick={() => setSelectedDiagram(null)}
+              className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base shrink-0"
             >
-              <Info className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" weight="duotone" />
-              <span className="hidden sm:inline">{showInfo ? 'Hide' : 'Show'} Info</span>
-            </Button>
-          </div>
-        </div>
-
-        <div 
-          ref={reactFlowWrapper} 
-          className="flex-grow relative mx-2 sm:mx-4 mb-2 sm:mb-4 rounded-lg sm:rounded-xl overflow-hidden border border-white/10"
-          style={{ flex: '1 1 auto', minHeight: 0 }}
-        >
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onInit={handleInit}
-            fitView
-            fitViewOptions={{ padding: isMobile ? 0.08 : 0.12, includeHiddenNodes: true }}
-            minZoom={isMobile ? 0.08 : 0.15}
-            maxZoom={isMobile ? 1.0 : 1.2}
-            panOnScroll={false}
-            zoomOnScroll={false}
-            zoomOnPinch={true}
-            panOnDrag={true}
-            preventScrolling={true}
-            proOptions={{ hideAttribution: true }}
-            style={{ width: '100%', height: '100%', background: 'rgba(11, 18, 33, 0.95)' }}
-          >
-            <Controls 
-              position="bottom-right"
-              showInteractive={false}
-              className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-1 sm:!m-2 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-5 [&>button]:!h-5 sm:[&>button]:!w-7 sm:[&>button]:!h-7"
-            />
-            {/* Hide MiniMap on mobile */}
-            {!isMobile && (
-              <MiniMap 
-                style={{ 
-                  backgroundColor: 'rgba(11, 18, 33, 0.95)',
-                  border: '1px solid rgba(198, 168, 124, 0.3)',
-                  borderRadius: '6px',
-                  width: 90,
-                  height: 60,
-                  margin: '8px',
-                }}
-                nodeColor={(node) => {
-                  if (node.style?.borderColor?.includes('C6A87C')) return '#C6A87C';
-                  if (node.style?.borderColor?.includes('3B82F6')) return '#3B82F6';
-                  if (node.style?.borderColor?.includes('22C55E')) return '#22C55E';
-                  if (node.style?.borderColor?.includes('A855F7')) return '#A855F7';
-                  return '#EF4444';
-                }}
-                position="top-right"
-                pannable={false}
-                zoomable={false}
-              />
-            )}
-            <Background color="rgba(255,255,255,0.05)" gap={20} />
-          </ReactFlow>
-
-          {/* Info Panel - immediate appearance with high z-index */}
-          {showInfo && (
-            <div
-              className="absolute right-2 sm:right-4 top-2 sm:top-4 w-[calc(100%-1rem)] sm:w-80 max-h-[60%] sm:max-h-[80%] overflow-y-auto z-50"
-              style={{ zIndex: 1000 }}
-            >
-              <GlassCard className="relative !bg-vault-dark/98 backdrop-blur-xl shadow-2xl border-vault-gold/30">
-                <button
-                  onClick={() => setShowInfo(false)}
-                  className="absolute top-2 right-2 text-white/40 hover:text-white p-1"
-                >
-                  <X className="w-4 h-4" weight="duotone" />
-                </button>
-                <h3 className="font-heading text-base sm:text-lg text-white mb-3 sm:mb-4 pr-6">{selectedDiagram.title}</h3>
-                <div className="prose prose-sm prose-invert">
-                  {selectedDiagram.info.split('\n\n').map((para, idx) => (
-                    <p key={idx} className="text-white/70 text-xs sm:text-sm whitespace-pre-line">{parseBoldText(para)}</p>
-                  ))}
-                </div>
-              </GlassCard>
+              ← Back
+            </button>
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+              <h2 className="text-sm sm:text-xl font-heading text-white truncate">{selectedDiagram.title}</h2>
+              <Button
+                onClick={() => setShowInfo(!showInfo)}
+                variant="outline"
+                size="sm"
+                className="btn-secondary h-7 sm:h-9 text-xs sm:text-sm px-2 sm:px-3 shrink-0"
+              >
+                <Info className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" weight="duotone" />
+                <span className="hidden sm:inline">{showInfo ? 'Hide' : 'Show'} Info</span>
+              </Button>
             </div>
-          )}
+          </div>
+        </header>
+
+        {/* Scrollable Body */}
+        <div className="flex-1 p-2 sm:p-4 overflow-y-auto">
+          {/* ReactFlow Framed Viewport Section */}
+          <div 
+            ref={reactFlowWrapper} 
+            className="relative rounded-xl overflow-hidden border border-white/10 shadow-lg"
+            style={{ 
+              height: 'clamp(420px, 70dvh, 780px)',
+            }}
+          >
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onInit={handleInit}
+              fitView
+              fitViewOptions={{ padding: 0.18, includeHiddenNodes: true, duration: 0 }}
+              minZoom={0.15}
+              maxZoom={1.0}
+              panOnScroll={false}
+              zoomOnScroll={false}
+              zoomOnPinch={true}
+              panOnDrag={true}
+              preventScrolling={true}
+              proOptions={{ hideAttribution: true }}
+              style={{ width: '100%', height: '100%', background: 'rgba(11, 18, 33, 0.95)' }}
+            >
+              <Controls 
+                position="bottom-right"
+                showInteractive={false}
+                className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-1 sm:!m-2 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-5 [&>button]:!h-5 sm:[&>button]:!w-7 sm:[&>button]:!h-7"
+              />
+              {/* Hide MiniMap on mobile */}
+              {!isMobile && (
+                <MiniMap 
+                  style={{ 
+                    backgroundColor: 'rgba(11, 18, 33, 0.95)',
+                    border: '1px solid rgba(198, 168, 124, 0.3)',
+                    borderRadius: '6px',
+                    width: 90,
+                    height: 60,
+                    margin: '8px',
+                  }}
+                  nodeColor={(node) => {
+                    if (node.style?.borderColor?.includes('C6A87C')) return '#C6A87C';
+                    if (node.style?.borderColor?.includes('3B82F6')) return '#3B82F6';
+                    if (node.style?.borderColor?.includes('22C55E')) return '#22C55E';
+                    if (node.style?.borderColor?.includes('A855F7')) return '#A855F7';
+                    return '#EF4444';
+                  }}
+                  position="top-right"
+                  pannable={false}
+                  zoomable={false}
+                />
+              )}
+              <Background color="rgba(255,255,255,0.05)" gap={20} />
+            </ReactFlow>
+
+            {/* Info Panel - immediate appearance with high z-index */}
+            {showInfo && (
+              <div
+                className="absolute right-2 sm:right-4 top-2 sm:top-4 w-[calc(100%-1rem)] sm:w-80 max-h-[60%] sm:max-h-[80%] overflow-y-auto z-50"
+                style={{ zIndex: 1000 }}
+              >
+                <GlassCard className="relative !bg-vault-dark/98 backdrop-blur-xl shadow-2xl border-vault-gold/30">
+                  <button
+                    onClick={() => setShowInfo(false)}
+                    className="absolute top-2 right-2 text-white/40 hover:text-white p-1"
+                  >
+                    <X className="w-4 h-4" weight="duotone" />
+                  </button>
+                  <h3 className="font-heading text-base sm:text-lg text-white mb-3 sm:mb-4 pr-6">{selectedDiagram.title}</h3>
+                  <div className="prose prose-sm prose-invert">
+                    {selectedDiagram.info.split('\n\n').map((para, idx) => (
+                      <p key={idx} className="text-white/70 text-xs sm:text-sm whitespace-pre-line">{parseBoldText(para)}</p>
+                    ))}
+                  </div>
+                </GlassCard>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 
+  // Cards grid view with "Luxury Scroll" layout
   return (
-    <div className="h-[calc(100dvh-3.5rem)] sm:h-auto p-3 sm:p-8 overflow-hidden sm:overflow-auto">
-      <PageHeader
-        icon={GitBranch}
-        title="Interactive Diagrams"
-        subtitle="Visualize trust relationships and legal structures"
-        subtitleAction={<PageHelpTooltip pageKey="diagrams" />}
-      />
+    <div 
+      className="flex flex-col overflow-x-hidden"
+      style={{
+        minHeight: '100dvh',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      }}
+    >
+      {/* Sticky Header for card view */}
+      <header className="sticky top-0 z-50 bg-vault-dark/95 backdrop-blur-sm">
+        <div className="p-3 sm:p-8 pb-0">
+          <PageHeader
+            icon={GitBranch}
+            title="Interactive Diagrams"
+            subtitle="Visualize trust relationships and legal structures"
+            subtitleAction={<PageHelpTooltip pageKey="diagrams" />}
+          />
+        </div>
+      </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-        {diagrams.map((diagram) => (
-          <motion.div
-            key={diagram.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <GlassCard
-              interactive
-              glow
-              onClick={() => loadDiagram(diagram)}
-              className="h-full group !p-3 sm:!p-6"
+      {/* Scrollable Body */}
+      <div className="flex-1 p-3 sm:p-8 pt-3 overflow-y-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+          {diagrams.map((diagram) => (
+            <motion.div
+              key={diagram.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
             >
-              <IconBadge icon={diagram.icon} size="md" variant="gold" className="mb-2 sm:mb-4" />
-              <h3 className="text-base sm:text-xl font-heading text-white mb-1 sm:mb-2">{diagram.title}</h3>
-              <p className="text-white/50 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-2">{diagram.description}</p>
-              <div className="flex items-center text-vault-gold text-xs sm:text-sm">
-                <span>Explore</span>
-                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" weight="duotone" />
-              </div>
-            </GlassCard>
-          </motion.div>
-        ))}
-      </div>
+              <GlassCard
+                interactive
+                glow
+                onClick={() => loadDiagram(diagram)}
+                className="h-full group !p-3 sm:!p-6"
+              >
+                <IconBadge icon={diagram.icon} size="md" variant="gold" className="mb-2 sm:mb-4" />
+                <h3 className="text-base sm:text-xl font-heading text-white mb-1 sm:mb-2">{diagram.title}</h3>
+                <p className="text-white/50 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-2">{diagram.description}</p>
+                <div className="flex items-center text-vault-gold text-xs sm:text-sm">
+                  <span>Explore</span>
+                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" weight="duotone" />
+                </div>
+              </GlassCard>
+            </motion.div>
+          ))}
+        </div>
 
-      {/* About section - Hidden on mobile to prevent scrolling */}
-      <div className="hidden sm:block mt-12">
-        <GlassCard>
-          <h3 className="font-heading text-lg text-white mb-4">About Interactive Diagrams</h3>
-          <p className="text-white/60 text-sm mb-4">
-            These diagrams are designed to help you visualize complex legal relationships and concepts. 
-            Each diagram is interactive—you can drag nodes, zoom in and out, and explore the connections 
-            between different elements.
-          </p>
-          <div className="grid md:grid-cols-3 gap-4 text-sm">
-            <div className="p-3 bg-white/5 rounded-lg">
-              <div className="text-vault-gold mb-1">🖱️ Drag</div>
-              <div className="text-white/40">Move nodes to rearrange the diagram</div>
+        {/* About section - Hidden on mobile to prevent excessive scrolling */}
+        <div className="hidden sm:block mt-12">
+          <GlassCard>
+            <h3 className="font-heading text-lg text-white mb-4">About Interactive Diagrams</h3>
+            <p className="text-white/60 text-sm mb-4">
+              These diagrams are designed to help you visualize complex legal relationships and concepts. 
+              Each diagram is interactive—you can drag nodes, zoom in and out, and explore the connections 
+              between different elements.
+            </p>
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              <div className="p-3 bg-white/5 rounded-lg">
+                <div className="text-vault-gold mb-1">🖱️ Drag</div>
+                <div className="text-white/40">Move nodes to rearrange the diagram</div>
+              </div>
+              <div className="p-3 bg-white/5 rounded-lg">
+                <div className="text-vault-gold mb-1">🔍 Zoom</div>
+                <div className="text-white/40">Scroll or use controls to zoom in/out</div>
+              </div>
+              <div className="p-3 bg-white/5 rounded-lg">
+                <div className="text-vault-gold mb-1">ℹ️ Info</div>
+                <div className="text-white/40">Click info button for explanations</div>
+              </div>
             </div>
-            <div className="p-3 bg-white/5 rounded-lg">
-              <div className="text-vault-gold mb-1">🔍 Zoom</div>
-              <div className="text-white/40">Scroll or use controls to zoom in/out</div>
-            </div>
-            <div className="p-3 bg-white/5 rounded-lg">
-              <div className="text-vault-gold mb-1">ℹ️ Info</div>
-              <div className="text-white/40">Click info button for explanations</div>
-            </div>
-          </div>
-        </GlassCard>
+          </GlassCard>
+        </div>
       </div>
     </div>
   );
