@@ -370,39 +370,30 @@ class BillingTester:
 
     # ============ TEST RUNNER ============
 
-    def run_shared_workspace_tests(self):
-        """Run all Shared Workspace feature tests"""
-        self.log("🚀 Starting SHARED WORKSPACE Feature Tests")
+    def run_billing_tests(self):
+        """Run all Billing/Subscription feature tests"""
+        self.log("🚀 Starting BILLING/SUBSCRIPTION Feature Tests")
         self.log(f"Testing against: {self.base_url}")
         self.log("User: jedediah.bey@gmail.com (OMNICOMPETENT_OWNER role)")
         self.log("=" * 80)
         
-        # Test sequence for shared workspace feature
+        # Test sequence for billing feature
         test_sequence = [
             # Authentication
             self.test_auth_status,
-            self.test_user_subscription,
             
-            # Vault Operations
-            self.test_list_vaults,
-            self.test_create_vault,
-            self.test_get_vault_details,
+            # Public Plans Endpoint (no auth required)
+            self.test_billing_plans_public,
+            self.test_billing_plans_auth_access,
             
-            # Participant Management
-            self.test_invite_participant,
-            self.test_list_participants,
+            # Auth-required endpoints
+            self.test_billing_subscription_auth,
+            self.test_billing_usage_auth,
+            self.test_billing_checkout_auth,
             
-            # Document Operations
-            self.test_create_document,
-            self.test_get_document_details,
-            self.test_submit_for_review,
-            self.test_affirm_document,
-            
-            # Signing
-            self.test_sign_document,
-            
-            # Notifications
-            self.test_get_notifications,
+            # Security tests (should require auth)
+            self.test_billing_subscription_without_auth,
+            self.test_billing_usage_without_auth,
         ]
         
         for test_func in test_sequence:
@@ -423,7 +414,7 @@ class BillingTester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 SHARED WORKSPACE FEATURE TEST SUMMARY")
+        self.log("🏁 BILLING/SUBSCRIPTION FEATURE TEST SUMMARY")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
@@ -440,43 +431,49 @@ class BillingTester:
         
         self.log("\n🎯 KEY FINDINGS:")
         if success_rate >= 90:
-            self.log("✅ Shared Workspace feature working perfectly")
-            self.log("✅ All vault CRUD operations functional")
-            self.log("✅ Participant management working correctly")
-            self.log("✅ Document workflow (create, review, affirm, sign) operational")
-            self.log("✅ Notifications system capturing vault activities")
+            self.log("✅ Billing/Subscription feature working perfectly")
+            self.log("✅ All 4 plans (Testamentary, Revocable, Irrevocable, Dynasty) available")
+            self.log("✅ Public plans endpoint accessible without authentication")
+            self.log("✅ Auth-protected endpoints properly secured")
+            self.log("✅ Subscription and usage data correctly returned")
+            self.log("✅ Checkout session creation functional")
         elif success_rate >= 75:
-            self.log("⚠️ Most shared workspace functionality working with minor issues")
+            self.log("⚠️ Most billing functionality working with minor issues")
         else:
-            self.log("❌ Significant shared workspace implementation issues detected")
+            self.log("❌ Significant billing implementation issues detected")
         
         # Specific feature status
         self.log("\n📋 FEATURE STATUS:")
         
-        # Vault operations
-        vault_tests = [t for t in self.test_results if 'vault' in t['test'].lower()]
-        vault_success = sum(1 for t in vault_tests if t['success'])
-        self.log(f"  Vault Operations: {vault_success}/{len(vault_tests)} ({'✅' if vault_success == len(vault_tests) else '❌'})")
+        # Plans endpoint
+        plans_tests = [t for t in self.test_results if 'plans' in t['test'].lower()]
+        plans_success = sum(1 for t in plans_tests if t['success'])
+        self.log(f"  Plans Endpoint: {plans_success}/{len(plans_tests)} ({'✅' if plans_success == len(plans_tests) else '❌'})")
         
-        # Participant management
-        participant_tests = [t for t in self.test_results if 'participant' in t['test'].lower()]
-        participant_success = sum(1 for t in participant_tests if t['success'])
-        self.log(f"  Participant Management: {participant_success}/{len(participant_tests)} ({'✅' if participant_success == len(participant_tests) else '❌'})")
+        # Subscription endpoint
+        subscription_tests = [t for t in self.test_results if 'subscription' in t['test'].lower()]
+        subscription_success = sum(1 for t in subscription_tests if t['success'])
+        self.log(f"  Subscription Endpoint: {subscription_success}/{len(subscription_tests)} ({'✅' if subscription_success == len(subscription_tests) else '❌'})")
         
-        # Document operations
-        document_tests = [t for t in self.test_results if 'document' in t['test'].lower() or 'affirm' in t['test'].lower() or 'sign' in t['test'].lower()]
-        document_success = sum(1 for t in document_tests if t['success'])
-        self.log(f"  Document Operations: {document_success}/{len(document_tests)} ({'✅' if document_success == len(document_tests) else '❌'})")
+        # Usage endpoint
+        usage_tests = [t for t in self.test_results if 'usage' in t['test'].lower()]
+        usage_success = sum(1 for t in usage_tests if t['success'])
+        self.log(f"  Usage Endpoint: {usage_success}/{len(usage_tests)} ({'✅' if usage_success == len(usage_tests) else '❌'})")
         
-        # Notifications
-        notification_tests = [t for t in self.test_results if 'notification' in t['test'].lower()]
-        notification_success = sum(1 for t in notification_tests if t['success'])
-        self.log(f"  Notifications: {notification_success}/{len(notification_tests)} ({'✅' if notification_success == len(notification_tests) else '❌'})")
+        # Checkout endpoint
+        checkout_tests = [t for t in self.test_results if 'checkout' in t['test'].lower()]
+        checkout_success = sum(1 for t in checkout_tests if t['success'])
+        self.log(f"  Checkout Endpoint: {checkout_success}/{len(checkout_tests)} ({'✅' if checkout_success == len(checkout_tests) else '❌'})")
+        
+        # Security
+        auth_tests = [t for t in self.test_results if 'no auth' in t['test'].lower()]
+        auth_success = sum(1 for t in auth_tests if t['success'])
+        self.log(f"  Security (Auth Required): {auth_success}/{len(auth_tests)} ({'✅' if auth_success == len(auth_tests) else '❌'})")
         
         return success_rate >= 75
 
 
 if __name__ == "__main__":
-    tester = SharedWorkspaceTester()
-    success = tester.run_shared_workspace_tests()
+    tester = BillingTester()
+    success = tester.run_billing_tests()
     sys.exit(0 if success else 1)
