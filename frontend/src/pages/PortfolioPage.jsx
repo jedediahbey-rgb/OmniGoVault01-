@@ -40,10 +40,17 @@ const PortfolioPage = ({ user, logout }) => {
   const [newDoc, setNewDoc] = useState({ title: "", document_type: "" });
 
   useEffect(() => {
-    fetchData();
+    if (portfolioId && portfolioId !== 'undefined') {
+      fetchData();
+    }
   }, [portfolioId]);
 
   const fetchData = async () => {
+    if (!portfolioId || portfolioId === 'undefined') {
+      navigate('/vault');
+      return;
+    }
+    
     try {
       const [portfolioRes, profileRes, assetsRes, noticesRes, docsRes, templatesRes] = await Promise.all([
         axios.get(`${API}/portfolios/${portfolioId}`),
