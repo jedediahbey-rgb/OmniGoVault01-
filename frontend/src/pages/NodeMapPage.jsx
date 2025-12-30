@@ -653,7 +653,7 @@ export default function NodeMapPage() {
   }
 
   return (
-    <div className="fixed inset-0 top-14 flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden bg-vault-dark">
+    <div className="absolute inset-0 flex flex-col p-2 sm:p-4 lg:p-6 overflow-hidden">
       {/* Header - More compact on mobile */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 mb-1 sm:mb-4 shrink-0">
         <div className="flex items-center gap-2 sm:gap-4">
