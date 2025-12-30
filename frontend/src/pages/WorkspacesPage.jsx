@@ -4,10 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import {
   Plus,
-  Vault,
+  UsersThree,
   Users,
   FileText,
-  Clock,
+  PencilSimpleLine,
   CaretRight,
   MagnifyingGlass,
   FunnelSimple,
@@ -21,7 +21,8 @@ import {
   Scales,
   Bank,
   Briefcase,
-  House
+  House,
+  Handshake
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
