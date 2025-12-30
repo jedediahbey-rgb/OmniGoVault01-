@@ -36,7 +36,7 @@ const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) 
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:truncate [&>span]:text-left overflow-hidden",
       className
     )}
     // On touch/click, blur any focused element first (closes keyboard)
@@ -47,9 +47,9 @@ const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) 
       }
     }}
     {...props}>
-    {children}
+    <span className="truncate flex-1 min-w-0">{children}</span>
     <SelectPrimitive.Icon asChild>
-      <CaretDown className="h-4 w-4 opacity-50" weight="duotone" />
+      <CaretDown className="h-4 w-4 opacity-50 flex-shrink-0 ml-2" weight="duotone" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ))
