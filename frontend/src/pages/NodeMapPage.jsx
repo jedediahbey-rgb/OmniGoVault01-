@@ -755,38 +755,40 @@ export default function NodeMapPage() {
             )}
             <Background color="rgba(255,255,255,0.05)" gap={isMobile ? 20 : 25} />
             
-            {/* Legend Panel - Very compact on mobile */}
-            <Panel position="bottom-left" className="!m-2 sm:!m-3 !mb-2 sm:!mb-3">
-              <GlassCard className="!p-1.5 sm:!p-3 !bg-vault-dark/95 !border-vault-gold/20">
-                <div className="text-[9px] sm:text-xs text-white/70 mb-1 sm:mb-2 font-semibold">Legend</div>
-                <div className="grid grid-cols-3 sm:grid-cols-2 gap-x-2 sm:gap-x-4 gap-y-0.5 sm:gap-y-1.5 text-[8px] sm:text-xs">
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-[#C6A87C]" />
-                    <span className="text-white/80">Trust</span>
+            {/* Legend Panel - Only inside ReactFlow on desktop */}
+            {!isMobile && (
+              <Panel position="bottom-left" className="!m-3">
+                <GlassCard className="!p-3 !bg-vault-dark/95 !border-vault-gold/20">
+                  <div className="text-xs text-white/70 mb-2 font-semibold">Legend</div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded bg-[#C6A87C]" />
+                      <span className="text-white/80">Trust</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded bg-[#A855F7]" />
+                      <span className="text-white/80">Grantor</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded bg-[#22C55E]" />
+                      <span className="text-white/80">Trustee</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded bg-[#FBBF24]" />
+                      <span className="text-white/80">Beneficiary</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded bg-[#EF4444]" />
+                      <span className="text-white/80">Asset</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded bg-[#0EA5E9]" />
+                      <span className="text-white/80">Governance</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-[#A855F7]" />
-                    <span className="text-white/80">Grantor</span>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-[#22C55E]" />
-                    <span className="text-white/80">Trustee</span>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-[#FBBF24]" />
-                    <span className="text-white/80">Beneficiary</span>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-[#EF4444]" />
-                    <span className="text-white/80">Asset</span>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded bg-[#0EA5E9]" />
-                    <span className="text-white/80">Gov</span>
-                  </div>
-                </div>
-              </GlassCard>
-            </Panel>
+                </GlassCard>
+              </Panel>
+            )}
           </ReactFlow>
         )}
 
