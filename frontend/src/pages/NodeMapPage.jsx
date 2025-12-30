@@ -733,26 +733,19 @@ function NodeMapContent() {
   // Loading state
   if (loading && !portfolios.length) {
     return (
-      <div 
-        className="flex flex-col overflow-x-hidden"
-        style={{
-          minHeight: '100dvh',
-          paddingTop: 'env(safe-area-inset-top, 0px)',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        }}
-      >
-        {/* Sticky Header */}
-        <header className="sticky top-0 z-50 bg-vault-dark/95 backdrop-blur-sm border-b border-white/5">
-          <div className="flex items-center gap-2 sm:gap-4 p-2 sm:p-4 lg:p-6">
+      <div className="h-full flex flex-col">
+        {/* Page Controls - matches vault page inner header style */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 p-3 sm:p-4 lg:p-6 pb-2">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link
               to="/vault"
               className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
             >
               <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
             </Link>
-            <h1 className="text-base sm:text-2xl font-heading text-white">Trust Node Map</h1>
+            <h1 className="text-base sm:text-xl lg:text-2xl font-heading text-white">Trust Node Map</h1>
           </div>
-        </header>
+        </div>
 
         {/* Loading state */}
         <div className="flex-1 flex items-center justify-center">
@@ -763,69 +756,56 @@ function NodeMapContent() {
   }
 
   return (
-    <div 
-      className="flex flex-col overflow-x-hidden"
-      style={{
-        minHeight: '100dvh',
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-      }}
-    >
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-vault-dark/95 backdrop-blur-sm border-b border-white/5">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-4 p-2 sm:p-4 lg:p-6">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link
-              to="/vault"
-              className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
-            >
-              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
-            </Link>
-            <h1 className="text-base sm:text-2xl font-heading text-white">Trust Node Map</h1>
-          </div>
-          
-          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-            <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
-              <SelectTrigger className="flex-1 sm:flex-none sm:w-[200px] bg-vault-dark border-vault-gold/30 h-7 sm:h-10 text-xs sm:text-sm">
-                <SelectValue placeholder="Select Portfolio" />
-              </SelectTrigger>
-              <SelectContent className="bg-vault-dark border-vault-gold/30">
-                {portfolios.map(p => (
-                  <SelectItem key={p.portfolio_id} value={p.portfolio_id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <Button
-              onClick={() => {
-                if (selectedPortfolio) {
-                  navigate(`/vault/portfolio/${selectedPortfolio}/trust-profile`);
-                } else {
-                  navigate('/vault');
-                }
-              }}
-              variant="outline"
-              size="sm"
-              className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10 h-7 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
-            >
-              <Plus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Add Party</span>
-            </Button>
-          </div>
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Page Controls - matches vault page inner header style */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 p-3 sm:p-4 lg:p-6 pb-2 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link
+            to="/vault"
+            className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
+          >
+            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
+          </Link>
+          <h1 className="text-base sm:text-xl lg:text-2xl font-heading text-white">Trust Node Map</h1>
         </div>
-      </header>
+        
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
+            <SelectTrigger className="flex-1 sm:flex-none sm:w-[200px] bg-vault-dark border-vault-gold/30 h-8 sm:h-10 text-xs sm:text-sm">
+              <SelectValue placeholder="Select Portfolio" />
+            </SelectTrigger>
+            <SelectContent className="bg-vault-dark border-vault-gold/30">
+              {portfolios.map(p => (
+                <SelectItem key={p.portfolio_id} value={p.portfolio_id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Button
+            onClick={() => {
+              if (selectedPortfolio) {
+                navigate(`/vault/portfolio/${selectedPortfolio}/trust-profile`);
+              } else {
+                navigate('/vault');
+              }
+            }}
+            variant="outline"
+            size="sm"
+            className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10 h-8 sm:h-10 text-xs sm:text-sm px-2 sm:px-4"
+          >
+            <Plus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Add Party</span>
+          </Button>
+        </div>
+      </div>
 
-      {/* Scrollable Body */}
-      <div className="flex-1 p-2 sm:p-4 lg:p-6 pt-2 overflow-y-auto">
-        {/* ReactFlow Framed Viewport Section */}
+      {/* ReactFlow Framed Viewport Section - Luxury Scroll */}
+      <div className="flex-1 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 min-h-0">
         <div 
           ref={reactFlowWrapper} 
-          className="relative rounded-xl overflow-hidden border border-white/10 shadow-lg"
-          style={{ 
-            height: 'clamp(420px, 70dvh, 780px)',
-          }}
+          className="h-full relative rounded-xl overflow-hidden border border-white/10 shadow-lg"
         >
           {loading ? (
             <div className="flex items-center justify-center h-full bg-vault-dark/95">
@@ -943,10 +923,12 @@ function NodeMapContent() {
             </motion.div>
           )}
         </div>
+      </div>
 
-        {/* Mobile Legend - Below the framed section */}
-        {isMobile && (
-          <div className="mt-3 py-2 px-3 bg-vault-dark/50 rounded-lg border border-white/5">
+      {/* Mobile Legend - Below the framed section */}
+      {isMobile && (
+        <div className="shrink-0 px-3 pb-3">
+          <div className="py-2 px-3 bg-vault-dark/50 rounded-lg border border-white/5">
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px]">
               <div className="flex items-center gap-1">
                 <div className="w-2.5 h-2.5 rounded bg-[#C6A87C]" />
@@ -974,8 +956,8 @@ function NodeMapContent() {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
