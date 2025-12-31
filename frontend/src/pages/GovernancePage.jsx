@@ -642,7 +642,7 @@ export default function GovernancePage({ user }) {
   const fetchParties = async () => {
     if (!selectedPortfolio) return;
     try {
-      const res = await axios.get(`${API}/portfolios/${selectedPortfolio}/parties`);
+      const res = await api.get(`${API}/portfolios/${selectedPortfolio}/parties`);
       setParties(res.data || []);
     } catch (error) {
       console.error('Failed to fetch parties:', error);
