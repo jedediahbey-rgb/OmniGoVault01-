@@ -768,23 +768,15 @@ function IndexTab() {
         </div>
       ) : (
         /* Premium Empty State */
-        <motion.div 
-          className="text-center py-12 sm:py-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <motion.div 
-            className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5"
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          >
+        <div className="text-center py-12 sm:py-16">
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5">
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10" />
             <div className="absolute inset-0 flex items-center justify-center">
               <Archive className="w-10 h-10 sm:w-12 sm:h-12 text-white/20" weight="duotone" />
             </div>
             {/* Subtle glow */}
             <div className="absolute inset-0 rounded-2xl bg-vault-gold/5 blur-xl opacity-50" />
-          </motion.div>
+          </div>
           
           <h3 className="text-white font-heading text-lg sm:text-xl mb-2">No Sources Found</h3>
           <p className="text-white/40 text-sm mb-5 max-w-xs mx-auto">
@@ -792,17 +784,15 @@ function IndexTab() {
           </p>
           
           {hasActiveFilters && (
-            <motion.button
+            <button
               onClick={clearFilters}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-vault-gold/30 rounded-lg text-white/60 hover:text-white text-sm transition-all"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
             >
               <X className="w-4 h-4" />
               Clear filters
-            </motion.button>
+            </button>
           )}
-        </motion.div>
+        </div>
       )}}
       
       {/* Source Detail Modal */}
