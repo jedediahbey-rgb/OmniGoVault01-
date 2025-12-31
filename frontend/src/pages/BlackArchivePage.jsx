@@ -1525,16 +1525,6 @@ function ReadingRoomTab() {
 // ARCHIVE MAP TAB - Interactive React Flow Implementation
 // ============================================================================
 
-import ReactFlow, {
-  Background,
-  Controls,
-  MiniMap,
-  useNodesState,
-  useEdgesState,
-  MarkerType,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
-
 // Custom Node Types
 const DoctrineNode = ({ data }) => (
   <motion.div 
