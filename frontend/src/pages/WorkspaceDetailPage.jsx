@@ -234,7 +234,7 @@ export default function WorkspaceDetailPage({ user }) {
     try {
       await axios.post(`${API}/vaults/${vaultId}/activate`, {}, { withCredentials: true });
       toast.success('Vault activated');
-      fetchVault();
+      await fetchVault();
     } catch (error) {
       toast.error(
             typeof error.response?.data?.detail === 'string' 
