@@ -1766,10 +1766,10 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
     fitViewCalled.current = false;
   }, [nodes.length]);
 
-  // Default viewport - zoomed out to show all 8 nodes in the larger container
+  // Default viewport - zoomed OUT to show all nodes so MiniMap viewport is smaller
   const defaultViewport = isMobile 
-    ? { x: 15, y: 15, zoom: 0.9 }   // Higher zoom since container is bigger
-    : { x: 50, y: 30, zoom: 0.85 };
+    ? { x: 10, y: 5, zoom: 0.85 }
+    : { x: 40, y: 20, zoom: 0.8 };
 
   return (
     <ReactFlow
