@@ -421,6 +421,13 @@ export default function VaultPage({ user, initialView }) {
       
     } catch (err) {
       console.error('[Vault] Failed to load documents:', err);
+      
+      // Check if auth error - don't show error state
+      if (err.response?.status === 401) {
+        setVaultState(VAULT_STATES.NO_PORTFOLIOS);
+        return;
+      }
+      
       setError('Failed to load documents');
       setVaultState(VAULT_STATES.ERROR);
     }
