@@ -419,3 +419,44 @@ Testing the refactored Black Archive page after major component breakdown from 2
 - **Restrictions**: Proper limitations on trial extensions (30 days max) and admin impersonation (blocked)
 
 
+
+## Bates Numbering Prefix System Refactoring (December 31, 2025)
+
+### New Service: `/app/backend/services/bates_config_service.py`
+
+**Features:**
+- **Prefix Schemes**: Saveable templates for Bates numbering configurations
+- **Pattern Variables**: Support for `{PORTFOLIO}`, `{MATTER}`, `{DATE}`, `{YEAR}` in prefixes
+- **Continuation Tracking**: Track last Bates number used across binders
+- **Position Options**: 6 positions (bottom-right/left/center, top-right/left/center)
+- **Validation**: Prefix validation with normalization
+
+### New API Endpoints:
+
+**Prefix Schemes:**
+- `POST /api/bates/schemes` - Create a new prefix scheme
+- `GET /api/bates/schemes` - List all schemes for workspace
+- `GET /api/bates/schemes/{scheme_id}` - Get specific scheme
+- `PUT /api/bates/schemes/{scheme_id}` - Update a scheme
+- `DELETE /api/bates/schemes/{scheme_id}` - Delete a scheme
+
+**Continuation:**
+- `GET /api/bates/continuation` - Get continuation for a prefix
+- `POST /api/bates/continuation` - Set/update continuation
+- `GET /api/bates/continuations` - List all continuations
+
+**Utilities:**
+- `GET /api/bates/config/resolve` - Get fully resolved config
+- `POST /api/bates/validate-prefix` - Validate a prefix
+- `POST /api/bates/format-number` - Format a Bates number
+- `POST /api/bates/parse-number` - Parse a Bates number string
+- `GET /api/bates/presets` - Get built-in scheme presets
+
+### Test Cases:
+1. [ ] Get presets list
+2. [ ] Create a prefix scheme
+3. [ ] Get resolved config
+4. [ ] Validate prefix
+5. [ ] Format Bates number
+6. [ ] Parse Bates number
+
