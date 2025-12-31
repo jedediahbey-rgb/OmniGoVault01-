@@ -990,8 +990,8 @@ function ClaimsTab() {
       
       {claims.length > 0 ? (
         <div className="grid md:grid-cols-2 gap-4">
-          {claims.map(claim => (
-            <ClaimCard key={claim.claim_id} claim={claim} onClick={() => openClaim(claim)} />
+          {claims.map((claim, index) => (
+            <ClaimCard key={claim.claim_id} claim={claim} index={index} onClick={() => openClaim(claim)} />
           ))}
         </div>
       ) : (
