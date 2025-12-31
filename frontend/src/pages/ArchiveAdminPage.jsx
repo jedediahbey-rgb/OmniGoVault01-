@@ -554,7 +554,7 @@ export default function ArchiveAdminPage() {
                         <SelectValue placeholder="All Statuses" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Statuses</SelectItem>
+                        <SelectItem value="all">All Statuses</SelectItem>
                         {CLAIM_STATUSES.map((s) => (
                           <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                         ))}
