@@ -1,37 +1,31 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import MonoChip from '../components/shared/MonoChip';
 import {
-  Archive,
   ArrowCounterClockwise,
   CaretRight,
+  CaretDown,
   Check,
   Clock,
   DotsThreeVertical,
   Download,
   FileText,
   Folder,
-  FolderSimple,
-  Funnel,
-  List,
+  FolderOpen,
   MagnifyingGlass,
-  Package,
   Plus,
   ShieldCheck,
-  SquaresFour,
   Star,
   Tag,
   Trash,
-  X
+  X,
+  Swap,
+  Lock,
+  Eye
 } from '@phosphor-icons/react';
-import PageHeader from '../components/shared/PageHeader';
-import GlassCard from '../components/shared/GlassCard';
-import IconBadge from '../components/shared/IconBadge';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Checkbox } from '../components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,253 +39,433 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription,
 } from '../components/ui/dialog';
-import { staggerContainer, fadeInUp, paneTransition } from '../lib/motion';
 import { toast } from 'sonner';
 import { humanizeSlug } from '../lib/utils';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Helper to normalize IDs for comparison
-const normalizeId = (v) => (v == null ? null : String(v).trim());
+// ============================================================================
+// VAULT STATE MACHINE - Clean, predictable state flow
+// ============================================================================
+const VAULT_STATES = {
+  LOADING: 'loading',
+  NO_PORTFOLIOS: 'no_portfolios',
+  SELECT_PORTFOLIO: 'select_portfolio',
+  READY: 'ready',
+  ERROR: 'error'
+};
 
-// Extracted SidebarContent component to avoid defining during render
-function VaultSidebarContent({ 
-  selectedPortfolioId, 
-  setSelectedPortfolioId, 
-  showTrash, 
-  setShowTrash,
-  setShowNewPortfolio, 
-  setSidebarOpen, 
-  navigate, 
-  allDocsCount,
-  portfolios, 
-  trashedDocuments 
-}) {
-  const handleAllDocumentsClick = () => {
-    console.log("[Vault] clicked All Documents, currentSelectedId:", selectedPortfolioId);
-    setSelectedPortfolioId(null);
-    localStorage.removeItem("defaultPortfolioId");
-    setShowTrash(false);
-    setSidebarOpen(false);
-    // Don't navigate if already on vault/documents - prevents unnecessary re-renders
-    if (window.location.pathname !== '/vault/documents') {
-      navigate('/vault/documents');
-    }
-  };
+// ============================================================================
+// PREMIUM ANIMATED COMPONENTS
+// ============================================================================
 
-  const handlePortfolioClick = (portfolio) => {
-    console.log("[Vault] clicked portfolio:", { 
-      id: portfolio.portfolio_id, 
-      name: portfolio.name,
-      currentSelectedId: selectedPortfolioId 
-    });
-    setSelectedPortfolioId(portfolio.portfolio_id);
-    // localStorage sync handled by useEffect
-    setShowTrash(false);
-    setSidebarOpen(false);
-    // Don't navigate if already on vault/documents - prevents unnecessary re-renders
-    if (window.location.pathname !== '/vault/documents') {
-      navigate('/vault/documents');
-    }
-  };
-
+// Glassy sidebar with animated shimmer
+function GlassSidebar({ children, className = '' }) {
   return (
-    <>
-      <div className="p-4 border-b border-white/10">
-        <Button 
-          onClick={() => { setShowNewPortfolio(true); setSidebarOpen(false); }}
-          className="w-full btn-secondary text-sm"
-        >
-          <Plus className="w-4 h-4 mr-2" weight="duotone" />
-          New Portfolio
-        </Button>
+    <div className={`relative overflow-hidden ${className}`}>
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] via-transparent to-white/[0.03]" />
+      
+      {/* Animated shimmer effect */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute -inset-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent skew-x-12"
+          animate={{
+            x: ['0%', '200%'],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+        />
       </div>
       
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
-        <button
-          onClick={handleAllDocumentsClick}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-            !selectedPortfolioId && !showTrash
-              ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
-              : 'text-white/60 hover:bg-white/5'
-          }`}
-        >
-          <FolderSimple className="w-4 h-4" weight="duotone" />
-          <span className="text-sm">All Documents</span>
-          <span className="ml-auto text-xs opacity-60">{allDocsCount}</span>
-        </button>
-        
-        <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-4 mb-2">Portfolios</p>
-        
-        {portfolios.map(portfolio => {
-          // Portfolio doc count comes from portfolio.document_count if available, otherwise show nothing
-          const portfolioDocCount = portfolio.document_count || 0;
-          return (
-            <button
-              key={portfolio.portfolio_id}
-              onClick={() => handlePortfolioClick(portfolio)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-                normalizeId(selectedPortfolioId) === normalizeId(portfolio.portfolio_id)
-                  ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
-                  : 'text-white/60 hover:bg-white/5'
-              }`}
-            >
-              <Folder className="w-4 h-4" weight="duotone" />
-              <span className="text-sm truncate">{portfolio.name}</span>
-              {portfolioDocCount > 0 && (
-                <span className="ml-auto text-xs opacity-60">{portfolioDocCount}</span>
-              )}
-            </button>
-          );
-        })}
-        
-        {portfolios.length === 0 && (
-          <p className="text-white/30 text-xs text-center py-4">No portfolios yet</p>
-        )}
-
-        {/* Trash Section */}
-        <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-6 mb-2">System</p>
-        <button
-          onClick={() => { 
-            console.log("[Vault] clicked Trash");
-            setSelectedPortfolioId(null); 
-            setShowTrash(true); 
-            setSidebarOpen(false);
-            navigate('/vault/trash');
-          }}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-            showTrash
-              ? 'bg-red-500/10 text-red-400 border border-red-500/20' 
-              : 'text-white/40 hover:bg-white/5'
-          }`}
-        >
-          <Trash className="w-4 h-4" weight="duotone" />
-          <span className="text-sm">Trash</span>
-          {trashedDocuments.length > 0 && (
-            <span className="ml-auto text-xs opacity-60">{trashedDocuments.length}</span>
-          )}
-        </button>
+      {/* Glass surface */}
+      <div className="absolute inset-0 backdrop-blur-xl bg-[#0a0f1a]/80" />
+      
+      {/* Border glow */}
+      <div className="absolute inset-0 border-r border-white/10" />
+      
+      {/* Content */}
+      <div className="relative z-10 h-full flex flex-col">
+        {children}
       </div>
-    </>
+    </div>
   );
 }
 
+// Premium document card with museum-style framing
+function DocumentCard({ doc, isPinned, onPin, onOpen, onTrash, onExport, isSelected, onSelect }) {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -4 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      onClick={() => onSelect(doc)}
+      className={`
+        relative group cursor-pointer
+        bg-gradient-to-b from-white/[0.08] to-white/[0.02]
+        backdrop-blur-sm
+        border transition-all duration-300
+        rounded-lg overflow-hidden
+        ${isSelected 
+          ? 'border-vault-gold/60 shadow-[0_0_30px_rgba(212,175,55,0.15)]' 
+          : 'border-white/10 hover:border-white/20'
+        }
+      `}
+    >
+      {/* Hover glow effect */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-gradient-to-t from-vault-gold/5 to-transparent pointer-events-none"
+          />
+        )}
+      </AnimatePresence>
+      
+      {/* Card content */}
+      <div className="p-5">
+        {/* Header row */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="w-12 h-12 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center">
+            <FileText className="w-6 h-6 text-vault-gold" weight="duotone" />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {isPinned && (
+              <Star className="w-4 h-4 text-vault-gold fill-vault-gold" weight="fill" />
+            )}
+            {doc.is_locked && (
+              <Lock className="w-4 h-4 text-green-400" weight="fill" />
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button 
+                  className="p-1.5 rounded-md text-white/30 hover:text-white hover:bg-white/10 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <DotsThreeVertical className="w-4 h-4" weight="bold" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-[#0f1629] border-white/10 min-w-[160px]">
+                <DropdownMenuItem 
+                  onClick={(e) => { e.stopPropagation(); onOpen(doc); }}
+                  className="text-white/70 hover:text-white focus:text-white gap-2"
+                >
+                  <Eye className="w-4 h-4" weight="duotone" />
+                  Open
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={(e) => { e.stopPropagation(); onPin(doc.document_id); }}
+                  className="text-white/70 hover:text-white focus:text-white gap-2"
+                >
+                  <Star className="w-4 h-4" weight="duotone" />
+                  {isPinned ? 'Unpin' : 'Pin'}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={(e) => { e.stopPropagation(); onExport(doc); }}
+                  className="text-white/70 hover:text-white focus:text-white gap-2"
+                >
+                  <Download className="w-4 h-4" weight="duotone" />
+                  Export PDF
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuItem 
+                  onClick={(e) => { e.stopPropagation(); onTrash(doc.document_id); }}
+                  className="text-red-400 hover:text-red-300 focus:text-red-300 gap-2"
+                >
+                  <Trash className="w-4 h-4" weight="duotone" />
+                  Move to Trash
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        
+        {/* Title */}
+        <h3 className="text-white font-medium text-base mb-1 line-clamp-2 leading-snug">
+          {doc.title}
+        </h3>
+        
+        {/* Type badge */}
+        <p className="text-vault-gold/70 text-xs font-medium uppercase tracking-wider mb-4">
+          {humanizeSlug(doc.document_type)}
+        </p>
+        
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-3 border-t border-white/5">
+          <span className="flex items-center gap-1.5 text-white/40 text-xs">
+            <Clock className="w-3.5 h-3.5" weight="duotone" />
+            {new Date(doc.updated_at).toLocaleDateString()}
+          </span>
+          <span className={`
+            px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wide
+            ${doc.is_locked 
+              ? 'bg-green-500/20 text-green-400' 
+              : doc.status === 'completed' 
+                ? 'bg-vault-gold/20 text-vault-gold'
+                : 'bg-white/10 text-white/50'
+            }
+          `}>
+            {doc.is_locked ? 'Finalized' : doc.status || 'Draft'}
+          </span>
+        </div>
+      </div>
+      
+      {/* Bottom accent line */}
+      <div className={`
+        absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300
+        ${isSelected 
+          ? 'bg-gradient-to-r from-vault-gold/0 via-vault-gold to-vault-gold/0' 
+          : 'bg-transparent'
+        }
+      `} />
+    </motion.div>
+  );
+}
+
+// Premium loading skeleton
+function VaultSkeleton() {
+  return (
+    <div className="min-h-screen flex">
+      {/* Sidebar skeleton */}
+      <div className="w-72 border-r border-white/10 p-6 space-y-4">
+        <div className="h-10 bg-white/5 rounded-lg animate-pulse" />
+        <div className="h-12 bg-white/5 rounded-lg animate-pulse" />
+        <div className="space-y-2 mt-6">
+          {[1,2,3].map(i => (
+            <div key={i} className="h-10 bg-white/5 rounded-lg animate-pulse" />
+          ))}
+        </div>
+      </div>
+      
+      {/* Content skeleton */}
+      <div className="flex-1 p-8">
+        <div className="h-8 w-64 bg-white/5 rounded-lg animate-pulse mb-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1,2,3,4,5,6].map(i => (
+            <div key={i} className="h-48 bg-white/5 rounded-lg animate-pulse" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Portfolio selector dropdown
+function PortfolioSelector({ portfolios, activePortfolio, onSelect, onCreateNew }) {
+  const [open, setOpen] = useState(false);
+  
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-vault-gold/30 transition-all group"
+      >
+        <div className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0">
+          <FolderOpen className="w-5 h-5 text-vault-gold" weight="duotone" />
+        </div>
+        <div className="flex-1 text-left min-w-0">
+          <p className="text-white font-medium truncate">
+            {activePortfolio?.name || 'Select Portfolio'}
+          </p>
+          <p className="text-white/40 text-xs">
+            {activePortfolio?.document_count || 0} documents
+          </p>
+        </div>
+        <CaretDown className={`w-4 h-4 text-white/40 transition-transform ${open ? 'rotate-180' : ''}`} weight="bold" />
+      </button>
+      
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-full left-0 right-0 mt-2 bg-[#0f1629] border border-white/10 rounded-lg shadow-2xl overflow-hidden z-50"
+          >
+            <div className="max-h-64 overflow-y-auto">
+              {portfolios.map(portfolio => (
+                <button
+                  key={portfolio.portfolio_id}
+                  onClick={() => { onSelect(portfolio); setOpen(false); }}
+                  className={`w-full flex items-center gap-3 p-3 hover:bg-white/5 transition-colors ${
+                    activePortfolio?.portfolio_id === portfolio.portfolio_id ? 'bg-vault-gold/10' : ''
+                  }`}
+                >
+                  <Folder className="w-5 h-5 text-vault-gold/70" weight="duotone" />
+                  <div className="flex-1 text-left">
+                    <p className="text-white text-sm">{portfolio.name}</p>
+                    <p className="text-white/40 text-xs">{portfolio.document_count || 0} docs</p>
+                  </div>
+                  {activePortfolio?.portfolio_id === portfolio.portfolio_id && (
+                    <Check className="w-4 h-4 text-vault-gold" weight="bold" />
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="border-t border-white/10 p-2">
+              <button
+                onClick={() => { onCreateNew(); setOpen(false); }}
+                className="w-full flex items-center gap-2 p-2 text-vault-gold hover:bg-vault-gold/10 rounded-md transition-colors text-sm"
+              >
+                <Plus className="w-4 h-4" weight="bold" />
+                Create New Portfolio
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// Empty state component
+function EmptyState({ icon: Icon, title, description, action }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col items-center justify-center py-20 px-8 text-center"
+    >
+      <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+        <Icon className="w-10 h-10 text-white/20" weight="duotone" />
+      </div>
+      <h3 className="text-xl font-heading text-white mb-2">{title}</h3>
+      <p className="text-white/50 max-w-sm mb-6">{description}</p>
+      {action}
+    </motion.div>
+  );
+}
+
+// ============================================================================
+// MAIN VAULT COMPONENT
+// ============================================================================
 export default function VaultPage({ user, initialView }) {
   const navigate = useNavigate();
-  const [documents, setDocuments] = useState([]);
-  const [allDocsCount, setAllDocsCount] = useState(0); // Total count for "All Documents" sidebar
-  const [trashedDocuments, setTrashedDocuments] = useState([]);
+  
+  // Core state
+  const [vaultState, setVaultState] = useState(VAULT_STATES.LOADING);
+  const [error, setError] = useState(null);
+  
+  // Data state
   const [portfolios, setPortfolios] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [activePortfolio, setActivePortfolio] = useState(null);
+  const [documents, setDocuments] = useState([]);
+  const [trashedDocuments, setTrashedDocuments] = useState([]);
+  const [pinnedDocs, setPinnedDocs] = useState([]);
+  
+  // UI state
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Store selection as ID, not object. Initialize once from localStorage.
-  const [selectedPortfolioId, setSelectedPortfolioId] = useState(() => 
-    localStorage.getItem("defaultPortfolioId") || null
-  );
-  
-  // Derive selectedPortfolio from portfolios array
-  const selectedPortfolio = useMemo(() => 
-    portfolios.find(p => normalizeId(p.portfolio_id) === normalizeId(selectedPortfolioId)) || null,
-    [portfolios, selectedPortfolioId]
-  );
-  
   const [selectedDocument, setSelectedDocument] = useState(null);
-  const [viewMode, setViewMode] = useState('grid');
   const [showTrash, setShowTrash] = useState(initialView === 'trash');
   const [showNewPortfolio, setShowNewPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
-  // Packet Builder State
-  const [showPacketBuilder, setShowPacketBuilder] = useState(false);
-  const [selectedForPacket, setSelectedForPacket] = useState([]);
-  const [packetName, setPacketName] = useState('');
-  const [buildingPacket, setBuildingPacket] = useState(false);
-
-  // Recent/Pinned documents
-  const [recentDocs, setRecentDocs] = useState([]);
-  const [pinnedDocs, setPinnedDocs] = useState([]);
-  const [showQuickAccess, setShowQuickAccess] = useState(true);
-
-  // DEBUG: Detect when selection changes (to catch race conditions)
+  // ============================================================================
+  // DATA FETCHING - Clean, predictable flow
+  // ============================================================================
+  
+  // Initialize vault - fetch portfolios first
   useEffect(() => {
-    console.log("[Vault] selectedPortfolioId changed to:", selectedPortfolioId);
-  }, [selectedPortfolioId]);
-
-  // Sync selectedPortfolioId to localStorage whenever it changes
-  useEffect(() => {
-    if (selectedPortfolioId) {
-      localStorage.setItem("defaultPortfolioId", selectedPortfolioId);
-    }
-  }, [selectedPortfolioId]);
-
-  // Fetch documents whenever selectedPortfolioId changes - BACKEND FILTERING
-  useEffect(() => {
-    fetchDocuments();
-  }, [selectedPortfolioId]);
-
-  // Fetch portfolios only once on mount
-  useEffect(() => {
-    fetchPortfolios();
+    initializeVault();
   }, []);
-
-  const fetchDocuments = async () => {
+  
+  const initializeVault = async () => {
+    setVaultState(VAULT_STATES.LOADING);
+    setError(null);
+    
     try {
-      // Build URL with portfolio_id if selected
-      let url = `${API}/documents`;
-      if (selectedPortfolioId) {
-        url += `?portfolio_id=${encodeURIComponent(selectedPortfolioId)}`;
+      // Step 1: Fetch portfolios
+      const portfoliosRes = await axios.get(`${API}/portfolios`);
+      const fetchedPortfolios = portfoliosRes.data || [];
+      setPortfolios(fetchedPortfolios);
+      
+      if (fetchedPortfolios.length === 0) {
+        setVaultState(VAULT_STATES.NO_PORTFOLIOS);
+        return;
       }
       
-      console.log("[Vault] Fetching documents from:", url);
+      // Step 2: Restore or select active portfolio
+      const savedPortfolioId = localStorage.getItem('activePortfolioId');
+      let targetPortfolio = fetchedPortfolios.find(p => p.portfolio_id === savedPortfolioId);
       
-      const [docsRes, trashRes, recentRes, pinnedRes] = await Promise.all([
-        axios.get(url),
+      if (!targetPortfolio) {
+        targetPortfolio = fetchedPortfolios[0]; // Default to first
+      }
+      
+      // Step 3: Set active and load documents
+      await switchPortfolio(targetPortfolio, false);
+      
+    } catch (err) {
+      console.error('[Vault] Initialization error:', err);
+      setError('Failed to load vault. Please try again.');
+      setVaultState(VAULT_STATES.ERROR);
+    }
+  };
+  
+  // Switch portfolio - single source of truth for portfolio changes
+  const switchPortfolio = useCallback(async (portfolio, showToast = true) => {
+    if (!portfolio) return;
+    
+    setVaultState(VAULT_STATES.LOADING);
+    setActivePortfolio(portfolio);
+    localStorage.setItem('activePortfolioId', portfolio.portfolio_id);
+    
+    try {
+      // Fetch documents for this specific portfolio
+      const [docsRes, trashRes, pinnedRes] = await Promise.all([
+        axios.get(`${API}/documents?portfolio_id=${portfolio.portfolio_id}`),
         axios.get(`${API}/documents/trash`).catch(() => ({ data: [] })),
-        axios.get(`${API}/documents/recent/list?limit=5`).catch(() => ({ data: [] })),
         axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
       ]);
       
-      const fetchedDocs = docsRes.data || [];
-      console.log("[Vault] Fetched", fetchedDocs.length, "documents for portfolio:", selectedPortfolioId || "ALL");
-      
-      setDocuments(fetchedDocs);
-      setTrashedDocuments(trashRes.data || []);
-      setRecentDocs(recentRes.data || []);
+      setDocuments(docsRes.data || []);
+      setTrashedDocuments((trashRes.data || []).filter(d => d.portfolio_id === portfolio.portfolio_id));
       setPinnedDocs(pinnedRes.data || []);
-    } catch (error) {
-      console.error('Failed to fetch documents:', error);
-      toast.error('Failed to load documents');
-    } finally {
-      setLoading(false);
+      setShowTrash(false);
+      setSelectedDocument(null);
+      setVaultState(VAULT_STATES.READY);
+      
+      if (showToast) {
+        toast.success(`Switched to ${portfolio.name}`);
+      }
+      
+    } catch (err) {
+      console.error('[Vault] Failed to load documents:', err);
+      setError('Failed to load documents');
+      setVaultState(VAULT_STATES.ERROR);
     }
-  };
-
-  const fetchPortfolios = async () => {
+  }, []);
+  
+  // Refresh documents (after create/delete/etc)
+  const refreshDocuments = useCallback(async () => {
+    if (!activePortfolio) return;
+    
     try {
-      // Fetch portfolios and ALL documents count in parallel
-      const [portfoliosRes, allDocsRes] = await Promise.all([
-        axios.get(`${API}/portfolios`),
-        axios.get(`${API}/documents`) // Get all docs to show count in sidebar
-      ]);
-      const fetchedPortfolios = portfoliosRes.data || [];
-      const allDocs = allDocsRes.data || [];
-      console.log("[Vault] Fetched", fetchedPortfolios.length, "portfolios,", allDocs.length, "total docs");
-      setPortfolios(fetchedPortfolios);
-      setAllDocsCount(allDocs.length);
-    } catch (error) {
-      console.error('Failed to fetch portfolios:', error);
-      toast.error('Failed to load portfolios');
+      const docsRes = await axios.get(`${API}/documents?portfolio_id=${activePortfolio.portfolio_id}`);
+      setDocuments(docsRes.data || []);
+    } catch (err) {
+      console.error('[Vault] Failed to refresh documents:', err);
     }
-  };
-
-  // Legacy fetchData for compatibility
-  const fetchData = async () => {
-    await Promise.all([fetchDocuments(), fetchPortfolios()]);
-  };
-
+  }, [activePortfolio]);
+  
+  // ============================================================================
+  // DOCUMENT ACTIONS
+  // ============================================================================
+  
   const togglePinDocument = async (docId) => {
     const isPinned = pinnedDocs.some(d => d.document_id === docId);
     try {
@@ -309,48 +483,32 @@ export default function VaultPage({ user, initialView }) {
       toast.error('Failed to update pin status');
     }
   };
-
-  const createPortfolio = async () => {
-    if (!newPortfolioName.trim()) return;
-    try {
-      const response = await axios.post(`${API}/portfolios`, {
-        name: newPortfolioName,
-        description: ''
-      });
-      setPortfolios([response.data, ...portfolios]);
-      setNewPortfolioName('');
-      setShowNewPortfolio(false);
-      toast.success('Portfolio created');
-    } catch (error) {
-      toast.error('Failed to create portfolio');
-    }
-  };
-
+  
   const trashDocument = async (docId) => {
     try {
       await axios.post(`${API}/documents/${docId}/trash`);
       const doc = documents.find(d => d.document_id === docId);
       setDocuments(documents.filter(d => d.document_id !== docId));
-      setTrashedDocuments([...trashedDocuments, { ...doc, deleted_at: new Date().toISOString() }]);
+      if (doc) setTrashedDocuments([...trashedDocuments, { ...doc, deleted_at: new Date().toISOString() }]);
       setSelectedDocument(null);
       toast.success('Document moved to trash');
     } catch (error) {
       toast.error('Failed to trash document');
     }
   };
-
+  
   const restoreDocument = async (docId) => {
     try {
       await axios.post(`${API}/documents/${docId}/restore`);
       const doc = trashedDocuments.find(d => d.document_id === docId);
       setTrashedDocuments(trashedDocuments.filter(d => d.document_id !== docId));
-      setDocuments([...documents, doc]);
+      if (doc) setDocuments([...documents, doc]);
       toast.success('Document restored');
     } catch (error) {
       toast.error('Failed to restore document');
     }
   };
-
+  
   const permanentlyDelete = async (docId) => {
     try {
       await axios.delete(`${API}/documents/${docId}/permanent`);
@@ -360,7 +518,7 @@ export default function VaultPage({ user, initialView }) {
       toast.error('Failed to delete document');
     }
   };
-
+  
   const exportDocument = async (doc) => {
     try {
       const response = await axios.get(`${API}/documents/${doc.document_id}/export/pdf`, {
@@ -378,105 +536,130 @@ export default function VaultPage({ user, initialView }) {
       toast.error('Failed to export document');
     }
   };
-
-  // Packet Builder Functions
-  const togglePacketSelection = (docId) => {
-    setSelectedForPacket(prev => 
-      prev.includes(docId) 
-        ? prev.filter(id => id !== docId)
-        : [...prev, docId]
-    );
-  };
-
-  const buildPacket = async () => {
-    if (selectedForPacket.length === 0 || !packetName.trim()) {
-      toast.error('Please select documents and enter a packet name');
-      return;
-    }
-    
-    setBuildingPacket(true);
+  
+  const createPortfolio = async () => {
+    if (!newPortfolioName.trim()) return;
     try {
-      // Create a ZIP packet with selected documents
-      const response = await axios.post(`${API}/documents/packet`, {
-        name: packetName,
-        document_ids: selectedForPacket
-      }, {
-        responseType: 'blob'
+      const response = await axios.post(`${API}/portfolios`, {
+        name: newPortfolioName,
+        description: ''
       });
-      
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${packetName}.zip`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      
-      toast.success('Packet created and downloaded!');
-      setShowPacketBuilder(false);
-      setSelectedForPacket([]);
-      setPacketName('');
+      const newPortfolio = response.data;
+      setPortfolios([newPortfolio, ...portfolios]);
+      setNewPortfolioName('');
+      setShowNewPortfolio(false);
+      await switchPortfolio(newPortfolio);
+      toast.success('Portfolio created');
     } catch (error) {
-      // If API doesn't exist, show info message
-      toast.info('Packet download initiated. Check your downloads.');
-      setShowPacketBuilder(false);
-      setSelectedForPacket([]);
-      setPacketName('');
-    } finally {
-      setBuildingPacket(false);
+      toast.error('Failed to create portfolio');
     }
   };
-
-  // SIMPLIFIED FILTERING - Backend handles portfolio filtering, we only do search + trash here
-  const filteredDocuments = (() => {
+  
+  // ============================================================================
+  // COMPUTED VALUES
+  // ============================================================================
+  
+  const displayedDocuments = useMemo(() => {
     const baseDocs = showTrash ? trashedDocuments : documents;
     
-    // Only filter by search term - portfolio filtering is done by backend
-    if (!searchTerm) {
-      return baseDocs;
+    // Filter by search
+    let filtered = baseDocs;
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = baseDocs.filter(doc => 
+        (doc.title || '').toLowerCase().includes(term)
+      );
     }
     
-    return baseDocs.filter(doc => {
-      const title = String(doc.title ?? "").toLowerCase();
-      return title.includes(searchTerm.toLowerCase());
+    // Sort: pinned first, then by date
+    return [...filtered].sort((a, b) => {
+      const aPinned = pinnedDocs.some(d => d.document_id === a.document_id);
+      const bPinned = pinnedDocs.some(d => d.document_id === b.document_id);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+      return new Date(b.updated_at) - new Date(a.updated_at);
     });
-  })();
-
-  // Sort: pinned first, then by date
-  const sortedDocuments = [...filteredDocuments].sort((a, b) => {
-    const aPinned = pinnedDocs.some(d => d.document_id === a.document_id);
-    const bPinned = pinnedDocs.some(d => d.document_id === b.document_id);
-    if (aPinned && !bPinned) return -1;
-    if (!aPinned && bPinned) return 1;
-    return new Date(b.updated_at) - new Date(a.updated_at);
-  });
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  if (loading) {
+  }, [documents, trashedDocuments, showTrash, searchTerm, pinnedDocs]);
+  
+  // ============================================================================
+  // RENDER STATES
+  // ============================================================================
+  
+  // Loading state
+  if (vaultState === VAULT_STATES.LOADING) {
+    return <VaultSkeleton />;
+  }
+  
+  // Error state
+  if (vaultState === VAULT_STATES.ERROR) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center">
+        <EmptyState
+          icon={ShieldCheck}
+          title="Unable to Access Vault"
+          description={error || 'Something went wrong. Please try again.'}
+          action={
+            <Button onClick={initializeVault} className="btn-primary">
+              Retry
+            </Button>
+          }
+        />
       </div>
     );
   }
-
-  // Props for sidebar
-  const sidebarProps = {
-    selectedPortfolioId,
-    setSelectedPortfolioId,
-    showTrash,
-    setShowTrash,
-    setShowNewPortfolio,
-    setSidebarOpen,
-    navigate,
-    allDocsCount,
-    portfolios,
-    trashedDocuments
-  };
-
+  
+  // No portfolios state
+  if (vaultState === VAULT_STATES.NO_PORTFOLIOS) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <EmptyState
+          icon={Folder}
+          title="Create Your First Portfolio"
+          description="Portfolios organize your documents by trust, entity, or project. Create one to get started."
+          action={
+            <Button onClick={() => setShowNewPortfolio(true)} className="btn-primary">
+              <Plus className="w-4 h-4 mr-2" weight="bold" />
+              Create Portfolio
+            </Button>
+          }
+        />
+        
+        {/* New Portfolio Dialog */}
+        <Dialog open={showNewPortfolio} onOpenChange={setShowNewPortfolio}>
+          <DialogContent className="bg-[#0f1629] border-white/10">
+            <DialogHeader>
+              <DialogTitle className="text-white font-heading text-xl">Create Portfolio</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <Input
+                placeholder="Portfolio name"
+                value={newPortfolioName}
+                onChange={(e) => setNewPortfolioName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && createPortfolio()}
+                className="bg-white/5 border-white/10 focus:border-vault-gold text-white"
+                autoFocus
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setShowNewPortfolio(false)} className="text-white/60">
+                Cancel
+              </Button>
+              <Button onClick={createPortfolio} className="btn-primary">
+                Create
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
+  
+  // ============================================================================
+  // MAIN VAULT UI
+  // ============================================================================
+  
   return (
-    <div className="min-h-screen lg:h-[calc(100vh-2rem)] flex flex-col lg:flex-row w-full max-w-full">
+    <div className="min-h-screen lg:h-[calc(100vh-2rem)] flex flex-col lg:flex-row">
       {/* Mobile Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -485,371 +668,266 @@ export default function VaultPage({ user, initialView }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden fixed inset-0 bg-black/60 z-40"
+            className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
           />
         )}
       </AnimatePresence>
-
-      {/* Mobile Sidebar Drawer */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.div
-            initial={{ x: -280 }}
-            animate={{ x: 0 }}
-            exit={{ x: -280 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="lg:hidden fixed left-0 top-0 h-screen w-[280px] bg-vault-void/95 backdrop-blur-xl border-r border-white/10 flex flex-col z-50"
-          >
-            <div className="flex items-center justify-between p-4 border-b border-white/10">
-              <span className="font-heading text-lg text-white">Portfolios</span>
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg"
-              >
-                <X className="w-5 h-5" weight="duotone" />
-              </button>
+      
+      {/* ================================================================== */}
+      {/* GLASSY SIDEBAR */}
+      {/* ================================================================== */}
+      <GlassSidebar className={`
+        fixed lg:relative inset-y-0 left-0 w-72 z-50
+        transform transition-transform duration-300 ease-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        {/* Mobile close button */}
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="lg:hidden absolute top-4 right-4 p-2 text-white/40 hover:text-white"
+        >
+          <X className="w-5 h-5" weight="bold" />
+        </button>
+        
+        {/* Sidebar header */}
+        <div className="p-5 border-b border-white/10">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-vault-gold" weight="fill" />
             </div>
-            <VaultSidebarContent {...sidebarProps} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Desktop Sidebar - hidden on mobile */}
-      <motion.div 
-        initial={{ x: -50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className="hidden lg:flex w-64 border-r border-white/10 flex-col shrink-0"
-      >
-        <VaultSidebarContent {...sidebarProps} />
-      </motion.div>
-
-      {/* Main Content - Documents List */}
-      <div className="flex-1 flex flex-col min-w-0 w-full max-w-full">
+            <div>
+              <h2 className="text-white font-heading text-lg">Vault</h2>
+              <p className="text-white/40 text-xs">Secure Documents</p>
+            </div>
+          </div>
+          
+          {/* Portfolio selector */}
+          <PortfolioSelector
+            portfolios={portfolios}
+            activePortfolio={activePortfolio}
+            onSelect={switchPortfolio}
+            onCreateNew={() => setShowNewPortfolio(true)}
+          />
+        </div>
+        
+        {/* Navigation */}
+        <div className="flex-1 overflow-y-auto p-3">
+          <nav className="space-y-1">
+            <button
+              onClick={() => { setShowTrash(false); setSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                !showTrash
+                  ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
+                  : 'text-white/60 hover:bg-white/5'
+              }`}
+            >
+              <FileText className="w-4 h-4" weight="duotone" />
+              <span className="text-sm font-medium">Documents</span>
+              <span className="ml-auto text-xs opacity-60">{documents.length}</span>
+            </button>
+            
+            <button
+              onClick={() => { setShowTrash(true); setSidebarOpen(false); }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                showTrash
+                  ? 'bg-red-500/10 text-red-400 border border-red-500/20' 
+                  : 'text-white/40 hover:bg-white/5'
+              }`}
+            >
+              <Trash className="w-4 h-4" weight="duotone" />
+              <span className="text-sm">Trash</span>
+              {trashedDocuments.length > 0 && (
+                <span className="ml-auto text-xs opacity-60">{trashedDocuments.length}</span>
+              )}
+            </button>
+          </nav>
+        </div>
+        
+        {/* New document button */}
+        <div className="p-4 border-t border-white/10">
+          <Button 
+            onClick={() => navigate('/templates')}
+            className="w-full btn-primary text-sm"
+          >
+            <Plus className="w-4 h-4 mr-2" weight="bold" />
+            New Document
+          </Button>
+        </div>
+      </GlassSidebar>
+      
+      {/* ================================================================== */}
+      {/* MAIN CONTENT */}
+      {/* ================================================================== */}
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="p-4 border-b border-white/10 flex items-center gap-2 sm:gap-4">
+        <div className="p-4 lg:p-6 border-b border-white/10 flex items-center gap-4">
           {/* Mobile menu button */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg shrink-0"
-            aria-label="Open portfolios"
+            className="lg:hidden p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg"
           >
-            <List className="w-5 h-5" weight="duotone" />
+            <Folder className="w-5 h-5" weight="duotone" />
           </button>
-          <div className="relative flex-1 min-w-0">
+          
+          {/* Active portfolio indicator */}
+          <div className="hidden sm:flex items-center gap-2 text-white/50 text-sm">
+            <FolderOpen className="w-4 h-4 text-vault-gold" weight="duotone" />
+            <span className="text-vault-gold font-medium">{activePortfolio?.name}</span>
+            {showTrash && (
+              <>
+                <CaretRight className="w-3 h-3" />
+                <span className="text-red-400">Trash</span>
+              </>
+            )}
+          </div>
+          
+          {/* Search */}
+          <div className="relative flex-1 max-w-md ml-auto">
             <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" weight="duotone" />
             <Input
               placeholder="Search documents..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white/5 border-white/10 focus:border-vault-gold text-base"
+              className="pl-10 bg-white/5 border-white/10 focus:border-vault-gold text-white"
             />
           </div>
-          <div className="hidden sm:flex gap-1 border border-white/10 rounded-lg p-1 shrink-0">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded ${viewMode === 'grid' ? 'bg-vault-gold/20 text-vault-gold' : 'text-white/40'}`}
-            >
-              <SquaresFour className="w-4 h-4" weight="duotone" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 rounded ${viewMode === 'list' ? 'bg-vault-gold/20 text-vault-gold' : 'text-white/40'}`}
-            >
-              <List className="w-4 h-4" weight="duotone" />
-            </button>
-          </div>
-          {!showTrash && (
-            <>
-              <Button 
-                onClick={() => setShowPacketBuilder(true)}
-                variant="outline"
-                className="hidden sm:flex btn-secondary text-sm shrink-0"
-              >
-                <Package className="w-4 h-4 sm:mr-2" weight="duotone" />
-                <span className="hidden sm:inline">Build Packet</span>
-              </Button>
-              <Button 
-                onClick={() => navigate('/templates')}
-                className="btn-primary text-sm shrink-0"
-              >
-                <Plus className="w-4 h-4 sm:mr-2" weight="duotone" />
-                <span className="hidden sm:inline">New Document</span>
-              </Button>
-            </>
-          )}
         </div>
-
-        {/* Quick Access Section (Pinned + Recent) */}
-        {!showTrash && showQuickAccess && (pinnedDocs.length > 0 || recentDocs.length > 0) && (
-          <div className="px-4 pb-4 border-b border-white/10">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-white/50 text-sm font-medium">Quick Access</span>
-              <button 
-                onClick={() => setShowQuickAccess(false)}
-                className="text-white/30 hover:text-white p-1"
-              >
-                <X className="w-3 h-3" weight="duotone" />
-              </button>
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
-              {pinnedDocs.slice(0, 3).map(doc => (
-                <button
-                  key={doc.document_id}
-                  onClick={() => navigate(`/vault/document/${doc.document_id}`)}
-                  className="flex items-center gap-2 px-3 py-2 bg-vault-gold/10 border border-vault-gold/30 rounded-lg text-sm whitespace-nowrap hover:bg-vault-gold/20 transition-colors"
-                >
-                  <Star className="w-3 h-3 text-vault-gold fill-vault-gold" weight="duotone" />
-                  <span className="text-white truncate max-w-[120px]">{doc.title}</span>
-                </button>
-              ))}
-              {recentDocs.slice(0, 3).map(doc => (
-                !pinnedDocs.some(p => p.document_id === doc.document_id) && (
-                  <button
-                    key={doc.document_id}
-                    onClick={() => navigate(`/vault/document/${doc.document_id}`)}
-                    className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm whitespace-nowrap hover:bg-white/10 transition-colors"
-                  >
-                    <Clock className="w-3 h-3 text-white/50" weight="duotone" />
-                    <span className="text-white/70 truncate max-w-[120px]">{doc.title}</span>
-                  </button>
-                )
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Documents SquaresFour/List */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
-          {showTrash ? (
-            <div className="flex items-center gap-2 text-red-400 text-sm mb-4">
+        
+        {/* Document grid */}
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+          {showTrash && (
+            <div className="flex items-center gap-2 text-red-400 text-sm mb-6 p-3 bg-red-500/10 rounded-lg border border-red-500/20">
               <Trash className="w-4 h-4" weight="duotone" />
-              <span>Trash - Documents will be permanently deleted after 30 days</span>
-            </div>
-          ) : selectedPortfolio && (
-            <div className="flex items-center gap-2 text-white/40 text-sm mb-4">
-              <ShieldCheck className="w-4 h-4" weight="duotone" />
-              <span>{selectedPortfolio.name}</span>
+              <span>Trash — Documents will be permanently deleted after 30 days</span>
             </div>
           )}
-
-          {sortedDocuments.length > 0 ? (
+          
+          {displayedDocuments.length > 0 ? (
             <motion.div
-              variants={staggerContainer}
-              initial="initial"
-              animate="animate"
-              className={viewMode === 'grid' 
-                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
-                : 'space-y-2'
-              }
+              layout
+              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
             >
-              {sortedDocuments.map((doc) => {
-                const isPinned = pinnedDocs.some(d => d.document_id === doc.document_id);
-                
-                return (
-                  <motion.div key={doc.document_id} variants={fadeInUp}>
-                    {viewMode === 'grid' ? (
-                      <GlassCard
-                        interactive
-                        glow
-                        onClick={() => setSelectedDocument(doc)}
-                        className={`relative ${selectedDocument?.document_id === doc.document_id ? 'border-vault-gold/50' : ''}`}
-                      >
-                        {isPinned && (
-                          <div className="absolute top-2 right-12">
-                            <Star className="w-4 h-4 text-vault-gold fill-vault-gold" weight="duotone" />
-                          </div>
-                        )}
-                        <div className="flex items-start justify-between mb-3">
-                          <IconBadge icon={FileText} size="md" variant="gold" />
-                          {!showTrash ? (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <button className="p-1 text-white/30 hover:text-white" onClick={(e) => e.stopPropagation()}>
-                                  <DotsThreeVertical className="w-4 h-4" weight="duotone" />
-                                </button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-vault-navy border-white/10">
-                                <DropdownMenuItem 
-                                  onClick={(e) => { e.stopPropagation(); navigate(`/vault/document/${doc.document_id}`); }}
-                                  className="text-white/70 hover:text-white focus:text-white"
-                                >
-                                  Open
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={(e) => { e.stopPropagation(); togglePinDocument(doc.document_id); }}
-                                  className="text-white/70 hover:text-white focus:text-white"
-                                >
-                                  {isPinned ? <Star className="w-4 h-4 mr-2" weight="duotone" /> : <Star className="w-4 h-4 mr-2" weight="duotone" />}
-                                  {isPinned ? 'Unpin' : 'Pin'}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={(e) => { e.stopPropagation(); exportDocument(doc); }}
-                                  className="text-white/70 hover:text-white focus:text-white"
-                                >
-                                  <Download className="w-4 h-4 mr-2" weight="duotone" />
-                                  Export PDF
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-white/10" weight="duotone" />
-                                <DropdownMenuItem 
-                                  onClick={(e) => { e.stopPropagation(); trashDocument(doc.document_id); }}
-                                  className="text-red-400 hover:text-red-300 focus:text-red-300"
-                                >
-                                  <Trash className="w-4 h-4 mr-2" weight="duotone" />
-                                  Move to Trash
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          ) : (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <button className="p-1 text-white/30 hover:text-white" onClick={(e) => e.stopPropagation()}>
-                                  <DotsThreeVertical className="w-4 h-4" weight="duotone" />
-                                </button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-vault-navy border-white/10">
-                                <DropdownMenuItem 
-                                  onClick={(e) => { e.stopPropagation(); restoreDocument(doc.document_id); }}
-                                  className="text-green-400 hover:text-green-300 focus:text-green-300"
-                                >
-                                  <ArrowCounterClockwise className="w-4 h-4 mr-2" weight="duotone" />
-                                  Restore
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={(e) => { e.stopPropagation(); permanentlyDelete(doc.document_id); }}
-                                  className="text-red-400 hover:text-red-300 focus:text-red-300"
-                                >
-                                  <Trash className="w-4 h-4 mr-2" weight="duotone" />
-                                  Delete Forever
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          )}
+              <AnimatePresence mode="popLayout">
+                {displayedDocuments.map((doc) => (
+                  showTrash ? (
+                    // Trash item
+                    <motion.div
+                      key={doc.document_id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="relative group p-5 bg-white/5 border border-white/10 rounded-lg"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+                          <FileText className="w-5 h-5 text-red-400" weight="duotone" />
                         </div>
-                        <h3 className="text-white font-medium mb-1 line-clamp-2 min-w-0">{doc.title}</h3>
-                        <p className="text-white/40 text-xs mb-3">{humanizeSlug(doc.document_type)}</p>
-                        {doc.rm_id && (
-                          <MonoChip variant="gold" size="xs" className="truncate mb-2 sm:hidden max-w-[150px]">
-                            {doc.sub_record_id || doc.rm_id}
-                          </MonoChip>
-                        )}
-                        <div className="flex items-center justify-between text-xs text-white/30 gap-2">
-                          <span className="flex items-center gap-1 shrink-0">
-                            <Clock className="w-3 h-3" weight="duotone" />
-                            {new Date(doc.updated_at).toLocaleDateString()}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded shrink-0 ${
-                            doc.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                            doc.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
-                            doc.is_locked ? 'bg-green-500/20 text-green-400' :
-                            'bg-white/10 text-white/50'
-                          }`}>
-                            {doc.is_locked ? 'Finalized' : doc.status}
-                          </span>
-                        </div>
-                      </GlassCard>
-                    ) : (
-                      <div
-                        onClick={() => setSelectedDocument(doc)}
-                        className={`flex items-start gap-3 p-3 rounded-lg border transition-all cursor-pointer ${
-                          selectedDocument?.document_id === doc.document_id
-                            ? 'border-vault-gold/50 bg-vault-gold/5'
-                            : 'border-white/5 hover:border-white/20 bg-white/5'
-                        }`}
-                      >
-                        {isPinned && <Star className="w-4 h-4 text-vault-gold fill-vault-gold shrink-0 mt-0.5" weight="duotone" />}
-                        <FileText className="w-5 h-5 text-white/40 shrink-0 mt-0.5" weight="duotone" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-white line-clamp-2 text-sm">{doc.title}</p>
-                          <p className="text-white/40 text-xs mt-0.5">{humanizeSlug(doc.document_type)}</p>
-                          {doc.rm_id && (
-                            <MonoChip variant="gold" size="xs" className="truncate mt-0.5 sm:hidden max-w-[120px]">
-                              {doc.sub_record_id || doc.rm_id}
-                            </MonoChip>
-                          )}
+                          <h3 className="text-white font-medium truncate">{doc.title}</h3>
+                          <p className="text-white/40 text-xs mt-1">
+                            Deleted {new Date(doc.deleted_at).toLocaleDateString()}
+                          </p>
                         </div>
-                        <div className="flex flex-col items-end gap-1 shrink-0 min-w-[70px]">
-                          <span className="text-white/30 text-xs">
-                            {new Date(doc.updated_at).toLocaleDateString()}
-                          </span>
-                          {doc.is_locked && (
-                            <span className="text-green-400 text-[10px] sm:text-xs bg-green-500/20 px-1.5 py-0.5 rounded">
-                              Finalized
-                            </span>
-                          )}
-                          {doc.rm_id && (
-                            <MonoChip variant="gold" size="xs" className="hidden sm:block truncate max-w-[150px]">
-                              {doc.sub_record_id || doc.rm_id}
-                            </MonoChip>
-                          )}
-                        </div>
-                        <CaretRight className="w-4 h-4 text-white/20 shrink-0 mt-0.5" weight="duotone" />
                       </div>
-                    )}
-                  </motion.div>
-                );
-              })}
+                      <div className="flex gap-2 mt-4">
+                        <Button
+                          onClick={() => restoreDocument(doc.document_id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-green-400 border-green-500/30 hover:bg-green-500/10"
+                        >
+                          <ArrowCounterClockwise className="w-4 h-4 mr-1" weight="duotone" />
+                          Restore
+                        </Button>
+                        <Button
+                          onClick={() => permanentlyDelete(doc.document_id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-red-400 border-red-500/30 hover:bg-red-500/10"
+                        >
+                          <Trash className="w-4 h-4 mr-1" weight="duotone" />
+                          Delete
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <DocumentCard
+                      key={doc.document_id}
+                      doc={doc}
+                      isPinned={pinnedDocs.some(d => d.document_id === doc.document_id)}
+                      isSelected={selectedDocument?.document_id === doc.document_id}
+                      onSelect={setSelectedDocument}
+                      onPin={togglePinDocument}
+                      onOpen={(d) => navigate(`/vault/document/${d.document_id}`)}
+                      onTrash={trashDocument}
+                      onExport={exportDocument}
+                    />
+                  )
+                ))}
+              </AnimatePresence>
             </motion.div>
           ) : (
-            // FIX #5: Correct empty-state messaging
-            <div className="text-center py-16">
-              <FileText className="w-16 h-16 text-white/10 mx-auto mb-4" weight="duotone" />
-              <p className="text-white/40 mb-4">
-                {showTrash 
-                  ? 'Trash is empty' 
+            <EmptyState
+              icon={showTrash ? Trash : FileText}
+              title={showTrash ? 'Trash is Empty' : searchTerm ? 'No Results' : 'No Documents Yet'}
+              description={
+                showTrash 
+                  ? 'Deleted documents will appear here'
                   : searchTerm 
-                    ? 'No documents match your search'
-                    : selectedPortfolioId
-                      ? 'No documents in this portfolio yet'
-                      : documents.length === 0
-                        ? 'No documents yet'
-                        : 'No documents found'
-                }
-              </p>
-              {/* Only show "Create Your First Document" when there are truly no documents */}
-              {!showTrash && documents.length === 0 && (
+                    ? 'Try adjusting your search terms'
+                    : 'Create your first document to get started'
+              }
+              action={!showTrash && !searchTerm && (
                 <Button onClick={() => navigate('/templates')} className="btn-primary">
-                  Create Your First Document
+                  <Plus className="w-4 h-4 mr-2" weight="bold" />
+                  Create Document
                 </Button>
               )}
-            </div>
+            />
           )}
         </div>
       </div>
-
-      {/* Right Panel - Document Preview */}
+      
+      {/* ================================================================== */}
+      {/* DOCUMENT PREVIEW PANEL */}
+      {/* ================================================================== */}
       <AnimatePresence>
-        {selectedDocument && (
+        {selectedDocument && !showTrash && (
           <motion.div
-            {...paneTransition}
-            className="w-96 border-l border-white/10 flex flex-col"
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 100, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="hidden xl:flex w-96 border-l border-white/10 flex-col bg-[#0a0f1a]/50"
           >
-            <div className="p-4 border-b border-white/10 flex items-center justify-between">
-              <h3 className="font-heading text-white">Document Details</h3>
+            <div className="p-5 border-b border-white/10 flex items-center justify-between">
+              <h3 className="font-heading text-white">Preview</h3>
               <button 
                 onClick={() => setSelectedDocument(null)}
-                className="text-white/40 hover:text-white"
+                className="text-white/40 hover:text-white p-1"
               >
-                <X className="w-4 h-4" weight="duotone" />
+                <X className="w-4 h-4" weight="bold" />
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
-              <div className="w-16 h-16 rounded-xl bg-vault-gold/10 flex items-center justify-center mb-4">
+            <div className="flex-1 overflow-y-auto p-5">
+              <div className="w-16 h-16 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center mb-5">
                 <FileText className="w-8 h-8 text-vault-gold" weight="duotone" />
               </div>
               
               <h2 className="text-xl font-heading text-white mb-2">{selectedDocument.title}</h2>
-              <p className="text-vault-gold text-sm mb-4">{humanizeSlug(selectedDocument.document_type)}</p>
+              <p className="text-vault-gold text-sm mb-6">{humanizeSlug(selectedDocument.document_type)}</p>
               
               <div className="space-y-4">
                 <div>
                   <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Status</p>
-                  <span className={`px-3 py-1 rounded text-sm ${
-                    selectedDocument.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                    selectedDocument.status === 'signed' ? 'bg-vault-gold/20 text-vault-gold' :
+                  <span className={`inline-block px-3 py-1 rounded text-sm ${
+                    selectedDocument.is_locked ? 'bg-green-500/20 text-green-400' :
+                    selectedDocument.status === 'completed' ? 'bg-vault-gold/20 text-vault-gold' :
                     'bg-white/10 text-white/50'
                   }`}>
-                    {selectedDocument.status}
+                    {selectedDocument.is_locked ? 'Finalized' : selectedDocument.status || 'Draft'}
                   </span>
                 </div>
                 
@@ -862,169 +940,55 @@ export default function VaultPage({ user, initialView }) {
                   <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Created</p>
                   <p className="text-white">{new Date(selectedDocument.created_at).toLocaleString()}</p>
                 </div>
-                
-                {selectedDocument.tags?.length > 0 && (
-                  <div>
-                    <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Tags</p>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedDocument.tags.map((tag, idx) => (
-                        <span key={idx} className="px-2 py-1 bg-white/5 text-white/60 text-xs rounded">
-                          <Tag className="w-3 h-3 inline mr-1" weight="duotone" />
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
             
-            <div className="p-4 border-t border-white/10 space-y-2">
-              {!showTrash ? (
-                <>
-                  <Button 
-                    onClick={() => navigate(`/vault/document/${selectedDocument.document_id}`)}
-                    className="w-full btn-primary"
-                  >
-                    Open Document
-                  </Button>
-                  <Button 
-                    onClick={() => exportDocument(selectedDocument)}
-                    variant="outline"
-                    className="w-full btn-secondary"
-                  >
-                    <Download className="w-4 h-4 mr-2" weight="duotone" />
-                    Export as PDF
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button 
-                    onClick={() => restoreDocument(selectedDocument.document_id)}
-                    className="w-full bg-green-600 hover:bg-green-700"
-                  >
-                    <ArrowCounterClockwise className="w-4 h-4 mr-2" weight="duotone" />
-                    Restore Document
-                  </Button>
-                  <Button 
-                    onClick={() => permanentlyDelete(selectedDocument.document_id)}
-                    variant="outline"
-                    className="w-full border-red-500/50 text-red-400 hover:bg-red-500/20"
-                  >
-                    <Trash className="w-4 h-4 mr-2" weight="duotone" />
-                    Delete Forever
-                  </Button>
-                </>
-              )}
+            <div className="p-5 border-t border-white/10 space-y-2">
+              <Button 
+                onClick={() => navigate(`/vault/document/${selectedDocument.document_id}`)}
+                className="w-full btn-primary"
+              >
+                Open Document
+              </Button>
+              <Button 
+                onClick={() => exportDocument(selectedDocument)}
+                variant="outline"
+                className="w-full btn-secondary"
+              >
+                <Download className="w-4 h-4 mr-2" weight="duotone" />
+                Export as PDF
+              </Button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
+      
+      {/* ================================================================== */}
+      {/* DIALOGS */}
+      {/* ================================================================== */}
+      
       {/* New Portfolio Dialog */}
       <Dialog open={showNewPortfolio} onOpenChange={setShowNewPortfolio}>
-        <DialogContent className="bg-vault-navy border-white/10">
+        <DialogContent className="bg-[#0f1629] border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-white font-heading">Create Portfolio</DialogTitle>
+            <DialogTitle className="text-white font-heading text-xl">Create Portfolio</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <Input
               placeholder="Portfolio name"
               value={newPortfolioName}
               onChange={(e) => setNewPortfolioName(e.target.value)}
-              className="bg-white/5 border-white/10 focus:border-vault-gold"
+              onKeyDown={(e) => e.key === 'Enter' && createPortfolio()}
+              className="bg-white/5 border-white/10 focus:border-vault-gold text-white"
+              autoFocus
             />
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setShowNewPortfolio(false)}>
+            <Button variant="ghost" onClick={() => setShowNewPortfolio(false)} className="text-white/60">
               Cancel
             </Button>
             <Button onClick={createPortfolio} className="btn-primary">
               Create
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Packet Builder Dialog */}
-      <Dialog open={showPacketBuilder} onOpenChange={setShowPacketBuilder}>
-        <DialogContent className="bg-vault-navy border-white/10 max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-white font-heading flex items-center gap-2">
-              <Package className="w-5 h-5 text-vault-gold" weight="duotone" />
-              Build Document Packet
-            </DialogTitle>
-            <DialogDescription className="text-white/50">
-              Select documents to bundle into a downloadable ZIP package
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4 flex-1 overflow-y-auto">
-            <Input
-              placeholder="Packet name (e.g., Trust Formation Package)"
-              value={packetName}
-              onChange={(e) => setPacketName(e.target.value)}
-              className="bg-white/5 border-white/10 focus:border-vault-gold mb-4"
-            />
-            
-            <p className="text-white/40 text-xs uppercase tracking-wider mb-3">
-              Select Documents ({selectedForPacket.length} selected)
-            </p>
-            
-            <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
-              {documents.map(doc => (
-                <div
-                  key={doc.document_id}
-                  onClick={() => togglePacketSelection(doc.document_id)}
-                  className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                    selectedForPacket.includes(doc.document_id)
-                      ? 'border-vault-gold/50 bg-vault-gold/10'
-                      : 'border-white/10 hover:border-white/20 bg-white/5'
-                  }`}
-                >
-                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                    selectedForPacket.includes(doc.document_id)
-                      ? 'border-vault-gold bg-vault-gold'
-                      : 'border-white/30'
-                  }`}>
-                    {selectedForPacket.includes(doc.document_id) && (
-                      <Check className="w-3 h-3 text-vault-navy" weight="duotone" />
-                    )}
-                  </div>
-                  <FileText className="w-4 h-4 text-white/40" weight="duotone" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm">{doc.title}</p>
-                    <p className="text-white/40 text-xs">{humanizeSlug(doc.document_type)}</p>
-                  </div>
-                </div>
-              ))}
-              
-              {documents.length === 0 && (
-                <p className="text-white/40 text-center py-8">No documents available</p>
-              )}
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setShowPacketBuilder(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={buildPacket} 
-              disabled={selectedForPacket.length === 0 || !packetName.trim() || buildingPacket}
-              className="btn-primary"
-            >
-              {buildingPacket ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Building...
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4 mr-2" weight="duotone" />
-                  Build & Download
-                </>
-              )}
             </Button>
           </DialogFooter>
         </DialogContent>
