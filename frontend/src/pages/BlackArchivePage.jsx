@@ -791,12 +791,11 @@ function IndexTab() {
       
       {/* Results */}
       {loading ? (
-        <div className="grid gap-3 sm:gap-4">
-          {[1,2,3].map(i => (
-            <div key={i} className="h-28 sm:h-32 bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden relative">
-              <div className="absolute inset-0 skeleton-shimmer" />
-            </div>
-          ))}
+        <div className="flex items-center justify-center py-16">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-vault-gold/30 border-t-vault-gold rounded-full animate-spin" />
+            <span className="text-vault-muted text-sm">Loading sources...</span>
+          </div>
         </div>
       ) : sources.length > 0 ? (
         <div className="grid gap-3 sm:gap-4">
