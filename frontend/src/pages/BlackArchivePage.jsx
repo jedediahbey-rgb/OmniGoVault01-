@@ -380,7 +380,7 @@ const DesktopPremiumTab = memo(({ tab, isActive, onClick }) => {
       )}
     </motion.button>
   );
-};
+});
 
 // Tab configurations
 const TABS = [
