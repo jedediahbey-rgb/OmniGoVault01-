@@ -1863,7 +1863,8 @@ class SupportAdminTester:
                 "content": "Test support note for SUPPORT_ADMIN permissions testing",
                 "note_type": "GENERAL",
                 "is_internal": True,
-                "tags": ["testing", "support_admin"]
+                "tags": ["testing", "support_admin"],
+                "user_id": self.test_user_id  # Provide user_id as required
             }
             
             response = self.session.post(
