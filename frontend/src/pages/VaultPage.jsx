@@ -423,47 +423,51 @@ export default function VaultPage({ user, initialView }) {
     }
   };
 
-  // FIX #3: Robust filtering with normalized IDs - ALL inside useMemo to avoid stale closures
-  const filteredDocuments = useMemo(() => {
-    const selectedId = normalizeId(selectedPortfolioId);
+  // SIMPLE DIRECT FILTERING - no useMemo, runs every render to ensure freshness
+  const getFilteredDocuments = () => {
+    const selectedId = selectedPortfolioId ? String(selectedPortfolioId).trim() : null;
     const baseDocs = showTrash ? trashedDocuments : documents;
     
+    console.log("[Vault] getFilteredDocuments called:", {
+      selectedPortfolioId,
+      selectedId,
+      showTrash,
+      searchTerm,
+      baseDocsCount: baseDocs.length
+    });
+    
     const result = baseDocs.filter(doc => {
+      // Search filter
       const title = String(doc.title ?? "");
       const matchesSearch = !searchTerm || title.toLowerCase().includes(searchTerm.toLowerCase());
       if (!matchesSearch) return false;
 
-      if (showTrash) return true;         // trash ignores portfolio filter
-      if (!selectedId) return true;       // All Documents view
-      return normalizeId(doc.portfolio_id) === selectedId;
+      // Trash view - show all
+      if (showTrash) return true;
+      
+      // All Documents view - show all
+      if (!selectedId) return true;
+      
+      // Portfolio filter
+      const docPortfolioId = doc.portfolio_id ? String(doc.portfolio_id).trim() : null;
+      return docPortfolioId === selectedId;
     });
     
-    // FIX #6: Debug log after filtering
-    console.log("[Vault] filter", { 
-      selectedPortfolioId, 
-      selectedId,
-      showTrash, 
-      searchTerm, 
-      total: baseDocs.length, 
-      filtered: result.length 
-    });
-    
+    console.log("[Vault] filtered result:", result.length, "docs");
     return result;
-  }, [documents, trashedDocuments, searchTerm, showTrash, selectedPortfolioId]);
+  };
+  
+  // Call it directly - this ensures it runs on every render
+  const filteredDocuments = getFilteredDocuments();
 
-  // FIX #4: Sort must derive from filteredDocuments, not documents
-  const sortedDocuments = useMemo(() => {
-    const arr = [...filteredDocuments];
-    // Sort: pinned first, then by date
-    arr.sort((a, b) => {
-      const aPinned = pinnedDocs.some(d => d.document_id === a.document_id);
-      const bPinned = pinnedDocs.some(d => d.document_id === b.document_id);
-      if (aPinned && !bPinned) return -1;
-      if (!aPinned && bPinned) return 1;
-      return new Date(b.updated_at) - new Date(a.updated_at);
-    });
-    return arr;
-  }, [filteredDocuments, pinnedDocs]);
+  // Sort: pinned first, then by date
+  const sortedDocuments = [...filteredDocuments].sort((a, b) => {
+    const aPinned = pinnedDocs.some(d => d.document_id === a.document_id);
+    const bPinned = pinnedDocs.some(d => d.document_id === b.document_id);
+    if (aPinned && !bPinned) return -1;
+    if (!aPinned && bPinned) return 1;
+    return new Date(b.updated_at) - new Date(a.updated_at);
+  });
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
