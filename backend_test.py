@@ -3671,14 +3671,19 @@ if __name__ == "__main__":
             tester = OmniBinderV2Tester()
             success = tester.run_omnibinder_v2_tests()
             sys.exit(0 if success else 1)
+        elif sys.argv[1] == "realtime":
+            # Run Real-time Collaboration V2 tests only
+            tester = RealtimeV2Tester()
+            success = tester.run_realtime_v2_tests()
+            sys.exit(0 if success else 1)
     
-    # Run OmniBinder V2 tests (default for this testing session)
-    omnibinder_tester = OmniBinderV2Tester()
-    omnibinder_success = omnibinder_tester.run_omnibinder_v2_tests()
+    # Run Real-time Collaboration V2 tests (default for this testing session)
+    realtime_tester = RealtimeV2Tester()
+    realtime_success = realtime_tester.run_realtime_v2_tests()
     
     print("\n" + "="*80)
-    print("🏆 OMNIBINDER V2 - SCHEDULED BINDERS TEST RESULTS")
+    print("🏆 REAL-TIME COLLABORATION V2 (WebSocket) TEST RESULTS")
     print("="*80)
-    print(f"OmniBinder V2 Tests: {'✅ PASSED' if omnibinder_success else '❌ FAILED'}")
+    print(f"Real-time V2 Tests: {'✅ PASSED' if realtime_success else '❌ FAILED'}")
     
-    sys.exit(0 if omnibinder_success else 1)
+    sys.exit(0 if realtime_success else 1)
