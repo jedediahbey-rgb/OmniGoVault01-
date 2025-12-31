@@ -11,7 +11,6 @@ import {
   PaintBrush
 } from '@phosphor-icons/react';
 import Sidebar from './Sidebar';
-import { pageTransition } from '../../lib/motion';
 import { useBilling } from '../../contexts/BillingContext';
 import NotificationBell from '../notifications/NotificationBell';
 import PortraitStyleSelector from '../portrait/PortraitStyleSelector';
