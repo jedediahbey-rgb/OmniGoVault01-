@@ -388,7 +388,9 @@ export default function BinderPage() {
   useEffect(() => {
     const fetchPortfolios = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/portfolios`);
+        const res = await fetch(`${API_URL}/api/portfolios`, {
+          credentials: 'include'
+        });
         const data = await res.json();
         if (Array.isArray(data)) {
           setPortfolios(data);
