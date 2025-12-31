@@ -1127,6 +1127,18 @@ export default function GovernancePage({ user }) {
 
   const selectedPortfolioData = portfolios.find(p => p.portfolio_id === selectedPortfolio);
 
+  // Show loading spinner while fetching initial data
+  if (loading && portfolios.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-vault-gold/30 border-t-vault-gold rounded-full animate-spin" />
+          <span className="text-vault-muted text-sm">Loading governance...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <motion.div 
       className="min-h-screen p-4 md:p-6 lg:p-8 w-full max-w-full overflow-x-hidden"
