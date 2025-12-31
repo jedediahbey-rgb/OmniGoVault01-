@@ -79,7 +79,11 @@ function VaultSidebarContent({
   };
 
   const handlePortfolioClick = (portfolio) => {
-    console.log("[Vault] clicked", portfolio.portfolio_id, portfolio.name);
+    console.log("[Vault] clicked portfolio:", { 
+      id: portfolio.portfolio_id, 
+      name: portfolio.name,
+      currentSelectedId: selectedPortfolioId 
+    });
     setSelectedPortfolioId(portfolio.portfolio_id);
     localStorage.setItem("defaultPortfolioId", portfolio.portfolio_id);
     setShowTrash(false);
