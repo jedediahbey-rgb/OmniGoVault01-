@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for OMNIGOVAULT Application
-OmniBinder V2 and Real-time Collaboration V2 API Testing
+Binder Generation Functionality Testing
 """
 
 import requests
@@ -15,7 +15,7 @@ import hashlib
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://premium-archive-1.preview.emergentagent.com/api"
 
-class OmniBinderV2Tester:
+class BinderTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
