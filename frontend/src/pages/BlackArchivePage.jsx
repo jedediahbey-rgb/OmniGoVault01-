@@ -470,29 +470,70 @@ function ClaimCard({ claim, onClick, index }) {
   );
 }
 
-// Trail Card
-function TrailCard({ trail, onClick }) {
+// ============================================================================
+// PREMIUM TRAIL CARD WITH EFFECTS
+// ============================================================================
+function TrailCard({ trail, onClick, index }) {
+  const [isHovered, setIsHovered] = useState(false);
+  
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.1, type: 'spring', stiffness: 80 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       onClick={onClick}
-      className="p-5 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10 rounded-xl cursor-pointer hover:border-vault-gold/30 transition-all group"
+      className="relative p-5 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10 rounded-xl cursor-pointer group overflow-hidden"
+      whileHover={{ 
+        y: -3, 
+        borderColor: 'rgba(198, 168, 124, 0.4)',
+        boxShadow: '0 15px 30px -10px rgba(198, 168, 124, 0.15)'
+      }}
+      whileTap={{ scale: 0.99 }}
     >
+      {/* Animated path line */}
+      <motion.div
+        className="absolute left-8 top-0 bottom-0 w-px"
+        style={{
+          background: isHovered 
+            ? 'linear-gradient(to bottom, transparent, rgba(198, 168, 124, 0.5), transparent)'
+            : 'linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent)'
+        }}
+      />
+      
+      {/* Moving dot on path */}
+      {isHovered && (
+        <motion.div
+          className="absolute left-[30px] w-2 h-2 rounded-full bg-vault-gold shadow-[0_0_10px_rgba(198,168,124,0.8)]"
+          initial={{ top: 0 }}
+          animate={{ top: '100%' }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+        />
+      )}
+      
       <div className="flex items-start gap-4">
-        <div className="w-14 h-14 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0">
+        <motion.div 
+          className="w-14 h-14 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0 group-hover:bg-vault-gold/20 transition-colors"
+          animate={isHovered ? { scale: [1, 1.05, 1] } : {}}
+          transition={{ duration: 0.4 }}
+        >
           <TreeStructure className="w-7 h-7 text-vault-gold" weight="duotone" />
-        </div>
+        </motion.div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="text-white font-heading text-lg mb-1">{trail.title}</h3>
+          <h3 className="text-white font-heading text-lg mb-1 group-hover:text-vault-gold transition-colors">{trail.title}</h3>
           <p className="text-white/50 text-sm line-clamp-2 mb-3">{trail.description}</p>
           
           <div className="flex items-center gap-4 text-xs">
-            <span className="text-vault-gold/60 flex items-center gap-1">
+            <motion.span 
+              className="text-vault-gold/60 flex items-center gap-1"
+              animate={isHovered ? { x: [0, 3, 0] } : {}}
+              transition={{ duration: 0.5 }}
+            >
               <Lightning className="w-3.5 h-3.5" />
               {trail.steps?.length || 0} steps
-            </span>
+            </motion.span>
             <span className="text-white/40 flex items-center gap-1">
               <Tag className="w-3.5 h-3.5" />
               {trail.topic_tags?.join(', ')}
@@ -500,7 +541,13 @@ function TrailCard({ trail, onClick }) {
           </div>
         </div>
         
-        <CaretRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors shrink-0" weight="bold" />
+        <motion.div
+          className="shrink-0"
+          animate={{ x: isHovered ? 5 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <CaretRight className="w-5 h-5 text-white/20 group-hover:text-vault-gold transition-colors" weight="bold" />
+        </motion.div>
       </div>
     </motion.div>
   );
