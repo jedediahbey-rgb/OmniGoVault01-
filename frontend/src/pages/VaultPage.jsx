@@ -187,7 +187,7 @@ export default function VaultPage({ user, initialView }) {
       setPinnedDocs(pinnedRes.data || []);
       
       // If we have a default portfolio ID from localStorage, find and set the full portfolio object
-      if (defaultPortfolioId && typeof selectedPortfolio === 'string') {
+      if (defaultPortfolioId) {
         const defaultPortfolio = fetchedPortfolios.find(p => p.portfolio_id === defaultPortfolioId);
         if (defaultPortfolio) {
           setSelectedPortfolio(defaultPortfolio);
