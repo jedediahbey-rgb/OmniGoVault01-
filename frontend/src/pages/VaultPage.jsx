@@ -208,6 +208,18 @@ export default function VaultPage({ user, initialView }) {
   const [pinnedDocs, setPinnedDocs] = useState([]);
   const [showQuickAccess, setShowQuickAccess] = useState(true);
 
+  // DEBUG: Detect when selection changes (to catch race conditions)
+  useEffect(() => {
+    console.log("[Vault] selectedPortfolioId changed to:", selectedPortfolioId);
+  }, [selectedPortfolioId]);
+
+  // Sync selectedPortfolioId to localStorage whenever it changes
+  useEffect(() => {
+    if (selectedPortfolioId) {
+      localStorage.setItem("defaultPortfolioId", selectedPortfolioId);
+    }
+  }, [selectedPortfolioId]);
+
   useEffect(() => {
     fetchData();
   }, []);
