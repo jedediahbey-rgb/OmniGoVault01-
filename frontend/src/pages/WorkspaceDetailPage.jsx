@@ -216,7 +216,7 @@ export default function WorkspaceDetailPage({ user }) {
       toast.success('Invitation sent');
       setShowInviteParticipant(false);
       setNewParticipant({ email: '', role: 'VIEWER', display_name: '' });
-      fetchVault();
+      await fetchVault();
     } catch (error) {
       console.error('Error inviting participant:', error);
       toast.error(
