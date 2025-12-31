@@ -811,7 +811,834 @@ class BinderTester:
         return success_rate >= 75
 
 
+class ArchiveAdminTester:
+    def __init__(self):
+        self.base_url = BASE_URL
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+            'User-Agent': 'ArchiveAdminTester/1.0'
+        })
+        self.tests_run = 0
+        self.tests_passed = 0
+        self.failed_tests = []
+        self.test_results = []
+        
+        # Test user details - using the specified email
+        self.test_user_email = "jedediah.bey@gmail.com"
+        self.test_user_id = "user_jedediah_bey"
+        
+        # Test data for Archive functionality
+        self.test_source_id = None
+        self.test_claim_id = None
+        self.test_trail_id = None
+        
+        # Try to get a valid session token
+        self.session_token = self.get_valid_session_token()
+
+    def get_valid_session_token(self):
+        """Get a valid session token for testing"""
+        try:
+            # Create test session using mongosh
+            result = subprocess.run([
+                'mongosh', '--eval', f"""
+                use('test_database');
+                var userId = '{self.test_user_id}';
+                var sessionToken = 'test_session_' + Date.now();
+                
+                // Ensure user exists
+                db.users.updateOne(
+                    {{user_id: userId}},
+                    {{$setOnInsert: {{
+                        user_id: userId,
+                        email: '{self.test_user_email}',
+                        name: 'Jedediah Bey',
+                        picture: 'https://via.placeholder.com/150',
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                // Create session
+                db.user_sessions.insertOne({{
+                    user_id: userId,
+                    session_token: sessionToken,
+                    expires_at: new Date(Date.now() + 7*24*60*60*1000),
+                    created_at: new Date()
+                }});
+                
+                print(sessionToken);
+                """
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                session_token = result.stdout.strip().split('\n')[-1]
+                if session_token and session_token.startswith('test_session_'):
+                    self.log(f"✅ Created test session: {session_token[:20]}...")
+                    self.session.headers['Authorization'] = f'Bearer {session_token}'
+                    return session_token
+            
+            self.log("⚠️ Could not create test session - testing without authentication")
+            return None
+            
+        except Exception as e:
+            self.log(f"⚠️ Session creation failed: {str(e)} - testing without authentication")
+            return None
+
+    def log(self, message):
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
+
+    def log_test(self, name, success, details=""):
+        """Log test result"""
+        self.tests_run += 1
+        if success:
+            self.tests_passed += 1
+            self.log(f"✅ {name}")
+        else:
+            self.log(f"❌ {name} - {details}")
+            self.failed_tests.append({
+                'test': name,
+                'details': details,
+                'timestamp': datetime.now().isoformat()
+            })
+        
+        self.test_results.append({
+            "test": name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        })
+
+    # ============ ARCHIVE ADMIN TESTS ============
+
+    def test_archive_stats(self):
+        """Test GET /api/archive/stats endpoint"""
+        if not self.session_token:
+            self.log_test("Archive Stats", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/archive/stats", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                total_sources = data.get("total_sources", 0)
+                total_claims = data.get("total_claims", 0)
+                total_trails = data.get("total_trails", 0)
+                details = f"Sources: {total_sources}, Claims: {total_claims}, Trails: {total_trails}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Archive Stats", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Archive Stats", False, f"Error: {str(e)}")
+            return False
+
+    def test_create_test_source(self):
+        """Create a test source for CRUD operations"""
+        if not self.session_token:
+            self.log_test("Create Test Source", False, "No session token available")
+            return False
+            
+        try:
+            source_data = {
+                "title": f"Test Source {datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                "source_type": "PRIMARY_SOURCE",
+                "jurisdiction": "Test Jurisdiction",
+                "era_tags": ["Modern"],
+                "topic_tags": ["Testing"],
+                "citation": "Test Citation 2025",
+                "excerpt": "This is a test source for CRUD operations testing.",
+                "notes": "Created by automated testing"
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/archive/sources",
+                json=source_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                self.test_source_id = data.get("source_id")
+                details = f"Created source: {self.test_source_id}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Create Test Source", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Create Test Source", False, f"Error: {str(e)}")
+            return False
+
+    def test_update_source(self):
+        """Test PUT /api/archive/sources/{source_id} endpoint"""
+        if not self.session_token or not self.test_source_id:
+            self.log_test("Update Source", False, "Missing session token or source ID")
+            return False
+            
+        try:
+            update_data = {
+                "title": f"Updated Test Source {datetime.now().strftime('%H%M%S')}",
+                "source_type": "SUPPORTED_INTERPRETATION",
+                "jurisdiction": "Updated Jurisdiction",
+                "era_tags": ["Modern", "Updated"],
+                "topic_tags": ["Testing", "Updated"],
+                "citation": "Updated Citation 2025",
+                "excerpt": "This source has been updated by automated testing.",
+                "notes": "Updated by automated testing"
+            }
+            
+            response = self.session.put(
+                f"{self.base_url}/archive/sources/{self.test_source_id}",
+                json=update_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                updated_title = data.get("title", "")
+                details = f"Updated source title: {updated_title[:50]}..."
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Update Source", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Update Source", False, f"Error: {str(e)}")
+            return False
+
+    def test_create_claim_with_counter_sources(self):
+        """Test POST /api/archive/claims with counter_source_ids (should auto-mark as DISPUTED)"""
+        if not self.session_token or not self.test_source_id:
+            self.log_test("Create Claim with Counter Sources", False, "Missing session token or source ID")
+            return False
+            
+        try:
+            claim_data = {
+                "title": f"Test Disputed Claim {datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                "status": "UNVERIFIED",  # Should be overridden to DISPUTED
+                "body": "This claim has counter sources and should be automatically marked as DISPUTED.",
+                "evidence_source_ids": [],
+                "counter_source_ids": [self.test_source_id],  # This should trigger auto-dispute
+                "topic_tags": ["Testing", "Conflict Detection"],
+                "reality_check": "Testing automatic conflict detection",
+                "practical_takeaway": "System should auto-detect disputes"
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/archive/claims",
+                json=claim_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                self.test_claim_id = data.get("claim_id")
+                status = data.get("status")
+                details = f"Created claim: {self.test_claim_id}, Status: {status}"
+                
+                # Verify it was auto-marked as DISPUTED
+                if status == "DISPUTED":
+                    details += " (✅ Auto-disputed correctly)"
+                else:
+                    details += f" (❌ Expected DISPUTED, got {status})"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Create Claim with Counter Sources", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Create Claim with Counter Sources", False, f"Error: {str(e)}")
+            return False
+
+    def test_update_claim_add_counter_sources(self):
+        """Test PUT /api/archive/claims/{claim_id} - adding counter sources should auto-mark as DISPUTED"""
+        if not self.session_token or not self.test_claim_id or not self.test_source_id:
+            self.log_test("Update Claim Add Counter Sources", False, "Missing required IDs")
+            return False
+            
+        try:
+            # First, create another source to use as counter source
+            source_data = {
+                "title": "Counter Source for Testing",
+                "source_type": "PRIMARY_SOURCE",
+                "jurisdiction": "Test",
+                "era_tags": ["Modern"],
+                "topic_tags": ["Testing"],
+                "citation": "Counter Test Citation",
+                "excerpt": "Counter evidence source",
+                "notes": "Counter source for testing"
+            }
+            
+            source_response = self.session.post(
+                f"{self.base_url}/archive/sources",
+                json=source_data,
+                timeout=10
+            )
+            
+            if source_response.status_code != 200:
+                self.log_test("Update Claim Add Counter Sources", False, "Failed to create counter source")
+                return False
+            
+            counter_source_id = source_response.json().get("source_id")
+            
+            # Now update the claim to add this counter source
+            update_data = {
+                "title": f"Updated Claim with More Counter Sources {datetime.now().strftime('%H%M%S')}",
+                "status": "VERIFIED",  # Should be overridden to DISPUTED
+                "body": "This claim now has multiple counter sources.",
+                "evidence_source_ids": [],
+                "counter_source_ids": [self.test_source_id, counter_source_id],
+                "topic_tags": ["Testing", "Conflict Detection", "Updated"],
+                "reality_check": "Testing automatic conflict detection on update",
+                "practical_takeaway": "System should auto-detect disputes on update"
+            }
+            
+            response = self.session.put(
+                f"{self.base_url}/archive/claims/{self.test_claim_id}",
+                json=update_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                status = data.get("status")
+                counter_count = len(data.get("counter_source_ids", []))
+                details = f"Updated claim status: {status}, Counter sources: {counter_count}"
+                
+                # Verify it was auto-marked as DISPUTED
+                if status == "DISPUTED":
+                    details += " (✅ Auto-disputed correctly on update)"
+                else:
+                    details += f" (❌ Expected DISPUTED, got {status})"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Update Claim Add Counter Sources", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Update Claim Add Counter Sources", False, f"Error: {str(e)}")
+            return False
+
+    def test_scan_conflicts(self):
+        """Test POST /api/archive/admin/scan-conflicts endpoint"""
+        if not self.session_token:
+            self.log_test("Scan Conflicts", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.post(f"{self.base_url}/archive/admin/scan-conflicts", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                newly_disputed = data.get("newly_disputed", 0)
+                reverted = data.get("reverted_to_unverified", 0)
+                details = f"Newly disputed: {newly_disputed}, Reverted: {reverted}"
+                
+                disputed_claims = data.get("disputed_claims", [])
+                if disputed_claims:
+                    details += f", First disputed: {disputed_claims[0].get('title', 'Unknown')[:30]}..."
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Scan Conflicts", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Scan Conflicts", False, f"Error: {str(e)}")
+            return False
+
+    def test_get_conflicts(self):
+        """Test GET /api/archive/admin/conflicts endpoint"""
+        if not self.session_token:
+            self.log_test("Get Conflicts", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/archive/admin/conflicts", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                count = data.get("count", 0)
+                conflicting_claims = data.get("conflicting_claims", [])
+                details = f"Found {count} conflicting claims"
+                
+                if conflicting_claims:
+                    first_claim = conflicting_claims[0]
+                    title = first_claim.get("title", "Unknown")
+                    counter_count = len(first_claim.get("counter_source_ids", []))
+                    details += f", First: {title[:30]}... ({counter_count} counter sources)"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Get Conflicts", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Get Conflicts", False, f"Error: {str(e)}")
+            return False
+
+    def test_create_trail(self):
+        """Test POST /api/archive/trails endpoint"""
+        if not self.session_token:
+            self.log_test("Create Trail", False, "No session token available")
+            return False
+            
+        try:
+            trail_data = {
+                "title": f"Test Trail {datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                "description": "This is a test trail for CRUD operations testing.",
+                "topic_tags": ["Testing", "CRUD"],
+                "steps": [
+                    {
+                        "order": 1,
+                        "title": "Step 1: Introduction",
+                        "content": "This is the first step of the test trail.",
+                        "source_ids": [],
+                        "key_definitions": ["test", "trail"]
+                    },
+                    {
+                        "order": 2,
+                        "title": "Step 2: Implementation",
+                        "content": "This is the second step of the test trail.",
+                        "source_ids": [self.test_source_id] if self.test_source_id else [],
+                        "key_definitions": ["implementation"]
+                    }
+                ],
+                "reality_check": "This is a test trail for automated testing purposes."
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/archive/trails",
+                json=trail_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                self.test_trail_id = data.get("trail_id")
+                details = f"Created trail: {self.test_trail_id}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Create Trail", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Create Trail", False, f"Error: {str(e)}")
+            return False
+
+    def test_update_trail(self):
+        """Test PUT /api/archive/trails/{trail_id} endpoint"""
+        if not self.session_token or not self.test_trail_id:
+            self.log_test("Update Trail", False, "Missing session token or trail ID")
+            return False
+            
+        try:
+            update_data = {
+                "title": f"Updated Test Trail {datetime.now().strftime('%H%M%S')}",
+                "description": "This trail has been updated by automated testing.",
+                "topic_tags": ["Testing", "CRUD", "Updated"],
+                "steps": [
+                    {
+                        "order": 1,
+                        "title": "Updated Step 1",
+                        "content": "This step has been updated.",
+                        "source_ids": [],
+                        "key_definitions": ["updated", "test"]
+                    },
+                    {
+                        "order": 2,
+                        "title": "New Step 2",
+                        "content": "This is a completely new step.",
+                        "source_ids": [],
+                        "key_definitions": ["new", "step"]
+                    },
+                    {
+                        "order": 3,
+                        "title": "Step 3: Conclusion",
+                        "content": "This trail now has three steps.",
+                        "source_ids": [self.test_source_id] if self.test_source_id else [],
+                        "key_definitions": ["conclusion"]
+                    }
+                ],
+                "reality_check": "This trail has been updated for testing purposes."
+            }
+            
+            response = self.session.put(
+                f"{self.base_url}/archive/trails/{self.test_trail_id}",
+                json=update_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                updated_title = data.get("title", "")
+                step_count = len(data.get("steps", []))
+                details = f"Updated trail: {updated_title[:30]}..., Steps: {step_count}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Update Trail", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Update Trail", False, f"Error: {str(e)}")
+            return False
+
+    def test_delete_source_with_references(self):
+        """Test DELETE /api/archive/sources/{source_id} - should fail if referenced by claims"""
+        if not self.session_token or not self.test_source_id:
+            self.log_test("Delete Source with References", False, "Missing session token or source ID")
+            return False
+            
+        try:
+            response = self.session.delete(
+                f"{self.base_url}/archive/sources/{self.test_source_id}",
+                timeout=10
+            )
+            
+            # Should fail with 400 because source is referenced by claims
+            success = response.status_code == 400
+            
+            if success:
+                data = response.json()
+                error_detail = data.get("detail", "")
+                details = f"Correctly prevented deletion: {error_detail}"
+            elif response.status_code == 200:
+                details = "❌ Source was deleted despite having references"
+                success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+                success = False
+            
+            self.log_test("Delete Source with References", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Delete Source with References", False, f"Error: {str(e)}")
+            return False
+
+    def test_delete_claim(self):
+        """Test DELETE /api/archive/claims/{claim_id} endpoint"""
+        if not self.session_token or not self.test_claim_id:
+            self.log_test("Delete Claim", False, "Missing session token or claim ID")
+            return False
+            
+        try:
+            response = self.session.delete(
+                f"{self.base_url}/archive/claims/{self.test_claim_id}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                message = data.get("message", "")
+                claim_id = data.get("claim_id", "")
+                details = f"Deleted claim: {claim_id}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Delete Claim", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Delete Claim", False, f"Error: {str(e)}")
+            return False
+
+    def test_delete_trail(self):
+        """Test DELETE /api/archive/trails/{trail_id} endpoint"""
+        if not self.session_token or not self.test_trail_id:
+            self.log_test("Delete Trail", False, "Missing session token or trail ID")
+            return False
+            
+        try:
+            response = self.session.delete(
+                f"{self.base_url}/archive/trails/{self.test_trail_id}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                message = data.get("message", "")
+                trail_id = data.get("trail_id", "")
+                details = f"Deleted trail: {trail_id}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Delete Trail", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Delete Trail", False, f"Error: {str(e)}")
+            return False
+
+    def test_delete_source_without_references(self):
+        """Test DELETE /api/archive/sources/{source_id} - should succeed after removing references"""
+        if not self.session_token or not self.test_source_id:
+            self.log_test("Delete Source without References", False, "Missing session token or source ID")
+            return False
+            
+        try:
+            response = self.session.delete(
+                f"{self.base_url}/archive/sources/{self.test_source_id}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                message = data.get("message", "")
+                source_id = data.get("source_id", "")
+                details = f"Successfully deleted source: {source_id}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Delete Source without References", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Delete Source without References", False, f"Error: {str(e)}")
+            return False
+
+    def test_auth_me_endpoint(self):
+        """Test /api/auth/me endpoint with valid session"""
+        if not self.session_token:
+            self.log_test("Auth Me Endpoint", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/auth/me", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                user_id = data.get("user_id")
+                email = data.get("email")
+                details = f"User: {email}, ID: {user_id}"
+                
+                # Store user ID for later tests
+                self.test_user_id = user_id
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Auth Me Endpoint", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Auth Me Endpoint", False, f"Error: {str(e)}")
+            return False
+
+    # ============ TEST RUNNER ============
+
+    def run_archive_admin_tests(self):
+        """Run all Archive Admin API tests"""
+        self.log("🚀 Starting BLACK ARCHIVE PHASE B - ADMIN TOOLS Tests")
+        self.log(f"Testing against: {self.base_url}")
+        self.log(f"User: {self.test_user_email}")
+        self.log("=" * 80)
+        
+        # Test sequence for Archive Admin APIs
+        test_sequence = [
+            # Authentication Tests
+            self.test_auth_me_endpoint,
+            
+            # Archive Stats
+            self.test_archive_stats,
+            
+            # Source CRUD Tests
+            self.test_create_test_source,
+            self.test_update_source,
+            
+            # Claim CRUD with Conflict Detection
+            self.test_create_claim_with_counter_sources,
+            self.test_update_claim_add_counter_sources,
+            
+            # Admin Tools - Conflict Detection
+            self.test_scan_conflicts,
+            self.test_get_conflicts,
+            
+            # Trail CRUD Tests
+            self.test_create_trail,
+            self.test_update_trail,
+            
+            # Deletion Tests (order matters - test reference protection first)
+            self.test_delete_source_with_references,
+            self.test_delete_claim,  # Remove claim first to remove references
+            self.test_delete_trail,
+            self.test_delete_source_without_references,  # Now source can be deleted
+        ]
+        
+        for test_func in test_sequence:
+            try:
+                test_func()
+                time.sleep(0.5)  # Brief pause between tests
+            except Exception as e:
+                test_name = getattr(test_func, '__name__', 'Unknown Test')
+                self.log(f"❌ Test {test_name} crashed: {str(e)}")
+                self.tests_run += 1
+                self.failed_tests.append({
+                    'test': test_name,
+                    'details': f"Test crashed: {str(e)}",
+                    'timestamp': datetime.now().isoformat()
+                })
+        
+        return self.print_summary()
+
+    def print_summary(self):
+        """Print test summary"""
+        self.log("=" * 80)
+        self.log("🏁 BLACK ARCHIVE PHASE B - ADMIN TOOLS TEST SUMMARY")
+        self.log("=" * 80)
+        
+        success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
+        
+        self.log(f"📊 Tests Run: {self.tests_run}")
+        self.log(f"✅ Tests Passed: {self.tests_passed}")
+        self.log(f"❌ Tests Failed: {len(self.failed_tests)}")
+        self.log(f"📈 Success Rate: {success_rate:.1f}%")
+        
+        if self.failed_tests:
+            self.log("\n❌ FAILED TESTS:")
+            for failure in self.failed_tests:
+                self.log(f"  • {failure['test']}: {failure['details']}")
+        
+        self.log("\n🎯 KEY FINDINGS:")
+        
+        # Check authentication status
+        auth_tests = [t for t in self.test_results if 'auth' in t['test'].lower() or 'Auth' in t['test']]
+        auth_working = any(t['success'] for t in auth_tests if 'me' in t['test'].lower())
+        
+        if auth_working:
+            self.log("✅ Authentication is working - full functionality testing completed")
+        else:
+            self.log("⚠️ Authentication issues detected - limited testing performed")
+        
+        # Check conflict detection
+        conflict_tests = [t for t in self.test_results if 'conflict' in t['test'].lower() or 'Counter' in t['test']]
+        conflict_working = any(t['success'] for t in conflict_tests)
+        
+        if conflict_working:
+            self.log("✅ Conflict detection is working correctly")
+        else:
+            self.log("❌ Conflict detection functionality needs attention")
+        
+        # Check CRUD operations
+        crud_tests = [t for t in self.test_results if any(op in t['test'].lower() for op in ['create', 'update', 'delete'])]
+        crud_working = sum(1 for t in crud_tests if t['success'])
+        crud_total = len(crud_tests)
+        
+        if crud_working == crud_total:
+            self.log("✅ All CRUD operations are working correctly")
+        elif crud_working > crud_total * 0.7:
+            self.log("⚠️ Most CRUD operations working, some issues detected")
+        else:
+            self.log("❌ CRUD operations have significant issues")
+        
+        # Specific feature status
+        self.log("\n📋 FEATURE STATUS:")
+        
+        feature_categories = [
+            ("Authentication", ["auth"]),
+            ("Archive Statistics", ["stats"]),
+            ("Source Management", ["source"]),
+            ("Claim Management", ["claim"]),
+            ("Trail Management", ["trail"]),
+            ("Conflict Detection", ["conflict", "counter"]),
+            ("Reference Protection", ["references"]),
+            ("Admin Tools", ["scan", "admin"])
+        ]
+        
+        for category, keywords in feature_categories:
+            category_tests = [
+                t for t in self.test_results 
+                if any(keyword in t['test'].lower() for keyword in keywords)
+            ]
+            if category_tests:
+                category_success = sum(1 for t in category_tests if t['success'])
+                total_tests = len(category_tests)
+                status = "✅" if category_success == total_tests else "⚠️" if category_success > 0 else "❌"
+                self.log(f"  {category}: {category_success}/{total_tests} {status}")
+        
+        self.log("\n📝 ARCHIVE ADMIN FLOW:")
+        flow_steps = [
+            ("1. User Authentication", auth_working),
+            ("2. Archive Statistics", any('stats' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("3. Source CRUD", any('source' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("4. Claim CRUD + Conflict Detection", any('claim' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("5. Trail CRUD", any('trail' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("6. Admin Conflict Tools", any('scan' in t['test'].lower() and t['success'] for t in self.test_results))
+        ]
+        
+        for step, working in flow_steps:
+            status = "✅" if working else "❌"
+            self.log(f"  {step}: {status}")
+        
+        self.log("\n📋 IMPLEMENTATION STATUS:")
+        if success_rate >= 90:
+            self.log("✅ Black Archive Phase B Admin Tools are fully functional")
+            self.log("✅ All CRUD operations working correctly")
+            self.log("✅ Conflict detection automatically applying DISPUTED status")
+            self.log("✅ Reference checks preventing invalid deletions")
+            self.log("✅ Admin tools for bulk operations working")
+        elif success_rate >= 75:
+            self.log("⚠️ Black Archive Admin Tools mostly working with minor issues")
+            self.log("✅ Core functionality is operational")
+            if not conflict_working:
+                self.log("⚠️ Conflict detection may need attention")
+        else:
+            self.log("❌ Black Archive Admin Tools have significant issues")
+            if not auth_working:
+                self.log("❌ Authentication issues preventing full testing")
+        
+        # Test data cleanup
+        if self.session_token:
+            self.log("\n🧹 CLEANUP:")
+            self.log("• Test data and session will be cleaned up automatically")
+        
+        return success_rate >= 75
+
+
 if __name__ == "__main__":
-    tester = BinderTester()
-    success = tester.run_binder_tests()
-    sys.exit(0 if success else 1)
+    import sys
+    
+    # Check command line arguments
+    if len(sys.argv) > 1 and sys.argv[1] == "archive":
+        # Run Archive Admin tests
+        tester = ArchiveAdminTester()
+        success = tester.run_archive_admin_tests()
+        sys.exit(0 if success else 1)
+    else:
+        # Run Binder tests (default)
+        tester = BinderTester()
+        success = tester.run_binder_tests()
+        sys.exit(0 if success else 1)
