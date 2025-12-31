@@ -384,11 +384,11 @@ export default function VaultPage({ user, initialView }) {
     }
   };
 
-  // FIX #3: Robust filtering with normalized IDs
-  const selectedId = normalizeId(selectedPortfolioId);
-  const baseDocs = showTrash ? trashedDocuments : documents;
-  
+  // FIX #3: Robust filtering with normalized IDs - ALL inside useMemo to avoid stale closures
   const filteredDocuments = useMemo(() => {
+    const selectedId = normalizeId(selectedPortfolioId);
+    const baseDocs = showTrash ? trashedDocuments : documents;
+    
     const result = baseDocs.filter(doc => {
       const title = String(doc.title ?? "");
       const matchesSearch = !searchTerm || title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -402,6 +402,7 @@ export default function VaultPage({ user, initialView }) {
     // FIX #6: Debug log after filtering
     console.log("[Vault] filter", { 
       selectedPortfolioId, 
+      selectedId,
       showTrash, 
       searchTerm, 
       total: baseDocs.length, 
@@ -409,7 +410,7 @@ export default function VaultPage({ user, initialView }) {
     });
     
     return result;
-  }, [baseDocs, searchTerm, showTrash, selectedId, selectedPortfolioId]);
+  }, [documents, trashedDocuments, searchTerm, showTrash, selectedPortfolioId]);
 
   // FIX #4: Sort must derive from filteredDocuments, not documents
   const sortedDocuments = useMemo(() => {
