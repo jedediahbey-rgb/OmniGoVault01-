@@ -1721,14 +1721,14 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
     // Multiple passes to ensure all nodes are measured
     const timers = [];
     
-    // Immediate fit with low maxZoom to see all nodes
+    // Immediate fit with padding to stay away from edges/bottom UI
     requestAnimationFrame(() => {
       fitView({
-        padding: 0.05,
+        padding: 0.25,
         includeHiddenNodes: true,
         duration: 0,
-        minZoom: 0.3,
-        maxZoom: 0.85,
+        minZoom: 0.4,
+        maxZoom: 1.2,
       });
     });
 
@@ -1736,11 +1736,11 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
     timers.push(setTimeout(() => {
       requestAnimationFrame(() => {
         fitView({
-          padding: 0.05,
+          padding: 0.25,
           includeHiddenNodes: true,
           duration: 300,
-          minZoom: 0.3,
-          maxZoom: 0.85,
+          minZoom: 0.4,
+          maxZoom: 1.2,
         });
       });
     }, 200));
@@ -1749,11 +1749,11 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
     timers.push(setTimeout(() => {
       requestAnimationFrame(() => {
         fitView({
-          padding: 0.05,
+          padding: 0.25,
           includeHiddenNodes: true,
           duration: 350,
-          minZoom: 0.3,
-          maxZoom: 0.85,
+          minZoom: 0.4,
+          maxZoom: 1.2,
         });
       });
     }, 500));
