@@ -1656,25 +1656,25 @@ const nodeTypes = {
   concept: ConceptNode,
 };
 
-// Mobile-optimized nodes - Compact vertical layout (fits in viewport)
+// Mobile-optimized nodes - Very compact vertical layout (fits in viewport)
 const mobileNodes = [
   // Row 1 - Center doctrine (main node)
   { id: '1', type: 'doctrine', position: { x: 60, y: 0 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
   
   // Row 2 - Two nodes spread  
-  { id: '2', type: 'case', position: { x: 0, y: 80 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
-  { id: '7', type: 'concept', position: { x: 155, y: 80 }, data: { label: "Chancellor's Conscience" } },
+  { id: '2', type: 'case', position: { x: 0, y: 70 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
+  { id: '7', type: 'concept', position: { x: 155, y: 70 }, data: { label: "Chancellor's Conscience" } },
   
   // Row 3 - Two nodes
-  { id: '4', type: 'doctrine', position: { x: 0, y: 160 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
-  { id: '8', type: 'concept', position: { x: 155, y: 160 }, data: { label: 'No-Profit Rule' } },
+  { id: '4', type: 'doctrine', position: { x: 0, y: 140 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
+  { id: '8', type: 'concept', position: { x: 155, y: 140 }, data: { label: 'No-Profit Rule' } },
   
   // Row 4 - Two nodes
-  { id: '3', type: 'case', position: { x: 0, y: 240 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
-  { id: '6', type: 'statute', position: { x: 155, y: 240 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
+  { id: '3', type: 'case', position: { x: 0, y: 210 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
+  { id: '6', type: 'statute', position: { x: 155, y: 210 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
   
   // Row 5 - Bottom center (1 node)
-  { id: '5', type: 'doctrine', position: { x: 60, y: 320 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
+  { id: '5', type: 'doctrine', position: { x: 60, y: 280 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
 ];
 
 // Desktop nodes - Compact 3-row layout
