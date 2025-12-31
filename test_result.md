@@ -139,3 +139,38 @@ Testing the Binder Generation functionality through the frontend UI at /binder p
 - **Test Portfolio**: Created and used for binder generation
 - **PDF Library**: WeasyPrint v62.3 working correctly
 - **Dependencies**: libpangoft2 available and functional
+
+## Black Archive Phase B - Admin Tools Testing (December 31, 2025)
+
+### New Backend Endpoints Added:
+
+**CRUD Operations:**
+- `PUT /api/archive/sources/{source_id}` - Update a source
+- `DELETE /api/archive/sources/{source_id}` - Delete a source (with reference check)
+- `PUT /api/archive/claims/{claim_id}` - Update a claim (with auto conflict detection)
+- `DELETE /api/archive/claims/{claim_id}` - Delete a claim
+- `PUT /api/archive/trails/{trail_id}` - Update a trail
+- `DELETE /api/archive/trails/{trail_id}` - Delete a trail
+
+**Admin Tools:**
+- `POST /api/archive/admin/scan-conflicts` - Scan all claims and auto-apply DISPUTED status to claims with counter sources
+- `GET /api/archive/admin/conflicts` - Get all claims with conflicting sources
+- `POST /api/archive/admin/bulk/sources` - Bulk create sources
+- `POST /api/archive/admin/bulk/claims` - Bulk create claims (with auto conflict detection)
+- `POST /api/archive/admin/bulk/trails` - Bulk create trails
+- `DELETE /api/archive/admin/reset` - Reset all archive data
+
+**Conflict Detection Logic:**
+- When creating/updating claims with `counter_source_ids`, status is automatically set to "DISPUTED"
+- `auto_disputed` flag tracks which claims were automatically marked
+- Scan endpoint can batch-detect and update all existing claims
+
+### Test Cases:
+1. [ ] Authenticate and verify /api/archive/stats returns data
+2. [ ] Test POST /api/archive/admin/scan-conflicts
+3. [ ] Test GET /api/archive/admin/conflicts
+4. [ ] Test creating a claim with counter_source_ids - should auto-mark as DISPUTED
+5. [ ] Test updating a claim to add counter sources - should auto-mark as DISPUTED
+6. [ ] Test source deletion with references (should fail)
+7. [ ] Test source deletion without references (should succeed)
+
