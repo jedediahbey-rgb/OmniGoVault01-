@@ -812,7 +812,7 @@ export default function GovernancePage({ user }) {
   const handleDeleteDistribution = async (distributionId) => {
     try {
       // Use V2 API void endpoint
-      await axios.post(`${API_V2}/records/${distributionId}/void`, {
+      await api.post(`${API_V2}/records/${distributionId}/void`, {
         void_reason: 'Deleted by user from governance list'
       });
       toast.success('Distribution deleted');
