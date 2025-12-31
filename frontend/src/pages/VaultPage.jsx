@@ -145,7 +145,8 @@ function VaultSidebarContent({
         <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-6 mb-2">System</p>
         <button
           onClick={() => { 
-            setSelectedPortfolio(null); 
+            console.log("[Vault] clicked Trash");
+            setSelectedPortfolioId(null); 
             setShowTrash(true); 
             setSidebarOpen(false);
             navigate('/vault/trash');
