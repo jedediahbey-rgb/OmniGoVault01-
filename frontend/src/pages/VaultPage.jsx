@@ -813,11 +813,11 @@ export default function VaultPage({ user, initialView }) {
       {/* ================================================================== */}
       {/* MAIN CONTENT */}
       {/* ================================================================== */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* ============ MOBILE LAYOUT ============ */}
-        <div className="lg:hidden flex flex-col h-full">
+        <div className="lg:hidden flex flex-col flex-1 overflow-hidden">
           {/* Mobile Header Bar */}
-          <div className="bg-[#0a0f1a] border-b border-white/10">
+          <div className="shrink-0 bg-[#0a0f1a] border-b border-white/10">
             {/* Portfolio Row */}
             <div className="flex items-center gap-2 px-4 py-3">
               <button
