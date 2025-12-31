@@ -11,6 +11,7 @@ from datetime import datetime
 import time
 import uuid
 import hashlib
+import subprocess
 
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://vault-enhance.preview.emergentagent.com/api"
@@ -30,6 +31,7 @@ class BinderTester:
         
         # Test user details - using the specified email
         self.test_user_email = "jedediah.bey@gmail.com"
+        self.test_user_id = "user_jedediah_bey"
         
         # Test data for Binder functionality
         self.test_portfolio_id = None
@@ -40,11 +42,53 @@ class BinderTester:
         self.session_token = self.get_valid_session_token()
 
     def get_valid_session_token(self):
-        """Try to get a valid session token for testing"""
-        # Since authentication is required and dev bypass is disabled,
-        # we'll test the endpoint structure and error handling instead
-        self.log("⚠️ Authentication required - testing endpoint structure and error handling")
-        return None
+        """Get a valid session token for testing"""
+        try:
+            # Create test session using mongosh
+            result = subprocess.run([
+                'mongosh', '--eval', f"""
+                use('test_database');
+                var userId = '{self.test_user_id}';
+                var sessionToken = 'test_session_' + Date.now();
+                
+                // Ensure user exists
+                db.users.updateOne(
+                    {{user_id: userId}},
+                    {{$setOnInsert: {{
+                        user_id: userId,
+                        email: '{self.test_user_email}',
+                        name: 'Jedediah Bey',
+                        picture: 'https://via.placeholder.com/150',
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                // Create session
+                db.user_sessions.insertOne({{
+                    user_id: userId,
+                    session_token: sessionToken,
+                    expires_at: new Date(Date.now() + 7*24*60*60*1000),
+                    created_at: new Date()
+                }});
+                
+                print(sessionToken);
+                """
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                session_token = result.stdout.strip().split('\n')[-1]
+                if session_token and session_token.startswith('test_session_'):
+                    self.log(f"✅ Created test session: {session_token[:20]}...")
+                    self.session.headers['Authorization'] = f'Bearer {session_token}'
+                    return session_token
+            
+            self.log("⚠️ Could not create test session - testing without authentication")
+            return None
+            
+        except Exception as e:
+            self.log(f"⚠️ Session creation failed: {str(e)} - testing without authentication")
+            return None
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
