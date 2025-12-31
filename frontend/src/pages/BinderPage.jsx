@@ -300,6 +300,7 @@ export default function BinderPage() {
   const [latestRun, setLatestRun] = useState(null);
   const [staleCheck, setStaleCheck] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [initialLoadDone, setInitialLoadDone] = useState(false); // Track if initial fetch completed
   const [generating, setGenerating] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null);
   
