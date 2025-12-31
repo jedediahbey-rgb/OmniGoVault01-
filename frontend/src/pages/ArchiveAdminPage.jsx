@@ -675,7 +675,7 @@ export default function ArchiveAdminPage() {
             <AlertDialogHeader>
               <AlertDialogTitle className="text-vault-light">Confirm Delete</AlertDialogTitle>
               <AlertDialogDescription className="text-vault-muted">
-                Are you sure you want to delete "{deleteItem?.title}"? This action cannot be undone.
+                Are you sure you want to delete &ldquo;{deleteItem?.title}&rdquo;? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
