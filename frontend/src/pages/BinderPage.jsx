@@ -1772,16 +1772,7 @@ export default function BinderPage() {
 
                   {/* Generate Evidence Button */}
                   <Button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleGenerateEvidence();
-                    }}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleGenerateEvidence();
-                    }}
+                    onClick={handleGenerateEvidence}
                     disabled={generating || !selectedDispute}
                     className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-6 text-lg touch-manipulation select-none"
                   >
