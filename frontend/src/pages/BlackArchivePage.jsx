@@ -786,18 +786,119 @@ function IndexTab() {
           ))}
         </div>
       ) : (
-        /* Premium Empty State - Black Index */
+        /* Premium Empty State - Black Index with Dynamic Visual Effect */
         <div className="text-center py-12 sm:py-16">
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5">
-            {/* Outer glow ring - CSS animation instead of JS */}
-            <div className="absolute inset-0 rounded-2xl border border-vault-gold/20 animate-pulse-slow" />
-            {/* Main container */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-vault-gold/15 to-vault-gold/5 border border-vault-gold/30" />
-            {/* Icon */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Books className="w-10 h-10 sm:w-12 sm:h-12 text-vault-gold" weight="duotone" />
+          <motion.div 
+            className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-6"
+            whileHover={{ scale: 1.05 }}
+          >
+            {/* Outer rotating ring with gradient */}
+            <motion.div
+              className="absolute inset-0 rounded-2xl"
+              style={{
+                background: 'conic-gradient(from 0deg, transparent, rgba(198, 168, 124, 0.4), transparent, rgba(198, 168, 124, 0.2), transparent)',
+              }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+            />
+            
+            {/* Counter-rotating inner ring */}
+            <motion.div
+              className="absolute inset-1 rounded-xl"
+              style={{
+                background: 'conic-gradient(from 180deg, transparent, rgba(139, 92, 246, 0.2), transparent, rgba(198, 168, 124, 0.15), transparent)',
+              }}
+              animate={{ rotate: -360 }}
+              transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+            />
+            
+            {/* Pulsing glow rings */}
+            <motion.div
+              className="absolute inset-2 rounded-xl border border-vault-gold/30"
+              animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.2, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <motion.div
+              className="absolute inset-2 rounded-xl border border-vault-gold/20"
+              animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0, 0.3] }}
+              transition={{ duration: 2, delay: 0.5, repeat: Infinity }}
+            />
+            
+            {/* Main container with glass effect */}
+            <div className="absolute inset-3 rounded-lg bg-gradient-to-br from-vault-gold/20 to-vault-gold/5 border border-vault-gold/40 backdrop-blur-sm overflow-hidden">
+              {/* Shimmer effect */}
+              <motion.div
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(45deg, transparent 30%, rgba(198, 168, 124, 0.15) 50%, transparent 70%)',
+                  backgroundSize: '200% 200%',
+                }}
+                animate={{ backgroundPosition: ['0% 0%', '200% 200%'] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              />
             </div>
-          </div>
+            
+            {/* Floating particles around icon */}
+            {[0, 60, 120, 180, 240, 300].map((angle, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1.5 h-1.5 rounded-full bg-vault-gold/60"
+                style={{
+                  top: '50%',
+                  left: '50%',
+                }}
+                animate={{
+                  x: [
+                    Math.cos((angle * Math.PI) / 180) * 35,
+                    Math.cos(((angle + 30) * Math.PI) / 180) * 40,
+                    Math.cos((angle * Math.PI) / 180) * 35,
+                  ],
+                  y: [
+                    Math.sin((angle * Math.PI) / 180) * 35,
+                    Math.sin(((angle + 30) * Math.PI) / 180) * 40,
+                    Math.sin((angle * Math.PI) / 180) * 35,
+                  ],
+                  opacity: [0.4, 0.8, 0.4],
+                  scale: [1, 1.2, 1],
+                }}
+                transition={{
+                  duration: 3,
+                  delay: i * 0.2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+            ))}
+            
+            {/* Icon with glow */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                animate={{ y: [0, -3, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <Books 
+                  className="w-10 h-10 sm:w-12 sm:h-12 text-vault-gold drop-shadow-[0_0_10px_rgba(198,168,124,0.5)]" 
+                  weight="duotone" 
+                />
+              </motion.div>
+            </div>
+            
+            {/* Corner sparkles */}
+            <motion.div
+              className="absolute top-1 right-1 w-2 h-2"
+              animate={{ opacity: [0, 1, 0], scale: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+            >
+              <Sparkle className="w-full h-full text-vault-gold" weight="fill" />
+            </motion.div>
+            <motion.div
+              className="absolute bottom-1 left-1 w-2 h-2"
+              animate={{ opacity: [0, 1, 0], scale: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            >
+              <Sparkle className="w-full h-full text-vault-gold" weight="fill" />
+            </motion.div>
+          </motion.div>
           
           <h3 className="text-white font-heading text-lg sm:text-xl mb-2">No Sources Found</h3>
           <p className="text-white/40 text-sm mb-5 max-w-xs mx-auto">
@@ -805,9 +906,16 @@ function IndexTab() {
           </p>
           
           {hasActiveFilters && (
-            <button
+            <motion.button
               onClick={clearFilters}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-vault-gold/30 rounded-lg text-white/60 hover:text-white text-sm transition-all"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <X className="w-4 h-4" />
+              Clear filters
+            </motion.button>
+          )}
             >
               <X className="w-4 h-4" />
               Clear filters
