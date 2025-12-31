@@ -115,53 +115,74 @@ function PortfolioSelector({ portfolios, activePortfolio, onSelect, onCreateNew 
   );
 }
 
-// Document Card Component - Plain div, no animations
+// Document Card Component - Swipe to delete
 function DocumentCard({ doc, isPinned, onNavigate, onDelete }) {
+  const x = useMotionValue(0);
+  const background = useTransform(x, [-100, 0], ['rgba(239, 68, 68, 0.3)', 'rgba(0, 0, 0, 0)']);
+  const deleteOpacity = useTransform(x, [-100, -50, 0], [1, 0.5, 0]);
+
+  const handleDragEnd = (event, info) => {
+    if (info.offset.x < -80 && onDelete && !doc.is_locked) {
+      onDelete(doc);
+    }
+  };
+
   return (
-    <div className="p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-xl active:scale-[0.98] transition-transform">
-      <div className="flex items-start gap-3">
-        <div 
-          onClick={onNavigate}
-          className="w-12 h-12 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0 cursor-pointer"
-        >
-          <FileText className="w-6 h-6 text-vault-gold" weight="duotone" />
-        </div>
-        <div className="flex-1 min-w-0 cursor-pointer" onClick={onNavigate}>
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="text-white font-medium text-sm line-clamp-2 leading-snug">{doc.title}</h3>
-            <div className="flex items-center gap-1 shrink-0">
-              {isPinned && <Star className="w-4 h-4 text-vault-gold" weight="fill" />}
-              {doc.is_locked && <Lock className="w-4 h-4 text-green-400" weight="fill" />}
+    <div className="relative overflow-hidden rounded-xl">
+      {/* Delete background */}
+      <motion.div 
+        className="absolute inset-0 flex items-center justify-end pr-4 rounded-xl"
+        style={{ background }}
+      >
+        <motion.div style={{ opacity: deleteOpacity }} className="flex items-center gap-2 text-red-400">
+          <Trash className="w-5 h-5" />
+          <span className="text-sm font-medium">Delete</span>
+        </motion.div>
+      </motion.div>
+      
+      {/* Card content */}
+      <motion.div
+        drag={doc.is_locked ? false : "x"}
+        dragConstraints={{ left: -100, right: 0 }}
+        dragElastic={0.1}
+        onDragEnd={handleDragEnd}
+        style={{ x }}
+        className="p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-xl cursor-grab active:cursor-grabbing relative"
+      >
+        <div className="flex items-start gap-3" onClick={onNavigate}>
+          <div className="w-12 h-12 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0">
+            <FileText className="w-6 h-6 text-vault-gold" weight="duotone" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-white font-medium text-sm line-clamp-2 leading-snug">{doc.title}</h3>
+              <div className="flex items-center gap-1 shrink-0">
+                {isPinned && <Star className="w-4 h-4 text-vault-gold" weight="fill" />}
+                {doc.is_locked && <Lock className="w-4 h-4 text-green-400" weight="fill" />}
+              </div>
+            </div>
+            <p className="text-vault-gold/60 text-xs font-medium uppercase tracking-wide mt-1">
+              {humanizeSlug(doc.document_type)}
+            </p>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-white/40 text-xs flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {new Date(doc.updated_at).toLocaleDateString()}
+              </span>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase ${
+                doc.is_locked ? 'bg-green-500/20 text-green-400' :
+                doc.status === 'completed' ? 'bg-vault-gold/20 text-vault-gold' :
+                'bg-white/10 text-white/50'
+              }`}>
+                {doc.is_locked ? 'Finalized' : doc.status || 'Draft'}
+              </span>
             </div>
           </div>
-          <p className="text-vault-gold/60 text-xs font-medium uppercase tracking-wide mt-1">
-            {humanizeSlug(doc.document_type)}
-          </p>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-white/40 text-xs flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {new Date(doc.updated_at).toLocaleDateString()}
-            </span>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase ${
-              doc.is_locked ? 'bg-green-500/20 text-green-400' :
-              doc.status === 'completed' ? 'bg-vault-gold/20 text-vault-gold' :
-              'bg-white/10 text-white/50'
-            }`}>
-              {doc.is_locked ? 'Finalized' : doc.status || 'Draft'}
-            </span>
-          </div>
         </div>
-        {/* Delete button */}
-        {!doc.is_locked && onDelete && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onDelete(doc.document_id); }}
-            className="p-2 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
-            title="Move to trash"
-          >
-            <Trash className="w-4 h-4" weight="duotone" />
-          </button>
+        {!doc.is_locked && (
+          <p className="text-white/20 text-[10px] text-center mt-2">← Swipe to delete</p>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
