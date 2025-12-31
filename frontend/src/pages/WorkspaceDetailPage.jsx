@@ -250,9 +250,12 @@ export default function WorkspaceDetailPage({ user }) {
       return;
     }
     try {
-      await axios.post(`${API}/vaults/${vaultId}/deactivate`, {}, { withCredentials: true });
+      const response = await axios.post(`${API}/vaults/${vaultId}/deactivate`, {}, { withCredentials: true });
+      // Update vault state immediately with response data
+      if (response.data) {
+        setVault(response.data);
+      }
       toast.success('Vault deactivated - returned to draft status');
-      await fetchVault();
     } catch (error) {
       toast.error(
             typeof error.response?.data?.detail === 'string' 
