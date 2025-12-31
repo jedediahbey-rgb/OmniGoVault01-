@@ -99,7 +99,7 @@ const AdminConsolePage = () => {
 
   const checkAdminStatus = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/admin/status`);
+      const response = await api.get('/api/admin/status');
       setAdminStatus(response.data);
       
       if (!response.data.is_admin) {
@@ -120,7 +120,7 @@ const AdminConsolePage = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/billing/plans`);
+      const response = await api.get('/api/billing/plans');
       setPlans(response.data.plans || []);
     } catch (error) {
       console.error('Error fetching plans:', error);
@@ -130,7 +130,7 @@ const AdminConsolePage = () => {
   const fetchAccounts = useCallback(async (search = '') => {
     setAccountsLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/admin/accounts`, {
+      const response = await api.get('/api/admin/accounts', {
         params: { search: search || undefined, limit: 50 }
       });
       setAccounts(response.data.accounts || []);
@@ -145,7 +145,7 @@ const AdminConsolePage = () => {
   const fetchUsers = useCallback(async (search = '') => {
     setUsersLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/admin/users`, {
+      const response = await api.get('/api/admin/users', {
         params: { search: search || undefined, limit: 50 }
       });
       setUsers(response.data.users || []);
@@ -160,7 +160,7 @@ const AdminConsolePage = () => {
   const fetchAuditLogs = useCallback(async () => {
     setLogsLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/admin/audit-logs`, {
+      const response = await api.get('/api/admin/audit-logs', {
         params: { limit: 100 }
       });
       setAuditLogs(response.data.logs || []);
