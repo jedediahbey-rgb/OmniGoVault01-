@@ -170,6 +170,104 @@ async def websocket_endpoint(
                         "timestamp": datetime.now(timezone.utc).isoformat()
                     })
                 
+                # V2: Channel subscriptions
+                elif action == "subscribe" and room_id:
+                    channel = payload.get("channel", room_id)
+                    await manager.subscribe_to_channel(connection_id, channel)
+                    await manager.send_personal_message(connection_id, {
+                        "type": "subscribed",
+                        "channel": channel,
+                        "timestamp": datetime.now(timezone.utc).isoformat()
+                    })
+                
+                elif action == "unsubscribe":
+                    channel = payload.get("channel")
+                    if channel:
+                        await manager.unsubscribe_from_channel(connection_id, channel)
+                        await manager.send_personal_message(connection_id, {
+                            "type": "unsubscribed",
+                            "channel": channel,
+                            "timestamp": datetime.now(timezone.utc).isoformat()
+                        })
+                
+                # V2: Get room history
+                elif action == "get_history" and room_id:
+                    since = payload.get("since")
+                    limit = payload.get("limit", 50)
+                    history = manager.get_room_history(room_id, since, limit)
+                    await manager.send_personal_message(connection_id, {
+                        "type": "room_history",
+                        "room_id": room_id,
+                        "events": history,
+                        "timestamp": datetime.now(timezone.utc).isoformat()
+                    })
+                
+                # V2: Conflict resolution
+                elif action == "sync_changes":
+                    document_id = payload.get("document_id")
+                    base_version = payload.get("base_version", 0)
+                    changes = payload.get("changes", {})
+                    
+                    if document_id:
+                        # Rate limit check
+                        if not manager.check_rate_limit(connection_id, "sync_changes", limit=60):
+                            await manager.send_personal_message(connection_id, {
+                                "type": "rate_limited",
+                                "action": "sync_changes",
+                                "timestamp": datetime.now(timezone.utc).isoformat()
+                            })
+                        else:
+                            result = await manager.resolve_conflict(
+                                document_id, user_info["user_id"], base_version, changes
+                            )
+                            
+                            await manager.send_personal_message(connection_id, {
+                                "type": "sync_result",
+                                "document_id": document_id,
+                                **result,
+                                "timestamp": datetime.now(timezone.utc).isoformat()
+                            })
+                            
+                            # Broadcast to others if resolved
+                            if result.get("resolved"):
+                                await manager.broadcast_to_room(f"document_{document_id}", {
+                                    "type": EventType.DOCUMENT_UPDATED.value,
+                                    "document_id": document_id,
+                                    "version": result.get("new_version"),
+                                    "changes": result.get("changes"),
+                                    "user_id": user_info["user_id"],
+                                    "timestamp": datetime.now(timezone.utc).isoformat()
+                                }, exclude_connection=connection_id)
+                
+                # V2: Store session for reconnection
+                elif action == "store_session":
+                    state = payload.get("state", {})
+                    state["rooms"] = list(manager.connection_metadata.get(connection_id, {}).get("rooms", set()))
+                    await manager.store_session_state(user_info["user_id"], state)
+                    await manager.send_personal_message(connection_id, {
+                        "type": "session_stored",
+                        "timestamp": datetime.now(timezone.utc).isoformat()
+                    })
+                
+                # V2: Restore session after reconnect
+                elif action == "restore_session":
+                    state = await manager.restore_session_state(user_info["user_id"])
+                    if state:
+                        # Rejoin rooms
+                        for room_id in state.get("rooms", []):
+                            await manager.join_room(connection_id, room_id, notify=True)
+                        
+                        await manager.send_personal_message(connection_id, {
+                            "type": "session_restored",
+                            "state": state,
+                            "timestamp": datetime.now(timezone.utc).isoformat()
+                        })
+                    else:
+                        await manager.send_personal_message(connection_id, {
+                            "type": "no_session",
+                            "timestamp": datetime.now(timezone.utc).isoformat()
+                        })
+                
             except json.JSONDecodeError:
                 await manager.send_personal_message(connection_id, {
                     "type": "error",
