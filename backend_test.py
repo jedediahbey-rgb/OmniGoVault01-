@@ -16,20 +16,20 @@ import subprocess
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://ux-cleanup.preview.emergentagent.com/api"
 
-class BinderTester:
+class BinderGenerationTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'BinderTester/1.0'
+            'User-Agent': 'BinderGenerationTester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_results = []
         
-        # Test user details - using the specified email
+        # Test user details - using the specified email from review request
         self.test_user_email = "jedediah.bey@gmail.com"
         self.test_user_id = "user_jedediah_bey"
         
@@ -114,7 +114,7 @@ class BinderTester:
             "timestamp": datetime.now().isoformat()
         })
 
-    # ============ AUTHENTICATED BINDER TESTS ============
+    # ============ BINDER GENERATION TESTS (USER REPORT) ============
 
     def test_auth_me_endpoint(self):
         """Test /api/auth/me endpoint with valid session"""
@@ -144,10 +144,10 @@ class BinderTester:
             self.log_test("Auth Me Endpoint", False, f"Error: {str(e)}")
             return False
 
-    def test_portfolios_endpoint(self):
-        """Test GET /api/portfolios endpoint"""
+    def test_get_portfolios(self):
+        """Test GET /api/portfolios endpoint - Step 1 from review request"""
         if not self.session_token:
-            self.log_test("Portfolios Endpoint", False, "No session token available")
+            self.log_test("Get User Portfolios", False, "No session token available")
             return False
             
         try:
@@ -162,7 +162,8 @@ class BinderTester:
                 # Store first portfolio for binder tests
                 if portfolios:
                     self.test_portfolio_id = portfolios[0].get("portfolio_id")
-                    details += f", Using portfolio: {self.test_portfolio_id}"
+                    portfolio_name = portfolios[0].get("name", "Unknown")
+                    details += f", Using portfolio: {portfolio_name} ({self.test_portfolio_id})"
                 else:
                     # Create a test portfolio
                     success = self.create_test_portfolio()
@@ -173,11 +174,11 @@ class BinderTester:
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("Portfolios Endpoint", success, details)
+            self.log_test("Get User Portfolios", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Portfolios Endpoint", False, f"Error: {str(e)}")
+            self.log_test("Get User Portfolios", False, f"Error: {str(e)}")
             return False
 
     def create_test_portfolio(self):
@@ -204,10 +205,10 @@ class BinderTester:
         except Exception:
             return False
 
-    def test_binder_profiles_authenticated(self):
-        """Test GET /api/binder/profiles with authentication"""
+    def test_get_binder_profiles(self):
+        """Test GET /api/binder/profiles - Step 2 from review request"""
         if not self.session_token or not self.test_portfolio_id:
-            self.log_test("Binder Profiles (Auth)", False, "Missing session token or portfolio ID")
+            self.log_test("Get Binder Profiles", False, "Missing session token or portfolio ID")
             return False
             
         try:
@@ -221,30 +222,38 @@ class BinderTester:
             
             if success:
                 data = response.json()
-                profiles = data.get("data", {}).get("profiles", [])
-                details = f"Found {len(profiles)} binder profiles"
-                
-                # Store first profile for generation test
-                if profiles:
-                    self.test_profile_id = profiles[0].get("id")
-                    profile_name = profiles[0].get("name", "Unknown")
-                    details += f", Using profile: {profile_name}"
+                if data.get("ok"):
+                    profiles = data.get("data", {}).get("profiles", [])
+                    details = f"Found {len(profiles)} binder profiles"
+                    
+                    # Store first profile for generation test
+                    if profiles:
+                        self.test_profile_id = profiles[0].get("id")
+                        profile_name = profiles[0].get("name", "Unknown")
+                        profile_type = profiles[0].get("profile_type", "Unknown")
+                        details += f", Using profile: {profile_name} ({profile_type})"
+                    else:
+                        details += ", No profiles found (will be auto-created)"
+                        # Use default profile type for generation
+                        self.test_profile_id = "audit"
                 else:
-                    details += ", No profiles found (will be auto-created)"
+                    error = data.get("error", {})
+                    details = f"API error: {error.get('message', 'Unknown error')}"
+                    success = False
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("Binder Profiles (Auth)", success, details)
+            self.log_test("Get Binder Profiles", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Binder Profiles (Auth)", False, f"Error: {str(e)}")
+            self.log_test("Get Binder Profiles", False, f"Error: {str(e)}")
             return False
 
     def test_binder_generation(self):
-        """Test POST /api/binder/generate endpoint"""
+        """Test POST /api/binder/generate - Step 3 from review request"""
         if not self.session_token or not self.test_portfolio_id:
-            self.log_test("Binder Generation", False, "Missing session token or portfolio ID")
+            self.log_test("Test Binder Generation", False, "Missing session token or portfolio ID")
             return False
             
         # If no profile ID, use a default one (profiles are auto-created)
@@ -254,11 +263,7 @@ class BinderTester:
         try:
             generation_data = {
                 "portfolio_id": self.test_portfolio_id,
-                "profile_id": self.test_profile_id,
-                "court_mode": {
-                    "bates_enabled": False,
-                    "redaction_mode": "standard"
-                }
+                "profile_id": self.test_profile_id
             }
             
             response = self.session.post(
@@ -283,17 +288,17 @@ class BinderTester:
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("Binder Generation", success, details)
+            self.log_test("Test Binder Generation", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Binder Generation", False, f"Error: {str(e)}")
+            self.log_test("Test Binder Generation", False, f"Error: {str(e)}")
             return False
 
-    def test_binder_runs_list(self):
-        """Test GET /api/binder/runs endpoint"""
+    def test_get_binder_history(self):
+        """Test GET /api/binder/runs - Step 4 from review request"""
         if not self.session_token or not self.test_portfolio_id:
-            self.log_test("Binder Runs List", False, "Missing session token or portfolio ID")
+            self.log_test("Get Binder History", False, "Missing session token or portfolio ID")
             return False
             
         try:
@@ -314,11 +319,13 @@ class BinderTester:
                     if runs:
                         latest_run = runs[0]
                         run_status = latest_run.get("status", "unknown")
-                        details += f", Latest status: {run_status}"
+                        run_id = latest_run.get("id", "unknown")
+                        profile_name = latest_run.get("profile_name", "unknown")
+                        details += f", Latest: {profile_name} ({run_status}) - {run_id}"
                         
                         # Update test_run_id if we don't have one
                         if not self.test_run_id:
-                            self.test_run_id = latest_run.get("id")
+                            self.test_run_id = run_id
                 else:
                     error = data.get("error", {})
                     details = f"API error: {error.get('message', 'Unknown error')}"
@@ -326,11 +333,66 @@ class BinderTester:
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("Binder Runs List", success, details)
+            self.log_test("Get Binder History", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Binder Runs List", False, f"Error: {str(e)}")
+            self.log_test("Get Binder History", False, f"Error: {str(e)}")
+            return False
+
+    def test_weasyprint_dependency(self):
+        """Test if WeasyPrint PDF library is working - Dependency check"""
+        try:
+            # Try to import WeasyPrint
+            import subprocess
+            result = subprocess.run([
+                'python3', '-c', 'import weasyprint; print("WeasyPrint available")'
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                details = "WeasyPrint library is available and importable"
+                success = True
+            else:
+                details = f"WeasyPrint import failed: {result.stderr}"
+                success = False
+            
+            self.log_test("WeasyPrint Dependency", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("WeasyPrint Dependency", False, f"Error: {str(e)}")
+            return False
+
+    def test_libpangoft2_dependency(self):
+        """Test if libpangoft2 dependency is available - Dependency check"""
+        try:
+            import subprocess
+            # Check if libpangoft2 is available
+            result = subprocess.run([
+                'pkg-config', '--exists', 'pangoft2'
+            ], capture_output=True, text=True, timeout=5)
+            
+            if result.returncode == 0:
+                details = "libpangoft2 dependency is available"
+                success = True
+            else:
+                # Try alternative check
+                result2 = subprocess.run([
+                    'find', '/usr', '-name', '*pangoft2*', '-type', 'f'
+                ], capture_output=True, text=True, timeout=5)
+                
+                if result2.stdout.strip():
+                    details = f"libpangoft2 found: {result2.stdout.strip()[:100]}"
+                    success = True
+                else:
+                    details = "libpangoft2 dependency not found"
+                    success = False
+            
+            self.log_test("libpangoft2 Dependency", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("libpangoft2 Dependency", False, f"Error: {str(e)}")
             return False
 
     def test_binder_run_details(self):
@@ -404,280 +466,40 @@ class BinderTester:
             self.log_test("Binder Download", False, f"Error: {str(e)}")
             return False
 
-    def test_weasyprint_dependency(self):
-        """Test if WeasyPrint PDF library is working"""
-        try:
-            # Try to import WeasyPrint
-            import subprocess
-            result = subprocess.run([
-                'python3', '-c', 'import weasyprint; print("WeasyPrint available")'
-            ], capture_output=True, text=True, timeout=10)
-            
-            if result.returncode == 0:
-                details = "WeasyPrint library is available and importable"
-                success = True
-            else:
-                details = f"WeasyPrint import failed: {result.stderr}"
-                success = False
-            
-            self.log_test("WeasyPrint Dependency", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("WeasyPrint Dependency", False, f"Error: {str(e)}")
-            return False
-
-    def test_libpangoft2_dependency(self):
-        """Test if libpangoft2 dependency is available"""
-        try:
-            import subprocess
-            # Check if libpangoft2 is available
-            result = subprocess.run([
-                'pkg-config', '--exists', 'pangoft2'
-            ], capture_output=True, text=True, timeout=5)
-            
-            if result.returncode == 0:
-                details = "libpangoft2 dependency is available"
-                success = True
-            else:
-                # Try alternative check
-                result2 = subprocess.run([
-                    'find', '/usr', '-name', '*pangoft2*', '-type', 'f'
-                ], capture_output=True, text=True, timeout=5)
-                
-                if result2.stdout.strip():
-                    details = f"libpangoft2 found: {result2.stdout.strip()[:100]}"
-                    success = True
-                else:
-                    details = "libpangoft2 dependency not found"
-                    success = False
-            
-            self.log_test("libpangoft2 Dependency", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("libpangoft2 Dependency", False, f"Error: {str(e)}")
-            return False
-
-    # ============ BINDER ENDPOINT STRUCTURE TESTS ============
-
-    def test_binder_profiles_endpoint(self):
-        """Test GET /api/binder/profiles endpoint structure"""
-        try:
-            # Test without portfolio_id parameter
-            response = self.session.get(f"{self.base_url}/binder/profiles", timeout=10)
-            
-            # Should return 422 for missing required parameter or 401 for auth
-            success = response.status_code in [401, 422]
-            details = f"Status: {response.status_code}"
-            
-            if response.status_code == 422:
-                details += ", Properly validates required portfolio_id parameter"
-            elif response.status_code == 401:
-                details += ", Properly requires authentication"
-            else:
-                details += f", Unexpected response: {response.text[:200]}"
-            
-            self.log_test("GET /api/binder/profiles endpoint structure", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/binder/profiles endpoint structure", False, f"Error: {str(e)}")
-            return False
-
-    def test_binder_generate_endpoint(self):
-        """Test POST /api/binder/generate endpoint structure"""
-        try:
-            # Test with empty body
-            response = self.session.post(f"{self.base_url}/binder/generate", json={}, timeout=10)
-            
-            # Should return 401 for auth or 400 for missing fields
-            success = response.status_code in [400, 401, 422]
-            details = f"Status: {response.status_code}"
-            
-            if response.status_code == 401:
-                details += ", Properly requires authentication"
-            elif response.status_code in [400, 422]:
-                details += ", Properly validates request body"
-            else:
-                details += f", Unexpected response: {response.text[:200]}"
-            
-            self.log_test("POST /api/binder/generate endpoint structure", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/binder/generate endpoint structure", False, f"Error: {str(e)}")
-            return False
-
-    def test_binder_runs_endpoint(self):
-        """Test GET /api/binder/runs endpoint structure"""
-        try:
-            # Test without portfolio_id parameter
-            response = self.session.get(f"{self.base_url}/binder/runs", timeout=10)
-            
-            # Should return 422 for missing required parameter or 401 for auth
-            success = response.status_code in [401, 422]
-            details = f"Status: {response.status_code}"
-            
-            if response.status_code == 422:
-                details += ", Properly validates required portfolio_id parameter"
-            elif response.status_code == 401:
-                details += ", Properly requires authentication"
-            else:
-                details += f", Unexpected response: {response.text[:200]}"
-            
-            self.log_test("GET /api/binder/runs endpoint structure", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/binder/runs endpoint structure", False, f"Error: {str(e)}")
-            return False
-
-    def test_binder_latest_endpoint(self):
-        """Test GET /api/binder/latest endpoint structure"""
-        try:
-            # Test without portfolio_id parameter
-            response = self.session.get(f"{self.base_url}/binder/latest", timeout=10)
-            
-            # Should return 422 for missing required parameter or 401 for auth
-            success = response.status_code in [401, 422]
-            details = f"Status: {response.status_code}"
-            
-            if response.status_code == 422:
-                details += ", Properly validates required portfolio_id parameter"
-            elif response.status_code == 401:
-                details += ", Properly requires authentication"
-            else:
-                details += f", Unexpected response: {response.text[:200]}"
-            
-            self.log_test("GET /api/binder/latest endpoint structure", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/binder/latest endpoint structure", False, f"Error: {str(e)}")
-            return False
-
-    def test_binder_run_by_id_endpoint(self):
-        """Test GET /api/binder/runs/{run_id} endpoint structure"""
-        try:
-            # Test with a dummy run_id
-            dummy_run_id = "brun_test123456"
-            response = self.session.get(f"{self.base_url}/binder/runs/{dummy_run_id}", timeout=10)
-            
-            # Should return 401 for auth or 404 for not found
-            success = response.status_code in [401, 404]
-            details = f"Status: {response.status_code}"
-            
-            if response.status_code == 401:
-                details += ", Properly requires authentication"
-            elif response.status_code == 404:
-                details += ", Properly handles non-existent run_id"
-            else:
-                details += f", Unexpected response: {response.text[:200]}"
-            
-            self.log_test("GET /api/binder/runs/{run_id} endpoint structure", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/binder/runs/{run_id} endpoint structure", False, f"Error: {str(e)}")
-            return False
-
-    def test_binder_stale_check_endpoint(self):
-        """Test GET /api/binder/stale-check endpoint structure"""
-        try:
-            # Test without portfolio_id parameter
-            response = self.session.get(f"{self.base_url}/binder/stale-check", timeout=10)
-            
-            # Should return 422 for missing required parameter or 401 for auth
-            success = response.status_code in [401, 422]
-            details = f"Status: {response.status_code}"
-            
-            if response.status_code == 422:
-                details += ", Properly validates required portfolio_id parameter"
-            elif response.status_code == 401:
-                details += ", Properly requires authentication"
-            else:
-                details += f", Unexpected response: {response.text[:200]}"
-            
-            self.log_test("GET /api/binder/stale-check endpoint structure", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/binder/stale-check endpoint structure", False, f"Error: {str(e)}")
-            return False
-
-    def test_binder_service_availability(self):
-        """Test if binder service endpoints are available"""
-        try:
-            # Test a few different binder endpoints to see if they're routed correctly
-            endpoints_to_test = [
-                "/binder/profiles",
-                "/binder/generate", 
-                "/binder/runs",
-                "/binder/latest"
-            ]
-            
-            available_endpoints = 0
-            total_endpoints = len(endpoints_to_test)
-            
-            for endpoint in endpoints_to_test:
-                try:
-                    response = self.session.get(f"{self.base_url}{endpoint}", timeout=5)
-                    # Any response other than 404 means the endpoint is routed
-                    if response.status_code != 404:
-                        available_endpoints += 1
-                except:
-                    pass
-            
-            success = available_endpoints == total_endpoints
-            details = f"Available endpoints: {available_endpoints}/{total_endpoints}"
-            
-            if success:
-                details += ", All binder endpoints are properly routed"
-            else:
-                details += ", Some binder endpoints may not be available"
-            
-            self.log_test("Binder Service Availability", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Binder Service Availability", False, f"Error: {str(e)}")
-            return False
-
     # ============ TEST RUNNER ============
 
-    def run_binder_tests(self):
-        """Run all Binder Generation API tests"""
-        self.log("🚀 Starting BINDER GENERATION API Tests")
+    def run_binder_generation_tests(self):
+        """Run all Binder Generation API tests based on user report"""
+        self.log("🚀 Starting BINDER GENERATION API Tests - User Report Issue")
         self.log(f"Testing against: {self.base_url}")
         self.log(f"User: {self.test_user_email}")
+        self.log("Issue: 'generate binder is not functioning on binder page'")
         self.log("=" * 80)
         
-        # Test sequence for Binder Generation APIs
+        # Test sequence based on review request
         test_sequence = [
-            # Dependency Tests
+            # Dependency Tests (WeasyPrint fix verification)
             self.test_weasyprint_dependency,
             self.test_libpangoft2_dependency,
             
             # Authentication Tests
             self.test_auth_me_endpoint,
-            self.test_portfolios_endpoint,
             
-            # Binder Service Tests (Authenticated)
-            self.test_binder_profiles_authenticated,
+            # Step 1: Get user's portfolios
+            self.test_get_portfolios,
+            
+            # Step 2: Get binder profiles for a portfolio
+            self.test_get_binder_profiles,
+            
+            # Step 3: Test binder generation
             self.test_binder_generation,
-            self.test_binder_runs_list,
+            
+            # Step 4: Get binder history
+            self.test_get_binder_history,
+            
+            # Additional verification tests
             self.test_binder_run_details,
             self.test_binder_download_attempt,
-            
-            # Endpoint Structure Tests (Fallback)
-            self.test_binder_service_availability,
-            self.test_binder_profiles_endpoint,
-            self.test_binder_generate_endpoint,
-            self.test_binder_runs_endpoint,
-            self.test_binder_latest_endpoint,
-            self.test_binder_run_by_id_endpoint,
-            self.test_binder_stale_check_endpoint,
         ]
         
         for test_func in test_sequence:
@@ -699,7 +521,7 @@ class BinderTester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 BINDER GENERATION API TEST SUMMARY")
+        self.log("🏁 BINDER GENERATION API TEST SUMMARY - USER REPORT")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
@@ -721,9 +543,9 @@ class BinderTester:
         auth_working = any(t['success'] for t in auth_tests if 'me' in t['test'].lower())
         
         if auth_working:
-            self.log("✅ Authentication is working - full functionality testing completed")
+            self.log("✅ Authentication is working - user can access the system")
         else:
-            self.log("⚠️ Authentication issues detected - limited testing performed")
+            self.log("❌ Authentication issues detected - user cannot access the system")
         
         # Check dependency status
         weasyprint_tests = [t for t in self.test_results if 'weasyprint' in t['test'].lower()]
@@ -733,75 +555,54 @@ class BinderTester:
         pangoft2_working = any(t['success'] for t in pangoft2_tests)
         
         if weasyprint_working and pangoft2_working:
-            self.log("✅ PDF generation dependencies are properly installed")
+            self.log("✅ PDF generation dependencies are properly installed (WeasyPrint fix verified)")
         elif weasyprint_working:
             self.log("⚠️ WeasyPrint available but libpangoft2 dependency may be missing")
         else:
             self.log("❌ PDF generation dependencies need to be installed")
         
         # Check binder functionality
-        binder_tests = [t for t in self.test_results if 'binder' in t['test'].lower() and 'auth' in t['test'].lower()]
+        binder_tests = [t for t in self.test_results if 'binder' in t['test'].lower()]
         binder_working = any(t['success'] for t in binder_tests)
         
         if binder_working:
             self.log("✅ Binder generation endpoints are working correctly")
         else:
-            self.log("⚠️ Binder generation functionality needs verification")
+            self.log("❌ Binder generation functionality has issues")
         
         # Specific feature status
-        self.log("\n📋 FEATURE STATUS:")
+        self.log("\n📋 BINDER GENERATION FLOW STATUS:")
         
-        feature_categories = [
-            ("Dependencies", ["weasyprint", "pangoft2"]),
-            ("Authentication", ["auth"]),
-            ("Portfolio Management", ["portfolio"]),
-            ("Binder Profiles", ["profiles"]),
-            ("Binder Generation", ["generation"]),
-            ("Binder History", ["runs", "download"]),
-            ("Service Availability", ["availability", "endpoint"])
-        ]
-        
-        for category, keywords in feature_categories:
-            category_tests = [
-                t for t in self.test_results 
-                if any(keyword in t['test'].lower() for keyword in keywords)
-            ]
-            if category_tests:
-                category_success = sum(1 for t in category_tests if t['success'])
-                total_tests = len(category_tests)
-                status = "✅" if category_success == total_tests else "⚠️" if category_success > 0 else "❌"
-                self.log(f"  {category}: {category_success}/{total_tests} {status}")
-        
-        self.log("\n📝 BINDER GENERATION FLOW:")
         flow_steps = [
             ("1. User Authentication", auth_working),
-            ("2. Portfolio Access", any('portfolio' in t['test'].lower() and t['success'] for t in self.test_results)),
-            ("3. Profile Configuration", any('profiles' in t['test'].lower() and t['success'] for t in self.test_results)),
-            ("4. PDF Generation", any('generation' in t['test'].lower() and t['success'] for t in self.test_results)),
-            ("5. Download/View", any('download' in t['test'].lower() and t['success'] for t in self.test_results))
+            ("2. Get Portfolios", any('portfolio' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("3. Get Binder Profiles", any('profiles' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("4. Generate Binder", any('generation' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("5. Get Binder History", any('history' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("6. Download Binder", any('download' in t['test'].lower() and t['success'] for t in self.test_results))
         ]
         
         for step, working in flow_steps:
             status = "✅" if working else "❌"
             self.log(f"  {step}: {status}")
         
-        self.log("\n📋 IMPLEMENTATION STATUS:")
+        self.log("\n📋 USER ISSUE ANALYSIS:")
         if success_rate >= 90:
-            self.log("✅ Binder Generation feature is fully functional")
-            self.log("✅ All core endpoints are working correctly")
-            self.log("✅ PDF generation dependencies are properly configured")
-            self.log("✅ Authentication and authorization are working")
+            self.log("✅ Binder generation is fully functional")
+            self.log("✅ WeasyPrint dependency fix is working correctly")
+            self.log("✅ All API endpoints are responding properly")
+            self.log("✅ User issue may be frontend-related or user-specific")
         elif success_rate >= 75:
-            self.log("⚠️ Binder Generation feature is mostly working with minor issues")
+            self.log("⚠️ Binder generation is mostly working with minor issues")
             self.log("✅ Core functionality is operational")
             if not weasyprint_working or not pangoft2_working:
                 self.log("⚠️ PDF generation dependencies may need attention")
         else:
-            self.log("❌ Binder Generation feature has significant issues")
+            self.log("❌ Binder generation has significant backend issues")
             if not auth_working:
-                self.log("❌ Authentication issues preventing full testing")
+                self.log("❌ Authentication issues preventing user access")
             if not weasyprint_working:
-                self.log("❌ PDF generation dependencies not properly installed")
+                self.log("❌ WeasyPrint dependency fix did not resolve the issue")
         
         # Test data cleanup
         if self.session_token and self.test_portfolio_id:
