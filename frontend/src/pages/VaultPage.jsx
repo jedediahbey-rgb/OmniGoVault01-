@@ -225,15 +225,28 @@ export default function VaultPage({ user, initialView }) {
       const fetchedDocs = docsRes.data || [];
       const fetchedPortfolios = portfoliosRes.data || [];
       
-      // FIX #6: Debug logs after fetch
+      // FIX #6: Debug logs after fetch - show all portfolio IDs for debugging
       const docsWithoutPortfolio = fetchedDocs.filter(d => !d.portfolio_id);
       const portfolioIds = new Set(fetchedPortfolios.map(p => normalizeId(p.portfolio_id)));
       const docsWithInvalidPortfolio = fetchedDocs.filter(d => d.portfolio_id && !portfolioIds.has(normalizeId(d.portfolio_id)));
-      console.log("[Vault] fetched", { 
+      
+      // Log each doc's portfolio_id for debugging
+      console.log("[Vault] fetched docs with portfolio_ids:", fetchedDocs.map(d => ({
+        title: d.title?.substring(0, 30),
+        portfolio_id: d.portfolio_id,
+        normalized: normalizeId(d.portfolio_id)
+      })));
+      console.log("[Vault] fetched portfolios:", fetchedPortfolios.map(p => ({
+        name: p.name,
+        portfolio_id: p.portfolio_id,
+        normalized: normalizeId(p.portfolio_id)
+      })));
+      console.log("[Vault] summary", { 
         docs: fetchedDocs.length, 
         portfolios: fetchedPortfolios.length,
         docsWithoutPortfolio: docsWithoutPortfolio.length,
-        docsWithInvalidPortfolio: docsWithInvalidPortfolio.length
+        docsWithInvalidPortfolio: docsWithInvalidPortfolio.length,
+        currentSelectedPortfolioId: selectedPortfolioId
       });
       
       setDocuments(fetchedDocs);
