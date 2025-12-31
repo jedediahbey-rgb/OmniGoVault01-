@@ -533,7 +533,7 @@ export default function VaultPage({ user, initialView }) {
                   doc={doc}
                   isPinned={pinnedDocs.some(d => d.document_id === doc.document_id)}
                   onNavigate={() => navigate(`/vault/document/${doc.document_id}`)}
-                  onDelete={softDeleteDocument}
+                  onDelete={handleDeleteRequest}
                 />
               )
             ))}
