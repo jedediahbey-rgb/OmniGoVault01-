@@ -346,13 +346,18 @@ export default function VaultPage({ user, initialView }) {
       return matchesSearch;
     }
     
-    // If no portfolio selected, show all documents
+    // If no portfolio selected (All Documents view), show ALL documents
     if (!selectedPortfolio) {
       return matchesSearch;
     }
     
-    // Filter by portfolio - selectedPortfolio is always an object now
-    const matchesPortfolio = doc.portfolio_id === selectedPortfolio.portfolio_id;
+    // Filter by portfolio - show documents that match the selected portfolio
+    // Also show documents without a portfolio_id (orphaned) in the selected portfolio view
+    // so they don't get lost
+    const docHasPortfolio = doc.portfolio_id && doc.portfolio_id.length > 0;
+    const matchesPortfolio = docHasPortfolio 
+      ? doc.portfolio_id === selectedPortfolio.portfolio_id
+      : false; // Don't show orphaned docs in portfolio view, only in "All Documents"
     
     return matchesSearch && matchesPortfolio;
   });
