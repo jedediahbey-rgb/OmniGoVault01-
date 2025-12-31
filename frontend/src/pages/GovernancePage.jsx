@@ -725,7 +725,7 @@ export default function GovernancePage({ user }) {
   const handleDeleteMeeting = async (meetingId) => {
     try {
       // Use V2 API void endpoint instead of delete
-      await axios.post(`${API_V2}/records/${meetingId}/void`, {
+      await api.post(`${API_V2}/records/${meetingId}/void`, {
         void_reason: 'Deleted by user from governance list'
       });
       toast.success('Meeting deleted');
