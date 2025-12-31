@@ -295,19 +295,6 @@ export default function VaultPage({ user, initialView }) {
     });
   }, [documents, trashedDocuments, showTrash, searchTerm, pinnedDocs]);
 
-  // After the switch render has happened, re-enable animations for normal adds/removes
-  useEffect(() => {
-    if (!skipAnimation) return;
-    // Only reset if this is the portfolio we're waiting for
-    if (skipForPortfolioId && activePortfolio?.portfolio_id === skipForPortfolioId) {
-      const id = requestAnimationFrame(() => {
-        setSkipAnimation(false);
-        setSkipForPortfolioId(null);
-      });
-      return () => cancelAnimationFrame(id);
-    }
-  }, [skipAnimation, skipForPortfolioId, activePortfolio?.portfolio_id]);
-
   // Loading state - show a simple centered spinner instead of skeleton flash
   if (vaultState === VAULT_STATES.LOADING) {
     return (
