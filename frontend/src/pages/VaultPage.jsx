@@ -180,6 +180,7 @@ export default function VaultPage({ user, initialView }) {
   const [showTrash, setShowTrash] = useState(initialView === 'trash');
   const [showNewPortfolio, setShowNewPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
+  const [justSwitched, setJustSwitched] = useState(false); // Track if we just switched portfolios
 
   // Switch portfolio - use SWITCHING state to avoid skeleton flash
   const switchPortfolio = useCallback(async (portfolio, showToast = true) => {
@@ -197,11 +198,16 @@ export default function VaultPage({ user, initialView }) {
         axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
       ]);
       
+      // Mark that we just switched - skip animations for immediate render
+      setJustSwitched(true);
       setDocuments(docsRes.data || []);
       setTrashedDocuments((trashRes.data || []).filter(d => d.portfolio_id === portfolio.portfolio_id));
       setPinnedDocs(pinnedRes.data || []);
       setShowTrash(false);
       setVaultState(VAULT_STATES.READY);
+      
+      // Reset justSwitched after a brief delay to allow normal animations again
+      setTimeout(() => setJustSwitched(false), 100);
       
       if (showToast) toast.success(`Switched to ${portfolio.name}`);
     } catch (err) {
