@@ -1725,50 +1725,71 @@ function ArchiveMapTab() {
         </div>
       </div>
       
-      {/* React Flow Map */}
-      <div className="h-[450px] sm:h-[550px] lg:h-[600px] bg-[#050810] border border-white/10 rounded-2xl overflow-hidden relative">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onNodeClick={onNodeClick}
-          nodeTypes={nodeTypes}
-          fitView
-          fitViewOptions={{ padding: 0.3, minZoom: 0.4, maxZoom: 1.2 }}
-          minZoom={0.2}
-          maxZoom={2}
-          attributionPosition="bottom-left"
-          className="archive-map-flow"
-          proOptions={{ hideAttribution: true }}
-        >
-          <Background color="#1a1a2e" gap={20} />
-          <Controls 
-            position="top-right"
-            className="!bg-black/60 !border-white/20 !rounded-lg !shadow-lg [&>button]:!bg-white/10 [&>button]:!border-white/10 [&>button]:!text-white/70 [&>button:hover]:!bg-vault-gold/20 [&>button:hover]:!text-vault-gold !m-2"
-            showInteractive={false}
-          />
-          <MiniMap 
-            position="bottom-right"
-            nodeColor={(node) => {
-              switch (node.type) {
-                case 'doctrine': return '#C6A87C';
-                case 'case': return '#3B82F6';
-                case 'statute': return '#8B5CF6';
-                case 'concept': return '#10B981';
-                default: return '#666';
-              }
-            }}
-            maskColor="rgba(0, 0, 0, 0.85)"
-            className="!bg-black/70 !border-white/20 !rounded-lg !m-2 !w-[120px] !h-[80px] sm:!w-[150px] sm:!h-[100px]"
-            pannable
-            zoomable
-          />
-        </ReactFlow>
+      {/* React Flow Map Container with Premium Border */}
+      <div className="relative">
+        {/* Outer glow border */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-vault-gold/20 via-purple-500/10 to-vault-gold/20 rounded-3xl blur-sm" />
         
-        {/* Touch hint for mobile */}
-        <div className="absolute bottom-2 left-2 sm:hidden text-white/30 text-[10px] bg-black/50 px-2 py-1 rounded">
-          Pinch to zoom • Drag to pan
+        {/* Inner border frame */}
+        <div className="absolute inset-0 rounded-2xl border-2 border-vault-gold/30 pointer-events-none z-10" />
+        
+        {/* Corner accents */}
+        <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-vault-gold/50 rounded-tl-2xl pointer-events-none z-10" />
+        <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-vault-gold/50 rounded-tr-2xl pointer-events-none z-10" />
+        <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-vault-gold/50 rounded-bl-2xl pointer-events-none z-10" />
+        <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-vault-gold/50 rounded-br-2xl pointer-events-none z-10" />
+        
+        {/* Map label */}
+        <div className="absolute -top-3 left-4 bg-[#0a0f1a] px-3 py-0.5 z-20">
+          <span className="text-vault-gold/70 text-xs font-medium uppercase tracking-wider">Doctrine Map</span>
+        </div>
+        
+        {/* React Flow Map */}
+        <div className="h-[420px] sm:h-[500px] lg:h-[550px] bg-[#050810] rounded-2xl overflow-hidden relative">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onNodeClick={onNodeClick}
+            nodeTypes={nodeTypes}
+            fitView
+            fitViewOptions={{ padding: 0.4, minZoom: 0.5, maxZoom: 1.5 }}
+            minZoom={0.3}
+            maxZoom={2}
+            attributionPosition="bottom-left"
+            className="archive-map-flow"
+            proOptions={{ hideAttribution: true }}
+          >
+            <Background color="#1a1a2e" gap={20} />
+            {/* Desktop: Controls bottom-left, Mobile: top-right */}
+            <Controls 
+              position="bottom-left"
+              className="archive-map-controls !bg-black/80 !border-vault-gold/30 !rounded-lg !shadow-xl [&>button]:!bg-white/10 [&>button]:!border-vault-gold/20 [&>button]:!text-white/70 [&>button:hover]:!bg-vault-gold/20 [&>button:hover]:!text-vault-gold"
+              showInteractive={false}
+            />
+            <MiniMap 
+              position="bottom-right"
+              nodeColor={(node) => {
+                switch (node.type) {
+                  case 'doctrine': return '#C6A87C';
+                  case 'case': return '#3B82F6';
+                  case 'statute': return '#8B5CF6';
+                  case 'concept': return '#10B981';
+                  default: return '#666';
+                }
+              }}
+              maskColor="rgba(0, 0, 0, 0.85)"
+              className="archive-map-minimap !bg-black/80 !border-vault-gold/30 !rounded-lg"
+              pannable
+              zoomable
+            />
+          </ReactFlow>
+          
+          {/* Touch hint for mobile */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 sm:hidden text-white/40 text-[10px] bg-black/60 px-3 py-1 rounded-full border border-white/10">
+            Pinch to zoom • Drag to pan
+          </div>
         </div>
       </div>
       
