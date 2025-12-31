@@ -119,8 +119,11 @@ async def get_source(source_id: str, user = Depends(get_current_user)):
     return source
 
 @router.post("/sources")
-async def create_source(source: ArchiveSource, user = Depends(get_current_user)):
+async def create_source(source: ArchiveSource, request: Request):
     """Create a new archive source"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     source_data = {
         "source_id": str(uuid4()),
         "created_at": datetime.now(timezone.utc).isoformat(),
