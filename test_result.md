@@ -529,3 +529,48 @@ Testing the refactored Black Archive page after major component breakdown from 2
 5. ✅ Get resolved config - Complete configuration returned
 6. ✅ Invalid input handling - Proper error responses
 
+
+## OmniBinder V2 - Scheduled Binders (December 31, 2025)
+
+### New Service: `/app/backend/services/scheduled_binder_service.py`
+
+**Features:**
+- **Schedule Types**: Daily, Weekly, Bi-Weekly, Monthly, Quarterly
+- **Next Run Calculation**: Automatic calculation of next execution time
+- **Execution Tracking**: Run history with status, duration, results
+- **Email Notifications**: Success/failure notifications to configured emails
+- **Manual Triggers**: Ability to trigger schedules on-demand
+- **Pause/Resume**: Control schedule execution
+
+### New API Endpoints:
+
+**Schedule CRUD:**
+- `POST /api/omnibinder/schedules` - Create a new schedule
+- `GET /api/omnibinder/schedules` - List all schedules
+- `GET /api/omnibinder/schedules/{id}` - Get a schedule
+- `PUT /api/omnibinder/schedules/{id}` - Update a schedule
+- `DELETE /api/omnibinder/schedules/{id}` - Delete a schedule
+
+**Schedule Control:**
+- `POST /api/omnibinder/schedules/{id}/pause` - Pause a schedule
+- `POST /api/omnibinder/schedules/{id}/resume` - Resume a schedule
+- `POST /api/omnibinder/schedules/{id}/trigger` - Manually trigger execution
+
+**Run History:**
+- `GET /api/omnibinder/schedules/{id}/runs` - Get run history
+- `GET /api/omnibinder/runs/{run_id}` - Get specific run details
+
+**Utilities:**
+- `GET /api/omnibinder/stats` - Get workspace statistics
+- `GET /api/omnibinder/schedule-types` - Get available schedule types
+- `POST /api/omnibinder/scheduler/tick` - Execute scheduler tick (internal)
+
+### Test Cases:
+1. [ ] Get schedule types
+2. [ ] Get workspace stats
+3. [ ] Create a schedule
+4. [ ] Get schedule
+5. [ ] Update schedule
+6. [ ] Pause/Resume schedule
+7. [ ] Get run history
+
