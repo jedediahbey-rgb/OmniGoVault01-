@@ -237,29 +237,33 @@ export default function VaultPage({ user, initialView }) {
       const fetchedDocs = docsRes.data || [];
       const fetchedPortfolios = portfoliosRes.data || [];
       
-      // FIX #6: Debug logs after fetch - show all portfolio IDs for debugging
-      const docsWithoutPortfolio = fetchedDocs.filter(d => !d.portfolio_id);
+      // FIX #6: Debug logs after fetch - validate data shape + integrity
       const portfolioIds = new Set(fetchedPortfolios.map(p => normalizeId(p.portfolio_id)));
+      const docsWithoutPortfolio = fetchedDocs.filter(d => !d.portfolio_id);
       const docsWithInvalidPortfolio = fetchedDocs.filter(d => d.portfolio_id && !portfolioIds.has(normalizeId(d.portfolio_id)));
       
-      // Log each doc's portfolio_id for debugging
-      console.log("[Vault] fetched docs with portfolio_ids:", fetchedDocs.map(d => ({
-        title: d.title?.substring(0, 30),
-        portfolio_id: d.portfolio_id,
-        normalized: normalizeId(d.portfolio_id)
-      })));
-      console.log("[Vault] fetched portfolios:", fetchedPortfolios.map(p => ({
-        name: p.name,
-        portfolio_id: p.portfolio_id,
-        normalized: normalizeId(p.portfolio_id)
-      })));
-      console.log("[Vault] summary", { 
+      console.log("[Vault] fetched", { 
         docs: fetchedDocs.length, 
-        portfolios: fetchedPortfolios.length,
-        docsWithoutPortfolio: docsWithoutPortfolio.length,
-        docsWithInvalidPortfolio: docsWithInvalidPortfolio.length,
-        currentSelectedPortfolioId: selectedPortfolioId
+        portfolios: fetchedPortfolios.length 
       });
+      console.log("[Vault] docs missing portfolio_id:", docsWithoutPortfolio.length);
+      console.log("[Vault] docs with portfolio_id not found in portfolios:", docsWithInvalidPortfolio.length);
+      
+      if (docsWithInvalidPortfolio.length > 0) {
+        console.table(docsWithInvalidPortfolio.slice(0, 20).map(d => ({
+          document_id: d.document_id,
+          title: d.title?.substring(0, 30),
+          portfolio_id: d.portfolio_id
+        })));
+      }
+      
+      // Log portfolio IDs for reference
+      console.log("[Vault] portfolio IDs:", fetchedPortfolios.map(p => ({
+        name: p.name,
+        portfolio_id: p.portfolio_id
+      })));
+      
+      console.log("[Vault] currentSelectedPortfolioId at fetch time:", selectedPortfolioId);
       
       setDocuments(fetchedDocs);
       setPortfolios(fetchedPortfolios);
