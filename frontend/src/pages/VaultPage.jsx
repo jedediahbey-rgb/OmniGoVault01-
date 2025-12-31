@@ -181,17 +181,18 @@ function VaultSidebarContent({
 export default function VaultPage({ user, initialView }) {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
+  const [allDocsCount, setAllDocsCount] = useState(0); // Total count for "All Documents" sidebar
   const [trashedDocuments, setTrashedDocuments] = useState([]);
   const [portfolios, setPortfolios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   
-  // FIX #2: Store selection as ID, not object. Initialize once from localStorage.
+  // Store selection as ID, not object. Initialize once from localStorage.
   const [selectedPortfolioId, setSelectedPortfolioId] = useState(() => 
     localStorage.getItem("defaultPortfolioId") || null
   );
   
-  // FIX #2: Derive selectedPortfolio from portfolios array
+  // Derive selectedPortfolio from portfolios array
   const selectedPortfolio = useMemo(() => 
     portfolios.find(p => normalizeId(p.portfolio_id) === normalizeId(selectedPortfolioId)) || null,
     [portfolios, selectedPortfolioId]
