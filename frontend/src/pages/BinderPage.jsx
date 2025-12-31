@@ -2110,13 +2110,13 @@ export default function BinderPage() {
 
         {/* Config Modal */}
         <Dialog open={showConfigModal} onOpenChange={setShowConfigModal}>
-          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-md">
+          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white w-[90vw] max-w-[380px]">
             <DialogHeader>
-              <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
+              <DialogTitle className="text-lg font-heading text-vault-gold flex items-center gap-2">
                 <Gear className="w-5 h-5" />
                 Configure Profile
               </DialogTitle>
-              <DialogDescription className="text-vault-muted">
+              <DialogDescription className="text-vault-muted text-sm">
                 {configProfile?.name}
               </DialogDescription>
             </DialogHeader>
