@@ -1291,6 +1291,462 @@ class OmniBinderV2Tester:
         return success_rate >= 75
 
 
+class RealtimeV2Tester:
+    def __init__(self):
+        self.base_url = BASE_URL
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+            'User-Agent': 'RealtimeV2Tester/1.0'
+        })
+        self.tests_run = 0
+        self.tests_passed = 0
+        self.failed_tests = []
+        self.test_results = []
+        
+        # Test user details - using the specified email
+        self.test_user_email = "jedediah.bey@gmail.com"
+        self.test_user_id = "user_jedediah_bey"
+        
+        # Try to get a valid session token
+        self.session_token = self.get_valid_session_token()
+
+    def get_valid_session_token(self):
+        """Get a valid session token for testing"""
+        try:
+            # Create test session using mongosh
+            result = subprocess.run([
+                'mongosh', '--eval', f"""
+                use('test_database');
+                var userId = '{self.test_user_id}';
+                var sessionToken = 'test_session_' + Date.now();
+                
+                // Ensure user exists
+                db.users.updateOne(
+                    {{user_id: userId}},
+                    {{$setOnInsert: {{
+                        user_id: userId,
+                        email: '{self.test_user_email}',
+                        name: 'Jedediah Bey',
+                        picture: 'https://via.placeholder.com/150',
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                // Create session
+                db.user_sessions.insertOne({{
+                    user_id: userId,
+                    session_token: sessionToken,
+                    expires_at: new Date(Date.now() + 7*24*60*60*1000),
+                    created_at: new Date()
+                }});
+                
+                print(sessionToken);
+                """
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                session_token = result.stdout.strip().split('\n')[-1]
+                if session_token and session_token.startswith('test_session_'):
+                    self.log(f"✅ Created test session: {session_token[:20]}...")
+                    self.session.headers['Authorization'] = f'Bearer {session_token}'
+                    return session_token
+            
+            self.log("⚠️ Could not create test session - testing without authentication")
+            return None
+            
+        except Exception as e:
+            self.log(f"⚠️ Session creation failed: {str(e)} - testing without authentication")
+            return None
+
+    def log(self, message):
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
+
+    def log_test(self, name, success, details=""):
+        """Log test result"""
+        self.tests_run += 1
+        if success:
+            self.tests_passed += 1
+            self.log(f"✅ {name}")
+        else:
+            self.log(f"❌ {name} - {details}")
+            self.failed_tests.append({
+                'test': name,
+                'details': details,
+                'timestamp': datetime.now().isoformat()
+            })
+        
+        self.test_results.append({
+            "test": name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        })
+
+    # ============ REALTIME V2 TESTS ============
+
+    def test_realtime_capabilities(self):
+        """Test GET /api/realtime/capabilities endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/realtime/capabilities", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    capabilities = data.get("data", {})
+                    version = capabilities.get("version")
+                    features = capabilities.get("features", {})
+                    event_types = capabilities.get("event_types", [])
+                    actions = capabilities.get("actions", [])
+                    
+                    # Verify V2 features
+                    expected_features = [
+                        "presence", "rooms", "document_locking", "channel_subscriptions",
+                        "activity_history", "conflict_resolution", "session_recovery", "rate_limiting"
+                    ]
+                    
+                    missing_features = [f for f in expected_features if not features.get(f)]
+                    
+                    if version == "2.0" and not missing_features:
+                        details = f"Version: {version}, Features: {len(features)}, Events: {len(event_types)}, Actions: {len(actions)}"
+                    else:
+                        details = f"Version: {version}, Missing features: {missing_features}"
+                        success = False
+                else:
+                    details = f"API error: {data}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Realtime Capabilities", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Realtime Capabilities", False, f"Error: {str(e)}")
+            return False
+
+    def test_realtime_stats(self):
+        """Test GET /api/realtime/stats endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/realtime/stats", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    stats = data.get("data", {})
+                    total_connections = stats.get("total_connections", 0)
+                    total_users = stats.get("total_users", 0)
+                    total_rooms = stats.get("total_rooms", 0)
+                    active_document_locks = stats.get("active_document_locks", 0)
+                    
+                    details = f"Connections: {total_connections}, Users: {total_users}, Rooms: {total_rooms}, Locks: {active_document_locks}"
+                else:
+                    details = f"API error: {data}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Realtime Stats", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Realtime Stats", False, f"Error: {str(e)}")
+            return False
+
+    def test_realtime_detailed_stats(self):
+        """Test GET /api/realtime/stats/detailed endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/realtime/stats/detailed", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    stats = data.get("data", {})
+                    connections = stats.get("connections", {})
+                    rooms = stats.get("rooms", {})
+                    locks = stats.get("locks", {})
+                    presence = stats.get("presence", {})
+                    
+                    details = f"Detailed stats - Connections: {connections.get('total', 0)}, Rooms: {rooms.get('total', 0)}, Presence: {presence.get('online_users', 0)}"
+                    
+                    # Check for V2 features
+                    if "channels" in stats:
+                        channels = stats["channels"]
+                        details += f", Channels: {channels.get('total', 0)}"
+                    
+                    if "history" in stats:
+                        history = stats["history"]
+                        details += f", History events: {history.get('total_events', 0)}"
+                else:
+                    details = f"API error: {data}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Realtime Detailed Stats", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Realtime Detailed Stats", False, f"Error: {str(e)}")
+            return False
+
+    def test_realtime_channels(self):
+        """Test GET /api/realtime/channels endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/realtime/channels", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    channels_data = data.get("data", {})
+                    channels = channels_data.get("channels", {})
+                    count = channels_data.get("count", 0)
+                    
+                    details = f"Active channels: {count}"
+                    if channels:
+                        channel_names = list(channels.keys())[:3]  # Show first 3
+                        details += f", Examples: {channel_names}"
+                else:
+                    details = f"API error: {data}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Realtime Channels", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Realtime Channels", False, f"Error: {str(e)}")
+            return False
+
+    def test_room_presence(self):
+        """Test GET /api/realtime/presence/test-room endpoint"""
+        try:
+            room_id = "test-room"
+            response = self.session.get(f"{self.base_url}/realtime/presence/{room_id}", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    presence_data = data.get("data", {})
+                    users = presence_data.get("users", [])
+                    count = presence_data.get("count", 0)
+                    room_id_returned = presence_data.get("room_id")
+                    
+                    details = f"Room: {room_id_returned}, Users: {count}"
+                    if users:
+                        user_names = [u.get("user_name", "Unknown") for u in users[:3]]
+                        details += f", Examples: {user_names}"
+                else:
+                    details = f"API error: {data}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Room Presence", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Room Presence", False, f"Error: {str(e)}")
+            return False
+
+    def test_document_lock_status(self):
+        """Test GET /api/realtime/document/test-doc/lock endpoint"""
+        try:
+            document_id = "test-doc"
+            response = self.session.get(f"{self.base_url}/realtime/document/{document_id}/lock", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    lock_data = data.get("data", {})
+                    document_id_returned = lock_data.get("document_id")
+                    is_locked = lock_data.get("is_locked", False)
+                    locked_by = lock_data.get("locked_by")
+                    
+                    details = f"Document: {document_id_returned}, Locked: {is_locked}"
+                    if locked_by:
+                        details += f", Locked by: {locked_by}"
+                else:
+                    details = f"API error: {data}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Document Lock Status", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Document Lock Status", False, f"Error: {str(e)}")
+            return False
+
+    def test_document_version(self):
+        """Test GET /api/realtime/document/test-doc/version endpoint"""
+        try:
+            document_id = "test-doc"
+            response = self.session.get(f"{self.base_url}/realtime/document/{document_id}/version", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    version_data = data.get("data", {})
+                    document_id_returned = version_data.get("document_id")
+                    version = version_data.get("version", 0)
+                    is_locked = version_data.get("is_locked", False)
+                    locked_by = version_data.get("locked_by")
+                    
+                    details = f"Document: {document_id_returned}, Version: {version}, Locked: {is_locked}"
+                    if locked_by:
+                        details += f", Locked by: {locked_by}"
+                else:
+                    details = f"API error: {data}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Document Version", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Document Version", False, f"Error: {str(e)}")
+            return False
+
+    # ============ TEST RUNNER ============
+
+    def run_realtime_v2_tests(self):
+        """Run all Real-time Collaboration V2 API tests"""
+        self.log("🚀 Starting REAL-TIME COLLABORATION V2 (WebSocket) Tests")
+        self.log(f"Testing against: {self.base_url}")
+        self.log(f"User: {self.test_user_email}")
+        self.log("=" * 80)
+        
+        # Test sequence for Real-time V2 REST endpoints
+        test_sequence = [
+            # Core V2 API Tests
+            self.test_realtime_capabilities,
+            self.test_realtime_stats,
+            self.test_realtime_detailed_stats,
+            self.test_realtime_channels,
+            self.test_room_presence,
+            self.test_document_lock_status,
+            self.test_document_version,
+        ]
+        
+        for test_func in test_sequence:
+            try:
+                test_func()
+                time.sleep(0.5)  # Brief pause between tests
+            except Exception as e:
+                test_name = getattr(test_func, '__name__', 'Unknown Test')
+                self.log(f"❌ Test {test_name} crashed: {str(e)}")
+                self.tests_run += 1
+                self.failed_tests.append({
+                    'test': test_name,
+                    'details': f"Test crashed: {str(e)}",
+                    'timestamp': datetime.now().isoformat()
+                })
+        
+        return self.print_summary()
+
+    def print_summary(self):
+        """Print test summary"""
+        self.log("=" * 80)
+        self.log("🏁 REAL-TIME COLLABORATION V2 TEST SUMMARY")
+        self.log("=" * 80)
+        
+        success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
+        
+        self.log(f"📊 Tests Run: {self.tests_run}")
+        self.log(f"✅ Tests Passed: {self.tests_passed}")
+        self.log(f"❌ Tests Failed: {len(self.failed_tests)}")
+        self.log(f"📈 Success Rate: {success_rate:.1f}%")
+        
+        if self.failed_tests:
+            self.log("\n❌ FAILED TESTS:")
+            for failure in self.failed_tests:
+                self.log(f"  • {failure['test']}: {failure['details']}")
+        
+        self.log("\n🎯 KEY FINDINGS:")
+        
+        # Check V2 capabilities
+        capabilities_tests = [t for t in self.test_results if 'capabilities' in t['test'].lower()]
+        capabilities_working = any(t['success'] for t in capabilities_tests)
+        
+        if capabilities_working:
+            self.log("✅ Real-time V2 capabilities endpoint working - all V2 features supported")
+        else:
+            self.log("❌ Real-time V2 capabilities endpoint issues detected")
+        
+        # Check stats endpoints
+        stats_tests = [t for t in self.test_results if 'stats' in t['test'].lower()]
+        stats_working = any(t['success'] for t in stats_tests)
+        
+        if stats_working:
+            self.log("✅ Real-time statistics endpoints working correctly")
+        else:
+            self.log("⚠️ Real-time statistics endpoints need verification")
+        
+        # Check specific features
+        self.log("\n📋 FEATURE STATUS:")
+        
+        feature_categories = [
+            ("V2 Capabilities", ["capabilities"]),
+            ("Statistics", ["stats"]),
+            ("Channel Management", ["channels"]),
+            ("Room Presence", ["presence"]),
+            ("Document Locking", ["lock"]),
+            ("Document Versioning", ["version"]),
+        ]
+        
+        for category, keywords in feature_categories:
+            category_tests = [
+                t for t in self.test_results 
+                if any(keyword in t['test'].lower() for keyword in keywords)
+            ]
+            if category_tests:
+                category_success = sum(1 for t in category_tests if t['success'])
+                total_tests = len(category_tests)
+                status = "✅" if category_success == total_tests else "⚠️" if category_success > 0 else "❌"
+                self.log(f"  {category}: {category_success}/{total_tests} {status}")
+        
+        self.log("\n📝 REAL-TIME V2 API FLOW:")
+        flow_steps = [
+            ("1. V2 Capabilities Available", capabilities_working),
+            ("2. Statistics Accessible", any('stats' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("3. Channel Management", any('channels' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("4. Room Presence", any('presence' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("5. Document Operations", any('document' in t['test'].lower() and t['success'] for t in self.test_results))
+        ]
+        
+        for step, working in flow_steps:
+            status = "✅" if working else "❌"
+            self.log(f"  {step}: {status}")
+        
+        self.log("\n📋 IMPLEMENTATION STATUS:")
+        if success_rate >= 90:
+            self.log("✅ Real-time Collaboration V2 system is fully functional")
+            self.log("✅ All V2 REST endpoints are working correctly")
+            self.log("✅ WebSocket capabilities properly exposed via REST API")
+            self.log("✅ Document locking and versioning systems operational")
+        elif success_rate >= 75:
+            self.log("⚠️ Real-time Collaboration V2 system is mostly working with minor issues")
+            self.log("✅ Core functionality is operational")
+        else:
+            self.log("❌ Real-time Collaboration V2 system has significant issues")
+            if not capabilities_working:
+                self.log("❌ V2 capabilities not properly exposed")
+        
+        return success_rate >= 75
+
+
 class ArchiveAdminTester:
     def __init__(self):
         self.base_url = BASE_URL
