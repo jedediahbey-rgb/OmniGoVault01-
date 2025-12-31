@@ -190,7 +190,7 @@ export default function WorkspaceDetailPage({ user }) {
       toast.success('Document created');
       setShowAddDocument(false);
       setNewDocument({ title: '', description: '', category: 'OTHER', content: '' });
-      fetchVault();
+      await fetchVault();  // Wait for refresh to complete
     } catch (error) {
       console.error('Error creating document:', error);
       toast.error(
