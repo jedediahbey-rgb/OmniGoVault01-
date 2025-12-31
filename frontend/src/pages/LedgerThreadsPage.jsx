@@ -187,7 +187,9 @@ export default function LedgerThreadsPage() {
       if (search) params.set('search', search);
       if (categoryFilter && categoryFilter !== 'all') params.set('category', categoryFilter);
 
-      const res = await fetch(`${API_URL}/api/ledger-threads?${params}`);
+      const res = await fetch(`${API_URL}/api/ledger-threads?${params}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
 
       if (data.ok) {
@@ -208,7 +210,9 @@ export default function LedgerThreadsPage() {
   // Fetch records for a thread
   const fetchThreadRecords = async (threadId) => {
     try {
-      const res = await fetch(`${API_URL}/api/ledger-threads/${threadId}`);
+      const res = await fetch(`${API_URL}/api/ledger-threads/${threadId}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       if (data.ok) {
         setThreadRecords(data.data.records || []);
