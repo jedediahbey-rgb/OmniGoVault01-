@@ -404,6 +404,34 @@ export default function WorkspaceDetailPage({ user }) {
                   <ArrowClockwise className="w-4 h-4 mr-2" />
                   Refresh
                 </DropdownMenuItem>
+                
+                {/* Deactivate - Only for ACTIVE vaults */}
+                {vault.status === 'ACTIVE' && vault.user_permissions?.includes('MANAGE_VAULT') && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={handleDeactivateVault}
+                      className="text-yellow-500 focus:text-yellow-500"
+                    >
+                      <Warning className="w-4 h-4 mr-2" />
+                      Deactivate (Return to Draft)
+                    </DropdownMenuItem>
+                  </>
+                )}
+                
+                {/* Delete - Only for DRAFT vaults by creator */}
+                {vault.status === 'DRAFT' && vault.created_by === vault.current_user_id && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={handleDeleteVault}
+                      className="text-red-500 focus:text-red-500"
+                    >
+                      <Trash className="w-4 h-4 mr-2" />
+                      Delete Vault
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
