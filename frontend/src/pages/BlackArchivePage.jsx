@@ -1718,24 +1718,23 @@ export default function BlackArchivePage() {
         />
       </div>
       
-      {/* Content Area */}
+      {/* Content Area - Tabs stay mounted to prevent reload flash */}
       <div className="w-full max-w-6xl mx-auto px-4 py-5 sm:py-8">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="w-full"
-          >
-            {activeTab === 'index' && <IndexTab />}
-            {activeTab === 'trails' && <TrailsTab />}
-            {activeTab === 'claims' && <ClaimsTab />}
-            {activeTab === 'map' && <ArchiveMapTab />}
-            {activeTab === 'reading' && <ReadingRoomTab />}
-          </motion.div>
-        </AnimatePresence>
+        <div className={activeTab === 'index' ? 'block' : 'hidden'}>
+          <IndexTab />
+        </div>
+        <div className={activeTab === 'trails' ? 'block' : 'hidden'}>
+          <TrailsTab />
+        </div>
+        <div className={activeTab === 'claims' ? 'block' : 'hidden'}>
+          <ClaimsTab />
+        </div>
+        <div className={activeTab === 'map' ? 'block' : 'hidden'}>
+          <ArchiveMapTab />
+        </div>
+        <div className={activeTab === 'reading' ? 'block' : 'hidden'}>
+          <ReadingRoomTab />
+        </div>
       </div>
     </div>
   );
