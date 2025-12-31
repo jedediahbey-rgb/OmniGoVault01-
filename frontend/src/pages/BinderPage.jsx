@@ -2200,12 +2200,12 @@ export default function BinderPage() {
               </div>
             )}
 
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowConfigModal(false)} className="border-vault-gold/30 text-white">
+            <DialogFooter className="flex flex-row gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowConfigModal(false)} className="border-vault-gold/30 text-white flex-1 sm:flex-none">
                 Cancel
               </Button>
-              <Button onClick={handleSaveConfig} className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark">
-                Save Configuration
+              <Button onClick={handleSaveConfig} className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark flex-1 sm:flex-none">
+                Save
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -2213,7 +2213,7 @@ export default function BinderPage() {
 
         {/* Manifest Modal */}
         <Dialog open={showManifestModal} onOpenChange={setShowManifestModal}>
-          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-2xl max-h-[80vh] overflow-hidden">
+          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white w-[95vw] max-w-2xl max-h-[80vh] overflow-hidden">
             <DialogHeader>
               <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
                 <FileText className="w-5 h-5" />
