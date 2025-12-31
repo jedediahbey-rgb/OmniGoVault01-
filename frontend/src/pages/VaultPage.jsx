@@ -453,10 +453,11 @@ export default function VaultPage({ user, initialView }) {
                 showTrash ? (
                   <motion.div
                     key={doc.document_id}
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
+                    layout={!justSwitched}
+                    initial={justSwitched ? false : { opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: justSwitched ? 0 : 0.2 }}
                     className="p-4 bg-white/5 border border-white/10 rounded-xl"
                   >
                     <div className="flex items-start gap-3">
