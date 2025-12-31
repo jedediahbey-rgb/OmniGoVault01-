@@ -120,20 +120,20 @@ function VaultSidebarContent({
         >
           <FolderSimple className="w-4 h-4" weight="duotone" />
           <span className="text-sm">All Documents</span>
-          <span className="ml-auto text-xs opacity-60">{documents.length}</span>
+          <span className="ml-auto text-xs opacity-60">{allDocsCount}</span>
         </button>
         
         <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-4 mb-2">Portfolios</p>
         
         {portfolios.map(portfolio => {
-          const normalizedPortfolioId = normalizeId(portfolio.portfolio_id);
-          const portfolioDocCount = documents.filter(d => normalizeId(d.portfolio_id) === normalizedPortfolioId).length;
+          // Portfolio doc count comes from portfolio.document_count if available, otherwise show nothing
+          const portfolioDocCount = portfolio.document_count || 0;
           return (
             <button
               key={portfolio.portfolio_id}
               onClick={() => handlePortfolioClick(portfolio)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-                normalizeId(selectedPortfolioId) === normalizedPortfolioId
+                normalizeId(selectedPortfolioId) === normalizeId(portfolio.portfolio_id)
                   ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
                   : 'text-white/60 hover:bg-white/5'
               }`}
