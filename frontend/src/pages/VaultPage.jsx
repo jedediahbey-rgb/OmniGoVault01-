@@ -464,16 +464,22 @@ export default function VaultPage({ user, initialView }) {
       <div className="p-4">
         {displayedDocuments.length > 0 ? (
           <div className="space-y-3">
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence 
+              // KEY CHANGE = portfolio switch => remount presence tree => no enter/exit animations for the mass replace
+              key={activePortfolio?.portfolio_id || "no-portfolio"}
+              initial={false}
+              // popLayout is great for individual exits, but it can feel janky on mass replace; use sync during switch render
+              mode={skipAnimation ? "sync" : "popLayout"}
+            >
               {displayedDocuments.map((doc) => (
                 showTrash ? (
                   <motion.div
                     key={doc.document_id}
-                    layout={!justSwitched}
-                    initial={justSwitched ? false : { opacity: 0, y: 10 }}
+                    layout={skipAnimation ? false : "position"}
+                    initial={skipAnimation ? false : { opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: justSwitched ? 0 : 0.2 }}
+                    transition={skipAnimation ? { duration: 0 } : { duration: 0.2 }}
                     className="p-4 bg-white/5 border border-white/10 rounded-xl"
                   >
                     <div className="flex items-start gap-3">
@@ -514,7 +520,7 @@ export default function VaultPage({ user, initialView }) {
                     doc={doc}
                     isPinned={pinnedDocs.some(d => d.document_id === doc.document_id)}
                     onNavigate={() => navigate(`/vault/document/${doc.document_id}`)}
-                    skipAnimation={justSwitched}
+                    skipAnimation={skipAnimation}
                   />
                 )
               ))}
