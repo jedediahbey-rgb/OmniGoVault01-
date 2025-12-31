@@ -4779,6 +4779,10 @@ from routes.realtime import router as realtime_router, init_realtime_routes
 init_realtime_routes(db, get_current_user)
 app.include_router(realtime_router)
 
+# Black Archive routes
+from routes.archive import router as archive_router
+app.include_router(archive_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
