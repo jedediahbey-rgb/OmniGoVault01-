@@ -109,6 +109,7 @@ export default function LedgerThreadsPage() {
   // Data state
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoadDone, setInitialLoadDone] = useState(false); // Track if initial fetch completed
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
@@ -130,8 +131,10 @@ export default function LedgerThreadsPage() {
             setSearchParams({ portfolio: data[0].portfolio_id });
           }
         }
+        setInitialLoadDone(true);
       } catch (error) {
         console.error('Error fetching portfolios:', error);
+        setInitialLoadDone(true);
       }
     };
     fetchPortfolios();
