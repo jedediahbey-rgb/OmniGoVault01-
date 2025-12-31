@@ -156,6 +156,55 @@ class AdminAuditLog(BaseModel):
     error_message: Optional[str] = None
 
 
+# ============ SUPPORT_ADMIN SPECIFIC MODELS ============
+
+class SupportNoteType(str, Enum):
+    """Types of support notes"""
+    GENERAL = "GENERAL"
+    ISSUE_REPORT = "ISSUE_REPORT"
+    RESOLUTION = "RESOLUTION"
+    ESCALATION = "ESCALATION"
+    FOLLOWUP = "FOLLOWUP"
+
+
+class SupportNote(BaseModel):
+    """Support notes attached to accounts/users"""
+    id: str = Field(default_factory=lambda: f"note_{uuid.uuid4().hex[:12]}")
+    account_id: Optional[str] = None
+    user_id: Optional[str] = None
+    note_type: SupportNoteType = SupportNoteType.GENERAL
+    content: str
+    created_by: str  # Support admin user_id
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None
+    is_internal: bool = True  # If True, only visible to admins
+    tags: List[str] = []
+    related_ticket_id: Optional[str] = None
+
+
+class TrialExtension(BaseModel):
+    """Record of trial extensions granted by support"""
+    id: str = Field(default_factory=lambda: f"trial_ext_{uuid.uuid4().hex[:12]}")
+    account_id: str
+    extended_by: str  # Support admin user_id
+    extended_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    original_end_date: datetime
+    new_end_date: datetime
+    days_extended: int
+    reason: str
+
+
+class AccountUnlock(BaseModel):
+    """Record of account unlocks by support"""
+    id: str = Field(default_factory=lambda: f"unlock_{uuid.uuid4().hex[:12]}")
+    account_id: Optional[str] = None
+    user_id: str
+    unlocked_by: str  # Support admin user_id
+    unlocked_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    reason: str
+    previous_lock_reason: Optional[str] = None
+
+
 # ============ REQUEST/RESPONSE MODELS ============
 
 class GrantGlobalRoleRequest(BaseModel):
