@@ -826,3 +826,91 @@
   background-size: 200% 100%;
   animation: skeleton-shimmer 2s ease-in-out infinite;
 }
+
+/* ============================================================================
+   PERFORMANCE OPTIMIZATIONS - GPU acceleration and smooth animations
+   ============================================================================ */
+
+/* Enable GPU acceleration for animated elements */
+.archive-map-flow,
+.archive-glass-card,
+.archive-header-glass {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optimize animations with contain */
+.react-flow__node {
+  contain: layout style;
+  will-change: transform;
+}
+
+.react-flow__edge {
+  contain: layout;
+}
+
+/* Reduce paint areas */
+.react-flow__pane {
+  contain: strict;
+}
+
+/* Hardware acceleration for floating particles */
+[class*="animate-"] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optimize backdrop-filter performance */
+@supports (backdrop-filter: blur(10px)) {
+  .archive-glass-card,
+  .archive-header-glass {
+    will-change: backdrop-filter;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .react-flow__node,
+  .archive-glass-card {
+    will-change: auto !important;
+  }
+}
+
+/* Optimize scroll performance */
+.react-flow__viewport {
+  will-change: transform;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 639px) {
+  /* Reduce complexity on mobile */
+  .archive-glass-card {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  /* Simpler shadows on mobile */
+  .react-flow__node {
+    box-shadow: none;
+  }
+}
+
+/* Content visibility for off-screen content */
+.tab-content-hidden {
+  content-visibility: hidden;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* Smooth scrolling with GPU acceleration */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
