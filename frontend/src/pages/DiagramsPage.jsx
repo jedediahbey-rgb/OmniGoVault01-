@@ -637,29 +637,27 @@ function DiagramsContent() {
                 showInteractive={false}
                 className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-1 sm:!m-2 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-5 [&>button]:!h-5 sm:[&>button]:!w-7 sm:[&>button]:!h-7"
               />
-              {/* Hide MiniMap on mobile */}
-              {!isMobile && (
-                <MiniMap 
-                  style={{ 
-                    backgroundColor: 'rgba(11, 18, 33, 0.95)',
-                    border: '1px solid rgba(198, 168, 124, 0.3)',
-                    borderRadius: '6px',
-                    width: 90,
-                    height: 60,
-                    margin: '8px',
-                  }}
-                  nodeColor={(node) => {
-                    if (node.style?.borderColor?.includes('C6A87C')) return '#C6A87C';
-                    if (node.style?.borderColor?.includes('3B82F6')) return '#3B82F6';
-                    if (node.style?.borderColor?.includes('22C55E')) return '#22C55E';
-                    if (node.style?.borderColor?.includes('A855F7')) return '#A855F7';
-                    return '#EF4444';
-                  }}
-                  position="top-right"
-                  pannable={false}
-                  zoomable={false}
-                />
-              )}
+              {/* MiniMap - visible on all devices */}
+              <MiniMap 
+                style={{ 
+                  backgroundColor: 'rgba(11, 18, 33, 0.95)',
+                  border: '1px solid rgba(198, 168, 124, 0.3)',
+                  borderRadius: '6px',
+                  width: isMobile ? 70 : 90,
+                  height: isMobile ? 45 : 60,
+                  margin: isMobile ? '4px' : '8px',
+                }}
+                nodeColor={(node) => {
+                  if (node.style?.borderColor?.includes('C6A87C')) return '#C6A87C';
+                  if (node.style?.borderColor?.includes('3B82F6')) return '#3B82F6';
+                  if (node.style?.borderColor?.includes('22C55E')) return '#22C55E';
+                  if (node.style?.borderColor?.includes('A855F7')) return '#A855F7';
+                  return '#EF4444';
+                }}
+                position="bottom-right"
+                pannable={false}
+                zoomable={false}
+              />
               <Background color="rgba(255,255,255,0.05)" gap={20} />
             </ReactFlow>
 
