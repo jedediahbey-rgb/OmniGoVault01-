@@ -400,17 +400,19 @@ async def get_archive_stats(user = Depends(get_current_user)):
 
 @router.post("/seed")
 async def seed_archive_data(user = Depends(get_current_user)):
-    """Seed initial archive data"""
+    """Seed initial archive data with expanded content"""
     
     # Check if already seeded
     existing = await db.archive_sources.count_documents({})
     if existing > 0:
         return {"message": "Archive already seeded", "sources": existing}
     
-    # Seed sources
+    # ========================================================================
+    # SOURCES - Primary sources, interpretations, and hypotheses
+    # ========================================================================
     sources = [
         {
-            "source_id": str(uuid4()),
+            "source_id": "src-001",
             "title": "Earl of Oxford's Case (1615)",
             "source_type": "PRIMARY_SOURCE",
             "jurisdiction": "England",
@@ -422,7 +424,7 @@ async def seed_archive_data(user = Depends(get_current_user)):
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "source_id": str(uuid4()),
+            "source_id": "src-002",
             "title": "Keech v Sandford (1726)",
             "source_type": "PRIMARY_SOURCE",
             "jurisdiction": "England",
@@ -434,7 +436,7 @@ async def seed_archive_data(user = Depends(get_current_user)):
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "source_id": str(uuid4()),
+            "source_id": "src-003",
             "title": "Restatement (Third) of Trusts",
             "source_type": "SUPPORTED_INTERPRETATION",
             "jurisdiction": "US Federal",
@@ -446,7 +448,7 @@ async def seed_archive_data(user = Depends(get_current_user)):
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "source_id": str(uuid4()),
+            "source_id": "src-004",
             "title": "31 U.S.C. § 5103 - Legal Tender",
             "source_type": "PRIMARY_SOURCE",
             "jurisdiction": "US Federal",
@@ -458,7 +460,7 @@ async def seed_archive_data(user = Depends(get_current_user)):
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "source_id": str(uuid4()),
+            "source_id": "src-005",
             "title": "UCC Article 3 - Negotiable Instruments",
             "source_type": "PRIMARY_SOURCE",
             "jurisdiction": "US Federal",
@@ -468,19 +470,105 @@ async def seed_archive_data(user = Depends(get_current_user)):
             "excerpt": "Governs negotiable instruments including promissory notes, drafts, and checks.",
             "notes": "Adopted in all 50 states with minor variations.",
             "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "source_id": "src-006",
+            "title": "Salomon v A Salomon & Co Ltd (1897)",
+            "source_type": "PRIMARY_SOURCE",
+            "jurisdiction": "England",
+            "era_tags": ["1600-1900"],
+            "topic_tags": ["Corporate Law", "Legal Personality"],
+            "citation": "[1897] AC 22",
+            "excerpt": "A properly formed company is a legal entity distinct from its members. The corporate veil separates shareholders from corporate liabilities.",
+            "notes": "Foundational case for corporate separate personality doctrine.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "source_id": "src-007",
+            "title": "Statute of Frauds (1677)",
+            "source_type": "PRIMARY_SOURCE",
+            "jurisdiction": "England",
+            "era_tags": ["1600-1900"],
+            "topic_tags": ["Contracts", "Trusts"],
+            "citation": "29 Car. II c. 3",
+            "excerpt": "Certain contracts must be evidenced in writing to be enforceable, including contracts for sale of land and trusts of land.",
+            "notes": "Basis for writing requirements in contract and trust law.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "source_id": "src-008",
+            "title": "Black's Law Dictionary (11th ed.)",
+            "source_type": "SUPPORTED_INTERPRETATION",
+            "jurisdiction": "General",
+            "era_tags": ["Modern"],
+            "topic_tags": ["Definitions", "Legal Terms"],
+            "citation": "Black's Law Dictionary (11th ed. 2019)",
+            "excerpt": "Standard reference for legal definitions in American courts.",
+            "notes": "Widely cited but not primary authority.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "source_id": "src-009",
+            "title": "Tulk v Moxhay (1848)",
+            "source_type": "PRIMARY_SOURCE",
+            "jurisdiction": "England",
+            "era_tags": ["1600-1900"],
+            "topic_tags": ["Property", "Equity", "Covenants"],
+            "citation": "2 Ph 774, 41 ER 1143",
+            "excerpt": "Restrictive covenants can bind successors in title if they have notice, even without privity of contract.",
+            "notes": "Foundation for equitable servitudes in property law.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "source_id": "src-010",
+            "title": "Coinage Act of 1792",
+            "source_type": "PRIMARY_SOURCE",
+            "jurisdiction": "US Federal",
+            "era_tags": ["1700-1900"],
+            "topic_tags": ["Monetary History", "Legal Tender"],
+            "citation": "1 Stat. 246",
+            "excerpt": "Established the United States Mint and regulated coinage, defining the dollar in terms of silver.",
+            "notes": "Historical foundation for US monetary system.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "source_id": "src-011",
+            "title": "Helvering v. Gregory (1934)",
+            "source_type": "PRIMARY_SOURCE",
+            "jurisdiction": "US Federal",
+            "era_tags": ["Modern"],
+            "topic_tags": ["Taxation", "Substance over Form"],
+            "citation": "69 F.2d 809 (2d Cir. 1934)",
+            "excerpt": "Transactions must have economic substance beyond tax avoidance. Form does not control when substance is lacking.",
+            "notes": "Foundation for substance-over-form doctrine in tax law.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "source_id": "src-012",
+            "title": "Federal Reserve Act (1913)",
+            "source_type": "PRIMARY_SOURCE",
+            "jurisdiction": "US Federal",
+            "era_tags": ["Modern"],
+            "topic_tags": ["Monetary History", "Banking"],
+            "citation": "12 U.S.C. § 221 et seq.",
+            "excerpt": "Established the Federal Reserve System as the central banking system of the United States.",
+            "notes": "Current framework for US monetary policy.",
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     ]
     
     await db.archive_sources.insert_many(sources)
     
-    # Seed claims (dossiers)
+    # ========================================================================
+    # CLAIMS (DOSSIERS) - 10 claim cards covering key topics
+    # ========================================================================
     claims = [
         {
-            "claim_id": str(uuid4()),
+            "claim_id": "claim-001",
             "title": "Equity Follows the Law — and Where Equity Overrides Form",
             "status": "VERIFIED",
             "body": "Equity courts developed to address deficiencies in common law remedies. While equity follows the law, it can override legal form when substance and fairness require it.",
-            "evidence_source_ids": [sources[0]["source_id"]],
+            "evidence_source_ids": ["src-001"],
             "counter_source_ids": [],
             "topic_tags": ["Equity", "Trusts"],
             "reality_check": "Courts consistently apply equitable principles but within established doctrinal limits. Equity is not a license to ignore law.",
@@ -488,11 +576,11 @@ async def seed_archive_data(user = Depends(get_current_user)):
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "claim_id": str(uuid4()),
+            "claim_id": "claim-002",
             "title": "Constructive Trust: Remedy, Not a Magic Keyword",
             "status": "VERIFIED",
             "body": "A constructive trust is an equitable remedy imposed by courts to prevent unjust enrichment. It is not a trust created by parties but a judicial remedy.",
-            "evidence_source_ids": [sources[0]["source_id"], sources[2]["source_id"]],
+            "evidence_source_ids": ["src-001", "src-003"],
             "counter_source_ids": [],
             "topic_tags": ["Trusts", "Equity"],
             "reality_check": "Courts impose constructive trusts in specific circumstances: fraud, breach of fiduciary duty, unjust enrichment. Simply claiming a constructive trust exists does not make it so.",
@@ -500,11 +588,11 @@ async def seed_archive_data(user = Depends(get_current_user)):
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "claim_id": str(uuid4()),
+            "claim_id": "claim-003",
             "title": "Fiduciary Duty: The Highest Standard (and the Standard Courts Enforce)",
             "status": "VERIFIED",
             "body": "Fiduciary duty imposes the highest standard of care in law. A fiduciary must act with undivided loyalty, prudence, and full disclosure.",
-            "evidence_source_ids": [sources[1]["source_id"], sources[2]["source_id"]],
+            "evidence_source_ids": ["src-002", "src-003"],
             "counter_source_ids": [],
             "topic_tags": ["Fiduciary Duties", "Trusts"],
             "reality_check": "Courts take fiduciary breaches seriously. Remedies include surcharge, removal, and constructive trust. But the duty must actually exist—not all relationships are fiduciary.",
@@ -512,11 +600,11 @@ async def seed_archive_data(user = Depends(get_current_user)):
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "claim_id": str(uuid4()),
+            "claim_id": "claim-004",
             "title": "Negotiable Instruments: What They Are and What They Are Not",
             "status": "VERIFIED",
             "body": "Negotiable instruments under UCC Article 3 include promissory notes, drafts, and checks meeting specific requirements. They enable transfer of payment rights.",
-            "evidence_source_ids": [sources[4]["source_id"]],
+            "evidence_source_ids": ["src-005"],
             "counter_source_ids": [],
             "topic_tags": ["Negotiable Instruments"],
             "reality_check": "Not everything called a 'note' is negotiable. Specific formal requirements must be met. Holder in due course status provides protections but has limits.",
@@ -524,156 +612,203 @@ async def seed_archive_data(user = Depends(get_current_user)):
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "claim_id": str(uuid4()),
+            "claim_id": "claim-005",
             "title": "Fiat Currency & Legal Tender: What the Law Actually Says",
             "status": "VERIFIED",
             "body": "US currency is legal tender by statute. This means it must be accepted for debts but does not mandate acceptance for all transactions.",
-            "evidence_source_ids": [sources[3]["source_id"]],
+            "evidence_source_ids": ["src-004", "src-012"],
             "counter_source_ids": [],
             "topic_tags": ["Monetary History", "Legal Tender"],
             "reality_check": "Legal tender laws are straightforward. Private parties can agree to other payment methods. Businesses can refuse cash in many contexts.",
             "practical_takeaway": "Legal tender status has specific legal meaning. It does not support broader monetary theories without additional evidence.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "claim_id": "claim-006",
+            "title": "The Corporate Veil: Protection and Its Limits",
+            "status": "VERIFIED",
+            "body": "A properly formed corporation is a separate legal entity from its shareholders. However, courts can 'pierce the veil' in cases of fraud, undercapitalization, or alter ego situations.",
+            "evidence_source_ids": ["src-006"],
+            "counter_source_ids": [],
+            "topic_tags": ["Corporate Law", "Legal Personality"],
+            "reality_check": "Veil piercing is the exception, not the rule. Courts require strong evidence of abuse. Mere ownership alone is insufficient.",
+            "practical_takeaway": "Maintain corporate formalities. Keep adequate capitalization. Avoid commingling funds.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "claim_id": "claim-007",
+            "title": "The Strawman Theory: Legal Fiction Without Legal Support",
+            "status": "DISPUTED",
+            "body": "The 'strawman' theory claims that birth certificates create a separate legal entity that can be used to discharge debts. This theory has no basis in law.",
+            "evidence_source_ids": [],
+            "counter_source_ids": ["src-004", "src-006", "src-008"],
+            "topic_tags": ["Debunked Theories", "Legal Personality"],
+            "reality_check": "NO COURT has ever accepted this theory. People who try to use it face sanctions, fines, and criminal charges. It is considered a fraudulent scheme.",
+            "practical_takeaway": "Avoid this and similar theories. They lead to real legal consequences including criminal prosecution.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "claim_id": "claim-008",
+            "title": "Statute of Frauds: When Writing Is Required",
+            "status": "VERIFIED",
+            "body": "Certain agreements must be evidenced in writing to be enforceable, including real estate contracts, trusts of land, and contracts that cannot be performed within one year.",
+            "evidence_source_ids": ["src-007"],
+            "counter_source_ids": [],
+            "topic_tags": ["Contracts", "Trusts"],
+            "reality_check": "The Statute of Frauds has exceptions (part performance, estoppel) but the general rule remains: get important agreements in writing.",
+            "practical_takeaway": "Always document significant agreements. Oral contracts for land are generally unenforceable.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "claim_id": "claim-009",
+            "title": "Sovereign Citizen Arguments: Rejected by All Courts",
+            "status": "DISPUTED",
+            "body": "Various theories claim individuals can opt out of government jurisdiction through declarations, punctuation changes, or UCC filings. All such theories have been uniformly rejected.",
+            "evidence_source_ids": [],
+            "counter_source_ids": ["src-004", "src-005", "src-008"],
+            "topic_tags": ["Debunked Theories", "Jurisdiction"],
+            "reality_check": "These arguments have been called 'frivolous,' 'delusional,' and 'legally incomprehensible' by courts. They result in sanctions and criminal liability.",
+            "practical_takeaway": "There is no legal basis for these claims. Using them causes harm to the person making them.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "claim_id": "claim-010",
+            "title": "Substance Over Form: Courts Look at Reality",
+            "status": "VERIFIED",
+            "body": "Courts apply substance-over-form analysis to look past labels and formalities to the economic reality of transactions, particularly in tax and equity contexts.",
+            "evidence_source_ids": ["src-001", "src-011"],
+            "counter_source_ids": [],
+            "topic_tags": ["Taxation", "Equity", "Substance over Form"],
+            "reality_check": "This doctrine cuts both ways. It can invalidate sham transactions but also protect legitimate transactions that lack perfect form.",
+            "practical_takeaway": "Structure transactions for genuine business purposes. Mere form without substance will not survive scrutiny.",
             "created_at": datetime.now(timezone.utc).isoformat()
         }
     ]
     
     await db.archive_claims.insert_many(claims)
     
-    # Seed trails
+    # ========================================================================
+    # TRAILS (TRACKS) - 8 doctrine trails for guided learning
+    # ========================================================================
     trails = [
         {
-            "trail_id": str(uuid4()),
+            "trail_id": "trail-001",
             "title": "Chancery Origins → Modern Trusts",
             "description": "Trace the evolution of equity from medieval England to modern trust law.",
             "topic_tags": ["Equity", "Trusts"],
             "steps": [
-                {
-                    "order": 1,
-                    "title": "The Problem: Common Law Rigidity",
-                    "content": "Medieval common law courts offered limited remedies. Rigid forms of action left many wrongs without remedy.",
-                    "source_ids": [],
-                    "key_definitions": ["common law", "forms of action"]
-                },
-                {
-                    "order": 2,
-                    "title": "The Chancellor's Court",
-                    "content": "The Lord Chancellor, as keeper of the King's conscience, began hearing petitions for relief where common law was inadequate.",
-                    "source_ids": [],
-                    "key_definitions": ["equity", "chancellor"]
-                },
-                {
-                    "order": 3,
-                    "title": "Earl of Oxford's Case",
-                    "content": "Established that equity prevails over common law when they conflict, cementing Chancery's authority.",
-                    "source_ids": [sources[0]["source_id"]],
-                    "key_definitions": []
-                },
-                {
-                    "order": 4,
-                    "title": "The Use and the Trust",
-                    "content": "The 'use' allowed separation of legal and beneficial ownership. The Statute of Uses (1536) and its workarounds led to the modern trust.",
-                    "source_ids": [],
-                    "key_definitions": ["use", "trust", "beneficiary"]
-                },
-                {
-                    "order": 5,
-                    "title": "Modern Trust Law",
-                    "content": "Today, trusts are governed by statute and common law, with the Restatement providing influential guidance.",
-                    "source_ids": [sources[2]["source_id"]],
-                    "key_definitions": []
-                }
+                {"order": 1, "title": "The Problem: Common Law Rigidity", "content": "Medieval common law courts offered limited remedies. Rigid forms of action left many wrongs without remedy.", "source_ids": [], "key_definitions": ["common law", "forms of action"]},
+                {"order": 2, "title": "The Chancellor's Court", "content": "The Lord Chancellor, as keeper of the King's conscience, began hearing petitions for relief where common law was inadequate.", "source_ids": [], "key_definitions": ["equity", "chancellor"]},
+                {"order": 3, "title": "Earl of Oxford's Case", "content": "Established that equity prevails over common law when they conflict, cementing Chancery's authority.", "source_ids": ["src-001"], "key_definitions": []},
+                {"order": 4, "title": "The Use and the Trust", "content": "The 'use' allowed separation of legal and beneficial ownership. The Statute of Uses (1536) and its workarounds led to the modern trust.", "source_ids": [], "key_definitions": ["use", "trust", "beneficiary"]},
+                {"order": 5, "title": "Modern Trust Law", "content": "Today, trusts are governed by statute and common law, with the Restatement providing influential guidance.", "source_ids": ["src-003"], "key_definitions": []}
             ],
             "reality_check": "Trust law is well-developed and courts apply established principles. Novel theories require strong support.",
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "trail_id": str(uuid4()),
+            "trail_id": "trail-002",
             "title": "Fiduciary Duty & Accounting",
             "description": "Understand the highest standard of care in law and how courts enforce it.",
             "topic_tags": ["Fiduciary Duties", "Trusts"],
             "steps": [
-                {
-                    "order": 1,
-                    "title": "What Makes a Relationship Fiduciary?",
-                    "content": "Not all relationships are fiduciary. Key indicators: trust and confidence, vulnerability, reliance, discretionary power.",
-                    "source_ids": [],
-                    "key_definitions": ["fiduciary", "principal"]
-                },
-                {
-                    "order": 2,
-                    "title": "The Duty of Loyalty",
-                    "content": "A fiduciary must act solely in the beneficiary's interest. No self-dealing, no conflicts of interest.",
-                    "source_ids": [sources[1]["source_id"]],
-                    "key_definitions": ["loyalty", "self-dealing"]
-                },
-                {
-                    "order": 3,
-                    "title": "The Duty of Prudence",
-                    "content": "Fiduciaries must act with reasonable care, skill, and caution. The standard is objective.",
-                    "source_ids": [sources[2]["source_id"]],
-                    "key_definitions": ["prudent investor rule"]
-                },
-                {
-                    "order": 4,
-                    "title": "Duty to Account",
-                    "content": "Fiduciaries must maintain records and provide accountings. Beneficiaries have the right to information.",
-                    "source_ids": [],
-                    "key_definitions": ["accounting", "surcharge"]
-                },
-                {
-                    "order": 5,
-                    "title": "Remedies for Breach",
-                    "content": "Breach of fiduciary duty can result in surcharge, removal, constructive trust, or damages.",
-                    "source_ids": [],
-                    "key_definitions": ["surcharge", "constructive trust"]
-                }
+                {"order": 1, "title": "What Makes a Relationship Fiduciary?", "content": "Not all relationships are fiduciary. Key indicators: trust and confidence, vulnerability, reliance, discretionary power.", "source_ids": [], "key_definitions": ["fiduciary", "principal"]},
+                {"order": 2, "title": "The Duty of Loyalty", "content": "A fiduciary must act solely in the beneficiary's interest. No self-dealing, no conflicts of interest.", "source_ids": ["src-002"], "key_definitions": ["loyalty", "self-dealing"]},
+                {"order": 3, "title": "The Duty of Prudence", "content": "Fiduciaries must act with reasonable care, skill, and caution. The standard is objective.", "source_ids": ["src-003"], "key_definitions": ["prudent investor rule"]},
+                {"order": 4, "title": "Duty to Account", "content": "Fiduciaries must maintain records and provide accountings. Beneficiaries have the right to information.", "source_ids": [], "key_definitions": ["accounting", "surcharge"]},
+                {"order": 5, "title": "Remedies for Breach", "content": "Breach of fiduciary duty can result in surcharge, removal, constructive trust, or damages.", "source_ids": [], "key_definitions": ["surcharge", "constructive trust"]}
             ],
-            "reality_check": "Fiduciary duty claims are taken seriously but require proof of the relationship and breach. Courts don't invent fiduciary relationships.",
+            "reality_check": "Fiduciary duty claims are taken seriously but require proof of the relationship and breach.",
             "created_at": datetime.now(timezone.utc).isoformat()
         },
         {
-            "trail_id": str(uuid4()),
+            "trail_id": "trail-003",
             "title": "Negotiable Instruments 101 → Holder in Due Course",
             "description": "Master the fundamentals of negotiable instruments under the UCC.",
             "topic_tags": ["Negotiable Instruments"],
             "steps": [
-                {
-                    "order": 1,
-                    "title": "What Is a Negotiable Instrument?",
-                    "content": "An unconditional promise or order to pay a fixed amount of money, payable on demand or at a definite time.",
-                    "source_ids": [sources[4]["source_id"]],
-                    "key_definitions": ["negotiable instrument", "note", "draft"]
-                },
-                {
-                    "order": 2,
-                    "title": "Requirements for Negotiability",
-                    "content": "Writing, signed, unconditional promise/order, fixed amount, payable in money, payable on demand or at definite time, payable to bearer or order.",
-                    "source_ids": [sources[4]["source_id"]],
-                    "key_definitions": ["bearer", "order"]
-                },
-                {
-                    "order": 3,
-                    "title": "Transfer and Negotiation",
-                    "content": "Transfer is delivery; negotiation requires proper endorsement for order instruments.",
-                    "source_ids": [],
-                    "key_definitions": ["endorsement", "negotiation"]
-                },
-                {
-                    "order": 4,
-                    "title": "Holder in Due Course",
-                    "content": "A holder who takes for value, in good faith, without notice of defects takes free of most defenses.",
-                    "source_ids": [sources[4]["source_id"]],
-                    "key_definitions": ["holder in due course", "real defenses"]
-                },
-                {
-                    "order": 5,
-                    "title": "Defenses and Limitations",
-                    "content": "Real defenses (fraud in factum, incapacity, illegality) are good against even HDCs. Personal defenses are cut off.",
-                    "source_ids": [],
-                    "key_definitions": ["real defense", "personal defense"]
-                }
+                {"order": 1, "title": "What Is a Negotiable Instrument?", "content": "An unconditional promise or order to pay a fixed amount of money, payable on demand or at a definite time.", "source_ids": ["src-005"], "key_definitions": ["negotiable instrument", "note", "draft"]},
+                {"order": 2, "title": "Requirements for Negotiability", "content": "Writing, signed, unconditional promise/order, fixed amount, payable in money, payable on demand or at definite time, payable to bearer or order.", "source_ids": ["src-005"], "key_definitions": ["bearer", "order"]},
+                {"order": 3, "title": "Transfer and Negotiation", "content": "Transfer is delivery; negotiation requires proper endorsement for order instruments.", "source_ids": [], "key_definitions": ["endorsement", "negotiation"]},
+                {"order": 4, "title": "Holder in Due Course", "content": "A holder who takes for value, in good faith, without notice of defects takes free of most defenses.", "source_ids": ["src-005"], "key_definitions": ["holder in due course", "real defenses"]},
+                {"order": 5, "title": "Defenses and Limitations", "content": "Real defenses (fraud in factum, incapacity, illegality) are good against even HDCs. Personal defenses are cut off.", "source_ids": [], "key_definitions": ["real defense", "personal defense"]}
             ],
-            "reality_check": "UCC Article 3 is technical. Courts apply it strictly. DIY negotiable instrument theories often fail because they misunderstand requirements.",
+            "reality_check": "UCC Article 3 is technical. Courts apply it strictly.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "trail_id": "trail-004",
+            "title": "Corporate Formation & Veil Piercing",
+            "description": "Understand corporate separate personality and when courts look behind it.",
+            "topic_tags": ["Corporate Law", "Legal Personality"],
+            "steps": [
+                {"order": 1, "title": "The Concept of Separate Personality", "content": "A corporation is a legal person distinct from its shareholders. Salomon v Salomon established this fundamental principle.", "source_ids": ["src-006"], "key_definitions": ["legal personality", "limited liability"]},
+                {"order": 2, "title": "Benefits of Incorporation", "content": "Limited liability, perpetual existence, transferable shares, centralized management.", "source_ids": [], "key_definitions": ["limited liability", "perpetual succession"]},
+                {"order": 3, "title": "Corporate Formalities", "content": "To maintain the veil: hold meetings, keep minutes, maintain separate accounts, adequate capitalization.", "source_ids": [], "key_definitions": ["corporate formalities", "capitalization"]},
+                {"order": 4, "title": "When Courts Pierce the Veil", "content": "Alter ego, fraud, undercapitalization, commingling funds, failure to observe formalities.", "source_ids": ["src-006"], "key_definitions": ["alter ego", "piercing the veil"]},
+                {"order": 5, "title": "Protecting Yourself", "content": "Document everything. Keep funds separate. Never use corporate assets for personal expenses.", "source_ids": [], "key_definitions": []}
+            ],
+            "reality_check": "Veil piercing is rare but real. Maintain formalities to preserve protection.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "trail_id": "trail-005",
+            "title": "History of Money: Gold Standard → Fiat Currency",
+            "description": "Trace the evolution of American monetary policy and what the law actually says.",
+            "topic_tags": ["Monetary History", "Legal Tender"],
+            "steps": [
+                {"order": 1, "title": "Colonial and Early Republic", "content": "Before the Constitution, states and private banks issued currency. The Constitution gave Congress power to coin money.", "source_ids": ["src-010"], "key_definitions": ["coinage power", "legal tender"]},
+                {"order": 2, "title": "The Gold Standard Era", "content": "The Coinage Act of 1792 defined the dollar in terms of silver and gold. The gold standard provided a fixed anchor.", "source_ids": ["src-010"], "key_definitions": ["gold standard", "bimetallism"]},
+                {"order": 3, "title": "The Federal Reserve System", "content": "Created in 1913 to provide an elastic currency and serve as lender of last resort.", "source_ids": ["src-012"], "key_definitions": ["Federal Reserve", "elastic currency"]},
+                {"order": 4, "title": "Departure from Gold", "content": "1933: domestic gold ownership restricted. 1971: Nixon ended gold convertibility for foreign governments.", "source_ids": [], "key_definitions": ["fiat currency", "floating exchange rate"]},
+                {"order": 5, "title": "Modern Legal Tender", "content": "Today, Federal Reserve Notes are legal tender by statute. This is the current legal framework.", "source_ids": ["src-004"], "key_definitions": ["legal tender", "Federal Reserve Note"]}
+            ],
+            "reality_check": "Monetary history is complex but documented. Current law is what courts apply.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "trail_id": "trail-006",
+            "title": "Contract Basics: Formation to Breach",
+            "description": "Essential contract law principles every person should understand.",
+            "topic_tags": ["Contracts"],
+            "steps": [
+                {"order": 1, "title": "Offer and Acceptance", "content": "A valid contract requires a definite offer and unequivocal acceptance. Meeting of the minds is essential.", "source_ids": [], "key_definitions": ["offer", "acceptance", "meeting of minds"]},
+                {"order": 2, "title": "Consideration", "content": "Both parties must give something of value. Past consideration is not consideration. Adequacy is generally not examined.", "source_ids": [], "key_definitions": ["consideration", "bargain"]},
+                {"order": 3, "title": "Statute of Frauds", "content": "Certain contracts must be in writing: land, suretyship, contracts not performable within one year, UCC goods over $500.", "source_ids": ["src-007"], "key_definitions": ["statute of frauds", "writing requirement"]},
+                {"order": 4, "title": "Performance and Breach", "content": "Material breach excuses further performance. Minor breach allows damages but requires continued performance.", "source_ids": [], "key_definitions": ["material breach", "substantial performance"]},
+                {"order": 5, "title": "Remedies", "content": "Expectation damages put the non-breaching party where they would have been. Specific performance is exceptional.", "source_ids": [], "key_definitions": ["expectation damages", "specific performance"]}
+            ],
+            "reality_check": "Contract law is foundational. Courts enforce clear agreements.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "trail_id": "trail-007",
+            "title": "Property: Real and Personal",
+            "description": "Understand the fundamental distinctions in property law.",
+            "topic_tags": ["Property"],
+            "steps": [
+                {"order": 1, "title": "Real vs. Personal Property", "content": "Real property is land and things attached to it. Personal property is everything else—chattels.", "source_ids": [], "key_definitions": ["real property", "personal property", "chattels"]},
+                {"order": 2, "title": "Estates in Land", "content": "Fee simple, life estate, leasehold. Each has different rights, duration, and transferability.", "source_ids": [], "key_definitions": ["fee simple", "life estate", "leasehold"]},
+                {"order": 3, "title": "Recording and Notice", "content": "Recording statutes protect bona fide purchasers. Check the records before buying real estate.", "source_ids": [], "key_definitions": ["recording act", "bona fide purchaser"]},
+                {"order": 4, "title": "Equitable Interests", "content": "Trusts, equitable servitudes, and other equity-created interests run with the land in many cases.", "source_ids": ["src-009"], "key_definitions": ["equitable servitude", "covenant"]},
+                {"order": 5, "title": "Taking and Eminent Domain", "content": "Government can take private property for public use with just compensation. This is constitutional.", "source_ids": [], "key_definitions": ["eminent domain", "just compensation"]}
+            ],
+            "reality_check": "Property law is ancient and well-settled. Novel claims face skepticism.",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "trail_id": "trail-008",
+            "title": "Debunking Common Legal Myths",
+            "description": "Identify and understand why certain legal theories are rejected by courts.",
+            "topic_tags": ["Debunked Theories"],
+            "steps": [
+                {"order": 1, "title": "The Strawman Theory", "content": "Claims that birth certificates create a separate entity with a secret account. No legal basis whatsoever.", "source_ids": [], "key_definitions": ["strawman", "legal fiction"]},
+                {"order": 2, "title": "Sovereign Citizen Arguments", "content": "Claims that individuals can opt out of jurisdiction through UCC filings or declarations. Uniformly rejected.", "source_ids": [], "key_definitions": ["sovereign citizen", "jurisdiction"]},
+                {"order": 3, "title": "Secret Trust Accounts", "content": "Claims of secret government accounts in your name. No evidence supports this; it is a known fraud scheme.", "source_ids": [], "key_definitions": []},
+                {"order": 4, "title": "Why Courts Reject These", "content": "These theories contradict established law, lack any supporting authority, and are often used to perpetrate fraud.", "source_ids": ["src-008"], "key_definitions": ["frivolous argument", "sanctions"]},
+                {"order": 5, "title": "Consequences of Using", "content": "Courts impose sanctions, refer for criminal prosecution, and dismiss cases with prejudice.", "source_ids": [], "key_definitions": ["sanctions", "dismissal with prejudice"]}
+            ],
+            "reality_check": "These theories harm those who use them. Stick to established legal principles.",
             "created_at": datetime.now(timezone.utc).isoformat()
         }
     ]
