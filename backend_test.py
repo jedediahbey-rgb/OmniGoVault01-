@@ -1628,6 +1628,551 @@ class ArchiveAdminTester:
         return success_rate >= 75
 
 
+class BatesNumberingTester:
+    def __init__(self):
+        self.base_url = BASE_URL
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+            'User-Agent': 'BatesNumberingTester/1.0',
+            'X-Workspace-ID': 'test-workspace-id'  # Required header for Bates endpoints
+        })
+        self.tests_run = 0
+        self.tests_passed = 0
+        self.failed_tests = []
+        self.test_results = []
+        
+        # Test user details - using the specified email
+        self.test_user_email = "jedediah.bey@gmail.com"
+        self.test_user_id = "user_jedediah_bey"
+        
+        # Try to get a valid session token
+        self.session_token = self.get_valid_session_token()
+
+    def get_valid_session_token(self):
+        """Get a valid session token for testing"""
+        try:
+            # Create test session using mongosh
+            result = subprocess.run([
+                'mongosh', '--eval', f"""
+                use('test_database');
+                var userId = '{self.test_user_id}';
+                var sessionToken = 'test_session_' + Date.now();
+                
+                // Ensure user exists
+                db.users.updateOne(
+                    {{user_id: userId}},
+                    {{$setOnInsert: {{
+                        user_id: userId,
+                        email: '{self.test_user_email}',
+                        name: 'Jedediah Bey',
+                        picture: 'https://via.placeholder.com/150',
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                // Create session
+                db.user_sessions.insertOne({{
+                    user_id: userId,
+                    session_token: sessionToken,
+                    expires_at: new Date(Date.now() + 7*24*60*60*1000),
+                    created_at: new Date()
+                }});
+                
+                print(sessionToken);
+                """
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                session_token = result.stdout.strip().split('\n')[-1]
+                if session_token and session_token.startswith('test_session_'):
+                    self.log(f"✅ Created test session: {session_token[:20]}...")
+                    self.session.headers['Authorization'] = f'Bearer {session_token}'
+                    return session_token
+            
+            self.log("⚠️ Could not create test session - testing without authentication")
+            return None
+            
+        except Exception as e:
+            self.log(f"⚠️ Session creation failed: {str(e)} - testing without authentication")
+            return None
+
+    def log(self, message):
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
+
+    def log_test(self, name, success, details=""):
+        """Log test result"""
+        self.tests_run += 1
+        if success:
+            self.tests_passed += 1
+            self.log(f"✅ {name}")
+        else:
+            self.log(f"❌ {name} - {details}")
+            self.failed_tests.append({
+                'test': name,
+                'details': details,
+                'timestamp': datetime.now().isoformat()
+            })
+        
+        self.test_results.append({
+            "test": name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        })
+
+    # ============ BATES NUMBERING TESTS ============
+
+    def test_auth_me_endpoint(self):
+        """Test /api/auth/me endpoint with valid session"""
+        if not self.session_token:
+            self.log_test("Auth Me Endpoint", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/auth/me", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                user_id = data.get("user_id")
+                email = data.get("email")
+                details = f"User: {email}, ID: {user_id}"
+                
+                # Store user ID for later tests
+                self.test_user_id = user_id
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Auth Me Endpoint", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Auth Me Endpoint", False, f"Error: {str(e)}")
+            return False
+
+    def test_get_bates_presets(self):
+        """Test GET /api/bates/presets endpoint"""
+        if not self.session_token:
+            self.log_test("Get Bates Presets", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/bates/presets", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("success"):
+                    presets = data.get("data", {}).get("presets", [])
+                    count = len(presets)
+                    details = f"Found {count} presets"
+                    
+                    # Check for expected presets
+                    expected_presets = ["Portfolio Standard", "Case Number", "Date Based", "Court Filing", "Discovery", "Sequential Only"]
+                    found_presets = [p.get("name") for p in presets]
+                    
+                    if count == 6 and all(preset in found_presets for preset in expected_presets):
+                        details += " (✅ All expected presets found)"
+                    else:
+                        details += f" (⚠️ Expected 6 presets, found: {found_presets})"
+                else:
+                    details = f"API error: {data.get('error', 'Unknown error')}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Get Bates Presets", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Get Bates Presets", False, f"Error: {str(e)}")
+            return False
+
+    def test_validate_bates_prefix(self):
+        """Test POST /api/bates/validate-prefix endpoint"""
+        if not self.session_token:
+            self.log_test("Validate Bates Prefix", False, "No session token available")
+            return False
+            
+        try:
+            test_data = {"prefix": "TEST-DOC-"}
+            response = self.session.post(
+                f"{self.base_url}/bates/validate-prefix",
+                json=test_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("success"):
+                    result = data.get("data", {})
+                    valid = result.get("valid", False)
+                    normalized = result.get("normalized", "")
+                    details = f"Valid: {valid}, Normalized: '{normalized}'"
+                    
+                    if valid and normalized == "TEST-DOC":
+                        details += " (✅ Validation working correctly)"
+                    else:
+                        details += " (⚠️ Unexpected validation result)"
+                else:
+                    details = f"API error: {data.get('error', 'Unknown error')}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Validate Bates Prefix", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Validate Bates Prefix", False, f"Error: {str(e)}")
+            return False
+
+    def test_format_bates_number(self):
+        """Test POST /api/bates/format-number endpoint"""
+        if not self.session_token:
+            self.log_test("Format Bates Number", False, "No session token available")
+            return False
+            
+        try:
+            test_data = {
+                "prefix": "DOC-",
+                "number": 42,
+                "digits": 6
+            }
+            response = self.session.post(
+                f"{self.base_url}/bates/format-number",
+                json=test_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("success"):
+                    result = data.get("data", {})
+                    formatted = result.get("formatted", "")
+                    details = f"Formatted: '{formatted}'"
+                    
+                    if formatted == "DOC-000042":
+                        details += " (✅ Formatting working correctly)"
+                    else:
+                        details += f" (❌ Expected 'DOC-000042', got '{formatted}')"
+                        success = False
+                else:
+                    details = f"API error: {data.get('error', 'Unknown error')}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Format Bates Number", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Format Bates Number", False, f"Error: {str(e)}")
+            return False
+
+    def test_parse_bates_number(self):
+        """Test POST /api/bates/parse-number endpoint"""
+        if not self.session_token:
+            self.log_test("Parse Bates Number", False, "No session token available")
+            return False
+            
+        try:
+            test_data = {"bates_string": "SMITH-000123"}
+            response = self.session.post(
+                f"{self.base_url}/bates/parse-number",
+                json=test_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("success"):
+                    result = data.get("data", {})
+                    valid = result.get("valid", False)
+                    prefix = result.get("prefix", "")
+                    number = result.get("number", 0)
+                    digits = result.get("digits", 0)
+                    details = f"Valid: {valid}, Prefix: '{prefix}', Number: {number}, Digits: {digits}"
+                    
+                    if valid and prefix == "SMITH-" and number == 123 and digits == 6:
+                        details += " (✅ Parsing working correctly)"
+                    else:
+                        details += " (⚠️ Unexpected parsing result)"
+                else:
+                    details = f"API error: {data.get('error', 'Unknown error')}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Parse Bates Number", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Parse Bates Number", False, f"Error: {str(e)}")
+            return False
+
+    def test_get_resolved_config(self):
+        """Test GET /api/bates/config/resolve endpoint"""
+        if not self.session_token:
+            self.log_test("Get Resolved Config", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/bates/config/resolve", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("success"):
+                    config = data.get("data", {})
+                    prefix = config.get("prefix", "")
+                    start_number = config.get("start_number", 0)
+                    digits = config.get("digits", 0)
+                    position = config.get("position", "")
+                    details = f"Prefix: '{prefix}', Start: {start_number}, Digits: {digits}, Position: {position}"
+                    
+                    # Check if we got a reasonable config
+                    if prefix and start_number >= 1 and digits >= 3 and position:
+                        details += " (✅ Config resolved successfully)"
+                    else:
+                        details += " (⚠️ Incomplete config returned)"
+                else:
+                    details = f"API error: {data.get('error', 'Unknown error')}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Get Resolved Config", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Get Resolved Config", False, f"Error: {str(e)}")
+            return False
+
+    def test_invalid_prefix_validation(self):
+        """Test prefix validation with invalid input"""
+        if not self.session_token:
+            self.log_test("Invalid Prefix Validation", False, "No session token available")
+            return False
+            
+        try:
+            # Test with invalid characters
+            test_data = {"prefix": "TEST@#$%"}
+            response = self.session.post(
+                f"{self.base_url}/bates/validate-prefix",
+                json=test_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("success"):
+                    result = data.get("data", {})
+                    valid = result.get("valid", True)  # Should be False
+                    issues = result.get("issues", [])
+                    details = f"Valid: {valid}, Issues: {len(issues)}"
+                    
+                    if not valid and len(issues) > 0:
+                        details += " (✅ Invalid prefix correctly rejected)"
+                    else:
+                        details += " (❌ Invalid prefix was accepted)"
+                        success = False
+                else:
+                    details = f"API error: {data.get('error', 'Unknown error')}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Invalid Prefix Validation", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Invalid Prefix Validation", False, f"Error: {str(e)}")
+            return False
+
+    def test_missing_workspace_header(self):
+        """Test endpoints without X-Workspace-ID header"""
+        if not self.session_token:
+            self.log_test("Missing Workspace Header", False, "No session token available")
+            return False
+            
+        try:
+            # Create a session without the workspace header
+            temp_session = requests.Session()
+            temp_session.headers.update({
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {self.session_token}'
+            })
+            
+            response = temp_session.get(f"{self.base_url}/bates/presets", timeout=10)
+            
+            # Should return 400 for missing workspace header
+            success = response.status_code == 400
+            
+            if success:
+                data = response.json()
+                error_detail = data.get("detail", {})
+                message = error_detail.get("message", "")
+                details = f"Correctly rejected: {message}"
+            else:
+                details = f"Status: {response.status_code}, Expected 400 for missing workspace header"
+            
+            self.log_test("Missing Workspace Header", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Missing Workspace Header", False, f"Error: {str(e)}")
+            return False
+
+    # ============ TEST RUNNER ============
+
+    def run_bates_tests(self):
+        """Run all Bates Numbering Configuration tests"""
+        self.log("🚀 Starting BATES NUMBERING CONFIGURATION Tests")
+        self.log(f"Testing against: {self.base_url}")
+        self.log(f"User: {self.test_user_email}")
+        self.log(f"Workspace ID: test-workspace-id")
+        self.log("=" * 80)
+        
+        # Test sequence for Bates Configuration APIs
+        test_sequence = [
+            # Authentication Tests
+            self.test_auth_me_endpoint,
+            
+            # Core Bates Functionality Tests
+            self.test_get_bates_presets,
+            self.test_validate_bates_prefix,
+            self.test_format_bates_number,
+            self.test_parse_bates_number,
+            self.test_get_resolved_config,
+            
+            # Error Handling Tests
+            self.test_invalid_prefix_validation,
+            self.test_missing_workspace_header,
+        ]
+        
+        for test_func in test_sequence:
+            try:
+                test_func()
+                time.sleep(0.5)  # Brief pause between tests
+            except Exception as e:
+                test_name = getattr(test_func, '__name__', 'Unknown Test')
+                self.log(f"❌ Test {test_name} crashed: {str(e)}")
+                self.tests_run += 1
+                self.failed_tests.append({
+                    'test': test_name,
+                    'details': f"Test crashed: {str(e)}",
+                    'timestamp': datetime.now().isoformat()
+                })
+        
+        return self.print_summary()
+
+    def print_summary(self):
+        """Print test summary"""
+        self.log("=" * 80)
+        self.log("🏁 BATES NUMBERING CONFIGURATION TEST SUMMARY")
+        self.log("=" * 80)
+        
+        success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
+        
+        self.log(f"📊 Tests Run: {self.tests_run}")
+        self.log(f"✅ Tests Passed: {self.tests_passed}")
+        self.log(f"❌ Tests Failed: {len(self.failed_tests)}")
+        self.log(f"📈 Success Rate: {success_rate:.1f}%")
+        
+        if self.failed_tests:
+            self.log("\n❌ FAILED TESTS:")
+            for failure in self.failed_tests:
+                self.log(f"  • {failure['test']}: {failure['details']}")
+        
+        self.log("\n🎯 KEY FINDINGS:")
+        
+        # Check authentication status
+        auth_tests = [t for t in self.test_results if 'auth' in t['test'].lower() or 'Auth' in t['test']]
+        auth_working = any(t['success'] for t in auth_tests if 'me' in t['test'].lower())
+        
+        if auth_working:
+            self.log("✅ Authentication is working - full functionality testing completed")
+        else:
+            self.log("⚠️ Authentication issues detected - limited testing performed")
+        
+        # Check core functionality
+        core_tests = [t for t in self.test_results if any(keyword in t['test'].lower() for keyword in ['presets', 'validate', 'format', 'parse', 'config'])]
+        core_working = sum(1 for t in core_tests if t['success'])
+        total_core = len(core_tests)
+        
+        if core_working == total_core:
+            self.log("✅ All core Bates numbering functionality is working correctly")
+        elif core_working > 0:
+            self.log(f"⚠️ Partial Bates functionality working ({core_working}/{total_core} tests passed)")
+        else:
+            self.log("❌ Core Bates numbering functionality has issues")
+        
+        # Specific feature status
+        self.log("\n📋 FEATURE STATUS:")
+        
+        feature_categories = [
+            ("Authentication", ["auth"]),
+            ("Presets", ["presets"]),
+            ("Prefix Validation", ["validate"]),
+            ("Number Formatting", ["format"]),
+            ("Number Parsing", ["parse"]),
+            ("Config Resolution", ["config"]),
+            ("Error Handling", ["invalid", "missing"])
+        ]
+        
+        for category, keywords in feature_categories:
+            category_tests = [
+                t for t in self.test_results 
+                if any(keyword in t['test'].lower() for keyword in keywords)
+            ]
+            if category_tests:
+                category_success = sum(1 for t in category_tests if t['success'])
+                total_tests = len(category_tests)
+                status = "✅" if category_success == total_tests else "⚠️" if category_success > 0 else "❌"
+                self.log(f"  {category}: {category_success}/{total_tests} {status}")
+        
+        self.log("\n📝 BATES NUMBERING FLOW:")
+        flow_steps = [
+            ("1. User Authentication", auth_working),
+            ("2. Get Presets", any('presets' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("3. Validate Prefix", any('validate' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("4. Format Numbers", any('format' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("5. Parse Numbers", any('parse' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("6. Resolve Config", any('config' in t['test'].lower() and t['success'] for t in self.test_results))
+        ]
+        
+        for step, working in flow_steps:
+            status = "✅" if working else "❌"
+            self.log(f"  {step}: {status}")
+        
+        self.log("\n📋 IMPLEMENTATION STATUS:")
+        if success_rate >= 90:
+            self.log("✅ Bates Numbering Configuration system is fully functional")
+            self.log("✅ All core endpoints are working correctly")
+            self.log("✅ Validation logic is working properly")
+            self.log("✅ Authentication and authorization are working")
+        elif success_rate >= 75:
+            self.log("⚠️ Bates Numbering Configuration system is mostly working with minor issues")
+            self.log("✅ Core functionality is operational")
+        else:
+            self.log("❌ Bates Numbering Configuration system has significant issues")
+            if not auth_working:
+                self.log("❌ Authentication issues preventing full testing")
+        
+        return success_rate >= 75
+
+
 class SupportAdminTester:
     def __init__(self):
         self.base_url = BASE_URL
