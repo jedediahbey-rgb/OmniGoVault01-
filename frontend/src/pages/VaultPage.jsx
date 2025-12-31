@@ -194,23 +194,23 @@ function DocumentCard({ doc, isPinned, onPin, onOpen, onTrash, onExport, isSelec
         </div>
         
         {/* Title */}
-        <h3 className="text-white font-medium text-base mb-1 line-clamp-2 leading-snug">
+        <h3 className="text-white font-medium text-sm lg:text-base mb-1 line-clamp-2 leading-snug">
           {doc.title}
         </h3>
         
         {/* Type badge */}
-        <p className="text-vault-gold/70 text-xs font-medium uppercase tracking-wider mb-4">
+        <p className="text-vault-gold/70 text-[10px] lg:text-xs font-medium uppercase tracking-wider mb-3 lg:mb-4">
           {humanizeSlug(doc.document_type)}
         </p>
         
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-white/5">
-          <span className="flex items-center gap-1.5 text-white/40 text-xs">
-            <Clock className="w-3.5 h-3.5" weight="duotone" />
+        <div className="flex items-center justify-between pt-2 lg:pt-3 border-t border-white/5">
+          <span className="flex items-center gap-1 lg:gap-1.5 text-white/40 text-[10px] lg:text-xs">
+            <Clock className="w-3 h-3 lg:w-3.5 lg:h-3.5" weight="duotone" />
             {new Date(doc.updated_at).toLocaleDateString()}
           </span>
           <span className={`
-            px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wide
+            px-1.5 lg:px-2 py-0.5 rounded text-[9px] lg:text-[10px] font-medium uppercase tracking-wide
             ${doc.is_locked 
               ? 'bg-green-500/20 text-green-400' 
               : doc.status === 'completed' 
