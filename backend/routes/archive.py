@@ -481,8 +481,12 @@ async def reading_room_query(query: ReadingRoomQuery, user = Depends(get_current
 # ============================================================================
 
 @router.get("/stats")
-async def get_archive_stats(user = Depends(get_current_user)):
+async def get_archive_stats(request: Request):
     """Get archive statistics"""
+    # Import get_current_user directly to avoid dependency injection issues
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     sources_count = await db.archive_sources.count_documents({})
     claims_count = await db.archive_claims.count_documents({})
     trails_count = await db.archive_trails.count_documents({})
