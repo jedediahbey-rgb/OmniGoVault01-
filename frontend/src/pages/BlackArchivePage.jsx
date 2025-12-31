@@ -252,29 +252,7 @@ const FloatingParticles = memo(() => {
       ))}
     </div>
   );
-}); 
-              ? 'rgba(198, 168, 124, 0.6)' 
-              : i % 3 === 1 
-                ? 'rgba(198, 168, 124, 0.4)'
-                : 'rgba(139, 92, 246, 0.4)',
-            // GPU acceleration
-            willChange: 'transform, opacity',
-          }}
-          animate={{
-            y: [0, -20, 0],
-            opacity: [0.3, 0.8, 0.3],
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            delay: particle.delay,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+});
 
 // ============================================================================
 // MOBILE SEGMENTED TAB CONTROL - Luxury Glass Style
