@@ -345,8 +345,11 @@ async def get_trail(trail_id: str, user = Depends(get_current_user)):
     return trail
 
 @router.post("/trails")
-async def create_trail(trail: ArchiveTrail, user = Depends(get_current_user)):
+async def create_trail(trail: ArchiveTrail, request: Request):
     """Create a new doctrine trail"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     trail_data = {
         "trail_id": str(uuid4()),
         "created_at": datetime.now(timezone.utc).isoformat(),
