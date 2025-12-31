@@ -317,14 +317,14 @@ export default function VaultPage({ user, initialView }) {
     }
   }, [skipAnimation, skipForPortfolioId, activePortfolio?.portfolio_id]);
 
-  // Loading state - only show skeleton on initial load, not when switching portfolios
+  // Loading state - show a simple centered spinner instead of skeleton flash
   if (vaultState === VAULT_STATES.LOADING) {
     return (
-      <div className="p-4 space-y-4">
-        <div className="h-14 bg-white/5 rounded-lg animate-pulse" />
-        <div className="h-10 bg-white/5 rounded-lg animate-pulse" />
-        <div className="h-12 bg-white/5 rounded-lg animate-pulse" />
-        {[1,2,3].map(i => <div key={i} className="h-24 bg-white/5 rounded-lg animate-pulse" />)}
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-vault-gold/30 border-t-vault-gold rounded-full animate-spin" />
+          <span className="text-vault-muted text-sm">Loading vault...</span>
+        </div>
       </div>
     );
   }
