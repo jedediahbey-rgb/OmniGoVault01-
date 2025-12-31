@@ -1780,6 +1780,12 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
       onNodeClick={onNodeClick}
       nodeTypes={nodeTypes}
       defaultViewport={defaultViewport}
+      fitViewOptions={{
+        padding: 0.25,
+        minZoom: 0.4,
+        maxZoom: 1.2,
+        includeHiddenNodes: true
+      }}
       minZoom={0.3}
       maxZoom={2}
       attributionPosition="bottom-left"
@@ -1789,11 +1795,24 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
       <Background color="#1a1a2e" gap={20} />
       <Controls 
         position="bottom-left"
+        style={{
+          margin: 12,
+          marginBottom: 'calc(12px + env(safe-area-inset-bottom))',
+          marginLeft: 'calc(12px + env(safe-area-inset-left))',
+        }}
         className="archive-map-controls !bg-black/80 !border-vault-gold/30 !rounded-lg !shadow-xl [&>button]:!bg-white/10 [&>button]:!border-vault-gold/20 [&>button]:!text-white/70 [&>button:hover]:!bg-vault-gold/20 [&>button:hover]:!text-vault-gold"
         showInteractive={false}
       />
+      {/* MiniMap at top-right on mobile to avoid bottom clipping, bottom-right on desktop */}
       <MiniMap 
-        position="bottom-right"
+        position={isMobile ? "top-right" : "bottom-right"}
+        style={{
+          margin: 12,
+          ...(isMobile ? {} : {
+            marginBottom: 'calc(12px + env(safe-area-inset-bottom))',
+            marginRight: 'calc(12px + env(safe-area-inset-right))',
+          })
+        }}
         nodeColor={(node) => {
           switch (node.type) {
             case 'doctrine': return '#C6A87C';
