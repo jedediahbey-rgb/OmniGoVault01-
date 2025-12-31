@@ -65,7 +65,7 @@ function VaultSidebarContent({
   setShowNewPortfolio, 
   setSidebarOpen, 
   navigate, 
-  documents, 
+  allDocsCount,
   portfolios, 
   trashedDocuments 
 }) {
