@@ -526,12 +526,15 @@ async def get_archive_stats(request: Request):
 # ============================================================================
 
 @router.post("/admin/scan-conflicts")
-async def scan_and_update_conflicts(user = Depends(get_current_user)):
+async def scan_and_update_conflicts(request: Request):
     """
     Scan all claims and automatically apply 'DISPUTED' status 
     to claims that have counter_source_ids populated.
     Returns a summary of changes made.
     """
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     # Find all claims with counter sources that aren't already DISPUTED
     claims_to_update = await db.archive_claims.find({
         "counter_source_ids": {"$exists": True, "$ne": []},
