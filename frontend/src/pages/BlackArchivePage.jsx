@@ -1796,20 +1796,20 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
       <Controls 
         position="bottom-left"
         style={{
-          margin: 16,
-          marginBottom: 'calc(16px + env(safe-area-inset-bottom))',
-          marginLeft: 'calc(16px + env(safe-area-inset-left))',
+          margin: 20,
+          marginBottom: 'calc(20px + env(safe-area-inset-bottom))',
+          marginLeft: 'calc(20px + env(safe-area-inset-left))',
         }}
         className="archive-map-controls !bg-black/80 !border-vault-gold/30 !rounded-lg !shadow-xl [&>button]:!bg-white/10 [&>button]:!border-vault-gold/20 [&>button]:!text-white/70 [&>button:hover]:!bg-vault-gold/20 [&>button:hover]:!text-vault-gold"
         showInteractive={false}
       />
-      {/* MiniMap with safe-area insets to prevent corner clipping */}
+      {/* MiniMap with increased margins to prevent corner clipping */}
       <MiniMap 
         position="bottom-right"
         style={{
-          margin: 16,
-          marginBottom: 'calc(16px + env(safe-area-inset-bottom))',
-          marginRight: 'calc(16px + env(safe-area-inset-right))',
+          margin: 20,
+          marginBottom: 'calc(20px + env(safe-area-inset-bottom))',
+          marginRight: 'calc(20px + env(safe-area-inset-right))',
         }}
         nodeColor={(node) => {
           switch (node.type) {
