@@ -2084,7 +2084,7 @@ export default function BinderPage() {
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={!!deleteConfirmRun} onOpenChange={(open) => !open && setDeleteConfirmRun(null)}>
-          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white w-[85vw] max-w-[320px] mx-auto">
+          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white" style={{ maxWidth: '320px' }}>
             <DialogHeader>
               <DialogTitle className="text-lg font-heading text-red-400 flex items-center gap-2">
                 <Trash className="w-5 h-5" />
