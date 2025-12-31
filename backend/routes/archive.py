@@ -262,8 +262,11 @@ async def create_claim(claim: ArchiveClaim, request: Request):
     return {"claim_id": claim_data["claim_id"], "status": claim_data["status"]}
 
 @router.put("/claims/{claim_id}")
-async def update_claim(claim_id: str, claim: ArchiveClaim, user = Depends(get_current_user)):
+async def update_claim(claim_id: str, claim: ArchiveClaim, request: Request):
     """Update an archive claim with automatic conflict detection"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     existing = await db.archive_claims.find_one({"claim_id": claim_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Claim not found")
