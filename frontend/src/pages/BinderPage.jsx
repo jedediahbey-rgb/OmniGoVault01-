@@ -2276,7 +2276,7 @@ export default function BinderPage() {
             resetScheduleForm();
           }
         }}>
-          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white w-[90vw] max-w-[380px]">
+          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white" style={{ maxWidth: '380px' }}>
             <DialogHeader>
               <DialogTitle className="text-lg font-heading text-vault-gold flex items-center gap-2">
                 <CalendarBlank className="w-5 h-5" />
