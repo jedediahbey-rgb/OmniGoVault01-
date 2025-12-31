@@ -578,6 +578,33 @@ export default function VaultPage({ user, initialView }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteConfirmDoc} onOpenChange={(open) => !open && setDeleteConfirmDoc(null)}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-[340px]">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-heading text-red-400 flex items-center gap-2">
+              <Trash className="w-5 h-5" />
+              Delete Document?
+            </DialogTitle>
+            <DialogDescription className="text-vault-muted text-sm">
+              Are you sure you want to delete "{deleteConfirmDoc?.title}"? It will be moved to trash and can be restored later.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-row gap-2 justify-end mt-4">
+            <Button variant="outline" onClick={() => setDeleteConfirmDoc(null)} className="border-vault-gold/30 text-white flex-1">
+              Cancel
+            </Button>
+            <Button 
+              onClick={confirmDeleteDocument} 
+              className="bg-red-500 hover:bg-red-600 text-white flex-1"
+            >
+              <Trash className="w-4 h-4 mr-1" />
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
