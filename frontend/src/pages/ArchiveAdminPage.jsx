@@ -1162,24 +1162,28 @@ function ClaimDialog({ open, onClose, claim, sources, onSave }) {
 
 // Trail Dialog Component
 function TrailDialog({ open, onClose, trail, onSave }) {
-  const getInitialFormData = () => ({
-    title: trail?.title || '',
-    description: trail?.description || '',
-    topic_tags: trail?.topic_tags || [],
-    steps: trail?.steps || [],
-    reality_check: trail?.reality_check || '',
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    topic_tags: [],
+    steps: [],
+    reality_check: '',
   });
-  
-  const [formData, setFormData] = useState(getInitialFormData);
   const [saving, setSaving] = useState(false);
 
-  // Reset form when dialog opens/trail changes
-  const dialogKey = open ? (trail?.trail_id || 'new') : 'closed';
-  const prevKeyRef = React.useRef(dialogKey);
-  if (prevKeyRef.current !== dialogKey && open) {
-    prevKeyRef.current = dialogKey;
-    setFormData(getInitialFormData());
-  }
+  // Reset form when trail changes or dialog opens
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        title: trail?.title || '',
+        description: trail?.description || '',
+        topic_tags: trail?.topic_tags || [],
+        steps: trail?.steps || [],
+        reality_check: trail?.reality_check || '',
+      });
+    }
+  }, [open, trail?.trail_id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
