@@ -493,7 +493,7 @@ export default function WorkspaceDetailPage({ user }) {
                     document={doc}
                     onView={() => handleViewDocument(doc)}
                     onSubmitForReview={() => handleSubmitForReview(doc.document_id)}
-                    canEdit={vault.user_permissions?.includes('edit_documents')}
+                    canEdit={vault.user_permissions?.includes('EDIT_DOC')}
                   />
                 ))}
               </div>
