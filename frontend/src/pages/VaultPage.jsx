@@ -235,54 +235,68 @@ function DocumentCard({ doc, isPinned, onPin, onOpen, onTrash, onExport, isSelec
   );
 }
 
-// Premium loading skeleton
+// Premium loading skeleton - responsive
 function VaultSkeleton() {
   return (
-    <div className="min-h-screen flex">
-      {/* Sidebar skeleton */}
-      <div className="w-72 border-r border-white/10 p-6 space-y-4">
+    <div className="min-h-screen">
+      {/* Mobile skeleton */}
+      <div className="lg:hidden p-4 space-y-4">
+        <div className="h-14 bg-white/5 rounded-lg animate-pulse" />
         <div className="h-10 bg-white/5 rounded-lg animate-pulse" />
-        <div className="h-12 bg-white/5 rounded-lg animate-pulse" />
-        <div className="space-y-2 mt-6">
+        <div className="h-10 bg-white/5 rounded-lg animate-pulse" />
+        <div className="grid grid-cols-1 gap-4 mt-4">
           {[1,2,3].map(i => (
-            <div key={i} className="h-10 bg-white/5 rounded-lg animate-pulse" />
+            <div key={i} className="h-32 bg-white/5 rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
       
-      {/* Content skeleton */}
-      <div className="flex-1 p-8">
-        <div className="h-8 w-64 bg-white/5 rounded-lg animate-pulse mb-8" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1,2,3,4,5,6].map(i => (
-            <div key={i} className="h-48 bg-white/5 rounded-lg animate-pulse" />
-          ))}
+      {/* Desktop skeleton */}
+      <div className="hidden lg:flex min-h-screen">
+        <div className="w-72 border-r border-white/10 p-6 space-y-4">
+          <div className="h-10 bg-white/5 rounded-lg animate-pulse" />
+          <div className="h-12 bg-white/5 rounded-lg animate-pulse" />
+          <div className="space-y-2 mt-6">
+            {[1,2,3].map(i => (
+              <div key={i} className="h-10 bg-white/5 rounded-lg animate-pulse" />
+            ))}
+          </div>
+        </div>
+        <div className="flex-1 p-8">
+          <div className="h-8 w-64 bg-white/5 rounded-lg animate-pulse mb-8" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1,2,3,4,5,6].map(i => (
+              <div key={i} className="h-48 bg-white/5 rounded-lg animate-pulse" />
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-// Portfolio selector dropdown
-function PortfolioSelector({ portfolios, activePortfolio, onSelect, onCreateNew }) {
+// Portfolio selector dropdown - compact version for mobile
+function PortfolioSelector({ portfolios, activePortfolio, onSelect, onCreateNew, compact = false }) {
   const [open, setOpen] = useState(false);
   
   return (
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-vault-gold/30 transition-all group"
+        className={`w-full flex items-center gap-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-vault-gold/30 transition-all group ${compact ? 'p-2' : 'p-3 gap-3'}`}
       >
-        <div className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0">
-          <FolderOpen className="w-5 h-5 text-vault-gold" weight="duotone" />
+        <div className={`rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0 ${compact ? 'w-8 h-8' : 'w-10 h-10'}`}>
+          <FolderOpen className={`text-vault-gold ${compact ? 'w-4 h-4' : 'w-5 h-5'}`} weight="duotone" />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <p className="text-white font-medium truncate">
+          <p className={`text-white font-medium truncate ${compact ? 'text-sm' : ''}`}>
             {activePortfolio?.name || 'Select Portfolio'}
           </p>
-          <p className="text-white/40 text-xs">
-            {activePortfolio?.document_count || 0} documents
-          </p>
+          {!compact && (
+            <p className="text-white/40 text-xs">
+              {activePortfolio?.document_count || 0} documents
+            </p>
+          )}
         </div>
         <CaretDown className={`w-4 h-4 text-white/40 transition-transform ${open ? 'rotate-180' : ''}`} weight="bold" />
       </button>
