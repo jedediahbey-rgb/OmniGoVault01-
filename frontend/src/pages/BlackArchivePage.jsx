@@ -238,7 +238,9 @@ function IndexTab() {
         await axios.post(`${API}/archive/seed`);
         const res = await axios.get(`${API}/archive/sources`);
         setSources(res.data.sources || []);
-      } catch { }
+      } catch (seedErr) {
+        console.log('Could not seed archive');
+      }
     } finally {
       setLoading(false);
     }
