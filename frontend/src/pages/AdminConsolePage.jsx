@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -49,7 +49,7 @@ import {
 import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// Using centralized API client with credentials - no need for BACKEND_URL
 
 // Role badge colors - OMNICOMPETENT_OWNER gets special glowing purple style
 const roleBadgeColors = {
