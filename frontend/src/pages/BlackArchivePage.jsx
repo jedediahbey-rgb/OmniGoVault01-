@@ -1709,38 +1709,63 @@ const initialEdges = [
 function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClick, isMobile }) {
   const nodesInitialized = useNodesInitialized();
   const { fitView } = useReactFlow();
-  const padding = isMobile ? 0.18 : 0.22;
+  const padding = isMobile ? 0.25 : 0.22;
+  const fitViewCalled = useRef(false);
 
   // Fit view when nodes are initialized
   useEffect(() => {
-    if (!nodesInitialized) return;
+    if (!nodesInitialized || fitViewCalled.current) return;
 
-    // Run after layout/paint is stable using requestAnimationFrame
+    // Mark as called to prevent multiple invocations
+    fitViewCalled.current = true;
+
+    // Multiple passes to ensure all nodes are measured
+    const timers = [];
+    
+    // Immediate fit
     requestAnimationFrame(() => {
       fitView({
         padding,
         includeHiddenNodes: true,
         duration: 0,
         minZoom: 0.4,
-        maxZoom: 1.2,
+        maxZoom: 1.0,
       });
     });
 
-    // Second pass after animations settle
-    const timer = setTimeout(() => {
+    // Second pass after 100ms
+    timers.push(setTimeout(() => {
+      requestAnimationFrame(() => {
+        fitView({
+          padding,
+          includeHiddenNodes: true,
+          duration: 200,
+          minZoom: 0.4,
+          maxZoom: 1.0,
+        });
+      });
+    }, 100));
+
+    // Third pass after 300ms (for slower devices)
+    timers.push(setTimeout(() => {
       requestAnimationFrame(() => {
         fitView({
           padding,
           includeHiddenNodes: true,
           duration: 300,
           minZoom: 0.4,
-          maxZoom: 1.2,
+          maxZoom: 1.0,
         });
       });
-    }, 100);
+    }, 300));
 
-    return () => clearTimeout(timer);
-  }, [nodesInitialized, fitView, padding, nodes.length]);
+    return () => timers.forEach(t => clearTimeout(t));
+  }, [nodesInitialized, fitView, padding]);
+
+  // Reset fitViewCalled when nodes change (device switch)
+  useEffect(() => {
+    fitViewCalled.current = false;
+  }, [nodes.length]);
 
   return (
     <ReactFlow
