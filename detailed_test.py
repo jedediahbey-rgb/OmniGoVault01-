@@ -7,7 +7,7 @@ import requests
 import json
 from datetime import datetime
 
-BASE_URL = "https://reactflow-optimize.preview.emergentagent.com/api"
+BASE_URL = "https://vaultdoc-repair.preview.emergentagent.com/api"
 
 def test_detailed_apis():
     session = requests.Session()

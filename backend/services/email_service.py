@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 # Initialize Resend with API key
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-APP_URL = os.environ.get("APP_URL", "https://reactflow-optimize.preview.emergentagent.com")
+APP_URL = os.environ.get("APP_URL", "https://vaultdoc-repair.preview.emergentagent.com")
 
 # Database reference for audit logging
 _db = None

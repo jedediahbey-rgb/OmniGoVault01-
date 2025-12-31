@@ -13,7 +13,7 @@ import uuid
 import hashlib
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://reactflow-optimize.preview.emergentagent.com/api"
+BASE_URL = "https://vaultdoc-repair.preview.emergentagent.com/api"
 
 class OmniBinderV2Tester:
     def __init__(self):

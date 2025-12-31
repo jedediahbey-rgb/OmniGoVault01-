@@ -15,7 +15,7 @@ import subprocess
 from datetime import datetime
 
 class RMIDUniquenessTest:
-    def __init__(self, base_url="https://reactflow-optimize.preview.emergentagent.com"):
+    def __init__(self, base_url="https://vaultdoc-repair.preview.emergentagent.com"):
         self.base_url = base_url
         self.session_token = None
         self.user_id = None

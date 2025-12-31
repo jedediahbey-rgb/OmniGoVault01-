@@ -911,7 +911,7 @@ Test the Portrait Customization feature frontend UI including:
 ### Test Request:
 Test the "Luxury Scroll" mobile layout implementation for React Flow pages on the OmniGoVault application.
 
-**Test URL**: https://reactflow-optimize.preview.emergentagent.com
+**Test URL**: https://vaultdoc-repair.preview.emergentagent.com
 
 **Pages Tested**:
 1. **DiagramsPage** at `/diagrams`
@@ -1302,7 +1302,7 @@ Test the following UI fixes on the OmniGoVault application with Google OAuth usi
 
 #### Application Loading Verification:
 - ✅ Application loads with "OMNIGOVAULT" branding and "Jacking into the Network" loading screen
-- ✅ Frontend URL accessible at https://reactflow-optimize.preview.emergentagent.com
+- ✅ Frontend URL accessible at https://vaultdoc-repair.preview.emergentagent.com
 - ✅ React 19 application with proper routing structure
 - ⚠️ Authentication required for accessing protected routes
 
