@@ -12,7 +12,11 @@ from models.admin import (
     ChangePlanRequest,
     StartImpersonationRequest,
     AccountSuspendRequest,
-    GLOBAL_ROLE_DESCRIPTIONS
+    GLOBAL_ROLE_DESCRIPTIONS,
+    AddSupportNoteRequest,
+    ExtendTrialRequest,
+    UnlockAccountRequest,
+    Reset2FARequest
 )
 from services.admin_service import get_admin_service
 
