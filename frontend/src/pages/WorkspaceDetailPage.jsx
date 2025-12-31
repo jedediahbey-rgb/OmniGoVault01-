@@ -260,7 +260,7 @@ export default function WorkspaceDetailPage({ user }) {
     try {
       await axios.post(`${API}/vaults/documents/${docId}/submit-for-review`, {}, { withCredentials: true });
       toast.success('Document submitted for review');
-      fetchVault();
+      await fetchVault();
     } catch (error) {
       toast.error(
             typeof error.response?.data?.detail === 'string' 
