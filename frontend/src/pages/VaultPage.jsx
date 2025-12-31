@@ -714,7 +714,7 @@ export default function VaultPage({ user, initialView }) {
   // ============================================================================
   
   return (
-    <div className="h-full flex flex-col lg:flex-row">
+    <div className="absolute inset-0 flex flex-col lg:flex-row">
       {/* Mobile Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
