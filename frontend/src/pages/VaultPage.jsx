@@ -378,44 +378,6 @@ export default function VaultPage({ user, initialView }) {
   // DATA FETCHING - Clean, predictable flow
   // ============================================================================
   
-  // Initialize vault - fetch portfolios first
-  useEffect(() => {
-    initializeVault();
-  }, []);
-  
-  const initializeVault = async () => {
-    setVaultState(VAULT_STATES.LOADING);
-    setError(null);
-    
-    try {
-      // Step 1: Fetch portfolios
-      const portfoliosRes = await axios.get(`${API}/portfolios`);
-      const fetchedPortfolios = portfoliosRes.data || [];
-      setPortfolios(fetchedPortfolios);
-      
-      if (fetchedPortfolios.length === 0) {
-        setVaultState(VAULT_STATES.NO_PORTFOLIOS);
-        return;
-      }
-      
-      // Step 2: Restore or select active portfolio
-      const savedPortfolioId = localStorage.getItem('activePortfolioId');
-      let targetPortfolio = fetchedPortfolios.find(p => p.portfolio_id === savedPortfolioId);
-      
-      if (!targetPortfolio) {
-        targetPortfolio = fetchedPortfolios[0]; // Default to first
-      }
-      
-      // Step 3: Set active and load documents
-      await switchPortfolio(targetPortfolio, false);
-      
-    } catch (err) {
-      console.error('[Vault] Initialization error:', err);
-      setError('Failed to load vault. Please try again.');
-      setVaultState(VAULT_STATES.ERROR);
-    }
-  };
-  
   // Switch portfolio - single source of truth for portfolio changes
   const switchPortfolio = useCallback(async (portfolio, showToast = true) => {
     if (!portfolio) return;
@@ -428,6 +390,65 @@ export default function VaultPage({ user, initialView }) {
       // Fetch documents for this specific portfolio
       const [docsRes, trashRes, pinnedRes] = await Promise.all([
         axios.get(`${API}/documents?portfolio_id=${portfolio.portfolio_id}`),
+        axios.get(`${API}/documents/trash`).catch(() => ({ data: [] })),
+        axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
+      ]);
+      
+      setDocuments(docsRes.data || []);
+      setTrashedDocuments((trashRes.data || []).filter(d => d.portfolio_id === portfolio.portfolio_id));
+      setPinnedDocs(pinnedRes.data || []);
+      setShowTrash(false);
+      setSelectedDocument(null);
+      setVaultState(VAULT_STATES.READY);
+      
+      if (showToast) {
+        toast.success(`Switched to ${portfolio.name}`);
+      }
+      
+    } catch (err) {
+      console.error('[Vault] Failed to load documents:', err);
+      setError('Failed to load documents');
+      setVaultState(VAULT_STATES.ERROR);
+    }
+  }, []);
+
+  // Initialize vault - fetch portfolios first
+  useEffect(() => {
+    const initializeVault = async () => {
+      setVaultState(VAULT_STATES.LOADING);
+      setError(null);
+      
+      try {
+        // Step 1: Fetch portfolios
+        const portfoliosRes = await axios.get(`${API}/portfolios`);
+        const fetchedPortfolios = portfoliosRes.data || [];
+        setPortfolios(fetchedPortfolios);
+        
+        if (fetchedPortfolios.length === 0) {
+          setVaultState(VAULT_STATES.NO_PORTFOLIOS);
+          return;
+        }
+        
+        // Step 2: Restore or select active portfolio
+        const savedPortfolioId = localStorage.getItem('activePortfolioId');
+        let targetPortfolio = fetchedPortfolios.find(p => p.portfolio_id === savedPortfolioId);
+        
+        if (!targetPortfolio) {
+          targetPortfolio = fetchedPortfolios[0]; // Default to first
+        }
+        
+        // Step 3: Set active and load documents
+        await switchPortfolio(targetPortfolio, false);
+        
+      } catch (err) {
+        console.error('[Vault] Initialization error:', err);
+        setError('Failed to load vault. Please try again.');
+        setVaultState(VAULT_STATES.ERROR);
+      }
+    };
+    
+    initializeVault();
+  }, [switchPortfolio]);
         axios.get(`${API}/documents/trash`).catch(() => ({ data: [] })),
         axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
       ]);
