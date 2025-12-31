@@ -764,7 +764,9 @@ function IndexTab() {
       {loading ? (
         <div className="grid gap-3 sm:gap-4">
           {[1,2,3].map(i => (
-            <div key={i} className="h-28 sm:h-32 bg-white/[0.03] rounded-xl animate-pulse" />
+            <div key={i} className="h-28 sm:h-32 bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden relative">
+              <div className="absolute inset-0 skeleton-shimmer" />
+            </div>
           ))}
         </div>
       ) : sources.length > 0 ? (
