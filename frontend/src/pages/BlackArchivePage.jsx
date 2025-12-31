@@ -1709,8 +1709,6 @@ const initialEdges = [
 function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClick, isMobile }) {
   const nodesInitialized = useNodesInitialized();
   const { fitView } = useReactFlow();
-  // Higher padding to ensure all nodes visible with margins
-  const padding = isMobile ? 0.08 : 0.15;
   const fitViewCalled = useRef(false);
 
   // Fit view when nodes are initialized
@@ -1726,47 +1724,52 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
     // Immediate fit with low maxZoom to see all nodes
     requestAnimationFrame(() => {
       fitView({
-        padding,
+        padding: 0.05,
         includeHiddenNodes: true,
         duration: 0,
         minZoom: 0.3,
-        maxZoom: 0.9,
+        maxZoom: 0.85,
       });
     });
 
-    // Second pass after 150ms
+    // Second pass after 200ms
     timers.push(setTimeout(() => {
       requestAnimationFrame(() => {
         fitView({
-          padding,
-          includeHiddenNodes: true,
-          duration: 250,
-          minZoom: 0.3,
-          maxZoom: 0.9,
-        });
-      });
-    }, 150));
-
-    // Third pass after 400ms (for slower devices/Framer Motion)
-    timers.push(setTimeout(() => {
-      requestAnimationFrame(() => {
-        fitView({
-          padding,
+          padding: 0.05,
           includeHiddenNodes: true,
           duration: 300,
           minZoom: 0.3,
-          maxZoom: 0.9,
+          maxZoom: 0.85,
         });
       });
-    }, 400));
+    }, 200));
+
+    // Third pass after 500ms (for slower devices/Framer Motion)
+    timers.push(setTimeout(() => {
+      requestAnimationFrame(() => {
+        fitView({
+          padding: 0.05,
+          includeHiddenNodes: true,
+          duration: 350,
+          minZoom: 0.3,
+          maxZoom: 0.85,
+        });
+      });
+    }, 500));
 
     return () => timers.forEach(t => clearTimeout(t));
-  }, [nodesInitialized, fitView, padding]);
+  }, [nodesInitialized, fitView]);
 
   // Reset fitViewCalled when nodes change (device switch)
   useEffect(() => {
     fitViewCalled.current = false;
   }, [nodes.length]);
+
+  // Default viewport to show zoomed out initially
+  const defaultViewport = isMobile 
+    ? { x: 50, y: 20, zoom: 0.75 }
+    : { x: 100, y: 50, zoom: 0.85 };
 
   return (
     <ReactFlow
@@ -1776,6 +1779,7 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
       onEdgesChange={onEdgesChange}
       onNodeClick={onNodeClick}
       nodeTypes={nodeTypes}
+      defaultViewport={defaultViewport}
       minZoom={0.3}
       maxZoom={2}
       attributionPosition="bottom-left"
