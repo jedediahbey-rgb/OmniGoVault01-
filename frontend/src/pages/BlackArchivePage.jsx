@@ -1902,8 +1902,8 @@ function ArchiveMapTab() {
             nodeTypes={nodeTypes}
             fitView
             fitViewOptions={{ 
-              padding: isMobile ? 0.1 : 0.15, 
-              minZoom: 0.4, 
+              padding: isMobile ? 0.12 : 0.18, 
+              minZoom: 0.5, 
               maxZoom: 1.2,
               includeHiddenNodes: true
             }}
