@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+
+const api = axios.create({ withCredentials: true });
+
 import { CaretRight, GitBranch, Warning } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '../../components/ui/button';
@@ -19,7 +22,7 @@ export function TrailsTab() {
   
   const fetchTrails = async () => {
     try {
-      const res = await axios.get(`${API}/archive/trails`);
+      const res = await api.get(`${API}/archive/trails`);
       setTrails(res.data.trails || []);
     } catch (err) {
       console.error('Failed to fetch trails:', err);
@@ -30,7 +33,7 @@ export function TrailsTab() {
   
   const openTrail = async (trail) => {
     try {
-      const res = await axios.get(`${API}/archive/trails/${trail.trail_id}`);
+      const res = await api.get(`${API}/archive/trails/${trail.trail_id}`);
       setSelectedTrail(res.data);
       setCurrentStep(0);
     } catch (err) {
