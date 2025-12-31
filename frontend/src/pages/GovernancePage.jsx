@@ -680,7 +680,7 @@ export default function GovernancePage({ user }) {
       console.log('[CREATE_MEETING] Sending request:', JSON.stringify(requestData, null, 2));
       console.log('[CREATE_MEETING] URL:', `${API_V2}/records`);
       
-      const res = await axios.post(`${API_V2}/records`, requestData);
+      const res = await api.post(`${API_V2}/records`, requestData);
       
       console.log('[CREATE_MEETING] Response status:', res.status);
       console.log('[CREATE_MEETING] Response data:', JSON.stringify(res.data, null, 2));
@@ -768,7 +768,7 @@ export default function GovernancePage({ user }) {
       
       console.log('[CREATE_DISTRIBUTION] Sending:', JSON.stringify(requestData, null, 2));
       
-      const res = await axios.post(`${API_V2}/records`, requestData);
+      const res = await api.post(`${API_V2}/records`, requestData);
       
       console.log('[CREATE_DISTRIBUTION] Response:', res.status, JSON.stringify(res.data, null, 2));
       
@@ -857,7 +857,7 @@ export default function GovernancePage({ user }) {
       
       console.log('[CREATE_DISPUTE] Sending:', JSON.stringify(requestData, null, 2));
       
-      const res = await axios.post(`${API_V2}/records`, requestData);
+      const res = await api.post(`${API_V2}/records`, requestData);
       
       console.log('[CREATE_DISPUTE] Response:', res.status, JSON.stringify(res.data, null, 2));
       
@@ -954,7 +954,7 @@ export default function GovernancePage({ user }) {
         }
       };
       
-      const res = await axios.post(`${API_V2}/records`, requestData);
+      const res = await api.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
       if (data.ok && data.data?.record) {
@@ -1037,7 +1037,7 @@ export default function GovernancePage({ user }) {
         }
       };
       
-      const res = await axios.post(`${API_V2}/records`, requestData);
+      const res = await api.post(`${API_V2}/records`, requestData);
       
       const data = res.data;
       if (data.ok && data.data?.record) {
