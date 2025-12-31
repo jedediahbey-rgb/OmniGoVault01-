@@ -6,6 +6,22 @@ export function cn(...inputs) {
 }
 
 /**
+ * API fetch wrapper that always includes credentials
+ * Use this for all API calls to ensure authentication is sent
+ */
+export async function apiFetch(url, options = {}) {
+  const defaultOptions = {
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  };
+  
+  return fetch(url, { ...defaultOptions, ...options });
+}
+
+/**
  * Convert slug/key strings to human-readable titles
  * e.g., "notice_of_interest" -> "Notice Of Interest"
  */
