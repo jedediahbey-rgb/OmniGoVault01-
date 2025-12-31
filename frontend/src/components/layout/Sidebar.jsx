@@ -1,6 +1,7 @@
 import { NavLink, useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
+  Archive,
   Book,
   BookOpen,
   CaretRight,
@@ -38,9 +39,10 @@ const navItems = [
   // main - sorted by length: Dashboard (9)
   { name: 'Dashboard', href: '/vault', icon: House, section: 'main' },
   
-  // knowledge - sorted by length: Learn (5), Maxims (6), Glossary (8), Diagrams (8)
+  // knowledge - sorted by length: Learn (5), Maxims (6), Archive (7), Glossary (8), Diagrams (8)
   { name: 'Learn', href: '/learn', icon: BookOpen, section: 'knowledge' },
   { name: 'Maxims', href: '/maxims', icon: Sparkle, section: 'knowledge' },
+  { name: 'Archive', href: '/archive', icon: Archive, section: 'knowledge', premium: true },
   { name: 'Glossary', href: '/glossary', icon: Book, section: 'knowledge' },
   { name: 'Diagrams', href: '/diagrams', icon: Graph, section: 'knowledge' },
   
