@@ -240,6 +240,37 @@ class AccountSuspendRequest(BaseModel):
     reason: str
 
 
+# ============ SUPPORT_ADMIN REQUEST MODELS ============
+
+class AddSupportNoteRequest(BaseModel):
+    """Request to add a support note"""
+    account_id: Optional[str] = None
+    user_id: Optional[str] = None
+    note_type: SupportNoteType = SupportNoteType.GENERAL
+    content: str
+    is_internal: bool = True
+    tags: List[str] = []
+
+
+class ExtendTrialRequest(BaseModel):
+    """Request to extend a trial period"""
+    account_id: str
+    days: int = Field(ge=1, le=90, description="Days to extend (1-90)")
+    reason: str
+
+
+class UnlockAccountRequest(BaseModel):
+    """Request to unlock a user account"""
+    user_id: str
+    reason: str
+
+
+class Reset2FARequest(BaseModel):
+    """Request to reset 2FA for a user"""
+    user_id: str
+    reason: str
+
+
 class AdminAccountResponse(BaseModel):
     account_id: str
     name: str
