@@ -152,7 +152,7 @@ const BlackArchiveIcon = memo(({ size = 'lg', animate = true }) => {
       <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-vault-gold/50 rounded-br" />
     </div>
   );
-};
+});
 
 // ============================================================================
 // FLOATING PARTICLES BACKGROUND - Optimized with memoization
