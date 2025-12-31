@@ -15,7 +15,7 @@ import subprocess
 from datetime import datetime
 
 class RMIDUniquenessTest:
-    def __init__(self, base_url="https://premium-archive-1.preview.emergentagent.com"):
+    def __init__(self, base_url="https://vault-enhance.preview.emergentagent.com"):
         self.base_url = base_url
         self.session_token = None
         self.user_id = None

@@ -46,8 +46,8 @@ Testing the Binder Generation functionality through the frontend UI at /binder p
 - [ ] Evidence binder generation functions
 
 ## Testing Notes
-- Frontend URL: https://premium-archive-1.preview.emergentagent.com
-- Backend API: https://premium-archive-1.preview.emergentagent.com/api
+- Frontend URL: https://vault-enhance.preview.emergentagent.com
+- Backend API: https://vault-enhance.preview.emergentagent.com/api
 - Test with real-looking data, not dummy data
 - Full PDF generation may take time - verify queued/generating status
 
