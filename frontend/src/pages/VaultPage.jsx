@@ -114,25 +114,18 @@ function PortfolioSelector({ portfolios, activePortfolio, onSelect, onCreateNew 
   );
 }
 
-// Document Card Component - NO entry animations, only exit for delete
-function DocumentCard({ doc, isPinned, onNavigate }) {
+// Document Card Component - Plain div, no animations
+function DocumentCard({ doc, isPinned, onNavigate, onDelete }) {
   return (
-    <motion.div
-      // No layout animation - prevents slide-up on portfolio switch
-      layout={false}
-      // NO entry animation - cards appear instantly
-      initial={false}
-      animate={{ opacity: 1 }}
-      // Only exit animation for delete swipe
-      exit={{ opacity: 0, x: -100, transition: { duration: 0.2 } }}
-      onClick={onNavigate}
-      className="p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-xl active:scale-[0.98] transition-transform cursor-pointer"
-    >
+    <div className="p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-xl active:scale-[0.98] transition-transform">
       <div className="flex items-start gap-3">
-        <div className="w-12 h-12 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0">
+        <div 
+          onClick={onNavigate}
+          className="w-12 h-12 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0 cursor-pointer"
+        >
           <FileText className="w-6 h-6 text-vault-gold" weight="duotone" />
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 cursor-pointer" onClick={onNavigate}>
           <div className="flex items-start justify-between gap-2">
             <h3 className="text-white font-medium text-sm line-clamp-2 leading-snug">{doc.title}</h3>
             <div className="flex items-center gap-1 shrink-0">
@@ -157,8 +150,18 @@ function DocumentCard({ doc, isPinned, onNavigate }) {
             </span>
           </div>
         </div>
+        {/* Delete button */}
+        {!doc.is_locked && onDelete && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(doc.document_id); }}
+            className="p-2 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+            title="Move to trash"
+          >
+            <Trash className="w-4 h-4" weight="duotone" />
+          </button>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
