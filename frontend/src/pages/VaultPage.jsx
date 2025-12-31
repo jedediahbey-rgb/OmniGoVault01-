@@ -588,7 +588,7 @@ export default function VaultPage({ user, initialView }) {
               Delete Document?
             </DialogTitle>
             <DialogDescription className="text-vault-muted text-sm">
-              Are you sure you want to delete "{deleteConfirmDoc?.title}"? It will be moved to trash and can be restored later.
+              Are you sure you want to delete &ldquo;{deleteConfirmDoc?.title}&rdquo;? It will be moved to trash and can be restored later.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-row gap-2 justify-end mt-4">
