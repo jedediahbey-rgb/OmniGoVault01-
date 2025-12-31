@@ -1893,10 +1893,11 @@ function ArchiveMapTab() {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
+            onInit={onInit}
             nodeTypes={nodeTypes}
             fitView
             fitViewOptions={{ 
-              padding: isMobile ? 0.08 : 0.2, 
+              padding: isMobile ? 0.05 : 0.15, 
               minZoom: 0.3, 
               maxZoom: 1.5,
               includeHiddenNodes: true
