@@ -500,6 +500,18 @@ const AppRouter = ({ auth }) => {
         }
       />
       
+      {/* Black Archive Routes */}
+      <Route
+        path="/archive"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <BlackArchivePage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      
       {/* Governance Routes */}
       <Route
         path="/vault/governance"
