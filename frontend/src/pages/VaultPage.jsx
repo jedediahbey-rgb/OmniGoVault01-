@@ -70,7 +70,7 @@ function VaultSidebarContent({
   trashedDocuments 
 }) {
   const handleAllDocumentsClick = () => {
-    console.log("[Vault] clicked All Documents");
+    console.log("[Vault] clicked All Documents, currentSelectedId:", selectedPortfolioId);
     setSelectedPortfolioId(null);
     localStorage.removeItem("defaultPortfolioId");
     setShowTrash(false);
