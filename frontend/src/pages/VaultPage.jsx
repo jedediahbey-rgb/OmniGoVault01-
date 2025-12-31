@@ -470,7 +470,7 @@ export default function VaultPage({ user, initialView }) {
     setShowNewPortfolio,
     setSidebarOpen,
     navigate,
-    documents,
+    allDocsCount,
     portfolios,
     trashedDocuments
   };
