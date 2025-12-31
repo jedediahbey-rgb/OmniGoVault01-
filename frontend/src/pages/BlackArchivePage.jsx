@@ -1993,7 +1993,16 @@ function ArchiveMapTab() {
         </div>
         
         {/* React Flow Map - using explicit height for stable container */}
-        <div style={{ height: isMobile ? 480 : 550, width: '100%' }} className="bg-gradient-to-b from-[#050810] to-[#080d18] rounded-2xl overflow-hidden relative">
+        <div 
+          style={{ 
+            position: 'relative',
+            width: '100%',
+            height: isMobile ? 480 : 550,
+            overflow: 'hidden',
+            borderRadius: 18
+          }} 
+          className="bg-gradient-to-b from-[#050810] to-[#080d18]"
+        >
           {/* Inner vignette effect */}
           <div className="absolute inset-0 pointer-events-none z-10" style={{
             background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)'
@@ -2011,8 +2020,11 @@ function ArchiveMapTab() {
             />
           </ReactFlowProvider>
           
-          {/* Touch hint for mobile */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 sm:hidden text-white/40 text-[10px] bg-black/60 px-3 py-1 rounded-full border border-white/10">
+          {/* Touch hint for mobile - positioned above safe area */}
+          <div 
+            className="absolute left-1/2 -translate-x-1/2 sm:hidden text-white/40 text-[10px] bg-black/60 px-3 py-1 rounded-full border border-white/10 z-20"
+            style={{ bottom: 'calc(8px + env(safe-area-inset-bottom))' }}
+          >
             Pinch to zoom • Drag to pan
           </div>
         </div>
