@@ -391,7 +391,7 @@ export default function GovernancePage({ user }) {
 
   const fetchPortfolios = async () => {
     try {
-      const res = await axios.get(`${API}/portfolios`);
+      const res = await api.get(`${API}/portfolios`);
       setPortfolios(res.data || []);
       // Auto-select portfolio: URL param > default portfolio > first portfolio
       if (!selectedPortfolio && res.data?.length > 0) {
