@@ -612,7 +612,7 @@ class BinderGenerationTester:
         return success_rate >= 75
 
 
-class OmniBinderV2Tester:
+# ============ MAIN EXECUTION ============
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
