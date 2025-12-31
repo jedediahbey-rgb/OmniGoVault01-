@@ -75,17 +75,29 @@ const SidebarNavItem = ({ item, onNavClick }) => {
   const isActive = location.pathname === item.href || 
     (item.href !== '/vault' && location.pathname.startsWith(item.href));
   
+  // Special handling for Black Archive premium item
+  const isArchive = item.href === '/archive';
+  
   return (
     <NavLink
       to={item.href}
       onClick={onNavClick}
       className={cn(
-        'flex items-center gap-3 px-3 py-2.5 rounded-lg group relative',
+        'flex items-center gap-3 px-3 py-2.5 rounded-lg group relative overflow-hidden',
         isActive
-          ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20'
+          ? isArchive 
+            ? 'bg-gradient-to-r from-vault-gold/15 to-purple-500/10 text-vault-gold border border-vault-gold/30'
+            : 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20'
           : 'text-white/60 hover:text-white hover:bg-white/5'
       )}
     >
+      {/* Animated background for Archive */}
+      {isArchive && !isActive && (
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-vault-gold/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"
+        />
+      )}
+      
       <item.icon className={cn(
         'w-4 h-4 flex-shrink-0',
         isActive ? 'text-vault-gold' : 'text-white/40 group-hover:text-white/70'
@@ -94,8 +106,14 @@ const SidebarNavItem = ({ item, onNavClick }) => {
       <span className="text-sm font-medium">{item.name}</span>
       
       {item.premium && (
-        <span className="ml-auto px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-black border border-vault-gold/30 text-vault-gold rounded">
-          New
+        <span className="ml-auto relative px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-black border border-vault-gold/30 text-vault-gold rounded overflow-hidden">
+          {/* Shine effect */}
+          <motion.span
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-vault-gold/20 to-transparent"
+            animate={{ x: ['-100%', '200%'] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          />
+          <span className="relative">New</span>
         </span>
       )}
       
