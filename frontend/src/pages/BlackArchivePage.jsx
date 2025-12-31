@@ -1657,41 +1657,41 @@ const nodeTypes = {
   concept: ConceptNode,
 };
 
-// Mobile-optimized nodes - 2x4 grid layout with proper spacing (110px nodes, 130px gap)
-// Container is ~340px wide, so 2 columns with proper margins
+// Mobile-optimized nodes - 2x4 grid layout with proper margins and spacing
+// Margins added to prevent clipping (x: 20, y: 20 start)
 const mobileNodes = [
-  // Row 1 - Two nodes (top)
-  { id: '1', type: 'doctrine', position: { x: 0, y: 0 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
-  { id: '4', type: 'doctrine', position: { x: 130, y: 0 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
+  // Row 1 (top)
+  { id: '1', type: 'doctrine', position: { x: 20, y: 20 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
+  { id: '4', type: 'doctrine', position: { x: 155, y: 20 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
   
   // Row 2
-  { id: '2', type: 'case', position: { x: 0, y: 70 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
-  { id: '7', type: 'concept', position: { x: 130, y: 70 }, data: { label: "Chancellor's Conscience" } },
+  { id: '2', type: 'case', position: { x: 20, y: 95 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
+  { id: '7', type: 'concept', position: { x: 155, y: 95 }, data: { label: "Chancellor's Conscience" } },
   
   // Row 3
-  { id: '3', type: 'case', position: { x: 0, y: 140 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
-  { id: '8', type: 'concept', position: { x: 130, y: 140 }, data: { label: 'No-Profit Rule' } },
+  { id: '3', type: 'case', position: { x: 20, y: 170 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
+  { id: '8', type: 'concept', position: { x: 155, y: 170 }, data: { label: 'No-Profit Rule' } },
   
   // Row 4 (bottom)
-  { id: '6', type: 'statute', position: { x: 0, y: 210 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
-  { id: '5', type: 'doctrine', position: { x: 130, y: 210 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
+  { id: '6', type: 'statute', position: { x: 20, y: 245 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
+  { id: '5', type: 'doctrine', position: { x: 155, y: 245 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
 ];
 
-// Desktop nodes - 3-row layout with good spacing (160px nodes, 220px gap)
+// Desktop nodes - 3-row layout with proper margins and spacing
 const desktopNodes = [
   // Top row - 3 nodes
-  { id: '2', type: 'case', position: { x: 0, y: 0 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
-  { id: '1', type: 'doctrine', position: { x: 220, y: 0 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
-  { id: '4', type: 'doctrine', position: { x: 440, y: 0 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
+  { id: '2', type: 'case', position: { x: 60, y: 40 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
+  { id: '1', type: 'doctrine', position: { x: 300, y: 40 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
+  { id: '4', type: 'doctrine', position: { x: 540, y: 40 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
   
   // Middle row - 3 nodes
-  { id: '7', type: 'concept', position: { x: 50, y: 110 }, data: { label: "Chancellor's Conscience" } },
-  { id: '6', type: 'statute', position: { x: 220, y: 110 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
-  { id: '8', type: 'concept', position: { x: 420, y: 110 }, data: { label: 'No-Profit Rule' } },
+  { id: '7', type: 'concept', position: { x: 120, y: 160 }, data: { label: "Chancellor's Conscience" } },
+  { id: '6', type: 'statute', position: { x: 340, y: 160 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
+  { id: '8', type: 'concept', position: { x: 560, y: 160 }, data: { label: 'No-Profit Rule' } },
   
   // Bottom row - 2 nodes centered
-  { id: '3', type: 'case', position: { x: 100, y: 220 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
-  { id: '5', type: 'doctrine', position: { x: 340, y: 220 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
+  { id: '3', type: 'case', position: { x: 200, y: 280 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
+  { id: '5', type: 'doctrine', position: { x: 460, y: 280 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
 ];
 
 const initialEdges = [
