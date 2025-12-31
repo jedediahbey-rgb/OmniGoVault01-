@@ -75,7 +75,10 @@ function VaultSidebarContent({
     localStorage.removeItem("defaultPortfolioId");
     setShowTrash(false);
     setSidebarOpen(false);
-    navigate('/vault/documents');
+    // Don't navigate if already on vault/documents - prevents unnecessary re-renders
+    if (window.location.pathname !== '/vault/documents') {
+      navigate('/vault/documents');
+    }
   };
 
   const handlePortfolioClick = (portfolio) => {
@@ -88,7 +91,10 @@ function VaultSidebarContent({
     // localStorage sync handled by useEffect
     setShowTrash(false);
     setSidebarOpen(false);
-    navigate('/vault/documents');
+    // Don't navigate if already on vault/documents - prevents unnecessary re-renders
+    if (window.location.pathname !== '/vault/documents') {
+      navigate('/vault/documents');
+    }
   };
 
   return (
