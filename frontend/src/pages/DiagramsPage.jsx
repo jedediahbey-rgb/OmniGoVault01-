@@ -450,12 +450,24 @@ function DiagramsContent() {
   // Suppress ResizeObserver loop error (benign in React)
   useEffect(() => {
     const errorHandler = (e) => {
-      if (e.message?.includes('ResizeObserver loop')) {
+      if (e.message?.includes('ResizeObserver loop') || e.message?.includes('ResizeObserver')) {
         e.stopImmediatePropagation();
+        e.preventDefault();
+        return true;
       }
     };
-    window.addEventListener('error', errorHandler);
-    return () => window.removeEventListener('error', errorHandler);
+    const unhandledHandler = (e) => {
+      if (e.reason?.message?.includes('ResizeObserver') || String(e.reason)?.includes('ResizeObserver')) {
+        e.preventDefault();
+        return;
+      }
+    };
+    window.addEventListener('error', errorHandler, true);
+    window.addEventListener('unhandledrejection', unhandledHandler);
+    return () => {
+      window.removeEventListener('error', errorHandler, true);
+      window.removeEventListener('unhandledrejection', unhandledHandler);
+    };
   }, []);
 
   // Detect mobile
