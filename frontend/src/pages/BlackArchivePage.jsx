@@ -1726,7 +1726,7 @@ function ArchiveMapTab() {
       </div>
       
       {/* React Flow Map */}
-      <div className="h-[500px] sm:h-[600px] bg-[#050810] border border-white/10 rounded-2xl overflow-hidden">
+      <div className="h-[450px] sm:h-[550px] lg:h-[600px] bg-[#050810] border border-white/10 rounded-2xl overflow-hidden relative">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -1735,18 +1735,21 @@ function ArchiveMapTab() {
           onNodeClick={onNodeClick}
           nodeTypes={nodeTypes}
           fitView
-          fitViewOptions={{ padding: 0.2, minZoom: 0.5, maxZoom: 1.5 }}
-          minZoom={0.3}
+          fitViewOptions={{ padding: 0.3, minZoom: 0.4, maxZoom: 1.2 }}
+          minZoom={0.2}
           maxZoom={2}
-          defaultViewport={{ x: 0, y: 0, zoom: 0.7 }}
           attributionPosition="bottom-left"
           className="archive-map-flow"
+          proOptions={{ hideAttribution: true }}
         >
           <Background color="#1a1a2e" gap={20} />
           <Controls 
-            className="!bg-white/5 !border-white/10 !rounded-lg [&>button]:!bg-white/5 [&>button]:!border-white/10 [&>button]:!text-white/60 [&>button:hover]:!bg-white/10"
+            position="top-right"
+            className="!bg-black/60 !border-white/20 !rounded-lg !shadow-lg [&>button]:!bg-white/10 [&>button]:!border-white/10 [&>button]:!text-white/70 [&>button:hover]:!bg-vault-gold/20 [&>button:hover]:!text-vault-gold !m-2"
+            showInteractive={false}
           />
           <MiniMap 
+            position="bottom-right"
             nodeColor={(node) => {
               switch (node.type) {
                 case 'doctrine': return '#C6A87C';
@@ -1756,10 +1759,17 @@ function ArchiveMapTab() {
                 default: return '#666';
               }
             }}
-            maskColor="rgba(0, 0, 0, 0.8)"
-            className="!bg-black/50 !border-white/10 !rounded-lg"
+            maskColor="rgba(0, 0, 0, 0.85)"
+            className="!bg-black/70 !border-white/20 !rounded-lg !m-2 !w-[120px] !h-[80px] sm:!w-[150px] sm:!h-[100px]"
+            pannable
+            zoomable
           />
         </ReactFlow>
+        
+        {/* Touch hint for mobile */}
+        <div className="absolute bottom-2 left-2 sm:hidden text-white/30 text-[10px] bg-black/50 px-2 py-1 rounded">
+          Pinch to zoom • Drag to pan
+        </div>
       </div>
       
       {/* Selected Node Details */}
