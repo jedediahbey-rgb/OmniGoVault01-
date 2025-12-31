@@ -1072,7 +1072,7 @@ export default function GovernancePage({ user }) {
   const handleDeleteCompensation = async (compensationId) => {
     try {
       // Use V2 API void endpoint
-      await axios.post(`${API_V2}/records/${compensationId}/void`, {
+      await api.post(`${API_V2}/records/${compensationId}/void`, {
         void_reason: 'Deleted by user from governance list'
       });
       toast.success('Compensation entry deleted');
