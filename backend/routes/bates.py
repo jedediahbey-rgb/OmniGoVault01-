@@ -38,7 +38,7 @@ async def create_prefix_scheme(request: Request, body: CreatePrefixSchemeRequest
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -67,7 +67,7 @@ async def list_prefix_schemes(request: Request):
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -93,7 +93,7 @@ async def get_prefix_scheme(scheme_id: str, request: Request):
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -116,7 +116,7 @@ async def update_prefix_scheme(scheme_id: str, request: Request, body: UpdatePre
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -137,7 +137,7 @@ async def delete_prefix_scheme(scheme_id: str, request: Request):
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -164,7 +164,7 @@ async def get_continuation(
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -199,7 +199,7 @@ async def set_continuation(request: Request, body: SetContinuationRequest):
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -230,7 +230,7 @@ async def list_continuations(
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -268,7 +268,7 @@ async def resolve_config(
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -298,7 +298,7 @@ async def validate_prefix(request: Request):
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -320,7 +320,7 @@ async def format_bates_number(request: Request):
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -350,7 +350,7 @@ async def parse_bates_number(request: Request):
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
@@ -385,7 +385,7 @@ async def get_scheme_presets(request: Request):
     from server import get_current_user
     
     try:
-        user = await get_current_user(request)
+        user = await get_current_user(request)  # noqa: F841
     except Exception:
         return error_response("AUTH_ERROR", "Authentication required", status_code=401)
     
