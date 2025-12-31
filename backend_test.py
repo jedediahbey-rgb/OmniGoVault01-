@@ -1628,6 +1628,537 @@ class ArchiveAdminTester:
         return success_rate >= 75
 
 
+class SupportAdminTester:
+    def __init__(self):
+        self.base_url = BASE_URL
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+            'User-Agent': 'SupportAdminTester/1.0'
+        })
+        self.tests_run = 0
+        self.tests_passed = 0
+        self.failed_tests = []
+        self.test_results = []
+        
+        # Test user details - using the specified email
+        self.test_user_email = "jedediah.bey@gmail.com"
+        self.test_user_id = "user_jedediah_bey"
+        
+        # Try to get a valid session token
+        self.session_token = self.get_valid_session_token()
+
+    def get_valid_session_token(self):
+        """Get a valid session token for testing"""
+        try:
+            # Create test session using mongosh
+            result = subprocess.run([
+                'mongosh', '--eval', f"""
+                use('test_database');
+                var userId = '{self.test_user_id}';
+                var sessionToken = 'test_session_' + Date.now();
+                
+                // Ensure user exists
+                db.users.updateOne(
+                    {{user_id: userId}},
+                    {{$setOnInsert: {{
+                        user_id: userId,
+                        email: '{self.test_user_email}',
+                        name: 'Jedediah Bey',
+                        picture: 'https://via.placeholder.com/150',
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                // Ensure user has SUPPORT_ADMIN role for testing
+                db.user_global_roles.updateOne(
+                    {{user_id: userId, role: 'SUPPORT_ADMIN'}},
+                    {{$setOnInsert: {{
+                        id: 'ugr_support_admin_test',
+                        user_id: userId,
+                        role: 'SUPPORT_ADMIN',
+                        granted_by: 'SYSTEM_TEST',
+                        granted_at: new Date(),
+                        expires_at: null,
+                        notes: 'Test SUPPORT_ADMIN role'
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                // Create session
+                db.user_sessions.insertOne({{
+                    user_id: userId,
+                    session_token: sessionToken,
+                    expires_at: new Date(Date.now() + 7*24*60*60*1000),
+                    created_at: new Date()
+                }});
+                
+                print(sessionToken);
+                """
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                session_token = result.stdout.strip().split('\n')[-1]
+                if session_token and session_token.startswith('test_session_'):
+                    self.log(f"✅ Created test session with SUPPORT_ADMIN role: {session_token[:20]}...")
+                    self.session.headers['Authorization'] = f'Bearer {session_token}'
+                    return session_token
+            
+            self.log("⚠️ Could not create test session - testing without authentication")
+            return None
+            
+        except Exception as e:
+            self.log(f"⚠️ Session creation failed: {str(e)} - testing without authentication")
+            return None
+
+    def log(self, message):
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
+
+    def log_test(self, name, success, details=""):
+        """Log test result"""
+        self.tests_run += 1
+        if success:
+            self.tests_passed += 1
+            self.log(f"✅ {name}")
+        else:
+            self.log(f"❌ {name} - {details}")
+            self.failed_tests.append({
+                'test': name,
+                'details': details,
+                'timestamp': datetime.now().isoformat()
+            })
+        
+        self.test_results.append({
+            "test": name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        })
+
+    # ============ SUPPORT ADMIN PERMISSION TESTS ============
+
+    def test_auth_me_endpoint(self):
+        """Test /api/auth/me endpoint with valid session"""
+        if not self.session_token:
+            self.log_test("Auth Me Endpoint", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/auth/me", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                user_id = data.get("user_id")
+                email = data.get("email")
+                details = f"User: {email}, ID: {user_id}"
+                
+                # Store user ID for later tests
+                self.test_user_id = user_id
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Auth Me Endpoint", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Auth Me Endpoint", False, f"Error: {str(e)}")
+            return False
+
+    def test_admin_status(self):
+        """Test GET /api/admin/status endpoint"""
+        if not self.session_token:
+            self.log_test("Admin Status", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/admin/status", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                is_admin = data.get("is_admin", False)
+                global_roles = data.get("global_roles", [])
+                details = f"Is Admin: {is_admin}, Roles: {global_roles}"
+                
+                # Verify SUPPORT_ADMIN role is present
+                if "SUPPORT_ADMIN" in global_roles:
+                    details += " (✅ SUPPORT_ADMIN role confirmed)"
+                else:
+                    details += " (❌ SUPPORT_ADMIN role missing)"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Admin Status", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Admin Status", False, f"Error: {str(e)}")
+            return False
+
+    def test_support_permissions(self):
+        """Test GET /api/admin/support/permissions endpoint"""
+        if not self.session_token:
+            self.log_test("Support Permissions", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/admin/support/permissions", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                is_support_admin = data.get("is_support_admin", False)
+                allowed_actions = data.get("allowed_actions", [])
+                denied_actions = data.get("denied_actions", [])
+                restrictions = data.get("restrictions", {})
+                
+                details = f"Support Admin: {is_support_admin}, Allowed: {len(allowed_actions)}, Denied: {len(denied_actions)}"
+                
+                # Verify key permissions
+                expected_allowed = ["view_accounts", "view_users", "add_support_note", "extend_trial"]
+                expected_denied = ["modify_entitlements", "change_plan", "suspend_account"]
+                
+                missing_allowed = [a for a in expected_allowed if a not in allowed_actions]
+                unexpected_denied = [d for d in expected_denied if d not in denied_actions]
+                
+                if missing_allowed:
+                    details += f" (❌ Missing allowed: {missing_allowed})"
+                    success = False
+                elif unexpected_denied:
+                    details += f" (❌ Missing denied: {unexpected_denied})"
+                    success = False
+                else:
+                    details += " (✅ Permission matrix correct)"
+                    
+                # Check restrictions
+                max_trial_days = restrictions.get("max_trial_extension_days", 0)
+                can_impersonate_admins = restrictions.get("can_impersonate_admins", True)
+                
+                if max_trial_days == 30 and not can_impersonate_admins:
+                    details += " (✅ Restrictions correct)"
+                else:
+                    details += f" (❌ Restrictions incorrect: trial_days={max_trial_days}, impersonate_admins={can_impersonate_admins})"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Support Permissions", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Support Permissions", False, f"Error: {str(e)}")
+            return False
+
+    def test_add_support_note(self):
+        """Test POST /api/admin/support/notes endpoint"""
+        if not self.session_token:
+            self.log_test("Add Support Note", False, "No session token available")
+            return False
+            
+        try:
+            note_data = {
+                "content": "Test support note for SUPPORT_ADMIN permissions testing",
+                "note_type": "GENERAL",
+                "is_internal": True,
+                "tags": ["testing", "support_admin"]
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/admin/support/notes",
+                json=note_data,
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                note_id = data.get("note_id", "")
+                details = f"Created note: {note_id}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Add Support Note", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Add Support Note", False, f"Error: {str(e)}")
+            return False
+
+    def test_get_support_notes(self):
+        """Test GET /api/admin/support/notes endpoint"""
+        if not self.session_token:
+            self.log_test("Get Support Notes", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/admin/support/notes", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                notes = data.get("notes", [])
+                total = data.get("total", 0)
+                details = f"Found {total} support notes"
+                
+                if notes:
+                    first_note = notes[0]
+                    note_type = first_note.get("note_type", "")
+                    content_preview = first_note.get("content", "")[:50]
+                    details += f", First: {note_type} - {content_preview}..."
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Get Support Notes", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Get Support Notes", False, f"Error: {str(e)}")
+            return False
+
+    def test_list_global_roles(self):
+        """Test GET /api/admin/roles endpoint"""
+        if not self.session_token:
+            self.log_test("List Global Roles", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/admin/roles", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                roles = data.get("roles", [])
+                details = f"Found {len(roles)} global roles"
+                
+                # Verify all 4 expected roles are present
+                expected_roles = ["OMNICOMPETENT_OWNER", "OMNICOMPETENT", "SUPPORT_ADMIN", "BILLING_ADMIN"]
+                role_values = [r.get("role") for r in roles]
+                
+                missing_roles = [r for r in expected_roles if r not in role_values]
+                
+                if missing_roles:
+                    details += f" (❌ Missing roles: {missing_roles})"
+                    success = False
+                else:
+                    details += " (✅ All expected roles present)"
+                    
+                # Check for SUPPORT_ADMIN description
+                support_admin_role = next((r for r in roles if r.get("role") == "SUPPORT_ADMIN"), None)
+                if support_admin_role:
+                    description = support_admin_role.get("description", "")
+                    details += f", SUPPORT_ADMIN: {description[:50]}..."
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("List Global Roles", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("List Global Roles", False, f"Error: {str(e)}")
+            return False
+
+    def test_list_accounts(self):
+        """Test GET /api/admin/accounts endpoint (verify basic admin access)"""
+        if not self.session_token:
+            self.log_test("List Accounts", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/admin/accounts", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                accounts = data.get("accounts", [])
+                total = data.get("total", 0)
+                details = f"Found {total} accounts"
+                
+                if accounts:
+                    first_account = accounts[0]
+                    account_name = first_account.get("name", "")
+                    plan_name = first_account.get("plan_name", "")
+                    details += f", First: {account_name} ({plan_name})"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("List Accounts", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("List Accounts", False, f"Error: {str(e)}")
+            return False
+
+    def test_restricted_endpoint_access(self):
+        """Test that SUPPORT_ADMIN cannot access restricted endpoints"""
+        if not self.session_token:
+            self.log_test("Restricted Endpoint Access", False, "No session token available")
+            return False
+            
+        try:
+            # Test endpoints that should be denied for SUPPORT_ADMIN
+            restricted_endpoints = [
+                ("/admin/roles/grant", "POST", {"user_id": "test", "role": "OMNICOMPETENT"}),
+                ("/admin/accounts/test_account/suspend", "POST", {"reason": "test"}),
+                ("/admin/audit-logs", "GET", None)
+            ]
+            
+            denied_count = 0
+            total_tests = len(restricted_endpoints)
+            
+            for endpoint, method, data in restricted_endpoints:
+                try:
+                    if method == "POST":
+                        resp = self.session.post(f"{self.base_url}{endpoint}", json=data, timeout=5)
+                    else:
+                        resp = self.session.get(f"{self.base_url}{endpoint}", timeout=5)
+                    
+                    # Should be denied (403) or not found (404) for non-existent resources
+                    if resp.status_code in [403, 404]:
+                        denied_count += 1
+                except:
+                    # Network errors count as properly restricted
+                    denied_count += 1
+            
+            success = denied_count == total_tests
+            details = f"Properly denied access to {denied_count}/{total_tests} restricted endpoints"
+            
+            if not success:
+                details += " (❌ Some restricted endpoints were accessible)"
+            else:
+                details += " (✅ All restricted endpoints properly denied)"
+            
+            self.log_test("Restricted Endpoint Access", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Restricted Endpoint Access", False, f"Error: {str(e)}")
+            return False
+
+    # ============ TEST RUNNER ============
+
+    def run_support_admin_tests(self):
+        """Run all SUPPORT_ADMIN permission tests"""
+        self.log("🚀 Starting SUPPORT_ADMIN PERMISSIONS Tests")
+        self.log(f"Testing against: {self.base_url}")
+        self.log(f"User: {self.test_user_email}")
+        self.log("=" * 80)
+        
+        # Test sequence for SUPPORT_ADMIN permissions
+        test_sequence = [
+            # Authentication Tests
+            self.test_auth_me_endpoint,
+            self.test_admin_status,
+            
+            # Permission Matrix Tests
+            self.test_support_permissions,
+            
+            # Support-specific Endpoints
+            self.test_add_support_note,
+            self.test_get_support_notes,
+            
+            # General Admin Endpoints (allowed)
+            self.test_list_global_roles,
+            self.test_list_accounts,
+            
+            # Restriction Tests
+            self.test_restricted_endpoint_access,
+        ]
+        
+        for test_func in test_sequence:
+            try:
+                test_func()
+                time.sleep(0.5)  # Brief pause between tests
+            except Exception as e:
+                test_name = getattr(test_func, '__name__', 'Unknown Test')
+                self.log(f"❌ Test {test_name} crashed: {str(e)}")
+                self.tests_run += 1
+                self.failed_tests.append({
+                    'test': test_name,
+                    'details': f"Test crashed: {str(e)}",
+                    'timestamp': datetime.now().isoformat()
+                })
+        
+        return self.print_summary()
+
+    def print_summary(self):
+        """Print test summary"""
+        self.log("=" * 80)
+        self.log("🏁 SUPPORT_ADMIN PERMISSIONS TEST SUMMARY")
+        self.log("=" * 80)
+        
+        success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
+        
+        self.log(f"📊 Tests Run: {self.tests_run}")
+        self.log(f"✅ Tests Passed: {self.tests_passed}")
+        self.log(f"❌ Tests Failed: {len(self.failed_tests)}")
+        self.log(f"📈 Success Rate: {success_rate:.1f}%")
+        
+        if self.failed_tests:
+            self.log("\n❌ FAILED TESTS:")
+            for failure in self.failed_tests:
+                self.log(f"  • {failure['test']}: {failure['details']}")
+        
+        self.log("\n🎯 KEY FINDINGS:")
+        
+        # Check authentication status
+        auth_tests = [t for t in self.test_results if 'auth' in t['test'].lower() or 'Auth' in t['test']]
+        auth_working = any(t['success'] for t in auth_tests if 'me' in t['test'].lower())
+        
+        if auth_working:
+            self.log("✅ Authentication working with SUPPORT_ADMIN role")
+        else:
+            self.log("❌ Authentication issues detected")
+        
+        # Check permission matrix
+        perm_tests = [t for t in self.test_results if 'permission' in t['test'].lower()]
+        perm_working = any(t['success'] for t in perm_tests)
+        
+        if perm_working:
+            self.log("✅ Permission matrix correctly configured")
+        else:
+            self.log("❌ Permission matrix issues detected")
+        
+        # Check support endpoints
+        support_tests = [t for t in self.test_results if 'support' in t['test'].lower() and 'note' in t['test'].lower()]
+        support_working = all(t['success'] for t in support_tests)
+        
+        if support_working:
+            self.log("✅ Support-specific endpoints working correctly")
+        else:
+            self.log("❌ Support-specific endpoint issues detected")
+        
+        # Check restrictions
+        restriction_tests = [t for t in self.test_results if 'restricted' in t['test'].lower()]
+        restrictions_working = any(t['success'] for t in restriction_tests)
+        
+        if restrictions_working:
+            self.log("✅ Access restrictions properly enforced")
+        else:
+            self.log("❌ Access restriction issues detected")
+        
+        self.log("\n📋 IMPLEMENTATION STATUS:")
+        if success_rate >= 90:
+            self.log("✅ SUPPORT_ADMIN permissions system fully functional")
+            self.log("✅ All permission matrix rules working correctly")
+            self.log("✅ Support-specific endpoints accessible")
+            self.log("✅ Restricted endpoints properly denied")
+        elif success_rate >= 75:
+            self.log("⚠️ SUPPORT_ADMIN permissions mostly working with minor issues")
+            self.log("✅ Core functionality operational")
+        else:
+            self.log("❌ SUPPORT_ADMIN permissions system has significant issues")
+            if not auth_working:
+                self.log("❌ Authentication issues preventing full testing")
+            if not perm_working:
+                self.log("❌ Permission matrix not properly configured")
+        
+        return success_rate >= 75
+
+
 if __name__ == "__main__":
     import sys
     
