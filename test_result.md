@@ -1,3 +1,55 @@
+# Archive Admin Page Testing
+
+## Test Scope
+Testing the new Black Archive Admin Page UI at /archive/admin
+
+## Test Scenarios
+
+### 1. Authentication & Navigation
+- [ ] Google Auth login with jedediah.bey@gmail.com
+- [ ] Navigate to /archive/admin page after login
+- [ ] Page loads correctly with tabs (Overview, Sources, Claims, Trails)
+
+### 2. Overview Tab
+- [ ] Stats cards display (Total Sources, Total Claims, Doctrine Trails, Disputed Claims)
+- [ ] Sources by Type chart displays correctly
+- [ ] Claims by Status chart displays correctly
+
+### 3. Sources CRUD
+- [ ] Sources tab loads source list
+- [ ] Can search sources
+- [ ] Can filter by type (Primary Source, Interpretation, Hypothesis)
+- [ ] Add Source dialog opens and works
+- [ ] Edit Source dialog works
+- [ ] Delete Source confirmation works
+
+### 4. Claims CRUD
+- [ ] Claims tab loads claim list  
+- [ ] Can search claims
+- [ ] Can filter by status (Verified, Disputed, Unverified)
+- [ ] Add Claim dialog opens and works
+- [ ] Edit Claim dialog works
+- [ ] Delete Claim confirmation works
+
+### 5. Trails CRUD
+- [ ] Trails tab loads trail list
+- [ ] Add Trail dialog opens and works
+- [ ] Edit Trail dialog works
+- [ ] Delete Trail confirmation works
+
+### 6. Admin Tools
+- [ ] "Scan Conflicts" button works
+- [ ] Conflict scan results dialog displays correctly
+- [ ] "View Archive" link navigates to /archive
+
+## Testing Notes
+- Frontend URL: https://apifix-portal.preview.emergentagent.com
+- Backend API: https://apifix-portal.preview.emergentagent.com/api
+- Test User: jedediah.bey@gmail.com
+
+---
+
+
 # Test Result - Binder Generation Functionality
 
 ## Test Scope
