@@ -343,7 +343,7 @@ export default function WorkspaceDetailPage({ user }) {
           
           {/* Actions */}
           <div className="flex items-center gap-2">
-            {vault.status === 'DRAFT' && vault.user_permissions?.includes('manage_vault') && (
+            {vault.status === 'DRAFT' && vault.user_permissions?.includes('MANAGE_VAULT') && (
               <Button
                 onClick={handleActivateVault}
                 className="bg-green-600 hover:bg-green-700 text-white"
