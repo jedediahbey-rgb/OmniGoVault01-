@@ -4790,6 +4790,12 @@ from services.bates_config_service import init_bates_service
 init_bates_service(db)
 app.include_router(bates_router, prefix="/api")
 
+# OmniBinder V2 Routes (Scheduled Binders)
+from routes.omnibinder import router as omnibinder_router
+from services.scheduled_binder_service import init_scheduled_binder_service
+init_scheduled_binder_service(db)
+app.include_router(omnibinder_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
