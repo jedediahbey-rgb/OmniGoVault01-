@@ -244,6 +244,42 @@ export default function WorkspaceDetailPage({ user }) {
     }
   };
 
+  // Deactivate vault (return to draft)
+  const handleDeactivateVault = async () => {
+    if (!window.confirm('Are you sure you want to deactivate this vault? It will return to draft status.')) {
+      return;
+    }
+    try {
+      await axios.post(`${API}/vaults/${vaultId}/deactivate`, {}, { withCredentials: true });
+      toast.success('Vault deactivated - returned to draft status');
+      await fetchVault();
+    } catch (error) {
+      toast.error(
+            typeof error.response?.data?.detail === 'string' 
+              ? error.response.data.detail 
+              : 'Failed to deactivate vault'
+          );
+    }
+  };
+
+  // Delete vault (only draft vaults with no participants/documents)
+  const handleDeleteVault = async () => {
+    if (!window.confirm('Are you sure you want to delete this vault? This action cannot be undone.')) {
+      return;
+    }
+    try {
+      await axios.delete(`${API}/vaults/${vaultId}`, { withCredentials: true });
+      toast.success('Vault deleted');
+      navigate('/vault/workspaces');
+    } catch (error) {
+      toast.error(
+            typeof error.response?.data?.detail === 'string' 
+              ? error.response.data.detail 
+              : 'Failed to delete vault'
+          );
+    }
+  };
+
   // View document
   const handleViewDocument = async (doc) => {
     try {
