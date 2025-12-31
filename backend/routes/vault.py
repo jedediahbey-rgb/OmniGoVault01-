@@ -179,6 +179,97 @@ async def close_vault(request: Request, vault_id: str):
         raise HTTPException(status_code=403, detail=str(e))
 
 
+@router.post("/{vault_id}/deactivate")
+async def deactivate_vault(request: Request, vault_id: str):
+    """Deactivate a vault (return to draft status) - Only for ACTIVE vaults with no signatures"""
+    user = await _get_current_user(request)
+    vault_service = get_vault_service()
+    
+    try:
+        # Get current vault
+        vault = await vault_service.get_vault(vault_id)
+        if not vault:
+            raise HTTPException(status_code=404, detail="Vault not found")
+        
+        # Check if vault is ACTIVE
+        if vault.get("status") != VaultStatus.ACTIVE.value:
+            raise HTTPException(status_code=400, detail="Only active vaults can be deactivated")
+        
+        # Check if any documents have been signed
+        documents = await _db.vault_documents.find({"vault_id": vault_id}).to_list(100)
+        for doc in documents:
+            signatures = doc.get("signatures", [])
+            if signatures:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Cannot deactivate vault with signed documents. Archive integrity must be preserved."
+                )
+        
+        # Deactivate
+        vault = await vault_service.update_vault(
+            vault_id, user.user_id,
+            {"status": VaultStatus.DRAFT.value}
+        )
+        return vault
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+
+@router.delete("/{vault_id}")
+async def delete_vault(request: Request, vault_id: str):
+    """Delete a vault - Only allowed for DRAFT vaults with no participants (except creator)"""
+    user = await _get_current_user(request)
+    vault_service = get_vault_service()
+    
+    try:
+        # Get current vault
+        vault = await vault_service.get_vault(vault_id)
+        if not vault:
+            raise HTTPException(status_code=404, detail="Vault not found")
+        
+        # Only creator can delete
+        if vault.get("created_by") != user.user_id:
+            raise HTTPException(status_code=403, detail="Only the vault creator can delete it")
+        
+        # Only DRAFT vaults can be deleted
+        if vault.get("status") != VaultStatus.DRAFT.value:
+            raise HTTPException(
+                status_code=400, 
+                detail="Only draft vaults can be deleted. Active or closed vaults must be preserved for audit integrity."
+            )
+        
+        # Check for other participants
+        participants = await _db.vault_participants.find({
+            "vault_id": vault_id,
+            "status": {"$ne": "removed"},
+            "user_id": {"$ne": user.user_id}
+        }).to_list(100)
+        
+        if participants:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot delete vault with other participants. Remove all participants first."
+            )
+        
+        # Check for documents
+        doc_count = await _db.vault_documents.count_documents({"vault_id": vault_id})
+        if doc_count > 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot delete vault with documents. Delete all documents first or keep as draft."
+            )
+        
+        # Delete participant record
+        await _db.vault_participants.delete_many({"vault_id": vault_id})
+        
+        # Delete vault
+        await _db.vaults.delete_one({"vault_id": vault_id})
+        
+        return {"ok": True, "message": "Vault deleted successfully"}
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+
 # ============ PARTICIPANT ENDPOINTS ============
 
 @router.post("/{vault_id}/participants")
