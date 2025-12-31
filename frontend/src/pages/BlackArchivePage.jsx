@@ -1790,60 +1790,41 @@ export default function BlackArchivePage() {
       }}
     >
       {/* Premium Header with Obsidian Glass Effect */}
-      <div className="relative bg-[#030508]/80 backdrop-blur-xl border-b border-vault-gold/10 overflow-hidden">
-        {/* Animated background gradients - visible on all devices */}
+      <div className="relative bg-[#030508]/80 sm:backdrop-blur-xl border-b border-vault-gold/10 overflow-hidden">
+        {/* Animated background gradients - simplified on mobile */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Base gradient layer */}
+          {/* Base gradient layer - static, no animation cost */}
           <div className="absolute inset-0 bg-gradient-to-br from-vault-gold/[0.08] via-transparent to-purple-900/[0.1]" />
           
-          {/* Animated gold orb - top left */}
+          {/* Animated gold orb - simplified animation on mobile */}
           <motion.div 
-            className="absolute -top-10 -left-10 w-40 sm:w-72 md:w-96 h-40 sm:h-72 md:h-96 rounded-full"
+            className="absolute -top-10 -left-10 w-40 sm:w-72 md:w-96 h-40 sm:h-72 md:h-96 rounded-full will-change-transform"
             style={{
               background: 'radial-gradient(circle, rgba(198, 168, 124, 0.15) 0%, rgba(198, 168, 124, 0.05) 40%, transparent 70%)',
             }}
             animate={{ 
-              scale: [1, 1.2, 1],
               opacity: [0.6, 0.8, 0.6],
-              x: [0, 10, 0],
-              y: [0, 10, 0]
             }}
             transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
           />
           
-          {/* Animated purple orb - bottom right */}
+          {/* Purple orb - hidden on mobile for performance */}
           <motion.div 
-            className="absolute -bottom-10 -right-10 w-32 sm:w-48 md:w-64 h-32 sm:h-48 md:h-64 rounded-full"
+            className="hidden sm:block absolute -bottom-10 -right-10 w-48 md:w-64 h-48 md:h-64 rounded-full will-change-transform"
             style={{
               background: 'radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, rgba(139, 92, 246, 0.04) 40%, transparent 70%)',
             }}
             animate={{ 
-              scale: [1.1, 1, 1.1],
               opacity: [0.5, 0.7, 0.5],
-              x: [0, -10, 0],
-              y: [0, -10, 0]
             }}
             transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
           />
-          
-          {/* Additional gold accent orb - center right (mobile visible) */}
-          <motion.div 
-            className="absolute top-1/2 -right-5 w-24 sm:w-32 h-24 sm:h-32 rounded-full"
-            style={{
-              background: 'radial-gradient(circle, rgba(198, 168, 124, 0.1) 0%, transparent 60%)',
-            }}
-            animate={{ 
-              opacity: [0.3, 0.6, 0.3],
-              scale: [1, 1.15, 1]
-            }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-          />
         </div>
         
-        {/* Floating particles - visible on all devices with reduced count on mobile */}
+        {/* Floating particles */}
         <FloatingParticles />
         
-        {/* Subtle grid pattern - more visible */}
+        {/* Subtle grid pattern - CSS only, no JS cost */}
         <div 
           className="absolute inset-0 opacity-[0.025] pointer-events-none"
           style={{
@@ -1852,7 +1833,7 @@ export default function BlackArchivePage() {
           }}
         />
         
-        {/* Specular highlight - top edge glow */}
+        {/* Specular highlight - CSS only */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-vault-gold/20 to-transparent" />
         
         {/* Header Content */}
