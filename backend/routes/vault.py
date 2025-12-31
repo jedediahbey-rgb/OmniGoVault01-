@@ -205,14 +205,21 @@ async def deactivate_vault(request: Request, vault_id: str):
                     detail="Cannot deactivate vault with signed documents. Archive integrity must be preserved."
                 )
         
-        # Deactivate
-        vault = await vault_service.update_vault(
-            vault_id, user.user_id,
-            {"status": VaultStatus.DRAFT.value}
+        # Deactivate - update directly in DB
+        await _db.vaults.update_one(
+            {"vault_id": vault_id},
+            {"$set": {"status": VaultStatus.DRAFT.value, "updated_at": datetime.now(timezone.utc).isoformat()}}
         )
-        return vault
+        
+        # Return updated vault
+        updated_vault = await vault_service.get_vault_details(vault_id, user.user_id)
+        return updated_vault
+    except HTTPException:
+        raise
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to deactivate vault: {str(e)}")
 
 
 @router.delete("/{vault_id}")
