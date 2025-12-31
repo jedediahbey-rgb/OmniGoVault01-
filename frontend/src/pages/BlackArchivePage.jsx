@@ -45,18 +45,9 @@ import { toast } from 'sonner';
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // ============================================================================
-// ANIMATED BLACK ARCHIVE ICON - Optimized for Mobile
+// ANIMATED BLACK ARCHIVE ICON - Exclusive Dynamic Symbol
 // ============================================================================
 const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 640);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
@@ -64,79 +55,58 @@ const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
     xl: 'w-20 h-20'
   };
   
-  // Simplified animations for mobile
-  const shouldAnimate = animate && !isMobile;
-  
   return (
     <div className={`${sizeClasses[size]} relative`}>
-      {/* Outer rotating ring - only on desktop */}
-      {shouldAnimate ? (
-        <motion.div
-          className="absolute inset-0 rounded-xl will-change-transform"
-          style={{
-            background: 'conic-gradient(from 0deg, transparent, rgba(198, 168, 124, 0.3), transparent, rgba(198, 168, 124, 0.1), transparent)',
-          }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-        />
-      ) : (
-        <div
-          className="absolute inset-0 rounded-xl"
-          style={{
-            background: 'conic-gradient(from 45deg, transparent, rgba(198, 168, 124, 0.3), transparent, rgba(198, 168, 124, 0.1), transparent)',
-          }}
-        />
-      )}
+      {/* Outer rotating ring */}
+      <motion.div
+        className="absolute inset-0 rounded-xl will-change-transform"
+        style={{
+          background: 'conic-gradient(from 0deg, transparent, rgba(198, 168, 124, 0.3), transparent, rgba(198, 168, 124, 0.1), transparent)',
+        }}
+        animate={animate ? { rotate: 360 } : {}}
+        transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+      />
       
-      {/* Inner ring - static on mobile */}
-      {shouldAnimate ? (
-        <motion.div
-          className="absolute inset-1 rounded-lg will-change-transform"
-          style={{
-            background: 'conic-gradient(from 180deg, transparent, rgba(139, 92, 246, 0.2), transparent, rgba(198, 168, 124, 0.2), transparent)',
-          }}
-          animate={{ rotate: -360 }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
-        />
-      ) : (
-        <div
-          className="absolute inset-1 rounded-lg"
-          style={{
-            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(198, 168, 124, 0.15))',
-          }}
-        />
-      )}
+      {/* Inner counter-rotating ring */}
+      <motion.div
+        className="absolute inset-1 rounded-lg will-change-transform"
+        style={{
+          background: 'conic-gradient(from 180deg, transparent, rgba(139, 92, 246, 0.2), transparent, rgba(198, 168, 124, 0.2), transparent)',
+        }}
+        animate={animate ? { rotate: -360 } : {}}
+        transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+      />
       
       {/* Core background */}
       <div className="absolute inset-2 rounded-lg bg-black/90 border border-vault-gold/30" />
       
-      {/* Mystical eye symbol - simplified on mobile */}
+      {/* Mystical eye symbol */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative">
+        <motion.div
+          className="relative"
+          animate={animate ? { scale: [1, 1.05, 1] } : {}}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        >
           <svg viewBox="0 0 40 40" className="w-8 h-8" style={{ filter: 'drop-shadow(0 0 8px rgba(198, 168, 124, 0.5))' }}>
-            {/* Decorative triangles - only on desktop */}
-            {shouldAnimate && (
-              <>
-                <motion.path
-                  d="M20 4 L24 12 L16 12 Z"
-                  fill="none"
-                  stroke="rgba(198, 168, 124, 0.6)"
-                  strokeWidth="0.5"
-                  animate={{ opacity: [0.4, 1, 0.4] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <motion.path
-                  d="M20 36 L24 28 L16 28 Z"
-                  fill="none"
-                  stroke="rgba(198, 168, 124, 0.6)"
-                  strokeWidth="0.5"
-                  animate={{ opacity: [0.4, 1, 0.4] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-                />
-              </>
-            )}
+            {/* Decorative outer triangles */}
+            <motion.path
+              d="M20 4 L24 12 L16 12 Z"
+              fill="none"
+              stroke="rgba(198, 168, 124, 0.6)"
+              strokeWidth="0.5"
+              animate={animate ? { opacity: [0.4, 1, 0.4] } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <motion.path
+              d="M20 36 L24 28 L16 28 Z"
+              fill="none"
+              stroke="rgba(198, 168, 124, 0.6)"
+              strokeWidth="0.5"
+              animate={animate ? { opacity: [0.4, 1, 0.4] } : {}}
+              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            />
             
-            {/* Eye shape - always visible */}
+            {/* Eye shape */}
             <path
               d="M6 20 Q20 8 34 20 Q20 32 6 20"
               fill="none"
@@ -146,24 +116,28 @@ const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
             />
             
             {/* Pupil */}
-            <circle
+            <motion.circle
               cx="20"
               cy="20"
               r="5"
               fill="rgba(198, 168, 124, 0.3)"
               stroke="rgba(198, 168, 124, 1)"
               strokeWidth="1"
+              animate={animate ? { r: [5, 6, 5] } : {}}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             />
             
             {/* Inner dot */}
-            <circle
+            <motion.circle
               cx="20"
               cy="20"
               r="2"
               fill="rgba(198, 168, 124, 1)"
+              animate={animate ? { opacity: [0.6, 1, 0.6] } : {}}
+              transition={{ duration: 1.5, repeat: Infinity }}
             />
           </svg>
-        </div>
+        </motion.div>
       </div>
       
       {/* Corner accents */}
