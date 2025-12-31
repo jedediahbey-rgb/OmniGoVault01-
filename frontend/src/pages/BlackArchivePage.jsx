@@ -376,42 +376,95 @@ function SourceCard({ source, onClick, index }) {
   );
 }
 
-// Claim Card (Dossier)
-function ClaimCard({ claim, onClick }) {
+// ============================================================================
+// PREMIUM CLAIM CARD (DOSSIER) WITH EFFECTS
+// ============================================================================
+function ClaimCard({ claim, onClick, index }) {
   const status = STATUS_BADGES[claim.status] || STATUS_BADGES.UNVERIFIED;
   const StatusIcon = status.icon;
+  const [isHovered, setIsHovered] = useState(false);
   
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: index * 0.08, type: 'spring', stiffness: 100 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       onClick={onClick}
-      className="p-5 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10 rounded-xl cursor-pointer hover:border-vault-gold/30 transition-all"
+      className="relative p-5 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10 rounded-xl cursor-pointer overflow-hidden group"
+      whileHover={{ y: -4, boxShadow: '0 20px 40px -20px rgba(198, 168, 124, 0.2)' }}
+      whileTap={{ scale: 0.98 }}
     >
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="w-12 h-12 rounded-xl bg-[#0a0f1a] border border-white/10 flex items-center justify-center shrink-0">
-          <Certificate className="w-6 h-6 text-vault-gold" weight="duotone" />
-        </div>
-        <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border ${status.color}`}>
-          <StatusIcon className="w-3.5 h-3.5" weight="fill" />
-          {status.label}
-        </span>
+      {/* Animated border gradient */}
+      <motion.div
+        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: 'linear-gradient(135deg, rgba(198, 168, 124, 0.2) 0%, transparent 50%, rgba(198, 168, 124, 0.1) 100%)',
+        }}
+      />
+      
+      {/* Corner decorations */}
+      <div className="absolute top-0 left-0 w-4 h-4">
+        <motion.div
+          className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-vault-gold/50 to-transparent"
+          animate={{ scaleX: isHovered ? 1 : 0.5 }}
+        />
+        <motion.div
+          className="absolute top-0 left-0 w-px h-full bg-gradient-to-b from-vault-gold/50 to-transparent"
+          animate={{ scaleY: isHovered ? 1 : 0.5 }}
+        />
+      </div>
+      <div className="absolute bottom-0 right-0 w-4 h-4">
+        <motion.div
+          className="absolute bottom-0 right-0 w-full h-px bg-gradient-to-l from-vault-gold/50 to-transparent"
+          animate={{ scaleX: isHovered ? 1 : 0.5 }}
+        />
+        <motion.div
+          className="absolute bottom-0 right-0 w-px h-full bg-gradient-to-t from-vault-gold/50 to-transparent"
+          animate={{ scaleY: isHovered ? 1 : 0.5 }}
+        />
       </div>
       
-      <h3 className="text-white font-heading text-base mb-2 line-clamp-2">{claim.title}</h3>
-      <p className="text-white/50 text-sm line-clamp-3 mb-3">{claim.body}</p>
-      
-      <div className="flex items-center gap-3 text-xs">
-        <span className="text-vault-gold/60 flex items-center gap-1">
-          <Stack className="w-3.5 h-3.5" />
-          {claim.evidence_source_ids?.length || 0} sources
-        </span>
-        {claim.counter_source_ids?.length > 0 && (
-          <span className="text-orange-400/60 flex items-center gap-1">
-            <Warning className="w-3.5 h-3.5" />
-            {claim.counter_source_ids.length} counter
-          </span>
-        )}
+      <div className="relative">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <motion.div 
+            className="w-12 h-12 rounded-xl bg-[#0a0f1a] border border-white/10 flex items-center justify-center shrink-0 group-hover:border-vault-gold/30 transition-colors"
+            animate={isHovered ? { rotate: [0, -5, 5, 0] } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <Certificate className="w-6 h-6 text-vault-gold" weight="duotone" />
+          </motion.div>
+          <motion.span 
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border ${status.color}`}
+            whileHover={{ scale: 1.05 }}
+          >
+            <StatusIcon className="w-3.5 h-3.5" weight="fill" />
+            {status.label}
+          </motion.span>
+        </div>
+        
+        <h3 className="text-white font-heading text-base mb-2 line-clamp-2 group-hover:text-vault-gold/90 transition-colors">{claim.title}</h3>
+        <p className="text-white/50 text-sm line-clamp-3 mb-3">{claim.body}</p>
+        
+        <div className="flex items-center gap-3 text-xs">
+          <motion.span 
+            className="text-vault-gold/60 flex items-center gap-1"
+            animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+          >
+            <Stack className="w-3.5 h-3.5" />
+            {claim.evidence_source_ids?.length || 0} sources
+          </motion.span>
+          {claim.counter_source_ids?.length > 0 && (
+            <motion.span 
+              className="text-orange-400/60 flex items-center gap-1"
+              animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+            >
+              <Warning className="w-3.5 h-3.5" />
+              {claim.counter_source_ids.length} counter
+            </motion.span>
+          )}
+        </div>
       </div>
     </motion.div>
   );
