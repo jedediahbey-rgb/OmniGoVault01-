@@ -115,13 +115,14 @@ function PortfolioSelector({ portfolios, activePortfolio, onSelect, onCreateNew 
 }
 
 // Document Card Component
-function DocumentCard({ doc, isPinned, onNavigate }) {
+function DocumentCard({ doc, isPinned, onNavigate, skipAnimation = false }) {
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: 10 }}
+      layout={!skipAnimation}
+      initial={skipAnimation ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -100 }}
+      transition={{ duration: skipAnimation ? 0 : 0.2 }}
       onClick={onNavigate}
       className="p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-xl active:scale-[0.98] transition-transform cursor-pointer"
     >
