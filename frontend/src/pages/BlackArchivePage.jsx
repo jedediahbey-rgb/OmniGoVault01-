@@ -156,43 +156,56 @@ const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
 
 // Pre-generated particle positions for consistent rendering
 const PARTICLE_POSITIONS = [
-  { left: 12, top: 8, duration: 5.2, delay: 0.3 },
-  { left: 85, top: 15, duration: 4.8, delay: 1.2 },
-  { left: 23, top: 45, duration: 6.1, delay: 0.8 },
-  { left: 67, top: 72, duration: 5.5, delay: 1.8 },
-  { left: 45, top: 28, duration: 4.3, delay: 0.5 },
-  { left: 91, top: 55, duration: 5.9, delay: 1.1 },
-  { left: 34, top: 82, duration: 4.6, delay: 0.2 },
-  { left: 78, top: 38, duration: 5.3, delay: 1.5 },
-  { left: 56, top: 91, duration: 6.4, delay: 0.9 },
-  { left: 8, top: 62, duration: 4.9, delay: 1.7 },
-  { left: 42, top: 12, duration: 5.7, delay: 0.4 },
-  { left: 95, top: 85, duration: 4.2, delay: 1.3 },
-  { left: 18, top: 33, duration: 6.0, delay: 0.6 },
-  { left: 72, top: 19, duration: 5.1, delay: 1.9 },
-  { left: 51, top: 68, duration: 4.7, delay: 0.1 },
-  { left: 29, top: 95, duration: 5.8, delay: 1.4 },
-  { left: 83, top: 42, duration: 4.4, delay: 0.7 },
-  { left: 6, top: 78, duration: 6.2, delay: 1.6 },
-  { left: 61, top: 5, duration: 5.0, delay: 1.0 },
-  { left: 38, top: 58, duration: 4.5, delay: 0.0 },
+  { left: 12, top: 8, duration: 5.2, delay: 0.3, size: 'lg' },
+  { left: 85, top: 15, duration: 4.8, delay: 1.2, size: 'md' },
+  { left: 23, top: 45, duration: 6.1, delay: 0.8, size: 'sm' },
+  { left: 67, top: 72, duration: 5.5, delay: 1.8, size: 'lg' },
+  { left: 45, top: 28, duration: 4.3, delay: 0.5, size: 'md' },
+  { left: 91, top: 55, duration: 5.9, delay: 1.1, size: 'sm' },
+  { left: 34, top: 82, duration: 4.6, delay: 0.2, size: 'lg' },
+  { left: 78, top: 38, duration: 5.3, delay: 1.5, size: 'md' },
+  { left: 56, top: 91, duration: 6.4, delay: 0.9, size: 'sm' },
+  { left: 8, top: 62, duration: 4.9, delay: 1.7, size: 'lg' },
+  { left: 42, top: 12, duration: 5.7, delay: 0.4, size: 'md' },
+  { left: 95, top: 85, duration: 4.2, delay: 1.3, size: 'sm' },
+  { left: 18, top: 33, duration: 6.0, delay: 0.6, size: 'lg' },
+  { left: 72, top: 19, duration: 5.1, delay: 1.9, size: 'md' },
+  { left: 51, top: 68, duration: 4.7, delay: 0.1, size: 'sm' },
+  { left: 29, top: 95, duration: 5.8, delay: 1.4, size: 'lg' },
+  { left: 83, top: 42, duration: 4.4, delay: 0.7, size: 'md' },
+  { left: 6, top: 78, duration: 6.2, delay: 1.6, size: 'sm' },
+  { left: 61, top: 5, duration: 5.0, delay: 1.0, size: 'lg' },
+  { left: 38, top: 58, duration: 4.5, delay: 0.0, size: 'md' },
 ];
 
 const FloatingParticles = () => {
+  const sizeClasses = {
+    sm: 'w-1 h-1',
+    md: 'w-1.5 h-1.5',
+    lg: 'w-2 h-2'
+  };
+  
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {PARTICLE_POSITIONS.map((particle, i) => (
         <motion.div
           key={i}
-          className="absolute w-1 h-1 rounded-full bg-vault-gold/30"
+          className={`absolute rounded-full ${sizeClasses[particle.size]}`}
           style={{
             left: `${particle.left}%`,
             top: `${particle.top}%`,
+            background: i % 3 === 0 
+              ? 'rgba(198, 168, 124, 0.6)' 
+              : i % 3 === 1 
+                ? 'rgba(198, 168, 124, 0.4)'
+                : 'rgba(139, 92, 246, 0.4)',
+            boxShadow: i % 2 === 0 ? '0 0 6px rgba(198, 168, 124, 0.4)' : 'none',
           }}
           animate={{
-            y: [0, -30, 0],
-            opacity: [0.2, 0.6, 0.2],
-            scale: [1, 1.5, 1],
+            y: [0, -20, 0],
+            x: [0, i % 2 === 0 ? 5 : -5, 0],
+            opacity: [0.3, 0.8, 0.3],
+            scale: [1, 1.3, 1],
           }}
           transition={{
             duration: particle.duration,
