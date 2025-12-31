@@ -112,7 +112,9 @@ export default function AuditLogPage() {
       if (severity) params.append('severity', severity);
       if (search) params.append('search', search);
       
-      const res = await fetch(`${API_URL}/api/audit-log?${params}`);
+      const res = await fetch(`${API_URL}/api/audit-log?${params}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       
       if (data.ok) {
@@ -137,7 +139,9 @@ export default function AuditLogPage() {
       const params = new URLSearchParams({ days: '30' });
       if (portfolioId) params.append('portfolio_id', portfolioId);
       
-      const res = await fetch(`${API_URL}/api/audit-log/summary?${params}`);
+      const res = await fetch(`${API_URL}/api/audit-log/summary?${params}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       
       if (data.ok) {
@@ -159,7 +163,9 @@ export default function AuditLogPage() {
       const params = new URLSearchParams({ format });
       if (portfolioId) params.append('portfolio_id', portfolioId);
       
-      const res = await fetch(`${API_URL}/api/audit-log/export?${params}`);
+      const res = await fetch(`${API_URL}/api/audit-log/export?${params}`, {
+        credentials: 'include'
+      });
       const data = await res.json();
       
       if (data.ok) {
