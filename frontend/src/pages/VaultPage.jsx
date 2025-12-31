@@ -666,7 +666,7 @@ export default function VaultPage({ user, initialView }) {
   // No portfolios state
   if (vaultState === VAULT_STATES.NO_PORTFOLIOS) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center pt-20 lg:pt-0 lg:min-h-screen px-4">
         <EmptyState
           icon={Folder}
           title="Create Your First Portfolio"
