@@ -1705,13 +1705,89 @@ const initialEdges = [
   { id: 'e8-4', source: '8', target: '4', type: 'smoothstep', style: { stroke: '#10B981' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' } },
 ];
 
+// Inner component that handles fitView after nodes are initialized
+function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClick, isMobile }) {
+  const nodesInitialized = useNodesInitialized();
+  const { fitView } = useReactFlow();
+  const padding = isMobile ? 0.18 : 0.22;
+
+  // Fit view when nodes are initialized
+  useEffect(() => {
+    if (!nodesInitialized) return;
+
+    // Run after layout/paint is stable using requestAnimationFrame
+    requestAnimationFrame(() => {
+      fitView({
+        padding,
+        includeHiddenNodes: true,
+        duration: 0,
+        minZoom: 0.4,
+        maxZoom: 1.2,
+      });
+    });
+
+    // Second pass after animations settle
+    const timer = setTimeout(() => {
+      requestAnimationFrame(() => {
+        fitView({
+          padding,
+          includeHiddenNodes: true,
+          duration: 300,
+          minZoom: 0.4,
+          maxZoom: 1.2,
+        });
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [nodesInitialized, fitView, padding, nodes.length]);
+
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onNodeClick={onNodeClick}
+      nodeTypes={nodeTypes}
+      minZoom={0.3}
+      maxZoom={2}
+      attributionPosition="bottom-left"
+      className="archive-map-flow"
+      proOptions={{ hideAttribution: true }}
+    >
+      <Background color="#1a1a2e" gap={20} />
+      <Controls 
+        position="bottom-left"
+        className="archive-map-controls !bg-black/80 !border-vault-gold/30 !rounded-lg !shadow-xl [&>button]:!bg-white/10 [&>button]:!border-vault-gold/20 [&>button]:!text-white/70 [&>button:hover]:!bg-vault-gold/20 [&>button:hover]:!text-vault-gold"
+        showInteractive={false}
+      />
+      <MiniMap 
+        position="bottom-right"
+        nodeColor={(node) => {
+          switch (node.type) {
+            case 'doctrine': return '#C6A87C';
+            case 'case': return '#3B82F6';
+            case 'statute': return '#8B5CF6';
+            case 'concept': return '#10B981';
+            default: return '#666';
+          }
+        }}
+        maskColor="rgba(0, 0, 0, 0.85)"
+        className="archive-map-minimap !bg-black/80 !border-vault-gold/30 !rounded-lg"
+        pannable
+        zoomable
+      />
+    </ReactFlow>
+  );
+}
+
 function ArchiveMapTab() {
   const [isMobile, setIsMobile] = useState(false);
   const initialNodesForDevice = isMobile ? mobileNodes : desktopNodes;
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodesForDevice);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
-  const reactFlowRef = useRef(null);
 
   // Detect mobile and update nodes accordingly
   useEffect(() => {
@@ -1733,24 +1809,6 @@ function ArchiveMapTab() {
   const onNodeClick = useCallback((event, node) => {
     setSelectedNode(node);
   }, []);
-
-  const onInit = useCallback((reactFlowInstance) => {
-    reactFlowRef.current = reactFlowInstance;
-    // Fit view immediately and again after a delay to ensure all nodes are properly positioned
-    reactFlowInstance.fitView({
-      padding: isMobile ? 0.12 : 0.18,
-      includeHiddenNodes: true,
-      duration: 0,
-    });
-    // Second fitView after nodes fully render
-    setTimeout(() => {
-      reactFlowInstance.fitView({
-        padding: isMobile ? 0.12 : 0.18,
-        includeHiddenNodes: true,
-        duration: 400,
-      });
-    }, 200);
-  }, [isMobile]);
 
   return (
     <div className="relative">
