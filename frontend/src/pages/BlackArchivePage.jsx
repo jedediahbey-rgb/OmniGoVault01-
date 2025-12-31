@@ -1654,25 +1654,25 @@ const nodeTypes = {
   concept: ConceptNode,
 };
 
-// Sample nodes for the map - repositioned for better visibility
+// Sample nodes for the map - centered positions starting from 0,0
 const initialNodes = [
-  // Central Doctrine - moved to center
-  { id: '1', type: 'doctrine', position: { x: 300, y: 150 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
+  // Central Doctrine - at center
+  { id: '1', type: 'doctrine', position: { x: 200, y: 120 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
   
   // Cases - left side
-  { id: '2', type: 'case', position: { x: 50, y: 50 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
-  { id: '3', type: 'case', position: { x: 50, y: 250 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
+  { id: '2', type: 'case', position: { x: 0, y: 20 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
+  { id: '3', type: 'case', position: { x: 0, y: 220 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
   
   // Related Doctrines - right side
-  { id: '4', type: 'doctrine', position: { x: 550, y: 50 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
-  { id: '5', type: 'doctrine', position: { x: 550, y: 250 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
+  { id: '4', type: 'doctrine', position: { x: 400, y: 20 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
+  { id: '5', type: 'doctrine', position: { x: 400, y: 220 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
   
   // Statutes - bottom center
-  { id: '6', type: 'statute', position: { x: 300, y: 320 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
+  { id: '6', type: 'statute', position: { x: 200, y: 280 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
   
-  // Concepts - near center
-  { id: '7', type: 'concept', position: { x: 180, y: 150 }, data: { label: 'Chancellor\'s Conscience' } },
-  { id: '8', type: 'concept', position: { x: 420, y: 150 }, data: { label: 'No-Profit Rule' } },
+  // Concepts - flanking center
+  { id: '7', type: 'concept', position: { x: 80, y: 120 }, data: { label: 'Chancellor\'s Conscience' } },
+  { id: '8', type: 'concept', position: { x: 320, y: 120 }, data: { label: 'No-Profit Rule' } },
 ];
 
 const initialEdges = [
