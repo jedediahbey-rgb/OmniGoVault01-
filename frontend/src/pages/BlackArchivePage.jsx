@@ -1086,53 +1086,19 @@ function TrailsTab() {
       ) : (
         /* Premium Empty State - Doctrine Tracks */
         <div className="text-center py-16">
-          <motion.div 
-            className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5"
-            whileHover={{ scale: 1.05 }}
-          >
-            {/* Rotating outer ring with gradient */}
-            <motion.div
-              className="absolute inset-0 rounded-2xl"
-              style={{
-                background: 'conic-gradient(from 0deg, transparent, rgba(139, 92, 246, 0.3), transparent, rgba(198, 168, 124, 0.2), transparent)',
-              }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-            />
-            {/* Counter-rotating inner ring */}
-            <motion.div
-              className="absolute inset-1 rounded-xl"
-              style={{
-                background: 'conic-gradient(from 180deg, transparent, rgba(139, 92, 246, 0.2), transparent)',
-              }}
-              animate={{ rotate: -360 }}
-              transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-            />
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5">
+            {/* Rotating ring - CSS animation */}
+            <div className="absolute inset-0 rounded-2xl border border-purple-500/30 animate-spin-slow" 
+                 style={{ animationDuration: '10s' }} />
             {/* Main container */}
-            <div className="absolute inset-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-vault-gold/10 border border-purple-500/40 backdrop-blur-sm" />
-            {/* Pulse rings */}
-            <motion.div
-              className="absolute inset-2 rounded-lg border border-purple-400/30"
-              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <motion.div
-              className="absolute inset-2 rounded-lg border border-purple-400/30"
-              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
-              transition={{ duration: 2, delay: 1, repeat: Infinity }}
-            />
-            {/* Inner glow */}
-            <motion.div
-              className="absolute inset-2 rounded-lg"
-              style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%)' }}
-              animate={{ opacity: [0.4, 0.8, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
+            <div className="absolute inset-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-vault-gold/10 border border-purple-500/40" />
+            {/* Pulse ring - CSS */}
+            <div className="absolute inset-2 rounded-lg border border-purple-400/30 animate-pulse-slow" />
             {/* Icon */}
             <div className="absolute inset-0 flex items-center justify-center">
               <GitBranch className="w-10 h-10 sm:w-12 sm:h-12 text-purple-400" weight="duotone" />
             </div>
-          </motion.div>
+          </div>
           
           <h3 className="text-white font-heading text-lg sm:text-xl mb-2">No Tracks Available</h3>
           <p className="text-white/40 text-sm">Doctrine tracks are being curated</p>
