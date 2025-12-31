@@ -249,6 +249,7 @@ export default function LedgerThreadsPage() {
       const res = await fetch(`${API_URL}/api/ledger-threads/${activeThread.id}/merge`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           source_thread_ids: selectedThreads,
           merge_reason: mergeReason
@@ -284,6 +285,7 @@ export default function LedgerThreadsPage() {
       const res = await fetch(`${API_URL}/api/ledger-threads/${activeThread.id}/split`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           record_ids: selectedRecords,
           new_thread_title: splitTitle,
@@ -321,6 +323,7 @@ export default function LedgerThreadsPage() {
       const res = await fetch(`${API_URL}/api/ledger-threads/reassign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           record_ids: selectedRecords,
           target_thread_id: reassignTarget,
@@ -358,6 +361,7 @@ export default function LedgerThreadsPage() {
       const res = await fetch(`${API_URL}/api/ledger-threads/${activeThread.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(editForm)
       });
       const data = await res.json();
@@ -383,7 +387,8 @@ export default function LedgerThreadsPage() {
     setProcessing(true);
     try {
       const res = await fetch(`${API_URL}/api/ledger-threads/${activeThread.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
       const data = await res.json();
 
@@ -411,6 +416,7 @@ export default function LedgerThreadsPage() {
       const res = await fetch(`${API_URL}/api/ledger-threads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           portfolio_id: portfolioId,
           title: newThreadForm.title,
