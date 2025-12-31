@@ -1053,10 +1053,49 @@ function TrailsTab() {
           ))}
         </div>
       ) : (
+        /* Premium Empty State - Doctrine Tracks */
         <div className="text-center py-16">
-          <TreeStructure className="w-16 h-16 text-white/10 mx-auto mb-4" weight="duotone" />
-          <h3 className="text-white text-lg mb-2">No Tracks Available</h3>
-          <p className="text-white/50 text-sm">Doctrine tracks are being curated</p>
+          <motion.div 
+            className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5"
+            whileHover={{ scale: 1.05 }}
+          >
+            {/* Animated path lines */}
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 96 96">
+              <motion.path
+                d="M20,48 Q48,20 76,48"
+                stroke="rgba(198, 168, 124, 0.3)"
+                strokeWidth="1"
+                fill="none"
+                strokeDasharray="4,4"
+                animate={{ strokeDashoffset: [0, -16] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+              />
+              <motion.path
+                d="M20,48 Q48,76 76,48"
+                stroke="rgba(139, 92, 246, 0.2)"
+                strokeWidth="1"
+                fill="none"
+                strokeDasharray="4,4"
+                animate={{ strokeDashoffset: [0, 16] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+              />
+            </svg>
+            {/* Main container */}
+            <div className="absolute inset-2 rounded-xl bg-gradient-to-br from-purple-500/15 to-vault-gold/10 border border-purple-500/30 backdrop-blur-sm" />
+            {/* Pulse effect */}
+            <motion.div
+              className="absolute inset-2 rounded-xl border border-purple-500/20"
+              animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+            />
+            {/* Icon */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <GitBranch className="w-10 h-10 sm:w-12 sm:h-12 text-purple-400" weight="duotone" />
+            </div>
+          </motion.div>
+          
+          <h3 className="text-white font-heading text-lg sm:text-xl mb-2">No Tracks Available</h3>
+          <p className="text-white/40 text-sm">Doctrine tracks are being curated</p>
         </div>
       )}
     </div>
