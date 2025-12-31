@@ -244,18 +244,18 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
 
       {/* Mobile Print Help Dialog */}
       <Dialog open={showPrintHelp} onOpenChange={setShowPrintHelp}>
-        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white w-[85vw] max-w-[340px]">
           <DialogHeader>
             <DialogTitle className="text-lg font-heading text-vault-gold flex items-center gap-2">
               <Printer className="w-5 h-5" />
               Print PDF
             </DialogTitle>
-            <DialogDescription className="text-vault-muted">
+            <DialogDescription className="text-vault-muted text-sm">
               Mobile browsers require manual printing
             </DialogDescription>
           </DialogHeader>
           
-          <div className="py-4 space-y-3">
+          <div className="py-3 space-y-2">
             <p className="text-white text-sm">To print your binder:</p>
             <ol className="text-vault-muted text-sm space-y-2 list-decimal list-inside">
               <li>Tap <span className="text-vault-gold font-medium">&ldquo;Open PDF&rdquo;</span> below</li>
@@ -264,17 +264,17 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
             </ol>
           </div>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="flex flex-row gap-2 justify-end">
             <Button 
               variant="outline" 
               onClick={() => setShowPrintHelp(false)} 
-              className="border-vault-gold/30 text-white"
+              className="border-vault-gold/30 text-white flex-1 sm:flex-none"
             >
               Cancel
             </Button>
             <Button 
               onClick={openPdfForPrint}
-              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark flex-1 sm:flex-none"
             >
               <Eye className="w-4 h-4 mr-2" />
               Open PDF
