@@ -457,7 +457,7 @@ export default function WorkspaceDetailPage({ user }) {
           <TabsContent value="documents">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-white">Documents</h2>
-              {vault.user_permissions?.includes('create_documents') && (
+              {vault.user_permissions?.includes('UPLOAD_DOC') && (
                 <Button
                   onClick={() => setShowAddDocument(true)}
                   className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
@@ -473,7 +473,7 @@ export default function WorkspaceDetailPage({ user }) {
                 <CardContent className="p-8 text-center">
                   <FileText className="w-12 h-12 text-vault-muted mx-auto mb-4" />
                   <p className="text-vault-muted mb-4">No documents yet</p>
-                  {vault.user_permissions?.includes('create_documents') && (
+                  {vault.user_permissions?.includes('UPLOAD_DOC') && (
                     <Button
                       onClick={() => setShowAddDocument(true)}
                       variant="outline"
