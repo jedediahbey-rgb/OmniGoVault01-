@@ -48,9 +48,9 @@ import { toast } from 'sonner';
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // ============================================================================
-// ANIMATED BLACK ARCHIVE ICON - Exclusive Dynamic Symbol
+// ANIMATED BLACK ARCHIVE ICON - Exclusive Dynamic Symbol (Memoized)
 // ============================================================================
-const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
+const BlackArchiveIcon = memo(({ size = 'lg', animate = true }) => {
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
@@ -62,9 +62,10 @@ const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
     <div className={`${sizeClasses[size]} relative`}>
       {/* Outer rotating ring */}
       <motion.div
-        className="absolute inset-0 rounded-xl will-change-transform"
+        className="absolute inset-0 rounded-xl"
         style={{
           background: 'conic-gradient(from 0deg, transparent, rgba(198, 168, 124, 0.3), transparent, rgba(198, 168, 124, 0.1), transparent)',
+          willChange: 'transform',
         }}
         animate={animate ? { rotate: 360 } : {}}
         transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
@@ -72,9 +73,10 @@ const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
       
       {/* Inner counter-rotating ring */}
       <motion.div
-        className="absolute inset-1 rounded-lg will-change-transform"
+        className="absolute inset-1 rounded-lg"
         style={{
           background: 'conic-gradient(from 180deg, transparent, rgba(139, 92, 246, 0.2), transparent, rgba(198, 168, 124, 0.2), transparent)',
+          willChange: 'transform',
         }}
         animate={animate ? { rotate: -360 } : {}}
         transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
