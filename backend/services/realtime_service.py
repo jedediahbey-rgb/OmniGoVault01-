@@ -14,7 +14,7 @@ import logging
 import json
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Set, Optional, List, Deque
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass, asdict
 from enum import Enum
 from uuid import uuid4
 from collections import deque
