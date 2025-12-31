@@ -207,7 +207,7 @@ export default function VaultPage({ user, initialView }) {
   const [showTrash, setShowTrash] = useState(initialView === 'trash');
   const [showNewPortfolio, setShowNewPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
-
+  const [deleteConfirmDoc, setDeleteConfirmDoc] = useState(null); // Document pending delete confirmation
   // Switch portfolio - use SWITCHING state to avoid skeleton flash
   const switchPortfolio = useCallback(async (portfolio, showToast = true) => {
     if (!portfolio) return;
