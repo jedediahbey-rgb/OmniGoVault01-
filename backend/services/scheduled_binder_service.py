@@ -581,7 +581,7 @@ Please check the schedule configuration and try again.
         # Parse time
         try:
             hour, minute = map(int, schedule_time.split(":"))
-        except:
+        except (ValueError, AttributeError):
             hour, minute = 9, 0
         
         if schedule_type == ScheduleType.DAILY:
