@@ -581,6 +581,11 @@ export default function VaultPage({ user, initialView }) {
     });
   }, [documents, trashedDocuments, showTrash, searchTerm, pinnedDocs]);
   
+  // Retry initialization
+  const retryInitialization = useCallback(() => {
+    window.location.reload();
+  }, []);
+  
   // ============================================================================
   // RENDER STATES
   // ============================================================================
@@ -599,7 +604,7 @@ export default function VaultPage({ user, initialView }) {
           title="Unable to Access Vault"
           description={error || 'Something went wrong. Please try again.'}
           action={
-            <Button onClick={initializeVault} className="btn-primary">
+            <Button onClick={retryInitialization} className="btn-primary">
               Retry
             </Button>
           }
