@@ -45,6 +45,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 // Vault states
 const VAULT_STATES = {
   LOADING: 'loading',
+  SWITCHING: 'switching', // New state for portfolio switch
   NO_PORTFOLIOS: 'no_portfolios',
   READY: 'ready',
   ERROR: 'error'
