@@ -271,28 +271,25 @@ export default function VaultPage({ user, initialView }) {
 
   const fetchPortfolios = async () => {
     try {
-      const portfoliosRes = await axios.get(`${API}/portfolios`);
+      // Fetch portfolios and ALL documents count in parallel
+      const [portfoliosRes, allDocsRes] = await Promise.all([
+        axios.get(`${API}/portfolios`),
+        axios.get(`${API}/documents`) // Get all docs to show count in sidebar
+      ]);
       const fetchedPortfolios = portfoliosRes.data || [];
-      console.log("[Vault] Fetched", fetchedPortfolios.length, "portfolios");
+      const allDocs = allDocsRes.data || [];
+      console.log("[Vault] Fetched", fetchedPortfolios.length, "portfolios,", allDocs.length, "total docs");
       setPortfolios(fetchedPortfolios);
+      setAllDocsCount(allDocs.length);
     } catch (error) {
       console.error('Failed to fetch portfolios:', error);
       toast.error('Failed to load portfolios');
     }
   };
 
-  // Legacy fetchData for compatibility - now just calls both
+  // Legacy fetchData for compatibility
   const fetchData = async () => {
     await Promise.all([fetchDocuments(), fetchPortfolios()]);
-  };
-      // It's already initialized from localStorage in useState.
-      // User selection is preserved.
-    } catch (error) {
-      console.error('Failed to fetch vault data:', error);
-      toast.error('Failed to load vault data');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const togglePinDocument = async (docId) => {
