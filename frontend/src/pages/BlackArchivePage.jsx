@@ -1511,11 +1511,7 @@ function ArchiveMapTab() {
   const [isHovered, setIsHovered] = useState(false);
   
   return (
-    <motion.div 
-      className="text-center py-16 relative"
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-    >
+    <div className="text-center py-16 relative">
       {/* Decorative connection lines */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 400 300">
         <motion.path
@@ -1524,9 +1520,8 @@ function ArchiveMapTab() {
           strokeWidth="1"
           fill="none"
           strokeDasharray="5,5"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 3, repeat: Infinity }}
+          animate={{ strokeDashoffset: [0, -20] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
         />
         <motion.path
           d="M50,100 Q150,200 250,100 T350,200"
@@ -1534,9 +1529,8 @@ function ArchiveMapTab() {
           strokeWidth="1"
           fill="none"
           strokeDasharray="5,5"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 4, delay: 1, repeat: Infinity }}
+          animate={{ strokeDashoffset: [0, 20] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
         />
         
         {/* Node dots */}
@@ -1566,41 +1560,48 @@ function ArchiveMapTab() {
         ))}
       </svg>
       
+      {/* Premium Map Icon */}
       <motion.div 
-        className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 flex items-center justify-center mx-auto mb-6 overflow-hidden"
-        animate={{ borderColor: isHovered ? 'rgba(198, 168, 124, 0.3)' : 'rgba(255, 255, 255, 0.1)' }}
+        className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6"
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+        whileHover={{ scale: 1.05 }}
       >
-        {/* Animated rings */}
+        {/* Rotating compass ring */}
         <motion.div
-          className="absolute inset-0 rounded-2xl border border-vault-gold/20"
-          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-          transition={{ duration: 3, repeat: Infinity }}
+          className="absolute inset-0 rounded-2xl"
+          style={{
+            background: 'conic-gradient(from 0deg, transparent, rgba(34, 197, 94, 0.2), transparent, rgba(198, 168, 124, 0.2), transparent)',
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+        />
+        {/* Main container */}
+        <div className="absolute inset-1 rounded-xl bg-gradient-to-br from-emerald-500/15 to-vault-gold/10 border border-emerald-500/30 backdrop-blur-sm" />
+        {/* Pulse rings */}
+        <motion.div
+          className="absolute inset-1 rounded-xl border border-emerald-500/20"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ duration: 2.5, repeat: Infinity }}
         />
         <motion.div
-          className="absolute inset-0 rounded-2xl border border-vault-gold/20"
-          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-          transition={{ duration: 3, delay: 1, repeat: Infinity }}
+          className="absolute inset-1 rounded-xl border border-emerald-500/20"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ duration: 2.5, delay: 1.25, repeat: Infinity }}
         />
-        
-        <MapTrifold className="w-12 h-12 text-white/30" weight="duotone" />
+        {/* Icon */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <MapTrifold className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-400" weight="duotone" />
+        </div>
       </motion.div>
       
-      <motion.h3 
-        className="text-white font-heading text-2xl mb-3"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
+      <h3 className="text-white font-heading text-xl sm:text-2xl mb-3">
         Interactive Archive Map
-      </motion.h3>
+      </h3>
       
-      <motion.p 
-        className="text-white/50 mb-6 max-w-md mx-auto"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
+      <p className="text-white/40 mb-6 max-w-md mx-auto text-sm sm:text-base">
         Explore doctrine relationships through an interactive visualization of connections between sources, claims, and trails.
-      </motion.p>
+      </p>
       
       <motion.span 
         className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-vault-gold/10 to-purple-500/10 border border-vault-gold/20 rounded-xl text-vault-gold text-sm font-medium"
@@ -1610,7 +1611,7 @@ function ArchiveMapTab() {
         <Sparkle className="w-4 h-4" weight="fill" />
         Coming in Phase B
       </motion.span>
-    </motion.div>
+    </div>
   );
 }
 
