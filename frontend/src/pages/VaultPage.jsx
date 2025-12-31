@@ -456,6 +456,15 @@ export default function VaultPage({ user, initialView }) {
         
       } catch (err) {
         console.error('[Vault] Initialization error:', err);
+        
+        // Check if it's an auth error (401) - don't show error state, user needs to login
+        if (err.response?.status === 401) {
+          // User not authenticated - this is handled by the app's auth flow
+          // Just set a neutral state
+          setVaultState(VAULT_STATES.NO_PORTFOLIOS);
+          return;
+        }
+        
         setError('Failed to load vault. Please try again.');
         setVaultState(VAULT_STATES.ERROR);
       }
