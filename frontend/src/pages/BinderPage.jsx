@@ -117,11 +117,11 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
         style={{ x }}
         className="p-3 rounded-lg bg-vault-dark/50 border border-vault-gold/10 hover:border-vault-gold/30 transition-colors cursor-grab active:cursor-grabbing relative"
       >
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-white text-sm font-medium truncate">
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <span className="text-white text-sm font-medium truncate flex-1 min-w-0">
             {run.profile_name}
           </span>
-          <Badge className={`text-xs ${statusColor} border`}>
+          <Badge className={`text-xs ${statusColor} border shrink-0`}>
             <StatusIcon className={`w-3 h-3 mr-1 ${run.status === 'generating' ? 'animate-spin' : ''}`} />
             {STATUS_CONFIG[run.status]?.label}
           </Badge>
@@ -151,7 +151,7 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
           </div>
         )}
         {run.status === 'failed' && run.error_json && (
-          <p className="text-red-400 text-xs mt-1 truncate">
+          <p className="text-red-400 text-xs mt-1 line-clamp-2">
             {run.error_json.user_message || run.error_json.message || 'Generation failed'}
           </p>
         )}
