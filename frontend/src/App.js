@@ -512,6 +512,16 @@ const AppRouter = ({ auth }) => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/archive/admin"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <ArchiveAdminPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
       
       {/* Governance Routes */}
       <Route
