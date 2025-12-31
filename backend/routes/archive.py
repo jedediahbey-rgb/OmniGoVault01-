@@ -134,8 +134,11 @@ async def create_source(source: ArchiveSource, request: Request):
     return {"source_id": source_data["source_id"]}
 
 @router.put("/sources/{source_id}")
-async def update_source(source_id: str, source: ArchiveSource, user = Depends(get_current_user)):
+async def update_source(source_id: str, source: ArchiveSource, request: Request):
     """Update an archive source"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     existing = await db.archive_sources.find_one({"source_id": source_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Source not found")
