@@ -1943,58 +1943,24 @@ function ArchiveMapTab() {
           <div className="w-8 h-px bg-gradient-to-l from-transparent to-vault-gold/50" />
         </div>
         
-        {/* React Flow Map */}
-        <div className="h-[480px] sm:h-[500px] lg:h-[550px] bg-gradient-to-b from-[#050810] to-[#080d18] rounded-2xl overflow-hidden relative">
+        {/* React Flow Map - using explicit height for stable container */}
+        <div style={{ height: isMobile ? 480 : 550, width: '100%' }} className="bg-gradient-to-b from-[#050810] to-[#080d18] rounded-2xl overflow-hidden relative">
           {/* Inner vignette effect */}
           <div className="absolute inset-0 pointer-events-none z-10" style={{
             background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)'
           }} />
           
-          <ReactFlow
-            key={isMobile ? 'mobile' : 'desktop'}
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodeClick={onNodeClick}
-            onInit={onInit}
-            nodeTypes={nodeTypes}
-            fitView
-            fitViewOptions={{ 
-              padding: isMobile ? 0.12 : 0.18, 
-              minZoom: 0.5, 
-              maxZoom: 1.2,
-              includeHiddenNodes: true
-            }}
-            minZoom={0.3}
-            maxZoom={2}
-            attributionPosition="bottom-left"
-            className="archive-map-flow"
-            proOptions={{ hideAttribution: true }}
-          >
-            <Background color="#1a1a2e" gap={20} />
-            <Controls 
-              position="bottom-left"
-              className="archive-map-controls !bg-black/80 !border-vault-gold/30 !rounded-lg !shadow-xl [&>button]:!bg-white/10 [&>button]:!border-vault-gold/20 [&>button]:!text-white/70 [&>button:hover]:!bg-vault-gold/20 [&>button:hover]:!text-vault-gold"
-              showInteractive={false}
+          <ReactFlowProvider>
+            <ArchiveMapFlow
+              key={isMobile ? 'mobile' : 'desktop'}
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onNodeClick={onNodeClick}
+              isMobile={isMobile}
             />
-            <MiniMap 
-              position="bottom-right"
-              nodeColor={(node) => {
-                switch (node.type) {
-                  case 'doctrine': return '#C6A87C';
-                  case 'case': return '#3B82F6';
-                  case 'statute': return '#8B5CF6';
-                  case 'concept': return '#10B981';
-                  default: return '#666';
-                }
-              }}
-              maskColor="rgba(0, 0, 0, 0.85)"
-              className="archive-map-minimap !bg-black/80 !border-vault-gold/30 !rounded-lg"
-              pannable
-              zoomable
-            />
-          </ReactFlow>
+          </ReactFlowProvider>
           
           {/* Touch hint for mobile */}
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 sm:hidden text-white/40 text-[10px] bg-black/60 px-3 py-1 rounded-full border border-white/10">
