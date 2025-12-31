@@ -651,6 +651,14 @@ function IndexTab() {
   });
   const [selectedSource, setSelectedSource] = useState(null);
   
+  // Check if any filters are active
+  const hasActiveFilters = filters.type || filters.topic || filters.era;
+  
+  const clearFilters = () => {
+    setFilters({ type: '', topic: '', jurisdiction: '', era: '' });
+    setSearch('');
+  };
+  
   useEffect(() => {
     fetchSources();
   }, [filters]);
@@ -689,35 +697,39 @@ function IndexTab() {
   };
   
   return (
-    <div>
-      {/* Search & Filters */}
-      <div className="mb-6 space-y-4">
-        <form onSubmit={handleSearch} className="relative">
-          <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+    <div className="w-full">
+      {/* Search & Filters - Mobile Optimized */}
+      <div className="mb-6 space-y-3">
+        {/* Search bar - full width */}
+        <form onSubmit={handleSearch} className="relative w-full">
+          <MagnifyingGlass className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-white/40" />
           <Input
-            placeholder="Search sources, citations, excerpts..."
+            placeholder="Search sources, citations..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-12 py-3 bg-white/5 border-white/10 focus:border-vault-gold text-white"
+            className="w-full pl-10 sm:pl-12 py-3 bg-white/[0.04] backdrop-blur-sm border-white/10 focus:border-vault-gold/50 focus:bg-white/[0.06] text-white text-sm sm:text-base rounded-xl transition-all"
           />
         </form>
         
-        <div className="flex flex-wrap gap-2">
+        {/* Filters - responsive grid */}
+        <div className="grid grid-cols-3 gap-2 w-full">
           <select
             value={filters.type}
             onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-vault-gold outline-none"
+            className="w-full px-2.5 sm:px-3 py-2.5 bg-white/[0.04] backdrop-blur-sm border border-white/10 rounded-xl text-white text-xs sm:text-sm focus:border-vault-gold/50 focus:bg-white/[0.06] outline-none transition-all appearance-none cursor-pointer"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23ffffff50' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em', paddingRight: '2rem' }}
           >
             <option value="">All Types</option>
-            <option value="PRIMARY_SOURCE">Primary Source</option>
-            <option value="SUPPORTED_INTERPRETATION">Interpretation</option>
+            <option value="PRIMARY_SOURCE">Primary</option>
+            <option value="SUPPORTED_INTERPRETATION">Interp.</option>
             <option value="HYPOTHESIS">Hypothesis</option>
           </select>
           
           <select
             value={filters.topic}
             onChange={(e) => setFilters({ ...filters, topic: e.target.value })}
-            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-vault-gold outline-none"
+            className="w-full px-2.5 sm:px-3 py-2.5 bg-white/[0.04] backdrop-blur-sm border border-white/10 rounded-xl text-white text-xs sm:text-sm focus:border-vault-gold/50 focus:bg-white/[0.06] outline-none transition-all appearance-none cursor-pointer"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23ffffff50' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em', paddingRight: '2rem' }}
           >
             <option value="">All Topics</option>
             {TOPICS.map(t => <option key={t} value={t}>{t}</option>)}
@@ -726,7 +738,8 @@ function IndexTab() {
           <select
             value={filters.era}
             onChange={(e) => setFilters({ ...filters, era: e.target.value })}
-            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-vault-gold outline-none"
+            className="w-full px-2.5 sm:px-3 py-2.5 bg-white/[0.04] backdrop-blur-sm border border-white/10 rounded-xl text-white text-xs sm:text-sm focus:border-vault-gold/50 focus:bg-white/[0.06] outline-none transition-all appearance-none cursor-pointer"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23ffffff50' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em', paddingRight: '2rem' }}
           >
             <option value="">All Eras</option>
             {ERAS.map(e => <option key={e} value={e}>{e}</option>)}
@@ -736,24 +749,55 @@ function IndexTab() {
       
       {/* Results */}
       {loading ? (
-        <div className="grid gap-4">
+        <div className="grid gap-3 sm:gap-4">
           {[1,2,3].map(i => (
-            <div key={i} className="h-32 bg-white/5 rounded-xl animate-pulse" />
+            <div key={i} className="h-28 sm:h-32 bg-white/[0.03] rounded-xl animate-pulse" />
           ))}
         </div>
       ) : sources.length > 0 ? (
-        <div className="grid gap-4">
+        <div className="grid gap-3 sm:gap-4">
           {sources.map((source, index) => (
             <SourceCard key={source.source_id} source={source} index={index} onClick={() => setSelectedSource(source)} />
           ))}
         </div>
       ) : (
-        <div className="text-center py-16">
-          <Archive className="w-16 h-16 text-white/10 mx-auto mb-4" weight="duotone" />
-          <h3 className="text-white text-lg mb-2">No Sources Found</h3>
-          <p className="text-white/50 text-sm">Try adjusting your search or filters</p>
-        </div>
-      )}
+        /* Premium Empty State */
+        <motion.div 
+          className="text-center py-12 sm:py-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <motion.div 
+            className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5"
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Archive className="w-10 h-10 sm:w-12 sm:h-12 text-white/20" weight="duotone" />
+            </div>
+            {/* Subtle glow */}
+            <div className="absolute inset-0 rounded-2xl bg-vault-gold/5 blur-xl opacity-50" />
+          </motion.div>
+          
+          <h3 className="text-white font-heading text-lg sm:text-xl mb-2">No Sources Found</h3>
+          <p className="text-white/40 text-sm mb-5 max-w-xs mx-auto">
+            {hasActiveFilters ? 'Try adjusting your filters' : 'Sources will appear here once available'}
+          </p>
+          
+          {hasActiveFilters && (
+            <motion.button
+              onClick={clearFilters}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-vault-gold/30 rounded-lg text-white/60 hover:text-white text-sm transition-all"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <X className="w-4 h-4" />
+              Clear filters
+            </motion.button>
+          )}
+        </motion.div>
+      )}}
       
       {/* Source Detail Modal */}
       <AnimatePresence>
