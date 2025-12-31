@@ -382,6 +382,132 @@ async def get_user_details(target_user_id: str, request: Request):
         raise HTTPException(status_code=404, detail=str(e))
 
 
+# ============ SUPPORT_ADMIN SPECIFIC ROUTES ============
+
+@router.get("/support/permissions")
+async def get_support_permissions(request: Request):
+    """Get current admin's support permissions and restrictions"""
+    user = await require_admin(request)
+    admin_service = get_admin_service()
+    
+    result = await admin_service.get_support_admin_permissions(user.user_id)
+    return result
+
+
+@router.post("/support/notes")
+async def add_support_note(request: Request, body: AddSupportNoteRequest):
+    """Add a support note to an account or user"""
+    user = await require_admin(request)
+    admin_service = get_admin_service()
+    ip = get_client_ip(request)
+    
+    try:
+        result = await admin_service.add_support_note(
+            admin_user_id=user.user_id,
+            account_id=body.account_id,
+            user_id=body.user_id,
+            note_type=body.note_type.value,
+            content=body.content,
+            is_internal=body.is_internal,
+            tags=body.tags,
+            ip_address=ip
+        )
+        return result
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/support/notes")
+async def get_support_notes(
+    request: Request,
+    account_id: Optional[str] = None,
+    user_id: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 50
+):
+    """Get support notes for an account or user"""
+    user = await require_admin(request)
+    admin_service = get_admin_service()
+    
+    try:
+        result = await admin_service.get_support_notes(
+            admin_user_id=user.user_id,
+            account_id=account_id,
+            user_id=user_id,
+            skip=skip,
+            limit=limit
+        )
+        return result
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+
+@router.post("/support/extend-trial")
+async def extend_trial(request: Request, body: ExtendTrialRequest):
+    """Extend a trial period for an account (Support Admin allowed, max 30 days)"""
+    user = await require_admin(request)
+    admin_service = get_admin_service()
+    ip = get_client_ip(request)
+    
+    try:
+        result = await admin_service.extend_trial(
+            admin_user_id=user.user_id,
+            account_id=body.account_id,
+            days=body.days,
+            reason=body.reason,
+            ip_address=ip
+        )
+        return result
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/support/unlock-account")
+async def unlock_account(request: Request, body: UnlockAccountRequest):
+    """Unlock a locked user account (Support Admin allowed)"""
+    user = await require_admin(request)
+    admin_service = get_admin_service()
+    ip = get_client_ip(request)
+    
+    try:
+        result = await admin_service.unlock_user_account(
+            admin_user_id=user.user_id,
+            target_user_id=body.user_id,
+            reason=body.reason,
+            ip_address=ip
+        )
+        return result
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/support/reset-2fa")
+async def reset_2fa(request: Request, body: Reset2FARequest):
+    """Reset 2FA for a user (Support Admin allowed)"""
+    user = await require_admin(request)
+    admin_service = get_admin_service()
+    ip = get_client_ip(request)
+    
+    try:
+        result = await admin_service.reset_user_2fa(
+            admin_user_id=user.user_id,
+            target_user_id=body.user_id,
+            reason=body.reason,
+            ip_address=ip
+        )
+        return result
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 # ============ AUDIT LOGS ============
 
 @router.get("/audit-logs")
