@@ -374,21 +374,14 @@ export default function MainLayout({ children, user, onLogout }) {
       
       {/* Main Content */}
       <main className="lg:ml-64 flex-1 min-h-0 relative pt-14 lg:pt-14 overflow-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            ref={scrollContainerRef}
-            data-scroll-container="true"
-            initial={pageTransition.initial}
-            animate={pageTransition.animate}
-            exit={pageTransition.exit}
-            transition={pageTransition.transition}
-            className="h-full min-w-0 w-full max-w-full overflow-y-auto overflow-x-hidden"
-            style={{ WebkitOverflowScrolling: 'touch' }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        <div
+          ref={scrollContainerRef}
+          data-scroll-container="true"
+          className="h-full min-w-0 w-full max-w-full overflow-y-auto overflow-x-hidden"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          {children}
+        </div>
       </main>
 
       {/* Portrait Style Selector Dialog */}
