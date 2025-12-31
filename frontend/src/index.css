@@ -550,3 +550,121 @@
 .archive-particle {
   animation: archive-particle-float 4s ease-in-out infinite;
 }
+
+/* ============================================================================
+   BLACK ARCHIVE - Mobile-First Responsive Styles
+   ============================================================================ */
+
+/* Ensure no horizontal overflow */
+.archive-page-root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Mobile segmented control glass effect */
+@media (max-width: 639px) {
+  .archive-mobile-tabs {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
+
+/* Safe area support for notch devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .archive-safe-area {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Select dropdown styling for mobile */
+.archive-select {
+  background-color: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.archive-select:focus {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(198, 168, 124, 0.5);
+}
+
+/* Responsive typography using clamp */
+.archive-title {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  line-height: 1.1;
+}
+
+.archive-subtitle {
+  font-size: clamp(0.75rem, 2.5vw, 1rem);
+}
+
+/* Mobile tab chip scrolling */
+.archive-chips-scroll {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.archive-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.archive-chips-scroll > * {
+  scroll-snap-align: start;
+}
+
+/* Mobile filter grid */
+@media (max-width: 639px) {
+  .archive-filters {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .archive-filters select {
+    width: 100%;
+    min-width: 0;
+    padding-left: 0.625rem;
+    padding-right: 1.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Obsidian glass card effect */
+.archive-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.04) 0%, 
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.archive-glass-card:hover {
+  border-color: rgba(198, 168, 124, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    0 0 20px rgba(198, 168, 124, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Premium header glass effect */
+.archive-header-glass {
+  background: rgba(3, 5, 8, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
