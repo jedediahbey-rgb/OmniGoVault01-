@@ -369,3 +369,131 @@ async def get_realtime_stats(request: Request):
         "active_document_locks": len(manager.document_locks),
         "rooms": {room_id: len(conns) for room_id, conns in manager.rooms.items()}
     })
+
+
+# ============ V2: ADVANCED ENDPOINTS ============
+
+@router.get("/stats/detailed")
+async def get_detailed_stats(request: Request):
+    """Get detailed real-time system statistics (V2)."""
+    manager = get_connection_manager()
+    stats = manager.get_detailed_stats()
+    return success_response(stats)
+
+
+@router.get("/history/{room_id}")
+async def get_room_history(
+    room_id: str,
+    request: Request,
+    since: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=100)
+):
+    """Get activity history for a room (V2)."""
+    manager = get_connection_manager()
+    history = manager.get_room_history(room_id, since, limit)
+    
+    return success_response({
+        "room_id": room_id,
+        "events": history,
+        "count": len(history)
+    })
+
+
+@router.get("/document/{document_id}/version")
+async def get_document_version(document_id: str, request: Request):
+    """Get the current version of a document for conflict resolution (V2)."""
+    manager = get_connection_manager()
+    version = manager.get_document_version(document_id)
+    locked_by = manager.get_document_lock(document_id)
+    
+    return success_response({
+        "document_id": document_id,
+        "version": version,
+        "is_locked": locked_by is not None,
+        "locked_by": locked_by
+    })
+
+
+@router.get("/channels")
+async def get_channels(request: Request):
+    """Get list of active channels and subscriber counts (V2)."""
+    manager = get_connection_manager()
+    
+    channels = {}
+    if hasattr(manager, '_subscriptions'):
+        channels = {ch: len(subs) for ch, subs in manager._subscriptions.items()}
+    
+    return success_response({
+        "channels": channels,
+        "count": len(channels)
+    })
+
+
+@router.post("/channel/{channel}/broadcast")
+async def broadcast_to_channel(channel: str, request: Request):
+    """Broadcast a message to all subscribers of a channel (V2)."""
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        return error_response("AUTH_ERROR", "Authentication required", status_code=401)
+    
+    try:
+        body = await request.json()
+        message = body.get("message", {})
+        
+        manager = get_connection_manager()
+        
+        await manager.broadcast_to_channel(channel, {
+            "type": "channel_message",
+            "channel": channel,
+            "message": message,
+            "sender_id": user.user_id,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+        
+        subscriber_count = manager.get_channel_subscribers(channel)
+        
+        return success_response({
+            "channel": channel,
+            "subscribers_notified": subscriber_count,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+        
+    except Exception as e:
+        return error_response("BROADCAST_ERROR", str(e), status_code=500)
+
+
+@router.get("/capabilities")
+async def get_capabilities(request: Request):
+    """Get supported real-time capabilities (V2)."""
+    return success_response({
+        "version": "2.0",
+        "features": {
+            "presence": True,
+            "rooms": True,
+            "document_locking": True,
+            "typing_indicators": True,
+            "cursor_sharing": True,
+            "channel_subscriptions": True,
+            "activity_history": True,
+            "conflict_resolution": True,
+            "session_recovery": True,
+            "rate_limiting": True
+        },
+        "event_types": [e.value for e in EventType],
+        "actions": [
+            "join_room",
+            "leave_room",
+            "typing",
+            "cursor",
+            "lock_document",
+            "unlock_document",
+            "ping",
+            "subscribe",
+            "unsubscribe",
+            "get_history",
+            "sync_changes",
+            "store_session",
+            "restore_session"
+        ]
+    })
