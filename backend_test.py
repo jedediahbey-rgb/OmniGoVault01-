@@ -14,7 +14,7 @@ import hashlib
 import subprocess
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://vault-enhance.preview.emergentagent.com/api"
+BASE_URL = "https://ux-cleanup.preview.emergentagent.com/api"
 
 class BinderTester:
     def __init__(self):

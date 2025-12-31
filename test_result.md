@@ -46,8 +46,8 @@ Testing the Binder Generation functionality through the frontend UI at /binder p
 - [x] Evidence binder generation functions
 
 ## Testing Notes
-- Frontend URL: https://vault-enhance.preview.emergentagent.com
-- Backend API: https://vault-enhance.preview.emergentagent.com/api
+- Frontend URL: https://ux-cleanup.preview.emergentagent.com
+- Backend API: https://ux-cleanup.preview.emergentagent.com/api
 - Test with real-looking data, not dummy data
 - Full PDF generation may take time - verify queued/generating status
 
@@ -134,7 +134,7 @@ Testing the Binder Generation functionality through the frontend UI at /binder p
 - ✅ End-to-end binder generation flow working
 
 ### Test Environment Details:
-- **Backend URL**: https://vault-enhance.preview.emergentagent.com/api
+- **Backend URL**: https://ux-cleanup.preview.emergentagent.com/api
 - **Test User**: jedediah.bey@gmail.com (authenticated successfully)
 - **Test Portfolio**: Created and used for binder generation
 - **PDF Library**: WeasyPrint v62.3 working correctly
