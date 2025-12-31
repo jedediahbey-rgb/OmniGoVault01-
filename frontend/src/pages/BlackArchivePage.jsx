@@ -322,12 +322,12 @@ const MobileSegmentedTabs = memo(({ tabs, activeTab, onTabChange }) => {
       </div>
     </div>
   );
-};
+});
 
 // ============================================================================
-// DESKTOP PREMIUM TAB WITH EFFECTS
+// DESKTOP PREMIUM TAB WITH EFFECTS (Memoized)
 // ============================================================================
-const DesktopPremiumTab = ({ tab, isActive, onClick }) => {
+const DesktopPremiumTab = memo(({ tab, isActive, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   
   return (
