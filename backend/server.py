@@ -4780,7 +4780,8 @@ init_realtime_routes(db, get_current_user)
 app.include_router(realtime_router)
 
 # Black Archive routes
-from routes.archive import router as archive_router
+from routes.archive import router as archive_router, init_archive_routes
+init_archive_routes(db, get_current_user)
 app.include_router(archive_router, prefix="/api")
 
 app.add_middleware(
