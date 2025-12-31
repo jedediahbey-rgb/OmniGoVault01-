@@ -41,36 +41,44 @@ class BinderTester:
 
     def get_valid_session_token(self):
         """Try to get a valid session token for testing"""
-        # Try different approaches to get a valid session token
-        
-        # Method 1: Try to create a test user and session
+        # Method 1: Try to login with the specified email
         try:
-            # Generate a unique test user
-            import uuid
-            test_suffix = uuid.uuid4().hex[:8]
-            test_email = f"test_omnibinder_{test_suffix}@example.com"
+            # Try to register/login with the specified email
             test_password = "testpassword123"
             
-            # Try to register a test user
+            # Try to register first
             register_data = {
-                'email': test_email,
+                'email': self.test_user_email,
                 'password': test_password,
-                'name': f'OmniBinder Test User {test_suffix}'
+                'name': 'Jedediah Bey Test User'
             }
             response = requests.post(f'{self.base_url}/auth/register', json=register_data)
             if response.status_code == 200:
                 data = response.json()
                 session_token = data.get('session_token')
                 if session_token:
-                    self.log(f"✅ Created test user: {test_email}")
-                    self.test_user_email = test_email  # Update test user email
+                    self.log(f"✅ Registered test user: {self.test_user_email}")
                     return session_token
+            
+            # If registration failed, try login
+            login_data = {
+                'email': self.test_user_email,
+                'password': test_password
+            }
+            response = requests.post(f'{self.base_url}/auth/login', json=login_data)
+            if response.status_code == 200:
+                data = response.json()
+                session_token = data.get('session_token')
+                if session_token:
+                    self.log(f"✅ Logged in test user: {self.test_user_email}")
+                    return session_token
+                    
         except Exception as e:
-            self.log(f"Failed to create test user: {e}")
+            self.log(f"Failed to authenticate with {self.test_user_email}: {e}")
         
         # Method 2: Try some common test session tokens
         test_tokens = [
-            'test_session_omnibinder_v2',
+            'test_session_binder',
             'dev_session_12345',
             'sess_' + '1' * 32,
         ]
