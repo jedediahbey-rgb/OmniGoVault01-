@@ -23,14 +23,15 @@ const reactFlowStyles = `
     width: 100px !important;
     height: 65px !important;
     right: 8px !important;
-    top: 8px !important;
+    bottom: 8px !important;
+    top: auto !important;
     border-radius: 6px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
     overflow: hidden !important;
   }
   .react-flow__controls {
     right: 8px !important;
-    bottom: 8px !important;
+    bottom: 80px !important;
     left: auto !important;
     display: flex !important;
     flex-direction: column !important;
@@ -42,11 +43,14 @@ const reactFlowStyles = `
   }
   @media (max-width: 640px) {
     .react-flow__minimap {
-      display: none !important;
+      width: 80px !important;
+      height: 50px !important;
+      right: 4px !important;
+      bottom: 4px !important;
     }
     .react-flow__controls {
       right: 4px !important;
-      bottom: 4px !important;
+      bottom: 58px !important;
     }
     .react-flow__controls button {
       width: 24px !important;
