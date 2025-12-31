@@ -287,21 +287,28 @@ export default function VaultPage({ user, initialView }) {
     try {
       await axios.delete(`${API}/documents/${docId}/permanent`);
       setTrashedDocuments(trashedDocuments.filter(d => d.document_id !== docId));
-      toast.success('Document deleted');
+      toast.success('Document permanently deleted');
     } catch { toast.error('Failed to delete'); }
   };
 
-  // Soft delete - move document to trash
-  const softDeleteDocument = async (docId) => {
+  // Soft delete - move document to trash (called after confirmation)
+  const confirmDeleteDocument = async () => {
+    if (!deleteConfirmDoc) return;
     try {
-      await axios.delete(`${API}/documents/${docId}`);
-      const doc = documents.find(d => d.document_id === docId);
-      setDocuments(documents.filter(d => d.document_id !== docId));
-      if (doc) {
-        setTrashedDocuments([{ ...doc, deleted_at: new Date().toISOString() }, ...trashedDocuments]);
-      }
+      await axios.delete(`${API}/documents/${deleteConfirmDoc.document_id}`);
+      setDocuments(documents.filter(d => d.document_id !== deleteConfirmDoc.document_id));
+      setTrashedDocuments([{ ...deleteConfirmDoc, deleted_at: new Date().toISOString() }, ...trashedDocuments]);
       toast.success('Document moved to trash');
-    } catch { toast.error('Failed to delete document'); }
+    } catch { 
+      toast.error('Failed to delete document'); 
+    } finally {
+      setDeleteConfirmDoc(null);
+    }
+  };
+
+  // Show delete confirmation dialog
+  const handleDeleteRequest = (doc) => {
+    setDeleteConfirmDoc(doc);
   };
 
   const createPortfolio = async () => {
