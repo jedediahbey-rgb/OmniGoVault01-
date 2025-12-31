@@ -153,16 +153,41 @@ const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
 // ============================================================================
 // FLOATING PARTICLES BACKGROUND
 // ============================================================================
+
+// Pre-generated particle positions for consistent rendering
+const PARTICLE_POSITIONS = [
+  { left: 12, top: 8, duration: 5.2, delay: 0.3 },
+  { left: 85, top: 15, duration: 4.8, delay: 1.2 },
+  { left: 23, top: 45, duration: 6.1, delay: 0.8 },
+  { left: 67, top: 72, duration: 5.5, delay: 1.8 },
+  { left: 45, top: 28, duration: 4.3, delay: 0.5 },
+  { left: 91, top: 55, duration: 5.9, delay: 1.1 },
+  { left: 34, top: 82, duration: 4.6, delay: 0.2 },
+  { left: 78, top: 38, duration: 5.3, delay: 1.5 },
+  { left: 56, top: 91, duration: 6.4, delay: 0.9 },
+  { left: 8, top: 62, duration: 4.9, delay: 1.7 },
+  { left: 42, top: 12, duration: 5.7, delay: 0.4 },
+  { left: 95, top: 85, duration: 4.2, delay: 1.3 },
+  { left: 18, top: 33, duration: 6.0, delay: 0.6 },
+  { left: 72, top: 19, duration: 5.1, delay: 1.9 },
+  { left: 51, top: 68, duration: 4.7, delay: 0.1 },
+  { left: 29, top: 95, duration: 5.8, delay: 1.4 },
+  { left: 83, top: 42, duration: 4.4, delay: 0.7 },
+  { left: 6, top: 78, duration: 6.2, delay: 1.6 },
+  { left: 61, top: 5, duration: 5.0, delay: 1.0 },
+  { left: 38, top: 58, duration: 4.5, delay: 0.0 },
+];
+
 const FloatingParticles = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => (
+      {PARTICLE_POSITIONS.map((particle, i) => (
         <motion.div
           key={i}
           className="absolute w-1 h-1 rounded-full bg-vault-gold/30"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
+            left: `${particle.left}%`,
+            top: `${particle.top}%`,
           }}
           animate={{
             y: [0, -30, 0],
@@ -170,9 +195,9 @@ const FloatingParticles = () => {
             scale: [1, 1.5, 1],
           }}
           transition={{
-            duration: 3 + Math.random() * 4,
+            duration: particle.duration,
             repeat: Infinity,
-            delay: Math.random() * 2,
+            delay: particle.delay,
             ease: 'easeInOut',
           }}
         />
