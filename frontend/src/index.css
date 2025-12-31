@@ -764,51 +764,43 @@
   display: none;
 }
 
-/* Controls positioning */
-.archive-map-flow .react-flow__controls {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  left: auto;
-  bottom: auto;
+/* Controls - Desktop: bottom-left */
+.archive-map-controls {
+  margin: 12px !important;
 }
 
-.archive-map-flow .react-flow__controls button {
-  width: 28px;
-  height: 28px;
+.archive-map-controls button {
+  width: 32px !important;
+  height: 32px !important;
 }
 
-.archive-map-flow .react-flow__controls button svg {
-  max-width: 14px;
-  max-height: 14px;
+.archive-map-controls button svg {
+  max-width: 16px !important;
+  max-height: 16px !important;
 }
 
-/* MiniMap positioning */
-.archive-map-flow .react-flow__minimap {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  left: auto;
-  top: auto;
+/* MiniMap styling */
+.archive-map-minimap {
+  width: 140px !important;
+  height: 90px !important;
+  margin: 12px !important;
 }
 
 /* Mobile adjustments */
 @media (max-width: 639px) {
-  .archive-map-flow .react-flow__controls {
-    top: 4px;
-    right: 4px;
+  .archive-map-controls {
+    margin: 8px !important;
   }
   
-  .archive-map-flow .react-flow__controls button {
-    width: 24px;
-    height: 24px;
+  .archive-map-controls button {
+    width: 28px !important;
+    height: 28px !important;
   }
   
-  .archive-map-flow .react-flow__minimap {
-    bottom: 4px;
-    right: 4px;
+  .archive-map-minimap {
     width: 100px !important;
-    height: 70px !important;
+    height: 65px !important;
+    margin: 8px !important;
   }
 }
 
