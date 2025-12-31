@@ -856,8 +856,9 @@ export default function VaultPage({ user, initialView }) {
         
         {/* Document grid */}
         <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+          {/* Desktop only trash notice */}
           {showTrash && (
-            <div className="flex items-center gap-2 text-red-400 text-sm mb-6 p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+            <div className="hidden lg:flex items-center gap-2 text-red-400 text-sm mb-6 p-3 bg-red-500/10 rounded-lg border border-red-500/20">
               <Trash className="w-4 h-4" weight="duotone" />
               <span>Trash — Documents will be permanently deleted after 30 days</span>
             </div>
@@ -866,7 +867,7 @@ export default function VaultPage({ user, initialView }) {
           {displayedDocuments.length > 0 ? (
             <motion.div
               layout
-              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
+              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5"
             >
               <AnimatePresence mode="popLayout">
                 {displayedDocuments.map((doc) => (
