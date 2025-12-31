@@ -1654,25 +1654,25 @@ const nodeTypes = {
   concept: ConceptNode,
 };
 
-// Sample nodes for the map - centered positions starting from 0,0
+// Sample nodes for the map - properly spaced and centered
 const initialNodes = [
   // Central Doctrine - at center
-  { id: '1', type: 'doctrine', position: { x: 200, y: 120 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
+  { id: '1', type: 'doctrine', position: { x: 220, y: 140 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
   
-  // Cases - left side
-  { id: '2', type: 'case', position: { x: 0, y: 20 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
-  { id: '3', type: 'case', position: { x: 0, y: 220 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
+  // Cases - left side with more spacing
+  { id: '2', type: 'case', position: { x: 0, y: 0 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
+  { id: '3', type: 'case', position: { x: 0, y: 250 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
   
   // Related Doctrines - right side
-  { id: '4', type: 'doctrine', position: { x: 400, y: 20 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
-  { id: '5', type: 'doctrine', position: { x: 400, y: 220 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
+  { id: '4', type: 'doctrine', position: { x: 440, y: 0 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
+  { id: '5', type: 'doctrine', position: { x: 440, y: 250 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
   
   // Statutes - bottom center
-  { id: '6', type: 'statute', position: { x: 200, y: 280 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
+  { id: '6', type: 'statute', position: { x: 220, y: 320 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
   
-  // Concepts - flanking center
-  { id: '7', type: 'concept', position: { x: 80, y: 120 }, data: { label: 'Chancellor\'s Conscience' } },
-  { id: '8', type: 'concept', position: { x: 320, y: 120 }, data: { label: 'No-Profit Rule' } },
+  // Concepts - flanking center with better spacing
+  { id: '7', type: 'concept', position: { x: 70, y: 140 }, data: { label: 'Chancellor\'s Conscience' } },
+  { id: '8', type: 'concept', position: { x: 370, y: 140 }, data: { label: 'No-Profit Rule' } },
 ];
 
 const initialEdges = [
