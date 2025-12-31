@@ -331,8 +331,12 @@ export default function VaultPage({ user, initialView }) {
     const matchesSearch = searchTerm === '' || 
       doc.title?.toLowerCase().includes(searchTerm.toLowerCase());
     // When viewing trash, show ALL trashed docs regardless of portfolio
-    const matchesPortfolio = showTrash || !selectedPortfolio || 
-      doc.portfolio_id === selectedPortfolio.portfolio_id;
+    // Handle both string ID and object with portfolio_id
+    const portfolioId = typeof selectedPortfolio === 'string' 
+      ? selectedPortfolio 
+      : selectedPortfolio?.portfolio_id;
+    const matchesPortfolio = showTrash || !portfolioId || 
+      doc.portfolio_id === portfolioId;
     return matchesSearch && matchesPortfolio;
   });
 
