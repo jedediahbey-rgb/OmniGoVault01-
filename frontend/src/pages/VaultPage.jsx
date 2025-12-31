@@ -337,27 +337,22 @@ export default function VaultPage({ user, initialView }) {
   };
 
   const filteredDocuments = (showTrash ? trashedDocuments : documents).filter(doc => {
+    // Search filter
     const matchesSearch = searchTerm === '' || 
       doc.title?.toLowerCase().includes(searchTerm.toLowerCase());
+    
     // When viewing trash, show ALL trashed docs regardless of portfolio
-    // Handle both string ID and object with portfolio_id
-    const portfolioId = typeof selectedPortfolio === 'string' 
-      ? selectedPortfolio 
-      : selectedPortfolio?.portfolio_id;
-    
-    // If no portfolio selected, show all documents
-    if (!portfolioId) {
-      return matchesSearch;
-    }
-    
-    // When viewing trash, show ALL trashed docs
     if (showTrash) {
       return matchesSearch;
     }
     
-    // Filter by portfolio - ensure both values exist and match
-    const docPortfolioId = doc.portfolio_id;
-    const matchesPortfolio = docPortfolioId === portfolioId;
+    // If no portfolio selected, show all documents
+    if (!selectedPortfolio) {
+      return matchesSearch;
+    }
+    
+    // Filter by portfolio - selectedPortfolio is always an object now
+    const matchesPortfolio = doc.portfolio_id === selectedPortfolio.portfolio_id;
     
     return matchesSearch && matchesPortfolio;
   });
