@@ -1896,12 +1896,12 @@ function ArchiveMapTab() {
             nodeTypes={nodeTypes}
             fitView
             fitViewOptions={{ 
-              padding: isMobile ? 0.05 : 0.15, 
-              minZoom: 0.3, 
-              maxZoom: 1.5,
+              padding: isMobile ? 0.1 : 0.15, 
+              minZoom: 0.4, 
+              maxZoom: 1.2,
               includeHiddenNodes: true
             }}
-            minZoom={0.2}
+            minZoom={0.3}
             maxZoom={2}
             attributionPosition="bottom-left"
             className="archive-map-flow"
