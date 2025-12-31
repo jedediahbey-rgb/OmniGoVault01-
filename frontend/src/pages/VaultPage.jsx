@@ -180,11 +180,12 @@ export default function VaultPage({ user, initialView }) {
   const [showNewPortfolio, setShowNewPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
 
-  // Switch portfolio
+  // Switch portfolio - use SWITCHING state to avoid skeleton flash
   const switchPortfolio = useCallback(async (portfolio, showToast = true) => {
     if (!portfolio) return;
     
-    setVaultState(VAULT_STATES.LOADING);
+    // Use SWITCHING state instead of LOADING to keep current content visible
+    setVaultState(prev => prev === VAULT_STATES.LOADING ? VAULT_STATES.LOADING : VAULT_STATES.SWITCHING);
     setActivePortfolio(portfolio);
     localStorage.setItem('activePortfolioId', portfolio.portfolio_id);
     
