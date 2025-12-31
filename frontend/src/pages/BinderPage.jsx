@@ -2213,7 +2213,7 @@ export default function BinderPage() {
 
         {/* Manifest Modal */}
         <Dialog open={showManifestModal} onOpenChange={setShowManifestModal}>
-          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white w-[95vw] max-w-2xl max-h-[80vh] overflow-hidden">
+          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-h-[80vh] overflow-hidden" style={{ maxWidth: '600px' }}>
             <DialogHeader>
               <DialogTitle className="text-xl font-heading text-vault-gold flex items-center gap-2">
                 <FileText className="w-5 h-5" />
