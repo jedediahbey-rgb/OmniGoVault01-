@@ -303,6 +303,18 @@ export default function VaultPage({ user, initialView }) {
     });
   }, [documents, trashedDocuments, showTrash, searchTerm, pinnedDocs]);
 
+  // After the switch render has happened, re-enable animations for normal adds/removes
+  useEffect(() => {
+    if (!skipNextAnimRef.current) return;
+    const id = requestAnimationFrame(() => {
+      skipNextAnimRef.current = false;
+    });
+    return () => cancelAnimationFrame(id);
+  }, [activePortfolio?.portfolio_id]);
+
+  // Get current skip animation state from ref
+  const skipAnimation = skipNextAnimRef.current;
+
   // Loading state - only show skeleton on initial load, not when switching portfolios
   if (vaultState === VAULT_STATES.LOADING) {
     return (
