@@ -783,9 +783,9 @@ export default function WorkspaceDetailPage({ user }) {
           onOpenChange={setShowSignDialog}
           document={selectedDocument}
           userRole={vault?.current_user_role}
-          onSignatureComplete={(signature) => {
+          onSignatureComplete={async (signature) => {
             // Refresh the document details
-            fetchVault();
+            await fetchVault();
             setSelectedDocument(prev => ({
               ...prev,
               has_user_signed: true,
