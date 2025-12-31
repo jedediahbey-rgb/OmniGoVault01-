@@ -85,7 +85,7 @@ function VaultSidebarContent({
       currentSelectedId: selectedPortfolioId 
     });
     setSelectedPortfolioId(portfolio.portfolio_id);
-    localStorage.setItem("defaultPortfolioId", portfolio.portfolio_id);
+    // localStorage sync handled by useEffect
     setShowTrash(false);
     setSidebarOpen(false);
     navigate('/vault/documents');
