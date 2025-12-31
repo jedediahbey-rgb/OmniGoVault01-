@@ -2036,6 +2036,19 @@ export default function BinderPage() {
                 </Button>
               </div>
 
+              {/* Clear Failed Button - shows when there are failed runs */}
+              {runs.filter(r => r.status === 'failed').length > 0 && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleClearFailed}
+                  className="w-full mb-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs"
+                >
+                  <Trash className="w-3 h-3 mr-1" />
+                  Clear {runs.filter(r => r.status === 'failed').length} Failed
+                </Button>
+              )}
+
               {loading ? (
                 <div className="flex items-center justify-center py-8">
                   <ArrowClockwise className="w-6 h-6 text-vault-gold animate-spin" />
