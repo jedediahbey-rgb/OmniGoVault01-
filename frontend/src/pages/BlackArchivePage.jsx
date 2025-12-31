@@ -1059,34 +1059,43 @@ function TrailsTab() {
             className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5"
             whileHover={{ scale: 1.05 }}
           >
-            {/* Animated path lines */}
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 96 96">
-              <motion.path
-                d="M20,48 Q48,20 76,48"
-                stroke="rgba(198, 168, 124, 0.3)"
-                strokeWidth="1"
-                fill="none"
-                strokeDasharray="4,4"
-                animate={{ strokeDashoffset: [0, -16] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              />
-              <motion.path
-                d="M20,48 Q48,76 76,48"
-                stroke="rgba(139, 92, 246, 0.2)"
-                strokeWidth="1"
-                fill="none"
-                strokeDasharray="4,4"
-                animate={{ strokeDashoffset: [0, 16] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              />
-            </svg>
-            {/* Main container */}
-            <div className="absolute inset-2 rounded-xl bg-gradient-to-br from-purple-500/15 to-vault-gold/10 border border-purple-500/30 backdrop-blur-sm" />
-            {/* Pulse effect */}
+            {/* Rotating outer ring with gradient */}
             <motion.div
-              className="absolute inset-2 rounded-xl border border-purple-500/20"
-              animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
+              className="absolute inset-0 rounded-2xl"
+              style={{
+                background: 'conic-gradient(from 0deg, transparent, rgba(139, 92, 246, 0.3), transparent, rgba(198, 168, 124, 0.2), transparent)',
+              }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+            />
+            {/* Counter-rotating inner ring */}
+            <motion.div
+              className="absolute inset-1 rounded-xl"
+              style={{
+                background: 'conic-gradient(from 180deg, transparent, rgba(139, 92, 246, 0.2), transparent)',
+              }}
+              animate={{ rotate: -360 }}
+              transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+            />
+            {/* Main container */}
+            <div className="absolute inset-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-vault-gold/10 border border-purple-500/40 backdrop-blur-sm" />
+            {/* Pulse rings */}
+            <motion.div
+              className="absolute inset-2 rounded-lg border border-purple-400/30"
+              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <motion.div
+              className="absolute inset-2 rounded-lg border border-purple-400/30"
+              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0, 0.6] }}
+              transition={{ duration: 2, delay: 1, repeat: Infinity }}
+            />
+            {/* Inner glow */}
+            <motion.div
+              className="absolute inset-2 rounded-lg"
+              style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%)' }}
+              animate={{ opacity: [0.4, 0.8, 0.4] }}
+              transition={{ duration: 2, repeat: Infinity }}
             />
             {/* Icon */}
             <div className="absolute inset-0 flex items-center justify-center">
