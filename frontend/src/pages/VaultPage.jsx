@@ -997,105 +997,104 @@ export default function VaultPage({ user, initialView }) {
             </div>
           </div>
         
-        {/* Document grid */}
-        <div className="flex-1 overflow-y-auto p-3 lg:p-6">
-          {/* Desktop only trash notice */}
-          {showTrash && (
-            <div className="hidden lg:flex items-center gap-2 text-red-400 text-sm mb-6 p-3 bg-red-500/10 rounded-lg border border-red-500/20">
-              <Trash className="w-4 h-4" weight="duotone" />
-              <span>Trash — Documents will be permanently deleted after 30 days</span>
-            </div>
-          )}
-          
-          {displayedDocuments.length > 0 ? (
-            <motion.div
-              layout
-              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 lg:gap-5"
-            >
-              <AnimatePresence mode="popLayout">
-                {displayedDocuments.map((doc) => (
-                  showTrash ? (
-                    // Trash item
-                    <motion.div
-                      key={doc.document_id}
-                      layout
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="relative group p-5 bg-white/5 border border-white/10 rounded-lg"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
-                          <FileText className="w-5 h-5 text-red-400" weight="duotone" />
+        {/* Desktop Document grid */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {showTrash && (
+              <div className="flex items-center gap-2 text-red-400 text-sm mb-6 p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                <Trash className="w-4 h-4" weight="duotone" />
+                <span>Trash — Documents will be permanently deleted after 30 days</span>
+              </div>
+            )}
+            
+            {displayedDocuments.length > 0 ? (
+              <motion.div
+                layout
+                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
+              >
+                <AnimatePresence mode="popLayout">
+                  {displayedDocuments.map((doc) => (
+                    showTrash ? (
+                      <motion.div
+                        key={doc.document_id}
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="relative group p-5 bg-white/5 border border-white/10 rounded-lg"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+                            <FileText className="w-5 h-5 text-red-400" weight="duotone" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-white font-medium truncate">{doc.title}</h3>
+                            <p className="text-white/40 text-xs mt-1">
+                              Deleted {new Date(doc.deleted_at).toLocaleDateString()}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-white font-medium truncate">{doc.title}</h3>
-                          <p className="text-white/40 text-xs mt-1">
-                            Deleted {new Date(doc.deleted_at).toLocaleDateString()}
-                          </p>
+                        <div className="flex gap-2 mt-4">
+                          <Button
+                            onClick={() => restoreDocument(doc.document_id)}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-green-400 border-green-500/30 hover:bg-green-500/10"
+                          >
+                            <ArrowCounterClockwise className="w-4 h-4 mr-1" weight="duotone" />
+                            Restore
+                          </Button>
+                          <Button
+                            onClick={() => permanentlyDelete(doc.document_id)}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-red-400 border-red-500/30 hover:bg-red-500/10"
+                          >
+                            <Trash className="w-4 h-4 mr-1" weight="duotone" />
+                            Delete
+                          </Button>
                         </div>
-                      </div>
-                      <div className="flex gap-2 mt-4">
-                        <Button
-                          onClick={() => restoreDocument(doc.document_id)}
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 text-green-400 border-green-500/30 hover:bg-green-500/10"
-                        >
-                          <ArrowCounterClockwise className="w-4 h-4 mr-1" weight="duotone" />
-                          Restore
-                        </Button>
-                        <Button
-                          onClick={() => permanentlyDelete(doc.document_id)}
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 text-red-400 border-red-500/30 hover:bg-red-500/10"
-                        >
-                          <Trash className="w-4 h-4 mr-1" weight="duotone" />
-                          Delete
-                        </Button>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <DocumentCard
-                      key={doc.document_id}
-                      doc={doc}
-                      isPinned={pinnedDocs.some(d => d.document_id === doc.document_id)}
-                      isSelected={selectedDocument?.document_id === doc.document_id}
-                      onSelect={setSelectedDocument}
-                      onPin={togglePinDocument}
-                      onOpen={(d) => navigate(`/vault/document/${d.document_id}`)}
-                      onTrash={trashDocument}
-                      onExport={exportDocument}
-                    />
-                  )
-                ))}
-              </AnimatePresence>
-            </motion.div>
-          ) : (
-            <EmptyState
-              icon={showTrash ? Trash : FileText}
-              title={showTrash ? 'Trash is Empty' : searchTerm ? 'No Results' : 'No Documents Yet'}
-              description={
-                showTrash 
-                  ? 'Deleted documents will appear here'
-                  : searchTerm 
-                    ? 'Try adjusting your search terms'
-                    : 'Create your first document to get started'
-              }
-              action={!showTrash && !searchTerm && (
-                <Button onClick={() => navigate('/templates')} className="btn-primary">
-                  <Plus className="w-4 h-4 mr-2" weight="bold" />
-                  Create Document
-                </Button>
-              )}
-            />
-          )}
+                      </motion.div>
+                    ) : (
+                      <DocumentCard
+                        key={doc.document_id}
+                        doc={doc}
+                        isPinned={pinnedDocs.some(d => d.document_id === doc.document_id)}
+                        isSelected={selectedDocument?.document_id === doc.document_id}
+                        onSelect={setSelectedDocument}
+                        onPin={togglePinDocument}
+                        onOpen={(d) => navigate(`/vault/document/${d.document_id}`)}
+                        onTrash={trashDocument}
+                        onExport={exportDocument}
+                      />
+                    )
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            ) : (
+              <EmptyState
+                icon={showTrash ? Trash : FileText}
+                title={showTrash ? 'Trash is Empty' : searchTerm ? 'No Results' : 'No Documents Yet'}
+                description={
+                  showTrash 
+                    ? 'Deleted documents will appear here'
+                    : searchTerm 
+                      ? 'Try adjusting your search terms'
+                      : 'Create your first document to get started'
+                }
+                action={!showTrash && !searchTerm && (
+                  <Button onClick={() => navigate('/templates')} className="btn-primary">
+                    <Plus className="w-4 h-4 mr-2" weight="bold" />
+                    Create Document
+                  </Button>
+                )}
+              />
+            )}
+          </div>
         </div>
       </div>
       
       {/* ================================================================== */}
-      {/* DOCUMENT PREVIEW PANEL */}
+      {/* DOCUMENT PREVIEW PANEL - Desktop Only */}
       {/* ================================================================== */}
       <AnimatePresence>
         {selectedDocument && !showTrash && (
