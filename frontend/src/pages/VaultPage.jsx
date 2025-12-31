@@ -217,20 +217,30 @@ export default function VaultPage({ user, initialView }) {
         axios.get(`${API}/documents/recent/list?limit=5`).catch(() => ({ data: [] })),
         axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
       ]);
-      setDocuments(docsRes.data || []);
+      
+      const fetchedDocs = docsRes.data || [];
       const fetchedPortfolios = portfoliosRes.data || [];
+      
+      // FIX #6: Debug logs after fetch
+      const docsWithoutPortfolio = fetchedDocs.filter(d => !d.portfolio_id);
+      const portfolioIds = new Set(fetchedPortfolios.map(p => normalizeId(p.portfolio_id)));
+      const docsWithInvalidPortfolio = fetchedDocs.filter(d => d.portfolio_id && !portfolioIds.has(normalizeId(d.portfolio_id)));
+      console.log("[Vault] fetched", { 
+        docs: fetchedDocs.length, 
+        portfolios: fetchedPortfolios.length,
+        docsWithoutPortfolio: docsWithoutPortfolio.length,
+        docsWithInvalidPortfolio: docsWithInvalidPortfolio.length
+      });
+      
+      setDocuments(fetchedDocs);
       setPortfolios(fetchedPortfolios);
       setTrashedDocuments(trashRes.data || []);
       setRecentDocs(recentRes.data || []);
       setPinnedDocs(pinnedRes.data || []);
       
-      // If we have a default portfolio ID from localStorage, find and set the full portfolio object
-      if (defaultPortfolioId) {
-        const defaultPortfolio = fetchedPortfolios.find(p => p.portfolio_id === defaultPortfolioId);
-        if (defaultPortfolio) {
-          setSelectedPortfolio(defaultPortfolio);
-        }
-      }
+      // FIX #1: DO NOT overwrite selectedPortfolioId here.
+      // It's already initialized from localStorage in useState.
+      // User selection is preserved.
     } catch (error) {
       console.error('Failed to fetch vault data:', error);
       toast.error('Failed to load vault data');
