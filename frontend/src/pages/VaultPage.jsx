@@ -384,40 +384,46 @@ export default function VaultPage({ user, initialView }) {
     }
   };
 
-  const filteredDocuments = (showTrash ? trashedDocuments : documents).filter(doc => {
-    // Search filter
-    const matchesSearch = searchTerm === '' || 
-      doc.title?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // When viewing trash, show ALL trashed docs regardless of portfolio
-    if (showTrash) {
-      return matchesSearch;
-    }
-    
-    // If no portfolio selected (All Documents view), show ALL documents
-    if (!selectedPortfolio) {
-      return matchesSearch;
-    }
-    
-    // Filter by portfolio - show documents that match the selected portfolio
-    // Also show documents without a portfolio_id (orphaned) in the selected portfolio view
-    // so they don't get lost
-    const docHasPortfolio = doc.portfolio_id && doc.portfolio_id.length > 0;
-    const matchesPortfolio = docHasPortfolio 
-      ? doc.portfolio_id === selectedPortfolio.portfolio_id
-      : false; // Don't show orphaned docs in portfolio view, only in "All Documents"
-    
-    return matchesSearch && matchesPortfolio;
-  });
+  // FIX #3: Robust filtering with normalized IDs
+  const selectedId = normalizeId(selectedPortfolioId);
+  const baseDocs = showTrash ? trashedDocuments : documents;
+  
+  const filteredDocuments = useMemo(() => {
+    const result = baseDocs.filter(doc => {
+      const title = String(doc.title ?? "");
+      const matchesSearch = !searchTerm || title.toLowerCase().includes(searchTerm.toLowerCase());
+      if (!matchesSearch) return false;
 
-  // Sort: pinned first, then by date
-  const sortedDocuments = [...filteredDocuments].sort((a, b) => {
-    const aPinned = pinnedDocs.some(d => d.document_id === a.document_id);
-    const bPinned = pinnedDocs.some(d => d.document_id === b.document_id);
-    if (aPinned && !bPinned) return -1;
-    if (!aPinned && bPinned) return 1;
-    return new Date(b.updated_at) - new Date(a.updated_at);
-  });
+      if (showTrash) return true;         // trash ignores portfolio filter
+      if (!selectedId) return true;       // All Documents view
+      return normalizeId(doc.portfolio_id) === selectedId;
+    });
+    
+    // FIX #6: Debug log after filtering
+    console.log("[Vault] filter", { 
+      selectedPortfolioId, 
+      showTrash, 
+      searchTerm, 
+      total: baseDocs.length, 
+      filtered: result.length 
+    });
+    
+    return result;
+  }, [baseDocs, searchTerm, showTrash, selectedId, selectedPortfolioId]);
+
+  // FIX #4: Sort must derive from filteredDocuments, not documents
+  const sortedDocuments = useMemo(() => {
+    const arr = [...filteredDocuments];
+    // Sort: pinned first, then by date
+    arr.sort((a, b) => {
+      const aPinned = pinnedDocs.some(d => d.document_id === a.document_id);
+      const bPinned = pinnedDocs.some(d => d.document_id === b.document_id);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+      return new Date(b.updated_at) - new Date(a.updated_at);
+    });
+    return arr;
+  }, [filteredDocuments, pinnedDocs]);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
