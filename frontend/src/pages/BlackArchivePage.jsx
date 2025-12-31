@@ -153,7 +153,7 @@ const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
 };
 
 // ============================================================================
-// FLOATING PARTICLES BACKGROUND
+// FLOATING PARTICLES BACKGROUND - Optimized with memoization
 // ============================================================================
 
 // Pre-generated particle positions - REDUCED for mobile performance
@@ -190,18 +190,8 @@ const PARTICLE_POSITIONS_MOBILE = [
   { left: 60, top: 35, duration: 7, delay: 0.8, size: 'md' },
 ];
 
-const FloatingParticles = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 640);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  
-  const particles = isMobile ? PARTICLE_POSITIONS_MOBILE : PARTICLE_POSITIONS_DESKTOP;
-  
+// Memoized particle component for better performance
+const Particle = memo(({ particle, index }) => {
   const sizeClasses = {
     sm: 'w-1 h-1',
     md: 'w-1.5 h-1.5',
@@ -209,15 +199,60 @@ const FloatingParticles = () => {
   };
   
   return (
+    <motion.div
+      className={`absolute rounded-full ${sizeClasses[particle.size]}`}
+      style={{
+        left: `${particle.left}%`,
+        top: `${particle.top}%`,
+        background: index % 3 === 0 
+          ? 'rgba(198, 168, 124, 0.4)' 
+          : index % 3 === 1 
+            ? 'rgba(255, 255, 255, 0.2)' 
+            : 'rgba(198, 168, 124, 0.2)',
+        willChange: 'transform, opacity',
+      }}
+      animate={{
+        y: [0, -20, 0],
+        opacity: [0.3, 0.7, 0.3],
+      }}
+      transition={{
+        duration: particle.duration,
+        delay: particle.delay,
+        repeat: Infinity,
+        ease: 'easeInOut',
+      }}
+    />
+  );
+});
+
+const FloatingParticles = memo(() => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  
+  useEffect(() => {
+    let timeoutId;
+    const checkMobile = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setIsMobile(window.innerWidth < 640);
+      }, 150); // Debounce resize
+    };
+    window.addEventListener('resize', checkMobile);
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      clearTimeout(timeoutId);
+    };
+  }, []);
+  
+  const particles = isMobile ? PARTICLE_POSITIONS_MOBILE : PARTICLE_POSITIONS_DESKTOP;
+  
+  return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {particles.map((particle, i) => (
-        <motion.div
-          key={i}
-          className={`absolute rounded-full ${sizeClasses[particle.size]}`}
-          style={{
-            left: `${particle.left}%`,
-            top: `${particle.top}%`,
-            background: i % 3 === 0 
+        <Particle key={i} particle={particle} index={i} />
+      ))}
+    </div>
+  );
+}); 
               ? 'rgba(198, 168, 124, 0.6)' 
               : i % 3 === 1 
                 ? 'rgba(198, 168, 124, 0.4)'
