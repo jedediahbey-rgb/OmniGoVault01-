@@ -1711,7 +1711,7 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
   const { fitView } = useReactFlow();
   const fitViewCalled = useRef(false);
 
-  // Fit view when nodes are initialized - fit all nodes in the larger container
+  // Fit view when nodes are initialized - zoom out to show all nodes
   useEffect(() => {
     if (!nodesInitialized || fitViewCalled.current) return;
 
@@ -1721,14 +1721,14 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
     // Multiple passes to ensure all nodes are measured
     const timers = [];
     
-    // Immediate fit - with proper padding to show all nodes
+    // Immediate fit - zoom out to show all 8 nodes
     requestAnimationFrame(() => {
       fitView({
-        padding: 0.1,
+        padding: 0.08,
         includeHiddenNodes: true,
         duration: 0,
-        minZoom: 0.5,
-        maxZoom: 1.0,
+        minZoom: 0.4,
+        maxZoom: 0.95,
       });
     });
 
@@ -1736,24 +1736,24 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
     timers.push(setTimeout(() => {
       requestAnimationFrame(() => {
         fitView({
-          padding: 0.1,
+          padding: 0.08,
           includeHiddenNodes: true,
           duration: 300,
-          minZoom: 0.5,
-          maxZoom: 1.0,
+          minZoom: 0.4,
+          maxZoom: 0.95,
         });
       });
     }, 200));
 
-    // Third pass after 500ms (for slower devices/Framer Motion)
+    // Third pass after 500ms
     timers.push(setTimeout(() => {
       requestAnimationFrame(() => {
         fitView({
-          padding: 0.1,
+          padding: 0.08,
           includeHiddenNodes: true,
           duration: 350,
-          minZoom: 0.5,
-          maxZoom: 1.0,
+          minZoom: 0.4,
+          maxZoom: 0.95,
         });
       });
     }, 500));
