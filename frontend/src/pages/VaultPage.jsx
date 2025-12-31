@@ -53,10 +53,13 @@ import { humanizeSlug } from '../lib/utils';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Helper to normalize IDs for comparison
+const normalizeId = (v) => (v == null ? null : String(v).trim());
+
 // Extracted SidebarContent component to avoid defining during render
 function VaultSidebarContent({ 
-  selectedPortfolio, 
-  setSelectedPortfolio, 
+  selectedPortfolioId, 
+  setSelectedPortfolioId, 
   showTrash, 
   setShowTrash,
   setShowNewPortfolio, 
@@ -66,6 +69,24 @@ function VaultSidebarContent({
   portfolios, 
   trashedDocuments 
 }) {
+  const handleAllDocumentsClick = () => {
+    console.log("[Vault] clicked All Documents");
+    setSelectedPortfolioId(null);
+    localStorage.removeItem("defaultPortfolioId");
+    setShowTrash(false);
+    setSidebarOpen(false);
+    navigate('/vault/documents');
+  };
+
+  const handlePortfolioClick = (portfolio) => {
+    console.log("[Vault] clicked", portfolio.portfolio_id, portfolio.name);
+    setSelectedPortfolioId(portfolio.portfolio_id);
+    localStorage.setItem("defaultPortfolioId", portfolio.portfolio_id);
+    setShowTrash(false);
+    setSidebarOpen(false);
+    navigate('/vault/documents');
+  };
+
   return (
     <>
       <div className="p-4 border-b border-white/10">
@@ -80,9 +101,9 @@ function VaultSidebarContent({
       
       <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
         <button
-          onClick={() => { setSelectedPortfolio(null); setShowTrash(false); setSidebarOpen(false); navigate('/vault/documents'); }}
+          onClick={handleAllDocumentsClick}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-            !selectedPortfolio && !showTrash
+            !selectedPortfolioId && !showTrash
               ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
               : 'text-white/60 hover:bg-white/5'
           }`}
@@ -95,13 +116,14 @@ function VaultSidebarContent({
         <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-4 mb-2">Portfolios</p>
         
         {portfolios.map(portfolio => {
-          const portfolioDocCount = documents.filter(d => d.portfolio_id === portfolio.portfolio_id).length;
+          const normalizedPortfolioId = normalizeId(portfolio.portfolio_id);
+          const portfolioDocCount = documents.filter(d => normalizeId(d.portfolio_id) === normalizedPortfolioId).length;
           return (
             <button
               key={portfolio.portfolio_id}
-              onClick={() => { setSelectedPortfolio(portfolio); setShowTrash(false); setSidebarOpen(false); navigate('/vault/documents'); }}
+              onClick={() => handlePortfolioClick(portfolio)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-                selectedPortfolio?.portfolio_id === portfolio.portfolio_id
+                normalizeId(selectedPortfolioId) === normalizedPortfolioId
                   ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
                   : 'text-white/60 hover:bg-white/5'
               }`}
