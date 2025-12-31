@@ -449,27 +449,6 @@ export default function VaultPage({ user, initialView }) {
     
     initializeVault();
   }, [switchPortfolio]);
-        axios.get(`${API}/documents/trash`).catch(() => ({ data: [] })),
-        axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
-      ]);
-      
-      setDocuments(docsRes.data || []);
-      setTrashedDocuments((trashRes.data || []).filter(d => d.portfolio_id === portfolio.portfolio_id));
-      setPinnedDocs(pinnedRes.data || []);
-      setShowTrash(false);
-      setSelectedDocument(null);
-      setVaultState(VAULT_STATES.READY);
-      
-      if (showToast) {
-        toast.success(`Switched to ${portfolio.name}`);
-      }
-      
-    } catch (err) {
-      console.error('[Vault] Failed to load documents:', err);
-      setError('Failed to load documents');
-      setVaultState(VAULT_STATES.ERROR);
-    }
-  }, []);
   
   // Refresh documents (after create/delete/etc)
   const refreshDocuments = useCallback(async () => {
