@@ -1535,7 +1535,7 @@ function ArchiveMapTab() {
 }
 
 // ============================================================================
-// MAIN PAGE COMPONENT - PREMIUM DESIGN
+// MAIN PAGE COMPONENT - PREMIUM DESIGN WITH MOBILE-FIRST LAYOUT
 // ============================================================================
 
 export default function BlackArchivePage() {
@@ -1547,107 +1547,134 @@ export default function BlackArchivePage() {
   };
   
   return (
-    <div className="min-h-screen relative">
-      {/* Premium Header with Effects */}
-      <div className="relative bg-[#050810] border-b border-vault-gold/20 overflow-hidden">
-        {/* Animated background gradients */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-vault-gold/5 via-transparent to-purple-900/10" />
+    <div 
+      className="min-h-screen relative w-full"
+      style={{ 
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)'
+      }}
+    >
+      {/* Premium Header with Obsidian Glass Effect */}
+      <div className="relative bg-[#030508]/95 backdrop-blur-xl border-b border-vault-gold/10 overflow-hidden">
+        {/* Animated background gradients - performance optimized */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-vault-gold/[0.03] via-transparent to-purple-900/[0.05]" />
           <motion.div 
-            className="absolute top-0 left-1/4 w-96 h-96 bg-vault-gold/5 rounded-full blur-3xl"
+            className="absolute -top-20 -left-20 w-60 sm:w-96 h-60 sm:h-96 bg-vault-gold/[0.04] rounded-full blur-3xl"
             animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.5, 0.3] 
-            }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div 
-            className="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl"
-            animate={{ 
-              scale: [1.2, 1, 1.2],
-              opacity: [0.2, 0.4, 0.2] 
+              scale: [1, 1.15, 1],
+              opacity: [0.3, 0.4, 0.3] 
             }}
             transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
           />
+          <motion.div 
+            className="absolute -bottom-20 -right-20 w-40 sm:w-64 h-40 sm:h-64 bg-purple-500/[0.04] rounded-full blur-3xl"
+            animate={{ 
+              scale: [1.1, 1, 1.1],
+              opacity: [0.2, 0.3, 0.2] 
+            }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+          />
         </div>
         
-        {/* Floating particles */}
-        <FloatingParticles />
+        {/* Floating particles - reduced for mobile performance */}
+        <div className="hidden sm:block">
+          <FloatingParticles />
+        </div>
         
-        {/* Grid pattern overlay */}
+        {/* Subtle grid pattern */}
         <div 
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.015] pointer-events-none"
           style={{
             backgroundImage: 'linear-gradient(rgba(198, 168, 124, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(198, 168, 124, 0.5) 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
+            backgroundSize: '40px 40px'
           }}
         />
         
-        <div className="relative max-w-6xl mx-auto px-4 py-10">
-          {/* Title section with dynamic icon */}
+        {/* Header Content */}
+        <div className="relative w-full max-w-6xl mx-auto px-4 pt-6 pb-5 sm:py-8 lg:py-10">
+          {/* Title section */}
           <motion.div 
-            className="flex flex-col sm:flex-row items-center gap-6 mb-8"
-            initial={{ opacity: 0, y: 20 }}
+            className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-4 sm:gap-6 mb-6 sm:mb-8"
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
-            <BlackArchiveIcon size="xl" animate={true} />
+            {/* Icon - smaller on mobile */}
+            <div className="shrink-0">
+              <BlackArchiveIcon size="lg" animate={true} />
+            </div>
             
-            <div className="text-center sm:text-left">
+            <div className="flex-1 min-w-0">
+              {/* Premium badge */}
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15 }}
               >
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vault-gold/10 border border-vault-gold/20 text-vault-gold text-xs font-medium mb-3">
-                  <Sparkle className="w-3 h-3" weight="fill" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-vault-gold/10 border border-vault-gold/20 text-vault-gold text-[10px] sm:text-xs font-medium mb-2 sm:mb-3">
+                  <Sparkle className="w-2.5 sm:w-3 h-2.5 sm:h-3" weight="fill" />
                   Premium Research Vault
                 </span>
               </motion.div>
               
+              {/* Title with responsive clamp sizing */}
               <motion.h1 
-                className="text-white font-heading text-3xl sm:text-4xl lg:text-5xl mb-2"
+                className="text-white font-heading mb-1 sm:mb-2"
+                style={{ fontSize: 'clamp(1.5rem, 5vw, 3rem)', lineHeight: 1.1 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.2 }}
               >
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-vault-gold/90 to-white">
                   The Black Archive
                 </span>
               </motion.h1>
               
+              {/* Subtitle */}
               <motion.p 
-                className="text-white/50 text-sm sm:text-base max-w-md"
+                className="text-white/45 text-xs sm:text-sm max-w-md"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.25 }}
               >
                 Primary sources. Doctrine trails. Citation-first learning.
               </motion.p>
             </div>
           </motion.div>
           
-          {/* Premium Tabs */}
-          <motion.div 
-            className="flex overflow-x-auto gap-2 pb-2 -mx-4 px-4 scrollbar-hide"
-            initial={{ opacity: 0, y: 20 }}
+          {/* Tabs - Mobile vs Desktop */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.35 }}
           >
-            {TABS.map((tab, index) => (
-              <motion.div
-                key={tab.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
-              >
-                <PremiumTab
-                  tab={tab}
-                  isActive={activeTab === tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                />
-              </motion.div>
-            ))}
+            {/* Mobile: Segmented control + chips */}
+            <div className="block sm:hidden">
+              <MobileSegmentedTabs
+                tabs={TABS}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+              />
+            </div>
+            
+            {/* Desktop: Horizontal premium tabs */}
+            <div className="hidden sm:flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+              {TABS.map((tab, index) => (
+                <motion.div
+                  key={tab.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 + index * 0.05 }}
+                >
+                  <DesktopPremiumTab
+                    tab={tab}
+                    isActive={activeTab === tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                  />
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
         
@@ -1655,27 +1682,28 @@ export default function BlackArchivePage() {
         <motion.div 
           className="absolute bottom-0 left-0 right-0 h-px"
           style={{
-            background: 'linear-gradient(90deg, transparent, rgba(198, 168, 124, 0.5), transparent)'
+            background: 'linear-gradient(90deg, transparent 5%, rgba(198, 168, 124, 0.4) 50%, transparent 95%)'
           }}
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 3, repeat: Infinity }}
+          animate={{ opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 4, repeat: Infinity }}
         />
       </div>
       
-      {/* Content */}
+      {/* Content Area */}
       <motion.div 
-        className="max-w-6xl mx-auto px-4 py-8"
+        className="w-full max-w-6xl mx-auto px-4 py-5 sm:py-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.25 }}
       >
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25 }}
+            className="w-full"
           >
             {activeTab === 'index' && <IndexTab />}
             {activeTab === 'trails' && <TrailsTab />}
