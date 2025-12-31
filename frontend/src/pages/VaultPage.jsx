@@ -460,64 +460,54 @@ export default function VaultPage({ user, initialView }) {
       <div className="p-4">
         {displayedDocuments.length > 0 ? (
           <div className="space-y-3">
-            <AnimatePresence 
-              // KEY CHANGE = portfolio switch => remount presence tree
-              key={activePortfolio?.portfolio_id || "no-portfolio"}
-              initial={false}
-              mode="sync"
-            >
-              {displayedDocuments.map((doc) => (
-                showTrash ? (
-                  <motion.div
-                    key={doc.document_id}
-                    layout={false}
-                    initial={false}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0, x: -100, transition: { duration: 0.2 } }}
-                    className="p-4 bg-white/5 border border-white/10 rounded-xl"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
-                        <FileText className="w-5 h-5 text-red-400" weight="duotone" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-white font-medium text-sm truncate">{doc.title}</h3>
-                        <p className="text-white/40 text-xs mt-0.5">
-                          Deleted {new Date(doc.deleted_at).toLocaleDateString()}
-                        </p>
-                      </div>
+            {displayedDocuments.map((doc) => (
+              showTrash ? (
+                <div
+                  key={doc.document_id}
+                  className="p-4 bg-white/5 border border-white/10 rounded-xl"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+                      <FileText className="w-5 h-5 text-red-400" weight="duotone" />
                     </div>
-                    <div className="flex gap-2 mt-3">
-                      <Button
-                        onClick={() => restoreDocument(doc.document_id)}
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 text-green-400 border-green-500/30 hover:bg-green-500/10 text-xs"
-                      >
-                        <ArrowCounterClockwise className="w-3.5 h-3.5 mr-1" />
-                        Restore
-                      </Button>
-                      <Button
-                        onClick={() => permanentlyDelete(doc.document_id)}
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 text-red-400 border-red-500/30 hover:bg-red-500/10 text-xs"
-                      >
-                        <Trash className="w-3.5 h-3.5 mr-1" />
-                        Delete
-                      </Button>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-medium text-sm truncate">{doc.title}</h3>
+                      <p className="text-white/40 text-xs mt-0.5">
+                        Deleted {new Date(doc.deleted_at).toLocaleDateString()}
+                      </p>
                     </div>
-                  </motion.div>
-                ) : (
-                  <DocumentCard
-                    key={doc.document_id}
-                    doc={doc}
-                    isPinned={pinnedDocs.some(d => d.document_id === doc.document_id)}
-                    onNavigate={() => navigate(`/vault/document/${doc.document_id}`)}
-                  />
-                )
-              ))}
-            </AnimatePresence>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <Button
+                      onClick={() => restoreDocument(doc.document_id)}
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-green-400 border-green-500/30 hover:bg-green-500/10 text-xs"
+                    >
+                      <ArrowCounterClockwise className="w-3.5 h-3.5 mr-1" />
+                      Restore
+                    </Button>
+                    <Button
+                      onClick={() => permanentlyDelete(doc.document_id)}
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-red-400 border-red-500/30 hover:bg-red-500/10 text-xs"
+                    >
+                      <Trash className="w-3.5 h-3.5 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <DocumentCard
+                  key={doc.document_id}
+                  doc={doc}
+                  isPinned={pinnedDocs.some(d => d.document_id === doc.document_id)}
+                  onNavigate={() => navigate(`/vault/document/${doc.document_id}`)}
+                  onDelete={softDeleteDocument}
+                />
+              )
+            ))}
           </div>
         ) : (
           <div className="text-center py-12">
