@@ -1709,7 +1709,8 @@ const initialEdges = [
 function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClick, isMobile }) {
   const nodesInitialized = useNodesInitialized();
   const { fitView } = useReactFlow();
-  const padding = isMobile ? 0.25 : 0.22;
+  // Higher padding to ensure all nodes visible with margins
+  const padding = isMobile ? 0.08 : 0.15;
   const fitViewCalled = useRef(false);
 
   // Fit view when nodes are initialized
@@ -1722,42 +1723,42 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
     // Multiple passes to ensure all nodes are measured
     const timers = [];
     
-    // Immediate fit
+    // Immediate fit with low maxZoom to see all nodes
     requestAnimationFrame(() => {
       fitView({
         padding,
         includeHiddenNodes: true,
         duration: 0,
-        minZoom: 0.4,
-        maxZoom: 1.0,
+        minZoom: 0.3,
+        maxZoom: 0.9,
       });
     });
 
-    // Second pass after 100ms
+    // Second pass after 150ms
     timers.push(setTimeout(() => {
       requestAnimationFrame(() => {
         fitView({
           padding,
           includeHiddenNodes: true,
-          duration: 200,
-          minZoom: 0.4,
-          maxZoom: 1.0,
+          duration: 250,
+          minZoom: 0.3,
+          maxZoom: 0.9,
         });
       });
-    }, 100));
+    }, 150));
 
-    // Third pass after 300ms (for slower devices)
+    // Third pass after 400ms (for slower devices/Framer Motion)
     timers.push(setTimeout(() => {
       requestAnimationFrame(() => {
         fitView({
           padding,
           includeHiddenNodes: true,
           duration: 300,
-          minZoom: 0.4,
-          maxZoom: 1.0,
+          minZoom: 0.3,
+          maxZoom: 0.9,
         });
       });
-    }, 300));
+    }, 400));
 
     return () => timers.forEach(t => clearTimeout(t));
   }, [nodesInitialized, fitView, padding]);
