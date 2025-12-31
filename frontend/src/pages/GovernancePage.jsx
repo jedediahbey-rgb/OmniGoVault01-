@@ -893,7 +893,7 @@ export default function GovernancePage({ user }) {
   const handleDeleteDispute = async (disputeId) => {
     try {
       // Use V2 API void endpoint
-      await axios.post(`${API_V2}/records/${disputeId}/void`, {
+      await api.post(`${API_V2}/records/${disputeId}/void`, {
         void_reason: 'Deleted by user from governance list'
       });
       toast.success('Dispute deleted');
