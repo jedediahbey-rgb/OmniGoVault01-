@@ -156,8 +156,11 @@ async def update_source(source_id: str, source: ArchiveSource, request: Request)
     return updated
 
 @router.delete("/sources/{source_id}")
-async def delete_source(source_id: str, user = Depends(get_current_user)):
+async def delete_source(source_id: str, request: Request):
     """Delete an archive source"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     existing = await db.archive_sources.find_one({"source_id": source_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Source not found")
