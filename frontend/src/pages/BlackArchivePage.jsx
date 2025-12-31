@@ -908,8 +908,8 @@ function TrailsTab() {
     <div>
       {trails.length > 0 ? (
         <div className="grid gap-4">
-          {trails.map(trail => (
-            <TrailCard key={trail.trail_id} trail={trail} onClick={() => openTrail(trail)} />
+          {trails.map((trail, index) => (
+            <TrailCard key={trail.trail_id} trail={trail} index={index} onClick={() => openTrail(trail)} />
           ))}
         </div>
       ) : (
