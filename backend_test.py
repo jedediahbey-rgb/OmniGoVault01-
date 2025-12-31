@@ -655,11 +655,23 @@ class BinderTester:
         
         # Test sequence for Binder Generation APIs
         test_sequence = [
-            # Authentication and Service Availability
-            self.test_auth_status,
-            self.test_binder_service_availability,
+            # Dependency Tests
+            self.test_weasyprint_dependency,
+            self.test_libpangoft2_dependency,
             
-            # Endpoint Structure Tests
+            # Authentication Tests
+            self.test_auth_me_endpoint,
+            self.test_portfolios_endpoint,
+            
+            # Binder Service Tests (Authenticated)
+            self.test_binder_profiles_authenticated,
+            self.test_binder_generation,
+            self.test_binder_runs_list,
+            self.test_binder_run_details,
+            self.test_binder_download_attempt,
+            
+            # Endpoint Structure Tests (Fallback)
+            self.test_binder_service_availability,
             self.test_binder_profiles_endpoint,
             self.test_binder_generate_endpoint,
             self.test_binder_runs_endpoint,
