@@ -114,26 +114,349 @@ class BinderTester:
             "timestamp": datetime.now().isoformat()
         })
 
-    # ============ AUTHENTICATION TEST ============
+    # ============ AUTHENTICATED BINDER TESTS ============
 
-    def test_auth_status(self):
-        """Test authentication requirement"""
+    def test_auth_me_endpoint(self):
+        """Test /api/auth/me endpoint with valid session"""
+        if not self.session_token:
+            self.log_test("Auth Me Endpoint", False, "No session token available")
+            return False
+            
         try:
             response = self.session.get(f"{self.base_url}/auth/me", timeout=10)
-            # We expect 401 since we don't have valid auth
-            success = response.status_code == 401
-            details = f"Status: {response.status_code}"
+            success = response.status_code == 200
             
             if success:
-                details += ", Authentication properly required"
+                data = response.json()
+                user_id = data.get("user_id")
+                email = data.get("email")
+                details = f"User: {email}, ID: {user_id}"
+                
+                # Store user ID for later tests
+                self.test_user_id = user_id
             else:
-                details += f", Unexpected response: {response.text[:200]}"
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("Authentication Requirement Check", success, details)
+            self.log_test("Auth Me Endpoint", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Authentication Requirement Check", False, f"Error: {str(e)}")
+            self.log_test("Auth Me Endpoint", False, f"Error: {str(e)}")
+            return False
+
+    def test_portfolios_endpoint(self):
+        """Test GET /api/portfolios endpoint"""
+        if not self.session_token:
+            self.log_test("Portfolios Endpoint", False, "No session token available")
+            return False
+            
+        try:
+            response = self.session.get(f"{self.base_url}/portfolios", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                portfolios = data if isinstance(data, list) else []
+                details = f"Found {len(portfolios)} portfolios"
+                
+                # Store first portfolio for binder tests
+                if portfolios:
+                    self.test_portfolio_id = portfolios[0].get("portfolio_id")
+                    details += f", Using portfolio: {self.test_portfolio_id}"
+                else:
+                    # Create a test portfolio
+                    success = self.create_test_portfolio()
+                    if success:
+                        details += ", Created test portfolio"
+                    else:
+                        details += ", Failed to create test portfolio"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Portfolios Endpoint", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Portfolios Endpoint", False, f"Error: {str(e)}")
+            return False
+
+    def create_test_portfolio(self):
+        """Create a test portfolio for binder testing"""
+        try:
+            portfolio_data = {
+                "name": f"Test Portfolio {datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                "description": "Test portfolio for binder generation testing"
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/portfolios",
+                json=portfolio_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.test_portfolio_id = data.get("portfolio_id")
+                return True
+            
+            return False
+            
+        except Exception:
+            return False
+
+    def test_binder_profiles_authenticated(self):
+        """Test GET /api/binder/profiles with authentication"""
+        if not self.session_token or not self.test_portfolio_id:
+            self.log_test("Binder Profiles (Auth)", False, "Missing session token or portfolio ID")
+            return False
+            
+        try:
+            response = self.session.get(
+                f"{self.base_url}/binder/profiles",
+                params={"portfolio_id": self.test_portfolio_id},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                profiles = data.get("data", {}).get("profiles", [])
+                details = f"Found {len(profiles)} binder profiles"
+                
+                # Store first profile for generation test
+                if profiles:
+                    self.test_profile_id = profiles[0].get("id")
+                    profile_name = profiles[0].get("name", "Unknown")
+                    details += f", Using profile: {profile_name}"
+                else:
+                    details += ", No profiles found (will be auto-created)"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Binder Profiles (Auth)", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Binder Profiles (Auth)", False, f"Error: {str(e)}")
+            return False
+
+    def test_binder_generation(self):
+        """Test POST /api/binder/generate endpoint"""
+        if not self.session_token or not self.test_portfolio_id:
+            self.log_test("Binder Generation", False, "Missing session token or portfolio ID")
+            return False
+            
+        # If no profile ID, use a default one (profiles are auto-created)
+        if not self.test_profile_id:
+            self.test_profile_id = "audit"  # Default profile type
+            
+        try:
+            generation_data = {
+                "portfolio_id": self.test_portfolio_id,
+                "profile_id": self.test_profile_id,
+                "court_mode": {
+                    "bates_enabled": False,
+                    "redaction_mode": "standard"
+                }
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/binder/generate",
+                json=generation_data,
+                timeout=30  # Longer timeout for generation
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    result = data.get("data", {})
+                    self.test_run_id = result.get("run_id")
+                    status = result.get("status", "unknown")
+                    details = f"Generation started, Run ID: {self.test_run_id}, Status: {status}"
+                else:
+                    error = data.get("error", {})
+                    details = f"Generation failed: {error.get('message', 'Unknown error')}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Binder Generation", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Binder Generation", False, f"Error: {str(e)}")
+            return False
+
+    def test_binder_runs_list(self):
+        """Test GET /api/binder/runs endpoint"""
+        if not self.session_token or not self.test_portfolio_id:
+            self.log_test("Binder Runs List", False, "Missing session token or portfolio ID")
+            return False
+            
+        try:
+            response = self.session.get(
+                f"{self.base_url}/binder/runs",
+                params={"portfolio_id": self.test_portfolio_id},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    runs = data.get("data", {}).get("runs", [])
+                    details = f"Found {len(runs)} binder runs"
+                    
+                    if runs:
+                        latest_run = runs[0]
+                        run_status = latest_run.get("status", "unknown")
+                        details += f", Latest status: {run_status}"
+                        
+                        # Update test_run_id if we don't have one
+                        if not self.test_run_id:
+                            self.test_run_id = latest_run.get("id")
+                else:
+                    error = data.get("error", {})
+                    details = f"API error: {error.get('message', 'Unknown error')}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Binder Runs List", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Binder Runs List", False, f"Error: {str(e)}")
+            return False
+
+    def test_binder_run_details(self):
+        """Test GET /api/binder/runs/{run_id} endpoint"""
+        if not self.session_token or not self.test_run_id:
+            self.log_test("Binder Run Details", False, "Missing session token or run ID")
+            return False
+            
+        try:
+            response = self.session.get(
+                f"{self.base_url}/binder/runs/{self.test_run_id}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                if data.get("ok"):
+                    run = data.get("data", {}).get("run", {})
+                    status = run.get("status", "unknown")
+                    profile_name = run.get("profile_name", "Unknown")
+                    total_items = run.get("total_items", 0)
+                    details = f"Status: {status}, Profile: {profile_name}, Items: {total_items}"
+                else:
+                    error = data.get("error", {})
+                    details = f"API error: {error.get('message', 'Unknown error')}"
+                    success = False
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+            
+            self.log_test("Binder Run Details", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Binder Run Details", False, f"Error: {str(e)}")
+            return False
+
+    def test_binder_download_attempt(self):
+        """Test GET /api/binder/runs/{run_id}/download endpoint"""
+        if not self.session_token or not self.test_run_id:
+            self.log_test("Binder Download", False, "Missing session token or run ID")
+            return False
+            
+        try:
+            response = self.session.get(
+                f"{self.base_url}/binder/runs/{self.test_run_id}/download",
+                timeout=10
+            )
+            
+            # Download may fail if binder is not complete, but endpoint should be accessible
+            if response.status_code == 200:
+                content_type = response.headers.get('content-type', '')
+                content_length = len(response.content)
+                details = f"PDF downloaded, Type: {content_type}, Size: {content_length} bytes"
+                success = True
+            elif response.status_code == 400:
+                # Expected if binder is not complete yet
+                data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {}
+                error_msg = data.get("error", {}).get("message", "Binder not ready")
+                details = f"Download not ready: {error_msg}"
+                success = True  # This is expected behavior
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+                success = False
+            
+            self.log_test("Binder Download", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Binder Download", False, f"Error: {str(e)}")
+            return False
+
+    def test_weasyprint_dependency(self):
+        """Test if WeasyPrint PDF library is working"""
+        try:
+            # Try to import WeasyPrint
+            import subprocess
+            result = subprocess.run([
+                'python3', '-c', 'import weasyprint; print("WeasyPrint available")'
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                details = "WeasyPrint library is available and importable"
+                success = True
+            else:
+                details = f"WeasyPrint import failed: {result.stderr}"
+                success = False
+            
+            self.log_test("WeasyPrint Dependency", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("WeasyPrint Dependency", False, f"Error: {str(e)}")
+            return False
+
+    def test_libpangoft2_dependency(self):
+        """Test if libpangoft2 dependency is available"""
+        try:
+            import subprocess
+            # Check if libpangoft2 is available
+            result = subprocess.run([
+                'pkg-config', '--exists', 'pangoft2'
+            ], capture_output=True, text=True, timeout=5)
+            
+            if result.returncode == 0:
+                details = "libpangoft2 dependency is available"
+                success = True
+            else:
+                # Try alternative check
+                result2 = subprocess.run([
+                    'find', '/usr', '-name', '*pangoft2*', '-type', 'f'
+                ], capture_output=True, text=True, timeout=5)
+                
+                if result2.stdout.strip():
+                    details = f"libpangoft2 found: {result2.stdout.strip()[:100]}"
+                    success = True
+                else:
+                    details = "libpangoft2 dependency not found"
+                    success = False
+            
+            self.log_test("libpangoft2 Dependency", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("libpangoft2 Dependency", False, f"Error: {str(e)}")
             return False
 
     # ============ BINDER ENDPOINT STRUCTURE TESTS ============
