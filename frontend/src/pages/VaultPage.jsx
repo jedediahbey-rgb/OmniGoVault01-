@@ -764,17 +764,23 @@ export default function VaultPage({ user, initialView }) {
               })}
             </motion.div>
           ) : (
+            // FIX #5: Correct empty-state messaging
             <div className="text-center py-16">
               <FileText className="w-16 h-16 text-white/10 mx-auto mb-4" weight="duotone" />
               <p className="text-white/40 mb-4">
                 {showTrash 
                   ? 'Trash is empty' 
                   : searchTerm 
-                    ? 'No documents match your search' 
-                    : 'No documents yet'
+                    ? 'No documents match your search'
+                    : selectedPortfolioId
+                      ? 'No documents in this portfolio yet'
+                      : documents.length === 0
+                        ? 'No documents yet'
+                        : 'No documents found'
                 }
               </p>
-              {!showTrash && (
+              {/* Only show "Create Your First Document" when there are truly no documents */}
+              {!showTrash && documents.length === 0 && (
                 <Button onClick={() => navigate('/templates')} className="btn-primary">
                   Create Your First Document
                 </Button>
