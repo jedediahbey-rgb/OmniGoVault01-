@@ -402,8 +402,10 @@ export default function BinderPage() {
             setSearchParams({ portfolio: targetId });
           }
         }
+        setInitialLoadDone(true);
       } catch (error) {
         console.error('Error fetching portfolios:', error);
+        setInitialLoadDone(true);
       }
     };
     fetchPortfolios();
