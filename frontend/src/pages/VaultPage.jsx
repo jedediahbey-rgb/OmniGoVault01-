@@ -292,7 +292,7 @@ export default function VaultPage({ user, initialView }) {
     });
   }, [documents, trashedDocuments, showTrash, searchTerm, pinnedDocs]);
 
-  // Loading state
+  // Loading state - only show skeleton on initial load, not when switching portfolios
   if (vaultState === VAULT_STATES.LOADING) {
     return (
       <div className="p-4 space-y-4">
@@ -303,6 +303,9 @@ export default function VaultPage({ user, initialView }) {
       </div>
     );
   }
+
+  // Switching portfolios - keep current content visible with subtle overlay
+  const isSwitching = vaultState === VAULT_STATES.SWITCHING;
 
   // Error state
   if (vaultState === VAULT_STATES.ERROR) {
