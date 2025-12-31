@@ -468,8 +468,8 @@ export default function LedgerThreadsPage() {
 
   const currentPortfolio = portfolios.find(p => p.portfolio_id === portfolioId);
 
-  // Show loading state while fetching portfolios
-  if (loading) {
+  // Show loading state while fetching portfolios - wait for initial load
+  if (!initialLoadDone || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -480,7 +480,7 @@ export default function LedgerThreadsPage() {
     );
   }
 
-  // Show message if no portfolios exist
+  // Show message if no portfolios exist - only after initial load is done
   if (portfolios.length === 0) {
     return (
       <div className="min-h-screen bg-vault-dark p-6">
