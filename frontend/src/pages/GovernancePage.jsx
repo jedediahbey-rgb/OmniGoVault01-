@@ -990,7 +990,7 @@ export default function GovernancePage({ user }) {
   const handleDeleteInsurance = async (policyId) => {
     try {
       // Use V2 API void endpoint
-      await axios.post(`${API_V2}/records/${policyId}/void`, {
+      await api.post(`${API_V2}/records/${policyId}/void`, {
         void_reason: 'Deleted by user from governance list'
       });
       toast.success('Insurance policy deleted');
