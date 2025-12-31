@@ -1022,43 +1022,27 @@ function SourceDialog({ open, onClose, source, onSave }) {
 
 // Claim Dialog Component
 function ClaimDialog({ open, onClose, claim, sources, onSave }) {
-  const [formData, setFormData] = useState({
-    title: '',
-    status: 'UNVERIFIED',
-    body: '',
-    evidence_source_ids: [],
-    counter_source_ids: [],
-    topic_tags: [],
-    reality_check: '',
-    practical_takeaway: '',
+  const getInitialFormData = () => ({
+    title: claim?.title || '',
+    status: claim?.status || 'UNVERIFIED',
+    body: claim?.body || '',
+    evidence_source_ids: claim?.evidence_source_ids || [],
+    counter_source_ids: claim?.counter_source_ids || [],
+    topic_tags: claim?.topic_tags || [],
+    reality_check: claim?.reality_check || '',
+    practical_takeaway: claim?.practical_takeaway || '',
   });
+  
+  const [formData, setFormData] = useState(getInitialFormData);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (claim) {
-      setFormData({
-        title: claim.title || '',
-        status: claim.status || 'UNVERIFIED',
-        body: claim.body || '',
-        evidence_source_ids: claim.evidence_source_ids || [],
-        counter_source_ids: claim.counter_source_ids || [],
-        topic_tags: claim.topic_tags || [],
-        reality_check: claim.reality_check || '',
-        practical_takeaway: claim.practical_takeaway || '',
-      });
-    } else {
-      setFormData({
-        title: '',
-        status: 'UNVERIFIED',
-        body: '',
-        evidence_source_ids: [],
-        counter_source_ids: [],
-        topic_tags: [],
-        reality_check: '',
-        practical_takeaway: '',
-      });
-    }
-  }, [claim, open]);
+  // Reset form when dialog opens/claim changes
+  const dialogKey = open ? (claim?.claim_id || 'new') : 'closed';
+  const prevKeyRef = React.useRef(dialogKey);
+  if (prevKeyRef.current !== dialogKey && open) {
+    prevKeyRef.current = dialogKey;
+    setFormData(getInitialFormData());
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
