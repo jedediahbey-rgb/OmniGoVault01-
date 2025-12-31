@@ -1738,19 +1738,14 @@ export default function BlackArchivePage() {
       </div>
       
       {/* Content Area */}
-      <motion.div 
-        className="w-full max-w-6xl mx-auto px-4 py-5 sm:py-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.25 }}
-      >
-        <AnimatePresence mode="wait">
+      <div className="w-full max-w-6xl mx-auto px-4 py-5 sm:py-8">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
             className="w-full"
           >
             {activeTab === 'index' && <IndexTab />}
@@ -1760,7 +1755,7 @@ export default function BlackArchivePage() {
             {activeTab === 'reading' && <ReadingRoomTab />}
           </motion.div>
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   );
 }
