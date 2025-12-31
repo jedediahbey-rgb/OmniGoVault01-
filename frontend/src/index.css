@@ -551,6 +551,32 @@
   animation: archive-particle-float 4s ease-in-out infinite;
 }
 
+/* Slow pulse animation for icons */
+@keyframes pulse-slow {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Slow spin for decorative rings */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 10s linear infinite;
+}
+
 /* ============================================================================
    BLACK ARCHIVE - Mobile-First Responsive Styles
    ============================================================================ */
