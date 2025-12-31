@@ -590,8 +590,11 @@ async def scan_and_update_conflicts(request: Request):
     }
 
 @router.get("/admin/conflicts")
-async def get_conflicting_claims(user = Depends(get_current_user)):
+async def get_conflicting_claims(request: Request):
     """Get all claims that have conflicting sources (counter_source_ids)"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     claims = await db.archive_claims.find(
         {"counter_source_ids": {"$exists": True, "$ne": []}},
         {"_id": 0}
