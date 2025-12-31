@@ -142,7 +142,7 @@ export default function ArchiveAdminPage() {
     try {
       const params = new URLSearchParams();
       if (sourceSearch) params.append('search', sourceSearch);
-      if (sourceTypeFilter) params.append('source_type', sourceTypeFilter);
+      if (sourceTypeFilter && sourceTypeFilter !== 'all') params.append('source_type', sourceTypeFilter);
       params.append('limit', '100');
       
       const response = await api.get(`/api/archive/sources?${params}`);
@@ -161,7 +161,7 @@ export default function ArchiveAdminPage() {
     try {
       const params = new URLSearchParams();
       if (claimSearch) params.append('search', claimSearch);
-      if (claimStatusFilter) params.append('status', claimStatusFilter);
+      if (claimStatusFilter && claimStatusFilter !== 'all') params.append('status', claimStatusFilter);
       params.append('limit', '100');
       
       const response = await api.get(`/api/archive/claims?${params}`);
