@@ -163,8 +163,8 @@ const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
 // FLOATING PARTICLES BACKGROUND
 // ============================================================================
 
-// Pre-generated particle positions for consistent rendering
-const PARTICLE_POSITIONS = [
+// Pre-generated particle positions - REDUCED for mobile performance
+const PARTICLE_POSITIONS_DESKTOP = [
   { left: 12, top: 8, duration: 5.2, delay: 0.3, size: 'lg' },
   { left: 85, top: 15, duration: 4.8, delay: 1.2, size: 'md' },
   { left: 23, top: 45, duration: 6.1, delay: 0.8, size: 'sm' },
@@ -187,7 +187,28 @@ const PARTICLE_POSITIONS = [
   { left: 38, top: 58, duration: 4.5, delay: 0.0, size: 'md' },
 ];
 
+// Only 6 particles for mobile - much lighter
+const PARTICLE_POSITIONS_MOBILE = [
+  { left: 15, top: 20, duration: 6, delay: 0, size: 'md' },
+  { left: 75, top: 15, duration: 7, delay: 1, size: 'lg' },
+  { left: 45, top: 60, duration: 5.5, delay: 0.5, size: 'md' },
+  { left: 85, top: 70, duration: 6.5, delay: 1.5, size: 'sm' },
+  { left: 25, top: 80, duration: 5, delay: 2, size: 'lg' },
+  { left: 60, top: 35, duration: 7, delay: 0.8, size: 'md' },
+];
+
 const FloatingParticles = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  const particles = isMobile ? PARTICLE_POSITIONS_MOBILE : PARTICLE_POSITIONS_DESKTOP;
+  
   const sizeClasses = {
     sm: 'w-1 h-1',
     md: 'w-1.5 h-1.5',
@@ -196,7 +217,7 @@ const FloatingParticles = () => {
   
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {PARTICLE_POSITIONS.map((particle, i) => (
+      {particles.map((particle, i) => (
         <motion.div
           key={i}
           className={`absolute rounded-full ${sizeClasses[particle.size]}`}
@@ -208,13 +229,12 @@ const FloatingParticles = () => {
               : i % 3 === 1 
                 ? 'rgba(198, 168, 124, 0.4)'
                 : 'rgba(139, 92, 246, 0.4)',
-            boxShadow: i % 2 === 0 ? '0 0 6px rgba(198, 168, 124, 0.4)' : 'none',
+            // GPU acceleration
+            willChange: 'transform, opacity',
           }}
           animate={{
             y: [0, -20, 0],
-            x: [0, i % 2 === 0 ? 5 : -5, 0],
             opacity: [0.3, 0.8, 0.3],
-            scale: [1, 1.3, 1],
           }}
           transition={{
             duration: particle.duration,
