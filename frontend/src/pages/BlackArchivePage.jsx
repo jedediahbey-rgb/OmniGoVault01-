@@ -257,11 +257,11 @@ const FloatingParticles = memo(() => {
 });
 
 // ============================================================================
-// MOBILE SEGMENTED TAB CONTROL - Luxury Glass Style
+// MOBILE SEGMENTED TAB CONTROL - Luxury Glass Style (Memoized)
 // ============================================================================
-const MobileSegmentedTabs = ({ tabs, activeTab, onTabChange }) => {
-  const primaryTabs = tabs.slice(0, 2); // First 2 tabs always visible
-  const secondaryTabs = tabs.slice(2);  // Remaining tabs in scrollable row
+const MobileSegmentedTabs = memo(({ tabs, activeTab, onTabChange }) => {
+  const primaryTabs = useMemo(() => tabs.slice(0, 2), [tabs]); // First 2 tabs always visible
+  const secondaryTabs = useMemo(() => tabs.slice(2), [tabs]);  // Remaining tabs in scrollable row
   
   return (
     <div className="space-y-3">
@@ -277,6 +277,7 @@ const MobileSegmentedTabs = ({ tabs, activeTab, onTabChange }) => {
                 isActive ? 'text-black' : 'text-white/60'
               }`}
               whileTap={{ scale: 0.98 }}
+              style={{ willChange: 'transform' }}
             >
               {isActive && (
                 <motion.div
