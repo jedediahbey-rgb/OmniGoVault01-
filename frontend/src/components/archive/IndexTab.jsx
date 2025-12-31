@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+
+const api = axios.create({ withCredentials: true });
+
 import { Books, MagnifyingGlass, X, Sparkle } from '@phosphor-icons/react';
 import { Input } from '../../components/ui/input';
 import { API, TOPICS, ERAS, TYPE_BADGES } from './constants';
@@ -39,14 +42,14 @@ export function IndexTab() {
       if (filters.jurisdiction) params.append('jurisdiction', filters.jurisdiction);
       if (filters.era) params.append('era', filters.era);
       
-      const res = await axios.get(`${API}/archive/sources?${params}`);
+      const res = await api.get(`${API}/archive/sources?${params}`);
       setSources(res.data.sources || []);
     } catch (err) {
       console.error('Failed to fetch sources:', err);
       if (err.response?.status === 401) return;
       try {
-        await axios.post(`${API}/archive/seed`);
-        const res = await axios.get(`${API}/archive/sources`);
+        await api.post(`${API}/archive/seed`);
+        const res = await api.get(`${API}/archive/sources`);
         setSources(res.data.sources || []);
       } catch (seedErr) {
         console.log('Could not seed archive');
