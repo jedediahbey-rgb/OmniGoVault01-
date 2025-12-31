@@ -120,7 +120,7 @@ async def get_source(source_id: str, user = Depends(get_current_user)):
 
 @router.post("/sources")
 async def create_source(source: ArchiveSource, user = Depends(get_current_user)):
-    """Create a new archive source (admin only in future)"""
+    """Create a new archive source"""
     source_data = {
         "source_id": str(uuid4()),
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -129,6 +129,48 @@ async def create_source(source: ArchiveSource, user = Depends(get_current_user))
     }
     await db.archive_sources.insert_one(source_data)
     return {"source_id": source_data["source_id"]}
+
+@router.put("/sources/{source_id}")
+async def update_source(source_id: str, source: ArchiveSource, user = Depends(get_current_user)):
+    """Update an archive source"""
+    existing = await db.archive_sources.find_one({"source_id": source_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Source not found")
+    
+    update_data = {
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_by": user.user_id,
+        **source.dict()
+    }
+    await db.archive_sources.update_one(
+        {"source_id": source_id},
+        {"$set": update_data}
+    )
+    updated = await db.archive_sources.find_one({"source_id": source_id}, {"_id": 0})
+    return updated
+
+@router.delete("/sources/{source_id}")
+async def delete_source(source_id: str, user = Depends(get_current_user)):
+    """Delete an archive source"""
+    existing = await db.archive_sources.find_one({"source_id": source_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Source not found")
+    
+    # Check if source is referenced by any claims
+    claim_refs = await db.archive_claims.count_documents({
+        "$or": [
+            {"evidence_source_ids": source_id},
+            {"counter_source_ids": source_id}
+        ]
+    })
+    if claim_refs > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete source: referenced by {claim_refs} claim(s)"
+        )
+    
+    await db.archive_sources.delete_one({"source_id": source_id})
+    return {"message": "Source deleted", "source_id": source_id}
 
 # ============================================================================
 # CLAIMS (DOSSIERS) ENDPOINTS
@@ -190,15 +232,61 @@ async def get_claim(claim_id: str, user = Depends(get_current_user)):
 
 @router.post("/claims")
 async def create_claim(claim: ArchiveClaim, user = Depends(get_current_user)):
-    """Create a new archive claim"""
+    """Create a new archive claim with automatic conflict detection"""
+    # Auto-detect disputed status based on counter sources
+    claim_dict = claim.dict()
+    if claim_dict.get("counter_source_ids") and len(claim_dict["counter_source_ids"]) > 0:
+        if claim_dict.get("status") != "DISPUTED":
+            claim_dict["status"] = "DISPUTED"
+            claim_dict["auto_disputed"] = True
+    
     claim_data = {
         "claim_id": str(uuid4()),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "created_by": user.user_id,
-        **claim.dict()
+        **claim_dict
     }
     await db.archive_claims.insert_one(claim_data)
-    return {"claim_id": claim_data["claim_id"]}
+    return {"claim_id": claim_data["claim_id"], "status": claim_data["status"]}
+
+@router.put("/claims/{claim_id}")
+async def update_claim(claim_id: str, claim: ArchiveClaim, user = Depends(get_current_user)):
+    """Update an archive claim with automatic conflict detection"""
+    existing = await db.archive_claims.find_one({"claim_id": claim_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Claim not found")
+    
+    # Auto-detect disputed status based on counter sources
+    claim_dict = claim.dict()
+    if claim_dict.get("counter_source_ids") and len(claim_dict["counter_source_ids"]) > 0:
+        if claim_dict.get("status") != "DISPUTED":
+            claim_dict["status"] = "DISPUTED"
+            claim_dict["auto_disputed"] = True
+    else:
+        # Remove auto-disputed flag if no counter sources
+        claim_dict["auto_disputed"] = False
+    
+    update_data = {
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_by": user.user_id,
+        **claim_dict
+    }
+    await db.archive_claims.update_one(
+        {"claim_id": claim_id},
+        {"$set": update_data}
+    )
+    updated = await db.archive_claims.find_one({"claim_id": claim_id}, {"_id": 0})
+    return updated
+
+@router.delete("/claims/{claim_id}")
+async def delete_claim(claim_id: str, user = Depends(get_current_user)):
+    """Delete an archive claim"""
+    existing = await db.archive_claims.find_one({"claim_id": claim_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Claim not found")
+    
+    await db.archive_claims.delete_one({"claim_id": claim_id})
+    return {"message": "Claim deleted", "claim_id": claim_id}
 
 # ============================================================================
 # TRAILS (TRACKS) ENDPOINTS
@@ -249,6 +337,35 @@ async def create_trail(trail: ArchiveTrail, user = Depends(get_current_user)):
     }
     await db.archive_trails.insert_one(trail_data)
     return {"trail_id": trail_data["trail_id"]}
+
+@router.put("/trails/{trail_id}")
+async def update_trail(trail_id: str, trail: ArchiveTrail, user = Depends(get_current_user)):
+    """Update a doctrine trail"""
+    existing = await db.archive_trails.find_one({"trail_id": trail_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Trail not found")
+    
+    update_data = {
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_by": user.user_id,
+        **trail.dict()
+    }
+    await db.archive_trails.update_one(
+        {"trail_id": trail_id},
+        {"$set": update_data}
+    )
+    updated = await db.archive_trails.find_one({"trail_id": trail_id}, {"_id": 0})
+    return updated
+
+@router.delete("/trails/{trail_id}")
+async def delete_trail(trail_id: str, user = Depends(get_current_user)):
+    """Delete a doctrine trail"""
+    existing = await db.archive_trails.find_one({"trail_id": trail_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Trail not found")
+    
+    await db.archive_trails.delete_one({"trail_id": trail_id})
+    return {"message": "Trail deleted", "trail_id": trail_id}
 
 # ============================================================================
 # MAP NODES & EDGES ENDPOINTS
