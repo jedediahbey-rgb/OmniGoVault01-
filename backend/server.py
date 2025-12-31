@@ -1281,8 +1281,18 @@ async def update_user_preferences(request: Request, user: User = Depends(get_cur
 
 @api_router.get("/portfolios")
 async def get_portfolios(user: User = Depends(get_current_user)):
-    docs = await db.portfolios.find({"user_id": user.user_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
-    return docs
+    portfolios = await db.portfolios.find({"user_id": user.user_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    # Add document counts for each portfolio
+    for portfolio in portfolios:
+        count = await db.documents.count_documents({
+            "user_id": user.user_id,
+            "portfolio_id": portfolio["portfolio_id"],
+            "$or": [{"is_deleted": False}, {"is_deleted": {"$exists": False}}]
+        })
+        portfolio["document_count"] = count
+    
+    return portfolios
 
 
 @api_router.post("/portfolios")
