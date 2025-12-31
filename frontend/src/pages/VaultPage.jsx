@@ -355,7 +355,30 @@ export default function VaultPage({ user, initialView }) {
 
   // Main Vault UI
   return (
-    <div>
+    <div className="relative">
+      {/* Switching Overlay - subtle fade instead of skeleton flash */}
+      <AnimatePresence>
+        {isSwitching && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="absolute inset-0 bg-[#0a0f1a]/60 z-20 flex items-center justify-center pointer-events-none"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="flex items-center gap-2 bg-vault-dark/90 px-4 py-2 rounded-full border border-vault-gold/20"
+            >
+              <div className="w-4 h-4 border-2 border-vault-gold/30 border-t-vault-gold rounded-full animate-spin" />
+              <span className="text-vault-gold/80 text-sm">Switching...</span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="bg-[#0a0f1a] sticky top-0 z-10">
         {/* Portfolio Row */}
