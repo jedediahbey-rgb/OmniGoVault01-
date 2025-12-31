@@ -613,7 +613,12 @@ export default function VaultPage({ user, initialView }) {
   
   // Retry initialization
   const retryInitialization = useCallback(() => {
-    window.location.reload();
+    setVaultState(VAULT_STATES.LOADING);
+    setError(null);
+    // Small delay to ensure state is reset
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   }, []);
   
   // ============================================================================
@@ -628,15 +633,20 @@ export default function VaultPage({ user, initialView }) {
   // Error state
   if (vaultState === VAULT_STATES.ERROR) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <EmptyState
           icon={ShieldCheck}
           title="Unable to Access Vault"
-          description={error || 'Something went wrong. Please try again.'}
+          description={error || 'Please check your connection and try again.'}
           action={
-            <Button onClick={retryInitialization} className="btn-primary">
-              Retry
-            </Button>
+            <div className="flex flex-col gap-3">
+              <Button onClick={retryInitialization} className="btn-primary">
+                Retry
+              </Button>
+              <Button onClick={() => window.location.href = '/'} variant="outline" className="text-white/60 border-white/20">
+                Go Home
+              </Button>
+            </div>
           }
         />
       </div>
