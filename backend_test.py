@@ -3210,14 +3210,19 @@ if __name__ == "__main__":
             tester = BatesNumberingTester()
             success = tester.run_bates_tests()
             sys.exit(0 if success else 1)
+        elif sys.argv[1] == "omnibinder":
+            # Run OmniBinder V2 tests only
+            tester = OmniBinderV2Tester()
+            success = tester.run_omnibinder_v2_tests()
+            sys.exit(0 if success else 1)
     
-    # Run Bates Numbering tests (default for this testing session)
-    bates_tester = BatesNumberingTester()
-    bates_success = bates_tester.run_bates_tests()
+    # Run OmniBinder V2 tests (default for this testing session)
+    omnibinder_tester = OmniBinderV2Tester()
+    omnibinder_success = omnibinder_tester.run_omnibinder_v2_tests()
     
     print("\n" + "="*80)
-    print("🏆 BATES NUMBERING CONFIGURATION TEST RESULTS")
+    print("🏆 OMNIBINDER V2 - SCHEDULED BINDERS TEST RESULTS")
     print("="*80)
-    print(f"Bates Numbering Tests: {'✅ PASSED' if bates_success else '❌ FAILED'}")
+    print(f"OmniBinder V2 Tests: {'✅ PASSED' if omnibinder_success else '❌ FAILED'}")
     
-    sys.exit(0 if bates_success else 1)
+    sys.exit(0 if omnibinder_success else 1)
