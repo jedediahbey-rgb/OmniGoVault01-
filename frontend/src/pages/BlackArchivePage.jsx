@@ -207,9 +207,76 @@ const FloatingParticles = () => {
 };
 
 // ============================================================================
-// PREMIUM TAB BUTTON WITH EFFECTS
+// MOBILE SEGMENTED TAB CONTROL - Luxury Glass Style
 // ============================================================================
-const PremiumTab = ({ tab, isActive, onClick }) => {
+const MobileSegmentedTabs = ({ tabs, activeTab, onTabChange }) => {
+  const primaryTabs = tabs.slice(0, 2); // First 2 tabs always visible
+  const secondaryTabs = tabs.slice(2);  // Remaining tabs in scrollable row
+  
+  return (
+    <div className="space-y-3">
+      {/* Primary tabs - 2-column grid, always visible */}
+      <div className="grid grid-cols-2 gap-2 p-1 bg-white/[0.03] backdrop-blur-md rounded-xl border border-white/10">
+        {primaryTabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <motion.button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`relative flex items-center justify-center gap-2 py-3 px-3 rounded-lg text-sm font-medium transition-all overflow-hidden ${
+                isActive ? 'text-black' : 'text-white/60'
+              }`}
+              whileTap={{ scale: 0.98 }}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="mobileActiveTab"
+                  className="absolute inset-0 bg-gradient-to-r from-vault-gold via-amber-400 to-vault-gold rounded-lg"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent rounded-lg"
+                    animate={{ x: ['-100%', '200%'] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
+                  />
+                </motion.div>
+              )}
+              <tab.icon className="w-4 h-4 relative z-10 shrink-0" weight={isActive ? 'fill' : 'duotone'} />
+              <span className="relative z-10 truncate">{tab.label}</span>
+            </motion.button>
+          );
+        })}
+      </div>
+      
+      {/* Secondary tabs - horizontal scroll chips */}
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
+        {secondaryTabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <motion.button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`relative flex items-center gap-2 py-2.5 px-4 rounded-lg text-xs font-medium whitespace-nowrap transition-all shrink-0 ${
+                isActive
+                  ? 'bg-vault-gold/20 text-vault-gold border border-vault-gold/30'
+                  : 'bg-white/[0.03] text-white/50 border border-white/10 hover:bg-white/[0.06] hover:text-white/70'
+              }`}
+              whileTap={{ scale: 0.98 }}
+            >
+              <tab.icon className="w-3.5 h-3.5" weight={isActive ? 'fill' : 'duotone'} />
+              <span>{tab.label}</span>
+            </motion.button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// DESKTOP PREMIUM TAB WITH EFFECTS
+// ============================================================================
+const DesktopPremiumTab = ({ tab, isActive, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   
   return (
@@ -218,22 +285,16 @@ const PremiumTab = ({ tab, isActive, onClick }) => {
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       className={`relative flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-medium whitespace-nowrap transition-colors overflow-hidden ${
-        isActive
-          ? 'text-black'
-          : 'text-white/60 hover:text-white'
+        isActive ? 'text-black' : 'text-white/60 hover:text-white'
       }`}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* Active background with shimmer */}
       {isActive && (
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-vault-gold via-amber-400 to-vault-gold"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          layoutId="activeTab"
+          layoutId="desktopActiveTab"
         >
-          {/* Shimmer overlay */}
           <motion.div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
             animate={{ x: ['-100%', '100%'] }}
@@ -242,17 +303,14 @@ const PremiumTab = ({ tab, isActive, onClick }) => {
         </motion.div>
       )}
       
-      {/* Hover glow effect */}
       {!isActive && isHovered && (
         <motion.div
           className="absolute inset-0 bg-white/5 rounded-xl"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
         />
       )}
       
-      {/* Icon with pulse on active */}
       <motion.div
         animate={isActive ? { scale: [1, 1.1, 1] } : {}}
         transition={{ duration: 0.5 }}
@@ -263,7 +321,6 @@ const PremiumTab = ({ tab, isActive, onClick }) => {
       
       <span className="relative z-10">{tab.label}</span>
       
-      {/* Subtle border glow on hover */}
       {!isActive && (
         <motion.div
           className="absolute inset-0 rounded-xl border border-vault-gold/0"
@@ -276,11 +333,11 @@ const PremiumTab = ({ tab, isActive, onClick }) => {
 
 // Tab configurations
 const TABS = [
-  { id: 'index', label: 'The Black Index', icon: Books },
-  { id: 'trails', label: 'Doctrine Tracks', icon: GitBranch },
-  { id: 'claims', label: 'Dossiers', icon: FileText },
-  { id: 'map', label: 'Archive Map', icon: MapTrifold },
-  { id: 'reading', label: 'Archive Desk', icon: Brain }
+  { id: 'index', label: 'Black Index', icon: Books, shortLabel: 'Index' },
+  { id: 'trails', label: 'Doctrine Tracks', icon: GitBranch, shortLabel: 'Tracks' },
+  { id: 'claims', label: 'Dossiers', icon: FileText, shortLabel: 'Dossiers' },
+  { id: 'map', label: 'Archive Map', icon: MapTrifold, shortLabel: 'Map' },
+  { id: 'reading', label: 'Archive Desk', icon: Brain, shortLabel: 'Desk' }
 ];
 
 // Type badges
