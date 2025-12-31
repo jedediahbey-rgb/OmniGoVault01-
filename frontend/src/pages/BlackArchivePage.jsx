@@ -285,35 +285,66 @@ const ERAS = ['1600-1900', '1900-1932', '1933-1945', 'Modern'];
 // SUB-COMPONENTS
 // ============================================================================
 
-// Source Card
-function SourceCard({ source, onClick }) {
+// ============================================================================
+// PREMIUM SOURCE CARD WITH HOVER EFFECTS
+// ============================================================================
+function SourceCard({ source, onClick, index }) {
   const badge = TYPE_BADGES[source.source_type] || TYPE_BADGES.HYPOTHESIS;
+  const [isHovered, setIsHovered] = useState(false);
   
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       onClick={onClick}
-      className="p-4 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10 rounded-xl cursor-pointer hover:border-vault-gold/30 transition-all group"
+      className="relative p-4 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10 rounded-xl cursor-pointer group overflow-hidden"
+      whileHover={{ y: -2, borderColor: 'rgba(198, 168, 124, 0.4)' }}
+      whileTap={{ scale: 0.99 }}
     >
-      <div className="flex items-start gap-3">
+      {/* Hover glow effect */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-vault-gold/5 to-transparent opacity-0"
+        animate={{ opacity: isHovered ? 1 : 0 }}
+      />
+      
+      {/* Scanning line effect on hover */}
+      {isHovered && (
+        <motion.div
+          className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-vault-gold/50 to-transparent"
+          initial={{ top: 0 }}
+          animate={{ top: '100%' }}
+          transition={{ duration: 1, repeat: Infinity }}
+        />
+      )}
+      
+      <div className="relative flex items-start gap-3">
         {source.source_type === 'PRIMARY_SOURCE' && (
-          <div className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0">
+          <motion.div 
+            className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0"
+            animate={isHovered ? { scale: [1, 1.1, 1], rotate: [0, 5, 0] } : {}}
+            transition={{ duration: 0.5 }}
+          >
             <Seal className="w-5 h-5 text-vault-gold" weight="fill" />
-          </div>
+          </motion.div>
         )}
         {source.source_type !== 'PRIMARY_SOURCE' && (
-          <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-            <BookOpen className="w-5 h-5 text-white/50" weight="duotone" />
+          <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:border-white/20 transition-colors">
+            <BookOpen className="w-5 h-5 text-white/50 group-hover:text-white/70 transition-colors" weight="duotone" />
           </div>
         )}
         
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className="text-white font-medium text-sm line-clamp-2">{source.title}</h3>
-            <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-medium border ${badge.color}`}>
+            <h3 className="text-white font-medium text-sm line-clamp-2 group-hover:text-vault-gold/90 transition-colors">{source.title}</h3>
+            <motion.span 
+              className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-medium border ${badge.color}`}
+              whileHover={{ scale: 1.05 }}
+            >
               {badge.label}
-            </span>
+            </motion.span>
           </div>
           
           <p className="text-vault-gold/60 text-xs font-mono mb-2">{source.citation}</p>
@@ -331,6 +362,15 @@ function SourceCard({ source, onClick }) {
             )}
           </div>
         </div>
+        
+        {/* View indicator */}
+        <motion.div
+          className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100"
+          initial={{ x: -10 }}
+          animate={{ x: isHovered ? 0 : -10 }}
+        >
+          <Eye className="w-4 h-4 text-vault-gold/50" weight="duotone" />
+        </motion.div>
       </div>
     </motion.div>
   );
