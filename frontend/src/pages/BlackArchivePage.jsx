@@ -1803,15 +1803,15 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
         className="archive-map-controls !bg-black/80 !border-vault-gold/30 !rounded-lg !shadow-xl [&>button]:!bg-white/10 [&>button]:!border-vault-gold/20 [&>button]:!text-white/70 [&>button:hover]:!bg-vault-gold/20 [&>button:hover]:!text-vault-gold"
         showInteractive={false}
       />
-      {/* MiniMap - showing all 8 nodes as small dots */}
+      {/* MiniMap - larger size to show all 8 nodes zoomed out */}
       <MiniMap 
         position="bottom-right"
         style={{
-          margin: 20,
-          marginBottom: 'calc(20px + env(safe-area-inset-bottom))',
-          marginRight: 'calc(20px + env(safe-area-inset-right))',
-          width: 120,
-          height: 90,
+          margin: 16,
+          marginBottom: 'calc(16px + env(safe-area-inset-bottom))',
+          marginRight: 'calc(16px + env(safe-area-inset-right))',
+          width: 140,
+          height: 100,
         }}
         nodeColor={(node) => {
           switch (node.type) {
@@ -1824,10 +1824,10 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
         }}
         nodeStrokeWidth={0}
         nodeBorderRadius={50}
-        maskColor="rgba(0, 0, 0, 0.85)"
+        maskColor="rgba(0, 0, 0, 0.8)"
         className="archive-map-minimap !bg-black/80 !border-vault-gold/30 !rounded-lg"
         pannable
-        zoomable={false}
+        zoomable
       />
     </ReactFlow>
   );
