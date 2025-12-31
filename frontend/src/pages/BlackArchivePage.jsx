@@ -1106,7 +1106,9 @@ function ClaimsTab() {
     return (
       <div className="grid md:grid-cols-2 gap-4">
         {[1,2,3,4].map(i => (
-          <div key={i} className="h-48 bg-white/5 rounded-xl animate-pulse" />
+          <div key={i} className="h-48 bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden relative">
+            <div className="absolute inset-0 skeleton-shimmer" />
+          </div>
         ))}
       </div>
     );
