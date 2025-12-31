@@ -382,8 +382,11 @@ async def update_trail(trail_id: str, trail: ArchiveTrail, request: Request):
     return updated
 
 @router.delete("/trails/{trail_id}")
-async def delete_trail(trail_id: str, user = Depends(get_current_user)):
+async def delete_trail(trail_id: str, request: Request):
     """Delete a doctrine trail"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     existing = await db.archive_trails.find_one({"trail_id": trail_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Trail not found")
