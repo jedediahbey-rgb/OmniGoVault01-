@@ -512,6 +512,178 @@ async def get_archive_stats(user = Depends(get_current_user)):
     }
 
 # ============================================================================
+# ADMIN TOOLS - Conflict Detection & Bulk Operations
+# ============================================================================
+
+@router.post("/admin/scan-conflicts")
+async def scan_and_update_conflicts(user = Depends(get_current_user)):
+    """
+    Scan all claims and automatically apply 'DISPUTED' status 
+    to claims that have counter_source_ids populated.
+    Returns a summary of changes made.
+    """
+    # Find all claims with counter sources that aren't already DISPUTED
+    claims_to_update = await db.archive_claims.find({
+        "counter_source_ids": {"$exists": True, "$ne": []},
+        "status": {"$ne": "DISPUTED"}
+    }, {"_id": 0}).to_list(1000)
+    
+    updated_claims = []
+    for claim in claims_to_update:
+        await db.archive_claims.update_one(
+            {"claim_id": claim["claim_id"]},
+            {"$set": {
+                "status": "DISPUTED",
+                "auto_disputed": True,
+                "dispute_detected_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        updated_claims.append({
+            "claim_id": claim["claim_id"],
+            "title": claim.get("title", "Untitled"),
+            "counter_sources_count": len(claim.get("counter_source_ids", []))
+        })
+    
+    # Also find claims marked DISPUTED but with no counter sources
+    invalid_disputes = await db.archive_claims.find({
+        "status": "DISPUTED",
+        "$or": [
+            {"counter_source_ids": {"$exists": False}},
+            {"counter_source_ids": []}
+        ],
+        "auto_disputed": True  # Only revert auto-disputed ones
+    }, {"_id": 0, "claim_id": 1, "title": 1}).to_list(1000)
+    
+    reverted_claims = []
+    for claim in invalid_disputes:
+        await db.archive_claims.update_one(
+            {"claim_id": claim["claim_id"]},
+            {"$set": {
+                "status": "UNVERIFIED",
+                "auto_disputed": False
+            }}
+        )
+        reverted_claims.append({
+            "claim_id": claim["claim_id"],
+            "title": claim.get("title", "Untitled")
+        })
+    
+    return {
+        "message": "Conflict scan complete",
+        "newly_disputed": len(updated_claims),
+        "disputed_claims": updated_claims,
+        "reverted_to_unverified": len(reverted_claims),
+        "reverted_claims": reverted_claims
+    }
+
+@router.get("/admin/conflicts")
+async def get_conflicting_claims(user = Depends(get_current_user)):
+    """Get all claims that have conflicting sources (counter_source_ids)"""
+    claims = await db.archive_claims.find(
+        {"counter_source_ids": {"$exists": True, "$ne": []}},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Enrich with source details
+    for claim in claims:
+        counter_ids = claim.get("counter_source_ids", [])
+        if counter_ids:
+            counter_sources = await db.archive_sources.find(
+                {"source_id": {"$in": counter_ids}},
+                {"_id": 0, "source_id": 1, "title": 1, "citation": 1}
+            ).to_list(100)
+            claim["counter_sources_detail"] = counter_sources
+    
+    return {
+        "count": len(claims),
+        "conflicting_claims": claims
+    }
+
+class BulkSourceCreate(BaseModel):
+    sources: List[ArchiveSource]
+
+@router.post("/admin/bulk/sources")
+async def bulk_create_sources(data: BulkSourceCreate, user = Depends(get_current_user)):
+    """Create multiple sources at once"""
+    created = []
+    for source in data.sources:
+        source_data = {
+            "source_id": str(uuid4()),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": user.user_id,
+            **source.dict()
+        }
+        await db.archive_sources.insert_one(source_data)
+        created.append(source_data["source_id"])
+    
+    return {"message": f"Created {len(created)} sources", "source_ids": created}
+
+class BulkClaimCreate(BaseModel):
+    claims: List[ArchiveClaim]
+
+@router.post("/admin/bulk/claims")
+async def bulk_create_claims(data: BulkClaimCreate, user = Depends(get_current_user)):
+    """Create multiple claims at once with automatic conflict detection"""
+    created = []
+    for claim in data.claims:
+        claim_dict = claim.dict()
+        # Auto-detect disputed status
+        if claim_dict.get("counter_source_ids") and len(claim_dict["counter_source_ids"]) > 0:
+            if claim_dict.get("status") != "DISPUTED":
+                claim_dict["status"] = "DISPUTED"
+                claim_dict["auto_disputed"] = True
+        
+        claim_data = {
+            "claim_id": str(uuid4()),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": user.user_id,
+            **claim_dict
+        }
+        await db.archive_claims.insert_one(claim_data)
+        created.append({"claim_id": claim_data["claim_id"], "status": claim_data["status"]})
+    
+    return {"message": f"Created {len(created)} claims", "claims": created}
+
+class BulkTrailCreate(BaseModel):
+    trails: List[ArchiveTrail]
+
+@router.post("/admin/bulk/trails")
+async def bulk_create_trails(data: BulkTrailCreate, user = Depends(get_current_user)):
+    """Create multiple trails at once"""
+    created = []
+    for trail in data.trails:
+        trail_data = {
+            "trail_id": str(uuid4()),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": user.user_id,
+            **trail.dict()
+        }
+        await db.archive_trails.insert_one(trail_data)
+        created.append(trail_data["trail_id"])
+    
+    return {"message": f"Created {len(created)} trails", "trail_ids": created}
+
+@router.delete("/admin/reset")
+async def reset_archive_data(user = Depends(get_current_user)):
+    """Reset all archive data (use with caution)"""
+    sources_deleted = await db.archive_sources.delete_many({})
+    claims_deleted = await db.archive_claims.delete_many({})
+    trails_deleted = await db.archive_trails.delete_many({})
+    nodes_deleted = await db.archive_nodes.delete_many({})
+    edges_deleted = await db.archive_edges.delete_many({})
+    
+    return {
+        "message": "Archive data reset complete",
+        "deleted": {
+            "sources": sources_deleted.deleted_count,
+            "claims": claims_deleted.deleted_count,
+            "trails": trails_deleted.deleted_count,
+            "nodes": nodes_deleted.deleted_count,
+            "edges": edges_deleted.deleted_count
+        }
+    }
+
+# ============================================================================
 # SEED DATA ENDPOINT (for initial setup)
 # ============================================================================
 
