@@ -269,6 +269,19 @@ export default function VaultPage({ user, initialView }) {
     } catch { toast.error('Failed to delete'); }
   };
 
+  // Soft delete - move document to trash
+  const softDeleteDocument = async (docId) => {
+    try {
+      await axios.delete(`${API}/documents/${docId}`);
+      const doc = documents.find(d => d.document_id === docId);
+      setDocuments(documents.filter(d => d.document_id !== docId));
+      if (doc) {
+        setTrashedDocuments([{ ...doc, deleted_at: new Date().toISOString() }, ...trashedDocuments]);
+      }
+      toast.success('Document moved to trash');
+    } catch { toast.error('Failed to delete document'); }
+  };
+
   const createPortfolio = async () => {
     if (!newPortfolioName.trim()) return;
     try {
