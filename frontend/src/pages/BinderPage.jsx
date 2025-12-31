@@ -244,7 +244,7 @@ function LatestBinderActions({ latestRun, handleViewManifest }) {
 
       {/* Mobile Print Help Dialog */}
       <Dialog open={showPrintHelp} onOpenChange={setShowPrintHelp}>
-        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white" style={{ maxWidth: '340px' }}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-[340px]">
           <DialogHeader>
             <DialogTitle className="text-lg font-heading text-vault-gold flex items-center gap-2">
               <Printer className="w-5 h-5" />
