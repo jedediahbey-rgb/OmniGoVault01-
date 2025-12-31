@@ -811,6 +811,311 @@ class AdminService:
             "account_memberships": memberships
         }
     
+    # ============ SUPPORT_ADMIN SPECIFIC METHODS ============
+    
+    async def is_support_admin(self, user_id: str) -> bool:
+        """Check if user has SUPPORT_ADMIN role"""
+        return await self.has_global_role(user_id, GlobalRole.SUPPORT_ADMIN)
+    
+    async def can_support_admin_impersonate(self, admin_user_id: str, target_user_id: str) -> bool:
+        """
+        Check if support admin can impersonate the target user.
+        Support admins CANNOT impersonate other admins or Omnicompetent users.
+        """
+        # Check if target has any admin roles
+        target_roles = await self.get_user_global_roles(target_user_id)
+        
+        # Block impersonation of any admin user
+        admin_roles = [
+            GlobalRole.OMNICOMPETENT_OWNER.value,
+            GlobalRole.OMNICOMPETENT.value,
+            GlobalRole.SUPPORT_ADMIN.value,
+            GlobalRole.BILLING_ADMIN.value
+        ]
+        
+        for role in target_roles:
+            if role in admin_roles:
+                return False
+        
+        return True
+    
+    async def add_support_note(
+        self,
+        admin_user_id: str,
+        account_id: str = None,
+        user_id: str = None,
+        note_type: str = "GENERAL",
+        content: str = "",
+        is_internal: bool = True,
+        tags: List[str] = None,
+        ip_address: str = None
+    ) -> Dict:
+        """Add a support note to an account or user"""
+        # Verify support admin role
+        if not await self.is_support_admin(admin_user_id) and not await self.is_omnicompetent(admin_user_id):
+            raise PermissionError("Support Admin or Omnicompetent role required")
+        
+        if not account_id and not user_id:
+            raise ValueError("Either account_id or user_id must be provided")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        note = {
+            "id": f"note_{uuid.uuid4().hex[:12]}",
+            "account_id": account_id,
+            "user_id": user_id,
+            "note_type": note_type,
+            "content": content,
+            "created_by": admin_user_id,
+            "created_at": now,
+            "is_internal": is_internal,
+            "tags": tags or []
+        }
+        
+        await self.db.support_notes.insert_one(note)
+        
+        # Audit log
+        await self._log_admin_action(
+            admin_user_id=admin_user_id,
+            action_type=AdminAuditAction.VIEW_ACCOUNT,  # Using existing action type
+            account_id=account_id,
+            target_user_id=user_id,
+            metadata={"action": "add_support_note", "note_id": note["id"], "note_type": note_type},
+            ip_address=ip_address
+        )
+        
+        return {"status": "created", "note_id": note["id"]}
+    
+    async def get_support_notes(
+        self,
+        admin_user_id: str,
+        account_id: str = None,
+        user_id: str = None,
+        skip: int = 0,
+        limit: int = 50
+    ) -> Dict:
+        """Get support notes for an account or user"""
+        if not await self.can_access_admin(admin_user_id):
+            raise PermissionError("Admin access required")
+        
+        query = {}
+        if account_id:
+            query["account_id"] = account_id
+        if user_id:
+            query["user_id"] = user_id
+        
+        notes = await self.db.support_notes.find(
+            query,
+            {"_id": 0}
+        ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+        
+        total = await self.db.support_notes.count_documents(query)
+        
+        return {"notes": notes, "total": total}
+    
+    async def extend_trial(
+        self,
+        admin_user_id: str,
+        account_id: str,
+        days: int,
+        reason: str,
+        ip_address: str = None
+    ) -> Dict:
+        """Extend a trial period for an account (Support Admin allowed)"""
+        # Support admin or higher can extend trials
+        is_support = await self.is_support_admin(admin_user_id)
+        is_omni = await self.is_omnicompetent(admin_user_id)
+        
+        if not is_support and not is_omni:
+            raise PermissionError("Support Admin or higher role required")
+        
+        # Support admins limited to 30 days, Omnicompetent can do up to 90
+        max_days = 90 if is_omni else 30
+        if days > max_days:
+            raise ValueError(f"Maximum extension for your role is {max_days} days")
+        
+        # Get current subscription
+        subscription = await self.subscription_service.get_subscription(account_id)
+        if not subscription:
+            raise ValueError("Account has no subscription")
+        
+        # Calculate new trial end date
+        now = datetime.now(timezone.utc)
+        current_end = subscription.get("trial_end") or subscription.get("current_period_end")
+        
+        if isinstance(current_end, str):
+            current_end = datetime.fromisoformat(current_end.replace("Z", "+00:00"))
+        
+        # If trial already ended, extend from now
+        if current_end < now:
+            current_end = now
+        
+        from datetime import timedelta
+        new_end = current_end + timedelta(days=days)
+        
+        # Update subscription
+        await self.db.subscriptions.update_one(
+            {"subscription_id": subscription["subscription_id"]},
+            {"$set": {
+                "trial_end": new_end.isoformat(),
+                "status": "trialing",
+                "updated_at": now.isoformat()
+            }}
+        )
+        
+        # Record the extension
+        extension_record = {
+            "id": f"trial_ext_{uuid.uuid4().hex[:12]}",
+            "account_id": account_id,
+            "extended_by": admin_user_id,
+            "extended_at": now.isoformat(),
+            "original_end_date": current_end.isoformat(),
+            "new_end_date": new_end.isoformat(),
+            "days_extended": days,
+            "reason": reason
+        }
+        await self.db.trial_extensions.insert_one(extension_record)
+        
+        # Audit log
+        await self._log_admin_action(
+            admin_user_id=admin_user_id,
+            action_type=AdminAuditAction.UPDATE_ENTITLEMENT,
+            account_id=account_id,
+            metadata={
+                "action": "extend_trial",
+                "days": days,
+                "reason": reason,
+                "new_end_date": new_end.isoformat()
+            },
+            ip_address=ip_address
+        )
+        
+        logger.info(f"Support admin {admin_user_id} extended trial for {account_id} by {days} days")
+        
+        return {
+            "status": "extended",
+            "days_extended": days,
+            "new_trial_end": new_end.isoformat()
+        }
+    
+    async def unlock_user_account(
+        self,
+        admin_user_id: str,
+        target_user_id: str,
+        reason: str,
+        ip_address: str = None
+    ) -> Dict:
+        """Unlock a locked user account (Support Admin allowed)"""
+        if not await self.is_support_admin(admin_user_id) and not await self.is_omnicompetent(admin_user_id):
+            raise PermissionError("Support Admin or higher role required")
+        
+        # Get user
+        user = await self.db.users.find_one({"user_id": target_user_id})
+        if not user:
+            raise ValueError("User not found")
+        
+        previous_lock_reason = user.get("lock_reason")
+        
+        # Unlock the user
+        now = datetime.now(timezone.utc).isoformat()
+        await self.db.users.update_one(
+            {"user_id": target_user_id},
+            {"$set": {
+                "is_locked": False,
+                "lock_reason": None,
+                "unlocked_at": now,
+                "unlocked_by": admin_user_id
+            }}
+        )
+        
+        # Record the unlock
+        unlock_record = {
+            "id": f"unlock_{uuid.uuid4().hex[:12]}",
+            "user_id": target_user_id,
+            "unlocked_by": admin_user_id,
+            "unlocked_at": now,
+            "reason": reason,
+            "previous_lock_reason": previous_lock_reason
+        }
+        await self.db.account_unlocks.insert_one(unlock_record)
+        
+        # Audit log
+        await self._log_admin_action(
+            admin_user_id=admin_user_id,
+            action_type=AdminAuditAction.UPDATE_USER,
+            target_user_id=target_user_id,
+            metadata={"action": "unlock_account", "reason": reason},
+            ip_address=ip_address
+        )
+        
+        logger.info(f"Support admin {admin_user_id} unlocked user {target_user_id}")
+        
+        return {"status": "unlocked", "user_id": target_user_id}
+    
+    async def reset_user_2fa(
+        self,
+        admin_user_id: str,
+        target_user_id: str,
+        reason: str,
+        ip_address: str = None
+    ) -> Dict:
+        """Reset 2FA for a user (Support Admin allowed)"""
+        if not await self.is_support_admin(admin_user_id) and not await self.is_omnicompetent(admin_user_id):
+            raise PermissionError("Support Admin or higher role required")
+        
+        # Get user
+        user = await self.db.users.find_one({"user_id": target_user_id})
+        if not user:
+            raise ValueError("User not found")
+        
+        # Reset 2FA settings
+        now = datetime.now(timezone.utc).isoformat()
+        await self.db.users.update_one(
+            {"user_id": target_user_id},
+            {"$set": {
+                "two_factor_enabled": False,
+                "two_factor_secret": None,
+                "two_factor_reset_at": now,
+                "two_factor_reset_by": admin_user_id
+            }}
+        )
+        
+        # Audit log
+        await self._log_admin_action(
+            admin_user_id=admin_user_id,
+            action_type=AdminAuditAction.RESET_2FA,
+            target_user_id=target_user_id,
+            metadata={"reason": reason},
+            ip_address=ip_address
+        )
+        
+        logger.info(f"Support admin {admin_user_id} reset 2FA for user {target_user_id}")
+        
+        return {"status": "reset", "user_id": target_user_id}
+    
+    async def get_support_admin_permissions(self, user_id: str) -> Dict:
+        """Get detailed permission info for a support admin"""
+        from models.admin import SUPPORT_ADMIN_ALLOWED_ACTIONS, SUPPORT_ADMIN_DENIED_ACTIONS
+        
+        is_support = await self.is_support_admin(user_id)
+        is_billing = await self.has_global_role(user_id, GlobalRole.BILLING_ADMIN)
+        is_omni = await self.is_omnicompetent(user_id)
+        
+        return {
+            "user_id": user_id,
+            "is_support_admin": is_support,
+            "is_billing_admin": is_billing,
+            "is_omnicompetent": is_omni,
+            "allowed_actions": [a.value for a in SUPPORT_ADMIN_ALLOWED_ACTIONS] if is_support else [],
+            "denied_actions": SUPPORT_ADMIN_DENIED_ACTIONS if is_support else [],
+            "restrictions": {
+                "max_trial_extension_days": 30 if is_support and not is_omni else 90,
+                "can_impersonate_admins": False if is_support and not is_omni else True,
+                "can_modify_entitlements": is_omni,
+                "can_suspend_accounts": is_omni,
+                "can_change_plans": is_billing or is_omni
+            }
+        }
+    
     # ============ AUDIT LOGGING ============
     
     async def _log_admin_action(
