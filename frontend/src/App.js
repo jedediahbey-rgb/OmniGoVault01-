@@ -46,6 +46,7 @@ import BillingPage from './pages/BillingPage';
 import AdminConsolePage from './pages/AdminConsolePage';
 import WorkspacesPage from './pages/WorkspacesPage';
 import WorkspaceDetailPage from './pages/WorkspaceDetailPage';
+import BlackArchivePage from './pages/BlackArchivePage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
