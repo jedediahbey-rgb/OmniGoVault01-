@@ -122,24 +122,24 @@ function DocumentCard({ doc, isPinned, onPin, onOpen, onTrash, onExport, isSelec
         }
       `}
     >
-      {/* Hover glow effect */}
+      {/* Hover glow effect - Desktop only */}
       <AnimatePresence>
         {isHovered && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-gradient-to-t from-vault-gold/5 to-transparent pointer-events-none"
+            className="hidden lg:block absolute inset-0 bg-gradient-to-t from-vault-gold/5 to-transparent pointer-events-none"
           />
         )}
       </AnimatePresence>
       
-      {/* Card content */}
-      <div className="p-5">
+      {/* Card content - More compact on mobile */}
+      <div className="p-4 lg:p-5">
         {/* Header row */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="w-12 h-12 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center">
-            <FileText className="w-6 h-6 text-vault-gold" weight="duotone" />
+        <div className="flex items-start justify-between mb-3 lg:mb-4">
+          <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center">
+            <FileText className="w-5 h-5 lg:w-6 lg:h-6 text-vault-gold" weight="duotone" />
           </div>
           
           <div className="flex items-center gap-2">
