@@ -7,13 +7,17 @@ from typing import Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
 from pydantic import BaseModel
-from ..services.auth_service import get_current_user
-from ..models.user import User
 
 router = APIRouter(prefix="/archive", tags=["Black Archive"])
 
-# Get database reference
-from ..server import db
+# These will be set by init function
+db = None
+get_current_user = None
+
+def init_archive_routes(database, auth_func):
+    global db, get_current_user
+    db = database
+    get_current_user = auth_func
 
 # ============================================================================
 # MODELS
