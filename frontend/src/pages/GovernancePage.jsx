@@ -602,7 +602,7 @@ export default function GovernancePage({ user }) {
     setCompensationLoading(true);
     try {
       // Use V2 API for compensation entries
-      const res = await axios.get(`${API_V2}/records`, {
+      const res = await api.get(`${API_V2}/records`, {
         params: { 
           portfolio_id: selectedPortfolio, 
           module_type: MODULE_TYPES.compensation
