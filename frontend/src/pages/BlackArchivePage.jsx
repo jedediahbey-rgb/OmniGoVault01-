@@ -1238,7 +1238,7 @@ function ArchiveMapTab() {
 }
 
 // ============================================================================
-// MAIN PAGE COMPONENT
+// MAIN PAGE COMPONENT - PREMIUM DESIGN
 // ============================================================================
 
 export default function BlackArchivePage() {
@@ -1250,48 +1250,144 @@ export default function BlackArchivePage() {
   };
   
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <div className="bg-[#0a0f1a] border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-xl bg-black border border-vault-gold/30 flex items-center justify-center">
-              <Archive className="w-7 h-7 text-vault-gold" weight="fill" />
-            </div>
-            <div>
-              <h1 className="text-white font-heading text-2xl sm:text-3xl">Black Archive</h1>
-              <p className="text-white/50 text-sm">Primary sources. Doctrine trails. Citation-first learning.</p>
-            </div>
-          </div>
-          
-          {/* Tabs */}
-          <div className="flex overflow-x-auto gap-1 mt-6 pb-2 -mx-4 px-4 scrollbar-hide">
-            {TABS.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-vault-gold text-black'
-                    : 'bg-white/5 text-white/60 hover:bg-white/10'
-                }`}
-              >
-                <tab.icon className="w-4 h-4" weight="duotone" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
+    <div className="min-h-screen relative">
+      {/* Premium Header with Effects */}
+      <div className="relative bg-[#050810] border-b border-vault-gold/20 overflow-hidden">
+        {/* Animated background gradients */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-vault-gold/5 via-transparent to-purple-900/10" />
+          <motion.div 
+            className="absolute top-0 left-1/4 w-96 h-96 bg-vault-gold/5 rounded-full blur-3xl"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3] 
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div 
+            className="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl"
+            animate={{ 
+              scale: [1.2, 1, 1.2],
+              opacity: [0.2, 0.4, 0.2] 
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          />
         </div>
+        
+        {/* Floating particles */}
+        <FloatingParticles />
+        
+        {/* Grid pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(198, 168, 124, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(198, 168, 124, 0.5) 1px, transparent 1px)',
+            backgroundSize: '50px 50px'
+          }}
+        />
+        
+        <div className="relative max-w-6xl mx-auto px-4 py-10">
+          {/* Title section with dynamic icon */}
+          <motion.div 
+            className="flex flex-col sm:flex-row items-center gap-6 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <BlackArchiveIcon size="xl" animate={true} />
+            
+            <div className="text-center sm:text-left">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vault-gold/10 border border-vault-gold/20 text-vault-gold text-xs font-medium mb-3">
+                  <Sparkle className="w-3 h-3" weight="fill" />
+                  Premium Research Vault
+                </span>
+              </motion.div>
+              
+              <motion.h1 
+                className="text-white font-heading text-3xl sm:text-4xl lg:text-5xl mb-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-vault-gold/90 to-white">
+                  The Black Archive
+                </span>
+              </motion.h1>
+              
+              <motion.p 
+                className="text-white/50 text-sm sm:text-base max-w-md"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                Primary sources. Doctrine trails. Citation-first learning.
+              </motion.p>
+            </div>
+          </motion.div>
+          
+          {/* Premium Tabs */}
+          <motion.div 
+            className="flex overflow-x-auto gap-2 pb-2 -mx-4 px-4 scrollbar-hide"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            {TABS.map((tab, index) => (
+              <motion.div
+                key={tab.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + index * 0.1 }}
+              >
+                <PremiumTab
+                  tab={tab}
+                  isActive={activeTab === tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+        
+        {/* Bottom decorative line */}
+        <motion.div 
+          className="absolute bottom-0 left-0 right-0 h-px"
+          style={{
+            background: 'linear-gradient(90deg, transparent, rgba(198, 168, 124, 0.5), transparent)'
+          }}
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
       </div>
       
       {/* Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {activeTab === 'index' && <IndexTab />}
-        {activeTab === 'trails' && <TrailsTab />}
-        {activeTab === 'claims' && <ClaimsTab />}
-        {activeTab === 'map' && <ArchiveMapTab />}
-        {activeTab === 'reading' && <ReadingRoomTab />}
-      </div>
+      <motion.div 
+        className="max-w-6xl mx-auto px-4 py-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {activeTab === 'index' && <IndexTab />}
+            {activeTab === 'trails' && <TrailsTab />}
+            {activeTab === 'claims' && <ClaimsTab />}
+            {activeTab === 'map' && <ArchiveMapTab />}
+            {activeTab === 'reading' && <ReadingRoomTab />}
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }
