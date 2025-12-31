@@ -1781,9 +1781,9 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
       nodeTypes={nodeTypes}
       defaultViewport={defaultViewport}
       fitViewOptions={{
-        padding: 0.25,
-        minZoom: 0.4,
-        maxZoom: 1.2,
+        padding: 0.15,
+        minZoom: 0.3,
+        maxZoom: 0.7,
         includeHiddenNodes: true
       }}
       minZoom={0.3}
