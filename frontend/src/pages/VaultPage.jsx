@@ -180,10 +180,19 @@ export default function VaultPage({ user, initialView }) {
         axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
       ]);
       setDocuments(docsRes.data || []);
-      setPortfolios(portfoliosRes.data || []);
+      const fetchedPortfolios = portfoliosRes.data || [];
+      setPortfolios(fetchedPortfolios);
       setTrashedDocuments(trashRes.data || []);
       setRecentDocs(recentRes.data || []);
       setPinnedDocs(pinnedRes.data || []);
+      
+      // If we have a default portfolio ID from localStorage, find and set the full portfolio object
+      if (defaultPortfolioId && typeof selectedPortfolio === 'string') {
+        const defaultPortfolio = fetchedPortfolios.find(p => p.portfolio_id === defaultPortfolioId);
+        if (defaultPortfolio) {
+          setSelectedPortfolio(defaultPortfolio);
+        }
+      }
     } catch (error) {
       console.error('Failed to fetch vault data:', error);
       toast.error('Failed to load vault data');
