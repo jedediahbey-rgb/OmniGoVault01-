@@ -89,11 +89,17 @@ const SidebarNavItem = ({ item, onNavClick }) => {
       <item.icon className={cn(
         'w-4 h-4 flex-shrink-0',
         isActive ? 'text-vault-gold' : 'text-white/40 group-hover:text-white/70'
-      )} />
+      )} weight={item.premium ? 'fill' : 'duotone'} />
       
       <span className="text-sm font-medium">{item.name}</span>
       
-      {isActive && (
+      {item.premium && (
+        <span className="ml-auto px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-black border border-vault-gold/30 text-vault-gold rounded">
+          New
+        </span>
+      )}
+      
+      {isActive && !item.premium && (
         <div className="ml-auto">
           <CaretRight className="w-3 h-3 text-vault-gold flex-shrink-0" weight="duotone" />
         </div>
