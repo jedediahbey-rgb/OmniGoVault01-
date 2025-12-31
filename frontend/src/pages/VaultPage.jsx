@@ -226,58 +226,64 @@ export default function VaultPage({ user, initialView }) {
     }
   }, [selectedPortfolioId]);
 
+  // Fetch documents whenever selectedPortfolioId changes - BACKEND FILTERING
   useEffect(() => {
-    fetchData();
+    fetchDocuments();
+  }, [selectedPortfolioId]);
+
+  // Fetch portfolios only once on mount
+  useEffect(() => {
+    fetchPortfolios();
   }, []);
 
-  const fetchData = async () => {
+  const fetchDocuments = async () => {
     try {
-      const [docsRes, portfoliosRes, trashRes, recentRes, pinnedRes] = await Promise.all([
-        axios.get(`${API}/documents`),
-        axios.get(`${API}/portfolios`),
+      // Build URL with portfolio_id if selected
+      let url = `${API}/documents`;
+      if (selectedPortfolioId) {
+        url += `?portfolio_id=${encodeURIComponent(selectedPortfolioId)}`;
+      }
+      
+      console.log("[Vault] Fetching documents from:", url);
+      
+      const [docsRes, trashRes, recentRes, pinnedRes] = await Promise.all([
+        axios.get(url),
         axios.get(`${API}/documents/trash`).catch(() => ({ data: [] })),
         axios.get(`${API}/documents/recent/list?limit=5`).catch(() => ({ data: [] })),
         axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
       ]);
       
       const fetchedDocs = docsRes.data || [];
-      const fetchedPortfolios = portfoliosRes.data || [];
-      
-      // FIX #6: Debug logs after fetch - validate data shape + integrity
-      const portfolioIds = new Set(fetchedPortfolios.map(p => normalizeId(p.portfolio_id)));
-      const docsWithoutPortfolio = fetchedDocs.filter(d => !d.portfolio_id);
-      const docsWithInvalidPortfolio = fetchedDocs.filter(d => d.portfolio_id && !portfolioIds.has(normalizeId(d.portfolio_id)));
-      
-      console.log("[Vault] fetched", { 
-        docs: fetchedDocs.length, 
-        portfolios: fetchedPortfolios.length 
-      });
-      console.log("[Vault] docs missing portfolio_id:", docsWithoutPortfolio.length);
-      console.log("[Vault] docs with portfolio_id not found in portfolios:", docsWithInvalidPortfolio.length);
-      
-      if (docsWithInvalidPortfolio.length > 0) {
-        console.table(docsWithInvalidPortfolio.slice(0, 20).map(d => ({
-          document_id: d.document_id,
-          title: d.title?.substring(0, 30),
-          portfolio_id: d.portfolio_id
-        })));
-      }
-      
-      // Log portfolio IDs for reference
-      console.log("[Vault] portfolio IDs:", fetchedPortfolios.map(p => ({
-        name: p.name,
-        portfolio_id: p.portfolio_id
-      })));
-      
-      console.log("[Vault] currentSelectedPortfolioId at fetch time:", selectedPortfolioId);
+      console.log("[Vault] Fetched", fetchedDocs.length, "documents for portfolio:", selectedPortfolioId || "ALL");
       
       setDocuments(fetchedDocs);
-      setPortfolios(fetchedPortfolios);
       setTrashedDocuments(trashRes.data || []);
       setRecentDocs(recentRes.data || []);
       setPinnedDocs(pinnedRes.data || []);
-      
-      // FIX #1: DO NOT overwrite selectedPortfolioId here.
+    } catch (error) {
+      console.error('Failed to fetch documents:', error);
+      toast.error('Failed to load documents');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPortfolios = async () => {
+    try {
+      const portfoliosRes = await axios.get(`${API}/portfolios`);
+      const fetchedPortfolios = portfoliosRes.data || [];
+      console.log("[Vault] Fetched", fetchedPortfolios.length, "portfolios");
+      setPortfolios(fetchedPortfolios);
+    } catch (error) {
+      console.error('Failed to fetch portfolios:', error);
+      toast.error('Failed to load portfolios');
+    }
+  };
+
+  // Legacy fetchData for compatibility - now just calls both
+  const fetchData = async () => {
+    await Promise.all([fetchDocuments(), fetchPortfolios()]);
+  };
       // It's already initialized from localStorage in useState.
       // User selection is preserved.
     } catch (error) {
