@@ -1,15 +1,24 @@
 """
 Real-time Collaboration Service V2
 WebSocket-based live updates for workspaces and documents.
+
+V2 Features:
+- Conflict resolution and operational transformation
+- Reconnection with state recovery
+- Activity history and replay
+- Channel subscriptions
+- Rate limiting
 """
 
 import logging
 import json
-from datetime import datetime, timezone
-from typing import Dict, Set, Optional, List
-from dataclasses import dataclass, asdict
+from datetime import datetime, timezone, timedelta
+from typing import Dict, Set, Optional, List, Deque
+from dataclasses import dataclass, asdict, field
 from enum import Enum
 from uuid import uuid4
+from collections import deque
+import asyncio
 
 logger = logging.getLogger(__name__)
 
