@@ -1036,18 +1036,19 @@ export default function BinderPage() {
   const currentProfile = getProfile(selectedProfile);
   const currentPortfolio = portfolios.find(p => p.portfolio_id === portfolioId);
 
-  // Show portfolio selector if no portfolios or no selection
-  if (portfolios.length === 0 && loading) {
+  // Show loading spinner while fetching data
+  if (loading) {
     return (
-      <div className="min-h-screen bg-vault-dark p-6">
-        <div className="max-w-4xl mx-auto text-center py-20">
-          <ArrowClockwise className="w-12 h-12 text-vault-gold mx-auto mb-4 animate-spin" />
-          <p className="text-vault-muted">Loading portfolios...</p>
+      <div className="min-h-screen bg-vault-dark flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-vault-gold/30 border-t-vault-gold rounded-full animate-spin" />
+          <span className="text-vault-muted text-sm">Loading binder...</span>
         </div>
       </div>
     );
   }
 
+  // Only show "No Portfolios" after loading is complete
   if (portfolios.length === 0) {
     return (
       <div className="min-h-screen bg-vault-dark p-6">
