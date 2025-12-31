@@ -48,58 +48,70 @@ const isSelectElement = (target) => {
 
 const DialogContent = React.forwardRef(({ className, children, onPointerDownOutside, onInteractOutside, ...props }, ref) => {
   return (
-    <DialogPortal>
+    <DialogPortal container={typeof document !== "undefined" ? document.body : undefined}>
       <DialogOverlay />
-      <DialogPrimitive.Content
-        ref={ref}
-        className={cn(
-          "fixed left-[50%] top-[50%] z-50 grid w-[92vw] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-4 sm:p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 rounded-lg",
-          className
-        )}
-        onOpenAutoFocus={(e) => {
-          // Prevent auto-focus to avoid keyboard issues on mobile
-          e.preventDefault();
-        }}
-        onPointerDownOutside={(e) => {
-          // Check if interaction is with a select dropdown (portaled outside dialog)
-          const target = e.target;
-          if (isSelectElement(target) || isSelectOpen()) {
+
+      {/* Full-screen centering wrapper - fixes mobile Chrome transform conflict */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+        <DialogPrimitive.Content
+          ref={ref}
+          className={cn(
+            // Always fits viewport on mobile
+            "relative grid w-full max-w-lg gap-4 rounded-lg border bg-background p-4 sm:p-6 shadow-lg",
+
+            // Prevent tall dialogs from spilling off-screen
+            "max-h-[calc(100vh-2rem)] overflow-y-auto",
+
+            // Keep animations (safe now because wrapper handles centering)
+            "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out",
+            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+            "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+
+            className
+          )}
+          onOpenAutoFocus={(e) => {
+            // Prevent auto-focus to avoid keyboard issues on mobile
             e.preventDefault();
-            return;
-          }
-          // ALWAYS prevent closing - user must use X button
-          e.preventDefault();
-          if (onPointerDownOutside) onPointerDownOutside(e);
-        }}
-        onInteractOutside={(e) => {
-          // Check if interaction is with a select dropdown
-          const target = e.target;
-          if (isSelectElement(target) || isSelectOpen()) {
+          }}
+          onPointerDownOutside={(e) => {
+            // Check if interaction is with a select dropdown (portaled outside dialog)
+            const target = e.target;
+            if (isSelectElement(target) || isSelectOpen()) {
+              e.preventDefault();
+              return;
+            }
+            // ALWAYS prevent closing - user must use X button
             e.preventDefault();
-            return;
-          }
-          // ALWAYS prevent closing - user must use X button
-          e.preventDefault();
-          if (onInteractOutside) onInteractOutside(e);
-        }}
-        onFocusOutside={(e) => {
-          // Prevent focus outside from closing dialog
-          // This is critical for mobile where tapping another input
-          // causes focus to change
-          e.preventDefault();
-        }}
-        onCloseAutoFocus={(e) => {
-          // Prevent auto-focus on close
-          e.preventDefault();
-        }}
-        {...props}>
-        {children}
-        <DialogPrimitive.Close
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" weight="duotone" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
-      </DialogPrimitive.Content>
+            if (onPointerDownOutside) onPointerDownOutside(e);
+          }}
+          onInteractOutside={(e) => {
+            // Check if interaction is with a select dropdown
+            const target = e.target;
+            if (isSelectElement(target) || isSelectOpen()) {
+              e.preventDefault();
+              return;
+            }
+            // ALWAYS prevent closing - user must use X button
+            e.preventDefault();
+            if (onInteractOutside) onInteractOutside(e);
+          }}
+          onFocusOutside={(e) => {
+            // Prevent focus outside from closing dialog
+            e.preventDefault();
+          }}
+          onCloseAutoFocus={(e) => {
+            // Prevent auto-focus on close
+            e.preventDefault();
+          }}
+          {...props}>
+          {children}
+          <DialogPrimitive.Close
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            <X className="h-4 w-4" weight="duotone" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        </DialogPrimitive.Content>
+      </div>
     </DialogPortal>
   );
 })
