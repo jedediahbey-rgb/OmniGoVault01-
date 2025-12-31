@@ -429,42 +429,20 @@ export default function VaultPage({ user, initialView }) {
     }
   };
 
-  // SIMPLE DIRECT FILTERING - no useMemo, runs every render to ensure freshness
-  const getFilteredDocuments = () => {
-    const selectedId = selectedPortfolioId ? String(selectedPortfolioId).trim() : null;
+  // SIMPLIFIED FILTERING - Backend handles portfolio filtering, we only do search + trash here
+  const filteredDocuments = (() => {
     const baseDocs = showTrash ? trashedDocuments : documents;
     
-    console.log("[Vault] getFilteredDocuments called:", {
-      selectedPortfolioId,
-      selectedId,
-      showTrash,
-      searchTerm,
-      baseDocsCount: baseDocs.length
-    });
+    // Only filter by search term - portfolio filtering is done by backend
+    if (!searchTerm) {
+      return baseDocs;
+    }
     
-    const result = baseDocs.filter(doc => {
-      // Search filter
-      const title = String(doc.title ?? "");
-      const matchesSearch = !searchTerm || title.toLowerCase().includes(searchTerm.toLowerCase());
-      if (!matchesSearch) return false;
-
-      // Trash view - show all
-      if (showTrash) return true;
-      
-      // All Documents view - show all
-      if (!selectedId) return true;
-      
-      // Portfolio filter
-      const docPortfolioId = doc.portfolio_id ? String(doc.portfolio_id).trim() : null;
-      return docPortfolioId === selectedId;
+    return baseDocs.filter(doc => {
+      const title = String(doc.title ?? "").toLowerCase();
+      return title.includes(searchTerm.toLowerCase());
     });
-    
-    console.log("[Vault] filtered result:", result.length, "docs");
-    return result;
-  };
-  
-  // Call it directly - this ensures it runs on every render
-  const filteredDocuments = getFilteredDocuments();
+  })();
 
   // Sort: pinned first, then by date
   const sortedDocuments = [...filteredDocuments].sort((a, b) => {
