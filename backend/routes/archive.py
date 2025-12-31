@@ -82,7 +82,7 @@ async def get_sources(
     era: Optional[str] = None,
     skip: int = 0,
     limit: int = 50,
-    user: User = Depends(get_current_user)
+    user = Depends(get_current_user)
 ):
     """Get archive sources with filtering"""
     query = {}
@@ -112,7 +112,7 @@ async def get_sources(
     return {"sources": sources, "total": total}
 
 @router.get("/sources/{source_id}")
-async def get_source(source_id: str, user: User = Depends(get_current_user)):
+async def get_source(source_id: str, user = Depends(get_current_user)):
     """Get a single source by ID"""
     source = await db.archive_sources.find_one({"source_id": source_id}, {"_id": 0})
     if not source:
@@ -120,7 +120,7 @@ async def get_source(source_id: str, user: User = Depends(get_current_user)):
     return source
 
 @router.post("/sources")
-async def create_source(source: ArchiveSource, user: User = Depends(get_current_user)):
+async def create_source(source: ArchiveSource, user = Depends(get_current_user)):
     """Create a new archive source (admin only in future)"""
     source_data = {
         "source_id": str(uuid4()),
@@ -142,7 +142,7 @@ async def get_claims(
     topic: Optional[str] = None,
     skip: int = 0,
     limit: int = 50,
-    user: User = Depends(get_current_user)
+    user = Depends(get_current_user)
 ):
     """Get archive claims with filtering"""
     query = {}
@@ -165,7 +165,7 @@ async def get_claims(
     return {"claims": claims, "total": total}
 
 @router.get("/claims/{claim_id}")
-async def get_claim(claim_id: str, user: User = Depends(get_current_user)):
+async def get_claim(claim_id: str, user = Depends(get_current_user)):
     """Get a single claim with its evidence sources"""
     claim = await db.archive_claims.find_one({"claim_id": claim_id}, {"_id": 0})
     if not claim:
@@ -190,7 +190,7 @@ async def get_claim(claim_id: str, user: User = Depends(get_current_user)):
     return claim
 
 @router.post("/claims")
-async def create_claim(claim: ArchiveClaim, user: User = Depends(get_current_user)):
+async def create_claim(claim: ArchiveClaim, user = Depends(get_current_user)):
     """Create a new archive claim"""
     claim_data = {
         "claim_id": str(uuid4()),
@@ -208,7 +208,7 @@ async def create_claim(claim: ArchiveClaim, user: User = Depends(get_current_use
 @router.get("/trails")
 async def get_trails(
     topic: Optional[str] = None,
-    user: User = Depends(get_current_user)
+    user = Depends(get_current_user)
 ):
     """Get all doctrine trails"""
     query = {}
@@ -219,7 +219,7 @@ async def get_trails(
     return {"trails": trails}
 
 @router.get("/trails/{trail_id}")
-async def get_trail(trail_id: str, user: User = Depends(get_current_user)):
+async def get_trail(trail_id: str, user = Depends(get_current_user)):
     """Get a single trail with full step details"""
     trail = await db.archive_trails.find_one({"trail_id": trail_id}, {"_id": 0})
     if not trail:
@@ -240,7 +240,7 @@ async def get_trail(trail_id: str, user: User = Depends(get_current_user)):
     return trail
 
 @router.post("/trails")
-async def create_trail(trail: ArchiveTrail, user: User = Depends(get_current_user)):
+async def create_trail(trail: ArchiveTrail, user = Depends(get_current_user)):
     """Create a new doctrine trail"""
     trail_data = {
         "trail_id": str(uuid4()),
@@ -256,14 +256,14 @@ async def create_trail(trail: ArchiveTrail, user: User = Depends(get_current_use
 # ============================================================================
 
 @router.get("/map")
-async def get_archive_map(user: User = Depends(get_current_user)):
+async def get_archive_map(user = Depends(get_current_user)):
     """Get all nodes and edges for the archive map"""
     nodes = await db.archive_nodes.find({}, {"_id": 0}).to_list(500)
     edges = await db.archive_edges.find({}, {"_id": 0}).to_list(1000)
     return {"nodes": nodes, "edges": edges}
 
 @router.post("/map/nodes")
-async def create_node(node: ArchiveNode, user: User = Depends(get_current_user)):
+async def create_node(node: ArchiveNode, user = Depends(get_current_user)):
     """Create a map node"""
     node_data = {
         "node_id": str(uuid4()),
@@ -274,7 +274,7 @@ async def create_node(node: ArchiveNode, user: User = Depends(get_current_user))
     return {"node_id": node_data["node_id"]}
 
 @router.post("/map/edges")
-async def create_edge(edge: ArchiveEdge, user: User = Depends(get_current_user)):
+async def create_edge(edge: ArchiveEdge, user = Depends(get_current_user)):
     """Create a map edge"""
     edge_data = {
         "edge_id": str(uuid4()),
@@ -289,7 +289,7 @@ async def create_edge(edge: ArchiveEdge, user: User = Depends(get_current_user))
 # ============================================================================
 
 @router.post("/reading-room/query")
-async def reading_room_query(query: ReadingRoomQuery, user: User = Depends(get_current_user)):
+async def reading_room_query(query: ReadingRoomQuery, user = Depends(get_current_user)):
     """
     AI-powered archive assistant that only responds using archive content.
     Citation-first approach - must cite sources or refuse.
@@ -365,7 +365,7 @@ async def reading_room_query(query: ReadingRoomQuery, user: User = Depends(get_c
 # ============================================================================
 
 @router.get("/stats")
-async def get_archive_stats(user: User = Depends(get_current_user)):
+async def get_archive_stats(user = Depends(get_current_user)):
     """Get archive statistics"""
     sources_count = await db.archive_sources.count_documents({})
     claims_count = await db.archive_claims.count_documents({})
@@ -400,7 +400,7 @@ async def get_archive_stats(user: User = Depends(get_current_user)):
 # ============================================================================
 
 @router.post("/seed")
-async def seed_archive_data(user: User = Depends(get_current_user)):
+async def seed_archive_data(user = Depends(get_current_user)):
     """Seed initial archive data"""
     
     # Check if already seeded
