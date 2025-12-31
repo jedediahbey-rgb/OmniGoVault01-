@@ -3445,46 +3445,26 @@ class SupportAdminTester:
 if __name__ == "__main__":
     import sys
     
-    # Check command line arguments
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "archive":
-            # Run Archive Admin tests only
-            tester = ArchiveAdminTester()
-            success = tester.run_archive_admin_tests()
-            sys.exit(0 if success else 1)
-        elif sys.argv[1] == "support":
-            # Run Support Admin tests only
-            tester = SupportAdminTester()
-            success = tester.run_support_admin_tests()
-            sys.exit(0 if success else 1)
-        elif sys.argv[1] == "binder":
-            # Run Binder tests only
-            tester = BinderTester()
-            success = tester.run_binder_tests()
-            sys.exit(0 if success else 1)
-        elif sys.argv[1] == "bates":
-            # Run Bates Numbering tests only
-            tester = BatesNumberingTester()
-            success = tester.run_bates_tests()
-            sys.exit(0 if success else 1)
-        elif sys.argv[1] == "omnibinder":
-            # Run OmniBinder V2 tests only
-            tester = OmniBinderV2Tester()
-            success = tester.run_omnibinder_v2_tests()
-            sys.exit(0 if success else 1)
-        elif sys.argv[1] == "realtime":
-            # Run Real-time Collaboration V2 tests only
-            tester = RealtimeV2Tester()
-            success = tester.run_realtime_v2_tests()
-            sys.exit(0 if success else 1)
+    print("🚀 OMNIGOVAULT BINDER GENERATION API TESTING")
+    print("=" * 80)
+    print("Testing user report: 'generate binder is not functioning on binder page'")
+    print("Focus: Binder Generation functionality after WeasyPrint dependency fix")
+    print("=" * 80)
     
-    # Run Real-time Collaboration V2 tests (default for this testing session)
-    realtime_tester = RealtimeV2Tester()
-    realtime_success = realtime_tester.run_realtime_v2_tests()
+    # Run Binder Generation Tests
+    tester = BinderGenerationTester()
+    success = tester.run_binder_generation_tests()
     
-    print("\n" + "="*80)
-    print("🏆 REAL-TIME COLLABORATION V2 (WebSocket) TEST RESULTS")
-    print("="*80)
-    print(f"Real-time V2 Tests: {'✅ PASSED' if realtime_success else '❌ FAILED'}")
+    print("\n" + "=" * 80)
+    print("🏁 TESTING COMPLETE")
+    print("=" * 80)
     
-    sys.exit(0 if realtime_success else 1)
+    if success:
+        print("✅ Overall Result: BINDER GENERATION IS WORKING")
+        print("✅ WeasyPrint dependency fix appears to be successful")
+        print("✅ User issue may be frontend-related or user-specific")
+        sys.exit(0)
+    else:
+        print("❌ Overall Result: BINDER GENERATION HAS ISSUES")
+        print("❌ Backend API issues detected that need resolution")
+        sys.exit(1)
