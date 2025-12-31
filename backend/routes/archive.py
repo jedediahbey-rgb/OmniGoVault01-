@@ -294,8 +294,11 @@ async def update_claim(claim_id: str, claim: ArchiveClaim, request: Request):
     return updated
 
 @router.delete("/claims/{claim_id}")
-async def delete_claim(claim_id: str, user = Depends(get_current_user)):
+async def delete_claim(claim_id: str, request: Request):
     """Delete an archive claim"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     existing = await db.archive_claims.find_one({"claim_id": claim_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Claim not found")
