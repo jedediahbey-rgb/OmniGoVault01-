@@ -1582,11 +1582,12 @@ function ReadingRoomTab() {
 // ARCHIVE MAP TAB - Interactive React Flow Implementation
 // ============================================================================
 
-// Custom Node Types - Responsive sizing (smaller on mobile to prevent overlap)
-const DoctrineNode = ({ data }) => (
+// Custom Node Types - Memoized for performance
+const DoctrineNode = memo(({ data }) => (
   <motion.div 
     className="px-2 py-1.5 sm:px-4 sm:py-3 bg-gradient-to-br from-vault-gold/20 to-vault-gold/5 border-2 border-vault-gold/50 rounded-lg sm:rounded-xl shadow-lg shadow-vault-gold/10 w-[110px] sm:min-w-[160px]"
     whileHover={{ scale: 1.05, borderColor: 'rgba(198, 168, 124, 0.8)' }}
+    style={{ willChange: 'transform' }}
   >
     <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
       <Scales className="w-3 h-3 sm:w-4 sm:h-4 text-vault-gold" weight="fill" />
@@ -1603,12 +1604,13 @@ const DoctrineNode = ({ data }) => (
       </span>
     )}
   </motion.div>
-);
+));
 
-const CaseNode = ({ data }) => (
+const CaseNode = memo(({ data }) => (
   <motion.div 
     className="px-2 py-1.5 sm:px-4 sm:py-3 bg-gradient-to-br from-blue-500/20 to-blue-600/5 border-2 border-blue-500/50 rounded-lg sm:rounded-xl shadow-lg shadow-blue-500/10 w-[110px] sm:min-w-[160px]"
     whileHover={{ scale: 1.05, borderColor: 'rgba(59, 130, 246, 0.8)' }}
+    style={{ willChange: 'transform' }}
   >
     <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
       <Seal className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" weight="fill" />
@@ -1619,12 +1621,13 @@ const CaseNode = ({ data }) => (
       <p className="text-blue-400/60 text-[7px] sm:text-[10px] font-mono mt-0.5 sm:mt-1">{data.citation}</p>
     )}
   </motion.div>
-);
+));
 
-const StatuteNode = ({ data }) => (
+const StatuteNode = memo(({ data }) => (
   <motion.div 
     className="px-2 py-1.5 sm:px-4 sm:py-3 bg-gradient-to-br from-purple-500/20 to-purple-600/5 border-2 border-purple-500/50 rounded-lg sm:rounded-xl shadow-lg shadow-purple-500/10 w-[110px] sm:min-w-[160px]"
     whileHover={{ scale: 1.05, borderColor: 'rgba(139, 92, 246, 0.8)' }}
+    style={{ willChange: 'transform' }}
   >
     <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
       <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-purple-400" weight="fill" />
@@ -1635,12 +1638,13 @@ const StatuteNode = ({ data }) => (
       <p className="text-purple-400/60 text-[7px] sm:text-[10px] font-mono mt-0.5 sm:mt-1">{data.citation}</p>
     )}
   </motion.div>
-);
+));
 
-const ConceptNode = ({ data }) => (
+const ConceptNode = memo(({ data }) => (
   <motion.div 
     className="px-2 py-1.5 sm:px-4 sm:py-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border-2 border-emerald-500/50 rounded-lg sm:rounded-xl shadow-lg shadow-emerald-500/10 w-[100px] sm:min-w-[140px]"
     whileHover={{ scale: 1.05, borderColor: 'rgba(16, 185, 129, 0.8)' }}
+    style={{ willChange: 'transform' }}
   >
     <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
       <Brain className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" weight="fill" />
@@ -1648,7 +1652,7 @@ const ConceptNode = ({ data }) => (
     </div>
     <p className="text-white font-medium text-[10px] sm:text-sm leading-tight">{data.label}</p>
   </motion.div>
-);
+));
 
 const nodeTypes = {
   doctrine: DoctrineNode,
