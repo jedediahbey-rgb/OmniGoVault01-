@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+
+const api = axios.create({ withCredentials: true });
+
 import { Brain, Sparkle, Clock } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Input } from '../../components/ui/input';
@@ -20,7 +23,7 @@ export function ReadingRoomTab() {
     
     setLoading(true);
     try {
-      const res = await axios.post(`${API}/archive/reading-room/query`, { query });
+      const res = await api.post(`${API}/archive/reading-room/query`, { query });
       setResponse(res.data);
       setHistory([{ query, response: res.data }, ...history.slice(0, 9)]);
     } catch (err) {
