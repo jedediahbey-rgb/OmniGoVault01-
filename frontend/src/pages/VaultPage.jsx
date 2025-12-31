@@ -118,11 +118,15 @@ function PortfolioSelector({ portfolios, activePortfolio, onSelect, onCreateNew 
 function DocumentCard({ doc, isPinned, onNavigate, skipAnimation = false }) {
   return (
     <motion.div
-      layout={!skipAnimation}
+      // layout animations cause the "slide up" on mass replacement; disable them on switch
+      layout={skipAnimation ? false : "position"}
+      // entry animation only when NOT switching portfolios
       initial={skipAnimation ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      // keep exit for normal removals (delete, etc.)
       exit={{ opacity: 0, x: -100 }}
-      transition={{ duration: skipAnimation ? 0 : 0.2 }}
+      // hard-disable motion on switch render
+      transition={skipAnimation ? { duration: 0 } : { duration: 0.2 }}
       onClick={onNavigate}
       className="p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-xl active:scale-[0.98] transition-transform cursor-pointer"
     >
