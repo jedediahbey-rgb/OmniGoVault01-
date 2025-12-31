@@ -1053,12 +1053,11 @@ function TrailsTab() {
   
   if (loading) {
     return (
-      <div className="grid gap-4">
-        {[1,2,3].map(i => (
-          <div key={i} className="h-32 bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden relative">
-            <div className="absolute inset-0 skeleton-shimmer" />
-          </div>
-        ))}
+      <div className="flex items-center justify-center py-16">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-vault-gold/30 border-t-vault-gold rounded-full animate-spin" />
+          <span className="text-vault-muted text-sm">Loading doctrine trails...</span>
+        </div>
       </div>
     );
   }
