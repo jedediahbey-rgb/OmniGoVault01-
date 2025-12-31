@@ -2,7 +2,7 @@
 Black Archive Routes - Doctrine Vault for OmniGoVault
 Educational content with citation-first approach
 """
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from typing import Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
