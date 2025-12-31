@@ -344,8 +344,21 @@ export default function VaultPage({ user, initialView }) {
     const portfolioId = typeof selectedPortfolio === 'string' 
       ? selectedPortfolio 
       : selectedPortfolio?.portfolio_id;
-    const matchesPortfolio = showTrash || !portfolioId || 
-      doc.portfolio_id === portfolioId;
+    
+    // If no portfolio selected, show all documents
+    if (!portfolioId) {
+      return matchesSearch;
+    }
+    
+    // When viewing trash, show ALL trashed docs
+    if (showTrash) {
+      return matchesSearch;
+    }
+    
+    // Filter by portfolio - ensure both values exist and match
+    const docPortfolioId = doc.portfolio_id;
+    const matchesPortfolio = docPortfolioId === portfolioId;
+    
     return matchesSearch && matchesPortfolio;
   });
 
