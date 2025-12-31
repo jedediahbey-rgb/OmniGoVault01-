@@ -21,22 +21,20 @@ class BinderTester:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'OmniBinderV2-Tester/1.0'
+            'User-Agent': 'BinderTester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
         self.failed_tests = []
         self.test_results = []
         
-        # Test user details
+        # Test user details - using the specified email
         self.test_user_email = "jedediah.bey@gmail.com"
-        self.test_user_role = "OMNICOMPETENT_OWNER"
         
-        # Test data for OmniBinder V2
+        # Test data for Binder functionality
         self.test_portfolio_id = None
         self.test_profile_id = None
-        self.test_schedule_id = None
-        self.test_template_id = None
+        self.test_run_id = None
         
         # Try to get a valid session token
         self.session_token = self.get_valid_session_token()
