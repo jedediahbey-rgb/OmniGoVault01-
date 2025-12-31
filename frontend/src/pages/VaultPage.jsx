@@ -94,20 +94,26 @@ function VaultSidebarContent({
         
         <p className="text-[10px] text-white/30 uppercase tracking-widest px-3 mt-4 mb-2">Portfolios</p>
         
-        {portfolios.map(portfolio => (
-          <button
-            key={portfolio.portfolio_id}
-            onClick={() => { setSelectedPortfolio(portfolio); setShowTrash(false); setSidebarOpen(false); navigate('/vault/documents'); }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-              selectedPortfolio?.portfolio_id === portfolio.portfolio_id
-                ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
-                : 'text-white/60 hover:bg-white/5'
-            }`}
-          >
-            <Folder className="w-4 h-4" weight="duotone" />
-            <span className="text-sm truncate">{portfolio.name}</span>
-          </button>
-        ))}
+        {portfolios.map(portfolio => {
+          const portfolioDocCount = documents.filter(d => d.portfolio_id === portfolio.portfolio_id).length;
+          return (
+            <button
+              key={portfolio.portfolio_id}
+              onClick={() => { setSelectedPortfolio(portfolio); setShowTrash(false); setSidebarOpen(false); navigate('/vault/documents'); }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                selectedPortfolio?.portfolio_id === portfolio.portfolio_id
+                  ? 'bg-vault-gold/10 text-vault-gold border border-vault-gold/20' 
+                  : 'text-white/60 hover:bg-white/5'
+              }`}
+            >
+              <Folder className="w-4 h-4" weight="duotone" />
+              <span className="text-sm truncate">{portfolio.name}</span>
+              {portfolioDocCount > 0 && (
+                <span className="ml-auto text-xs opacity-60">{portfolioDocCount}</span>
+              )}
+            </button>
+          );
+        })}
         
         {portfolios.length === 0 && (
           <p className="text-white/30 text-xs text-center py-4">No portfolios yet</p>
