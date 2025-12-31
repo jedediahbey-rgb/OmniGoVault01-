@@ -1766,10 +1766,10 @@ function ArchiveMapFlow({ nodes, edges, onNodesChange, onEdgesChange, onNodeClic
     fitViewCalled.current = false;
   }, [nodes.length]);
 
-  // Default viewport - start zoomed out so all nodes are visible
+  // Default viewport - zoomed out to show all 8 nodes in the larger container
   const defaultViewport = isMobile 
-    ? { x: 20, y: 10, zoom: 0.55 }  // More zoomed out on mobile
-    : { x: 60, y: 20, zoom: 0.7 };  // Zoomed out on desktop
+    ? { x: 15, y: 15, zoom: 0.9 }   // Higher zoom since container is bigger
+    : { x: 50, y: 30, zoom: 0.85 };
 
   return (
     <ReactFlow
