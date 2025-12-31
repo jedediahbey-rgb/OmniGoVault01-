@@ -761,13 +761,55 @@
 }
 
 .archive-map-flow .react-flow__attribution {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 10px;
+  display: none;
 }
 
-.archive-map-flow .react-flow__attribution a {
-  color: rgba(198, 168, 124, 0.4);
+/* Controls positioning */
+.archive-map-flow .react-flow__controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  left: auto;
+  bottom: auto;
+}
+
+.archive-map-flow .react-flow__controls button {
+  width: 28px;
+  height: 28px;
+}
+
+.archive-map-flow .react-flow__controls button svg {
+  max-width: 14px;
+  max-height: 14px;
+}
+
+/* MiniMap positioning */
+.archive-map-flow .react-flow__minimap {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  left: auto;
+  top: auto;
+}
+
+/* Mobile adjustments */
+@media (max-width: 639px) {
+  .archive-map-flow .react-flow__controls {
+    top: 4px;
+    right: 4px;
+  }
+  
+  .archive-map-flow .react-flow__controls button {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .archive-map-flow .react-flow__minimap {
+    bottom: 4px;
+    right: 4px;
+    width: 100px !important;
+    height: 70px !important;
+  }
 }
 
 /* Dark skeleton shimmer - no flash */
