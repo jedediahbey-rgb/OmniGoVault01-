@@ -764,18 +764,40 @@ export default function VaultPage({ user, initialView }) {
       {/* MAIN CONTENT */}
       {/* ================================================================== */}
       <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile Portfolio Bar - Shows on mobile only */}
+        <div className="lg:hidden p-3 border-b border-white/10 bg-[#0a0f1a]/50">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg shrink-0"
+            >
+              <Folder className="w-5 h-5" weight="duotone" />
+            </button>
+            
+            {/* Mobile Portfolio Selector */}
+            <div className="flex-1 min-w-0">
+              <PortfolioSelector
+                portfolios={portfolios}
+                activePortfolio={activePortfolio}
+                onSelect={switchPortfolio}
+                onCreateNew={() => setShowNewPortfolio(true)}
+              />
+            </div>
+          </div>
+        </div>
+        
         {/* Header */}
         <div className="p-4 lg:p-6 border-b border-white/10 flex items-center gap-4">
-          {/* Mobile menu button */}
+          {/* Desktop menu button - hidden on mobile since we have mobile bar above */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg"
+            className="hidden lg:hidden p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg"
           >
             <Folder className="w-5 h-5" weight="duotone" />
           </button>
           
-          {/* Active portfolio indicator */}
-          <div className="hidden sm:flex items-center gap-2 text-white/50 text-sm">
+          {/* Active portfolio indicator - Desktop only */}
+          <div className="hidden lg:flex items-center gap-2 text-white/50 text-sm">
             <FolderOpen className="w-4 h-4 text-vault-gold" weight="duotone" />
             <span className="text-vault-gold font-medium">{activePortfolio?.name}</span>
             {showTrash && (
@@ -787,7 +809,7 @@ export default function VaultPage({ user, initialView }) {
           </div>
           
           {/* Search */}
-          <div className="relative flex-1 max-w-md ml-auto">
+          <div className="relative flex-1 max-w-md lg:ml-auto">
             <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" weight="duotone" />
             <Input
               placeholder="Search documents..."
@@ -796,6 +818,40 @@ export default function VaultPage({ user, initialView }) {
               className="pl-10 bg-white/5 border-white/10 focus:border-vault-gold text-white"
             />
           </div>
+          
+          {/* Mobile New Document Button */}
+          <Button 
+            onClick={() => navigate('/templates')}
+            className="lg:hidden btn-primary text-sm px-3 py-2 shrink-0"
+          >
+            <Plus className="w-4 h-4" weight="bold" />
+          </Button>
+        </div>
+        
+        {/* Mobile View Toggle (Documents / Trash) */}
+        <div className="lg:hidden flex border-b border-white/10">
+          <button
+            onClick={() => setShowTrash(false)}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
+              !showTrash 
+                ? 'text-vault-gold border-b-2 border-vault-gold' 
+                : 'text-white/50'
+            }`}
+          >
+            <FileText className="w-4 h-4" weight="duotone" />
+            Documents ({documents.length})
+          </button>
+          <button
+            onClick={() => setShowTrash(true)}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
+              showTrash 
+                ? 'text-red-400 border-b-2 border-red-400' 
+                : 'text-white/50'
+            }`}
+          >
+            <Trash className="w-4 h-4" weight="duotone" />
+            Trash ({trashedDocuments.length})
+          </button>
         </div>
         
         {/* Document grid */}
