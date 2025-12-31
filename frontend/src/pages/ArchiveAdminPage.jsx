@@ -872,30 +872,36 @@ function TrailRow({ trail, onEdit, onDelete }) {
 
 // Source Dialog Component
 function SourceDialog({ open, onClose, source, onSave }) {
-  const getInitialFormData = () => ({
-    title: source?.title || '',
-    source_type: source?.source_type || 'PRIMARY_SOURCE',
-    jurisdiction: source?.jurisdiction || 'General',
-    era_tags: source?.era_tags || [],
-    topic_tags: source?.topic_tags || [],
-    citation: source?.citation || '',
-    url: source?.url || '',
-    excerpt: source?.excerpt || '',
-    notes: source?.notes || '',
+  const [formData, setFormData] = useState({
+    title: '',
+    source_type: 'PRIMARY_SOURCE',
+    jurisdiction: 'General',
+    era_tags: [],
+    topic_tags: [],
+    citation: '',
+    url: '',
+    excerpt: '',
+    notes: '',
   });
-  
-  const [formData, setFormData] = useState(getInitialFormData);
   const [saving, setSaving] = useState(false);
-
-  // Reset form when dialog opens/source changes
-  const dialogKey = open ? (source?.source_id || 'new') : 'closed';
   
-  // Use a ref to track previous key and reset form when it changes
-  const prevKeyRef = React.useRef(dialogKey);
-  if (prevKeyRef.current !== dialogKey && open) {
-    prevKeyRef.current = dialogKey;
-    setFormData(getInitialFormData());
-  }
+  // Reset form when source changes or dialog opens
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        title: source?.title || '',
+        source_type: source?.source_type || 'PRIMARY_SOURCE',
+        jurisdiction: source?.jurisdiction || 'General',
+        era_tags: source?.era_tags || [],
+        topic_tags: source?.topic_tags || [],
+        citation: source?.citation || '',
+        url: source?.url || '',
+        excerpt: source?.excerpt || '',
+        notes: source?.notes || '',
+      });
+    }
+  }, [open, source?.source_id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
