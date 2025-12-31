@@ -103,14 +103,14 @@ Testing the Binder Generation functionality through the frontend UI at /binder p
 - **Main agent**: Binder generation feature is ready for user testing and production deployment
 
 ### Mobile UI Testing Results (December 31, 2025):
-- **Testing agent**: ⚠️ **MOBILE UI TESTING PARTIALLY COMPLETED - AUTHENTICATION LIMITATIONS**
-  - Successfully accessed application pages without full authentication
-  - Tested Diagrams page, Node Map page, and Binder page layouts
-  - **CRITICAL FINDING**: MiniMap is HIDDEN on mobile viewport (confirmed bug)
-  - React Flow components load correctly but MiniMap has `display: none` on mobile
-  - No ResizeObserver loop errors detected during viewport changes
-  - Controls are visible and positioned correctly in bottom-right
-  - **LIMITATION**: Full binder dialog testing requires authenticated session with portfolio data
+- **Testing agent**: ⚠️ **MOBILE UI TESTING COMPLETED - MIXED RESULTS**
+  - Successfully accessed application pages and tested mobile viewport (390x844)
+  - **CRITICAL FINDING**: Node Map MiniMap is COMPLETELY MISSING on mobile viewport
+  - **SUCCESS**: Black Archive MiniMap is VISIBLE and properly positioned in bottom-right
+  - **SUCCESS**: Black Archive MiniMap shows all 8 expected colored nodes correctly
+  - **SUCCESS**: No ResizeObserver loop errors detected during viewport changes
+  - **LIMITATION**: Binder dialog centering tests limited by authentication requirements
+  - **ISSUE**: Node Map page shows loading spinner but React Flow container not found
 
 ### Critical Success Indicators:
 - ✅ Authentication working with real user session
