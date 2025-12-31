@@ -1704,9 +1704,28 @@ const initialEdges = [
 ];
 
 function ArchiveMapTab() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [isMobile, setIsMobile] = useState(false);
+  const initialNodesForDevice = isMobile ? mobileNodes : desktopNodes;
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodesForDevice);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
+
+  // Detect mobile and update nodes accordingly
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 640;
+      setIsMobile(mobile);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Update nodes when device type changes
+  useEffect(() => {
+    const newNodes = isMobile ? mobileNodes : desktopNodes;
+    setNodes(newNodes);
+  }, [isMobile, setNodes]);
 
   const onNodeClick = (event, node) => {
     setSelectedNode(node);
