@@ -189,7 +189,7 @@ const AdminConsolePage = () => {
   // Grant role handler
   const handleGrantRole = async (userId, role, notes) => {
     try {
-      await axios.post(`${BACKEND_URL}/api/admin/roles/grant`, {
+      await api.post('/api/admin/roles/grant', {
         user_id: userId,
         role: role,
         notes: notes
@@ -205,7 +205,7 @@ const AdminConsolePage = () => {
   // Revoke role handler
   const handleRevokeRole = async (userId, role) => {
     try {
-      await axios.post(`${BACKEND_URL}/api/admin/roles/revoke`, {
+      await api.post('/api/admin/roles/revoke', {
         user_id: userId,
         role: role,
         reason: 'Revoked via admin console'
@@ -220,7 +220,7 @@ const AdminConsolePage = () => {
   // Change plan handler
   const handleChangePlan = async (accountId, planId, reason) => {
     try {
-      await axios.post(`${BACKEND_URL}/api/admin/accounts/${accountId}/change-plan`, {
+      await api.post(`/api/admin/accounts/${accountId}/change-plan`, {
         plan_id: planId,
         reason: reason
       });
@@ -235,7 +235,7 @@ const AdminConsolePage = () => {
   // Impersonation handlers
   const handleStartImpersonation = async (userId, reason) => {
     try {
-      await axios.post(`${BACKEND_URL}/api/admin/impersonate/start`, {
+      await api.post('/api/admin/impersonate/start', {
         target_user_id: userId,
         reason: reason
       });
@@ -249,7 +249,7 @@ const AdminConsolePage = () => {
 
   const handleStopImpersonation = async () => {
     try {
-      await axios.post(`${BACKEND_URL}/api/admin/impersonate/stop`);
+      await api.post('/api/admin/impersonate/stop');
       toast.success('Impersonation ended');
       checkAdminStatus();
     } catch (error) {
