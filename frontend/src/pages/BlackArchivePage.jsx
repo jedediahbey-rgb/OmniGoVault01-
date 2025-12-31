@@ -353,7 +353,7 @@ function IndexTab() {
                   <div>
                     <h4 className="text-white/60 text-xs uppercase tracking-wider mb-2">Excerpt</h4>
                     <p className="text-white/80 text-sm italic border-l-2 border-vault-gold/30 pl-4">
-                      "{selectedSource.excerpt}"
+                      &ldquo;{selectedSource.excerpt}&rdquo;
                     </p>
                   </div>
                 )}
