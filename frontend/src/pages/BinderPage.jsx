@@ -951,6 +951,36 @@ export default function BinderPage() {
     }
   };
 
+  // Clear all failed binder runs
+  const handleClearFailed = async () => {
+    const failedRuns = runs.filter(r => r.status === 'failed');
+    if (failedRuns.length === 0) return;
+
+    let deletedCount = 0;
+    for (const run of failedRuns) {
+      try {
+        const res = await fetch(`${API_URL}/api/binder/runs/${run.id}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        const data = await res.json();
+        if (data.ok) deletedCount++;
+      } catch (e) {
+        console.error('Failed to delete run:', run.id);
+      }
+    }
+
+    if (deletedCount > 0) {
+      toast({ title: 'Cleared Failed Binders', description: `Removed ${deletedCount} failed binder${deletedCount > 1 ? 's' : ''} from history` });
+      setRuns(runs.filter(r => r.status !== 'failed'));
+      // Update latest if needed
+      if (latestRun?.status === 'failed') {
+        const successfulRuns = runs.filter(r => r.status === 'complete');
+        setLatestRun(successfulRuns[0] || null);
+      }
+    }
+  };
+
   // Reset schedule form
   const resetScheduleForm = () => {
     setScheduleForm({
