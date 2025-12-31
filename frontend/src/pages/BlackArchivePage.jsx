@@ -1738,11 +1738,11 @@ function ArchiveMapTab() {
     // Fit view after a small delay to ensure nodes are rendered
     setTimeout(() => {
       reactFlowInstance.fitView({
-        padding: isMobile ? 0.05 : 0.15,
+        padding: isMobile ? 0.1 : 0.15,
         includeHiddenNodes: true,
-        duration: 200,
+        duration: 300,
       });
-    }, 100);
+    }, 150);
   }, [isMobile]);
 
   return (
