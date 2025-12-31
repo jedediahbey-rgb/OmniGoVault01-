@@ -334,3 +334,29 @@ Testing the refactored Black Archive page after major component breakdown from 2
 - **Component Path**: `/app/frontend/src/components/archive/`
 - **Main Page**: `/app/frontend/src/pages/BlackArchivePage.jsx`
 
+
+## SUPPORT_ADMIN Permissions Testing (December 31, 2025)
+
+### New Backend Endpoints Added:
+
+**Support Admin Specific Routes:**
+- `GET /api/admin/support/permissions` - Get admin's support permissions and restrictions
+- `POST /api/admin/support/notes` - Add a support note to an account/user
+- `GET /api/admin/support/notes` - Get support notes for an account/user
+- `POST /api/admin/support/extend-trial` - Extend a trial period (max 30 days for support admins)
+- `POST /api/admin/support/unlock-account` - Unlock a locked user account
+- `POST /api/admin/support/reset-2fa` - Reset 2FA for a user
+
+**Permission Matrix Implemented:**
+- SUPPORT_ADMIN can: View accounts, View users, Impersonate non-admin users, Reset 2FA, Unlock accounts, Extend trials (max 30 days), Add support notes
+- SUPPORT_ADMIN cannot: Modify entitlements, Change plans, Suspend accounts, Delete accounts, Grant/revoke roles, Modify user data, View all audit logs, Impersonate admin users
+
+### Test Cases:
+1. [ ] Verify /api/admin/support/permissions returns correct permission matrix
+2. [ ] Test adding support notes
+3. [ ] Test retrieving support notes
+4. [ ] Test extending trial period
+5. [ ] Test unlocking user account
+6. [ ] Test resetting 2FA
+7. [ ] Verify support admin cannot access restricted endpoints
+
