@@ -234,8 +234,11 @@ async def get_claim(claim_id: str, user = Depends(get_current_user)):
     return claim
 
 @router.post("/claims")
-async def create_claim(claim: ArchiveClaim, user = Depends(get_current_user)):
+async def create_claim(claim: ArchiveClaim, request: Request):
     """Create a new archive claim with automatic conflict detection"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     # Auto-detect disputed status based on counter sources
     claim_dict = claim.dict()
     if claim_dict.get("counter_source_ids") and len(claim_dict["counter_source_ids"]) > 0:
