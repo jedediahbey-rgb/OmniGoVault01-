@@ -2041,23 +2041,23 @@ export default function BinderPage() {
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={!!deleteConfirmRun} onOpenChange={(open) => !open && setDeleteConfirmRun(null)}>
-          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-sm">
+          <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white w-[85vw] max-w-[320px] mx-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl font-heading text-red-400 flex items-center gap-2">
+              <DialogTitle className="text-lg font-heading text-red-400 flex items-center gap-2">
                 <Trash className="w-5 h-5" />
                 Delete Binder?
               </DialogTitle>
-              <DialogDescription className="text-vault-muted">
+              <DialogDescription className="text-vault-muted text-sm">
                 Are you sure you want to delete this binder from history? This action cannot be undone.
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setDeleteConfirmRun(null)} className="border-vault-gold/30 text-white">
+            <DialogFooter className="flex flex-row gap-2 justify-end mt-4">
+              <Button variant="outline" onClick={() => setDeleteConfirmRun(null)} className="border-vault-gold/30 text-white flex-1 sm:flex-none">
                 Cancel
               </Button>
               <Button 
                 onClick={() => deleteConfirmRun && handleDeleteRun(deleteConfirmRun.id)} 
-                className="bg-red-500 hover:bg-red-600 text-white"
+                className="bg-red-500 hover:bg-red-600 text-white flex-1 sm:flex-none"
               >
                 Delete
               </Button>
