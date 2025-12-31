@@ -1994,12 +1994,12 @@ function ArchiveMapTab() {
           <div className="w-8 h-px bg-gradient-to-l from-transparent to-vault-gold/50" />
         </div>
         
-        {/* React Flow Map - larger container to fit all 8 nodes */}
+        {/* React Flow Map container */}
         <div 
           style={{ 
             position: 'relative',
             width: '100%',
-            height: isMobile ? 580 : 600,  // Increased height to fit all nodes
+            height: isMobile ? 480 : 550,
             overflow: 'hidden',
             borderRadius: 18
           }} 
