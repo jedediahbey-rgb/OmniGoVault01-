@@ -661,8 +661,8 @@ function IndexTab() {
         </div>
       ) : sources.length > 0 ? (
         <div className="grid gap-4">
-          {sources.map(source => (
-            <SourceCard key={source.source_id} source={source} onClick={() => setSelectedSource(source)} />
+          {sources.map((source, index) => (
+            <SourceCard key={source.source_id} source={source} index={index} onClick={() => setSelectedSource(source)} />
           ))}
         </div>
       ) : (
