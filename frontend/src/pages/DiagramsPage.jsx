@@ -41,11 +41,15 @@ const reactFlowStyles = `
   }
   @media (max-width: 640px) {
     .react-flow__minimap {
-      display: none !important;
+      width: 70px !important;
+      height: 45px !important;
+      right: 4px !important;
+      bottom: 4px !important;
+      top: auto !important;
     }
     .react-flow__controls {
       right: 4px !important;
-      bottom: 4px !important;
+      bottom: 54px !important;
     }
     .react-flow__controls button {
       width: 22px !important;
