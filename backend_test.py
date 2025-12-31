@@ -2163,13 +2163,30 @@ if __name__ == "__main__":
     import sys
     
     # Check command line arguments
-    if len(sys.argv) > 1 and sys.argv[1] == "archive":
-        # Run Archive Admin tests
-        tester = ArchiveAdminTester()
-        success = tester.run_archive_admin_tests()
-        sys.exit(0 if success else 1)
-    else:
-        # Run Binder tests (default)
-        tester = BinderTester()
-        success = tester.run_binder_tests()
-        sys.exit(0 if success else 1)
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "archive":
+            # Run Archive Admin tests only
+            tester = ArchiveAdminTester()
+            success = tester.run_archive_admin_tests()
+            sys.exit(0 if success else 1)
+        elif sys.argv[1] == "support":
+            # Run Support Admin tests only
+            tester = SupportAdminTester()
+            success = tester.run_support_admin_tests()
+            sys.exit(0 if success else 1)
+        elif sys.argv[1] == "binder":
+            # Run Binder tests only
+            tester = BinderTester()
+            success = tester.run_binder_tests()
+            sys.exit(0 if success else 1)
+    
+    # Run Support Admin tests (default for this testing session)
+    support_tester = SupportAdminTester()
+    support_success = support_tester.run_support_admin_tests()
+    
+    print("\n" + "="*80)
+    print("🏆 SUPPORT_ADMIN PERMISSIONS TEST RESULTS")
+    print("="*80)
+    print(f"Support Admin Tests: {'✅ PASSED' if support_success else '❌ FAILED'}")
+    
+    sys.exit(0 if support_success else 1)
