@@ -848,35 +848,33 @@ function NodeMapContent() {
                 showInteractive={false}
                 className="!bg-vault-dark/95 !border-vault-gold/30 !rounded-lg !shadow-lg !m-2 [&>button]:!bg-vault-dark/95 [&>button]:!border-vault-gold/30 [&>button]:!text-vault-gold [&>button:hover]:!bg-vault-gold/20 [&>button]:!w-6 [&>button]:!h-6 sm:[&>button]:!w-7 sm:[&>button]:!h-7"
               />
-              {/* MiniMap - hidden on mobile */}
-              {!isMobile && (
-                <MiniMap 
-                  style={{ 
-                    backgroundColor: 'rgba(11, 18, 33, 0.98)',
-                    border: '1px solid rgba(198, 168, 124, 0.4)',
-                    borderRadius: '6px',
-                    width: 100,
-                    height: 65,
-                    margin: '8px',
-                  }}
-                  nodeColor={(node) => {
-                    const colors = {
-                      trust: '#C6A87C',
-                      grantor: '#A855F7',
-                      trustee: '#22C55E',
-                      beneficiary: '#FBBF24',
-                      party: '#3B82F6',
-                      asset: '#EF4444',
-                      governance: '#0EA5E9',
-                    };
-                    return colors[node.data?.type] || '#666';
-                  }}
-                  maskColor="rgba(11, 18, 33, 0.7)"
-                  position="top-right"
-                  pannable={false}
-                  zoomable={false}
-                />
-              )}
+              {/* MiniMap - visible on all devices */}
+              <MiniMap 
+                style={{ 
+                  backgroundColor: 'rgba(11, 18, 33, 0.98)',
+                  border: '1px solid rgba(198, 168, 124, 0.4)',
+                  borderRadius: '6px',
+                  width: isMobile ? 80 : 100,
+                  height: isMobile ? 50 : 65,
+                  margin: isMobile ? '4px' : '8px',
+                }}
+                nodeColor={(node) => {
+                  const colors = {
+                    trust: '#C6A87C',
+                    grantor: '#A855F7',
+                    trustee: '#22C55E',
+                    beneficiary: '#FBBF24',
+                    party: '#3B82F6',
+                    asset: '#EF4444',
+                    governance: '#0EA5E9',
+                  };
+                  return colors[node.data?.type] || '#666';
+                }}
+                maskColor="rgba(11, 18, 33, 0.7)"
+                position="bottom-right"
+                pannable={false}
+                zoomable={false}
+              />
               <Background color="rgba(255,255,255,0.05)" gap={isMobile ? 20 : 25} />
               
               {/* Legend Panel - Only inside ReactFlow on desktop */}
