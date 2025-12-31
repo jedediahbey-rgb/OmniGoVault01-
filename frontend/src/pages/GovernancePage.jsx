@@ -907,7 +907,7 @@ export default function GovernancePage({ user }) {
   const handleUpdateDisputeStatus = async (disputeId, newStatus) => {
     try {
       // Update the dispute status via PATCH
-      await axios.patch(`${API_V2}/records/${disputeId}`, {
+      await api.patch(`${API_V2}/records/${disputeId}`, {
         payload_json: {
           dispute_status: newStatus
         }
