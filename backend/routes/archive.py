@@ -360,8 +360,11 @@ async def create_trail(trail: ArchiveTrail, request: Request):
     return {"trail_id": trail_data["trail_id"]}
 
 @router.put("/trails/{trail_id}")
-async def update_trail(trail_id: str, trail: ArchiveTrail, user = Depends(get_current_user)):
+async def update_trail(trail_id: str, trail: ArchiveTrail, request: Request):
     """Update a doctrine trail"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     existing = await db.archive_trails.find_one({"trail_id": trail_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Trail not found")
