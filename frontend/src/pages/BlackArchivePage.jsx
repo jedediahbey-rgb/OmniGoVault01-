@@ -767,16 +767,32 @@ function IndexTab() {
           ))}
         </div>
       ) : (
-        /* Premium Empty State */
+        /* Premium Empty State - Black Index */
         <div className="text-center py-12 sm:py-16">
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5">
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10" />
+          <motion.div 
+            className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5"
+            whileHover={{ scale: 1.05 }}
+          >
+            {/* Outer glow ring */}
+            <motion.div
+              className="absolute inset-0 rounded-2xl border border-vault-gold/20"
+              animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            {/* Main container */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-vault-gold/15 to-vault-gold/5 border border-vault-gold/30 backdrop-blur-sm" />
+            {/* Inner shimmer */}
+            <motion.div
+              className="absolute inset-0 rounded-2xl overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, transparent 40%, rgba(198, 168, 124, 0.1) 50%, transparent 60%)' }}
+              animate={{ backgroundPosition: ['200% 200%', '-200% -200%'] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+            />
+            {/* Icon */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <Archive className="w-10 h-10 sm:w-12 sm:h-12 text-white/20" weight="duotone" />
+              <Books className="w-10 h-10 sm:w-12 sm:h-12 text-vault-gold" weight="duotone" />
             </div>
-            {/* Subtle glow */}
-            <div className="absolute inset-0 rounded-2xl bg-vault-gold/5 blur-xl opacity-50" />
-          </div>
+          </motion.div>
           
           <h3 className="text-white font-heading text-lg sm:text-xl mb-2">No Sources Found</h3>
           <p className="text-white/40 text-sm mb-5 max-w-xs mx-auto">
