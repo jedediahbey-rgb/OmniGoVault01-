@@ -437,8 +437,8 @@ export default function VaultPage({ user, initialView }) {
 
   // Props for sidebar
   const sidebarProps = {
-    selectedPortfolio,
-    setSelectedPortfolio,
+    selectedPortfolioId,
+    setSelectedPortfolioId,
     showTrash,
     setShowTrash,
     setShowNewPortfolio,
