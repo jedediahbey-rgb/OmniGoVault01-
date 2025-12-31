@@ -1719,27 +1719,116 @@ function ArchiveMapTab() {
         </div>
       </div>
       
-      {/* React Flow Map Container with Premium Border */}
-      <div className="relative">
-        {/* Outer glow border */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-vault-gold/20 via-purple-500/10 to-vault-gold/20 rounded-3xl blur-sm" />
+      {/* React Flow Map Container with Unique Premium Border */}
+      <div className="relative mt-2">
+        {/* Animated outer glow */}
+        <motion.div 
+          className="absolute -inset-2 rounded-3xl opacity-60"
+          style={{
+            background: 'linear-gradient(135deg, rgba(198, 168, 124, 0.15), rgba(139, 92, 246, 0.1), rgba(198, 168, 124, 0.15))',
+            filter: 'blur(8px)',
+          }}
+          animate={{ opacity: [0.4, 0.6, 0.4] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        />
         
-        {/* Inner border frame */}
-        <div className="absolute inset-0 rounded-2xl border-2 border-vault-gold/30 pointer-events-none z-10" />
+        {/* Rotating corner accents */}
+        <div className="absolute -top-1 -left-1 w-8 h-8">
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              background: 'conic-gradient(from 0deg, transparent 0deg, rgba(198, 168, 124, 0.6) 90deg, transparent 90deg)',
+            }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          />
+          <div className="absolute inset-1 bg-[#0a0f1a]" />
+        </div>
+        <div className="absolute -top-1 -right-1 w-8 h-8">
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              background: 'conic-gradient(from 90deg, transparent 0deg, rgba(198, 168, 124, 0.6) 90deg, transparent 90deg)',
+            }}
+            animate={{ rotate: -360 }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          />
+          <div className="absolute inset-1 bg-[#0a0f1a]" />
+        </div>
+        <div className="absolute -bottom-1 -left-1 w-8 h-8">
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              background: 'conic-gradient(from 270deg, transparent 0deg, rgba(198, 168, 124, 0.6) 90deg, transparent 90deg)',
+            }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          />
+          <div className="absolute inset-1 bg-[#0a0f1a]" />
+        </div>
+        <div className="absolute -bottom-1 -right-1 w-8 h-8">
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              background: 'conic-gradient(from 180deg, transparent 0deg, rgba(198, 168, 124, 0.6) 90deg, transparent 90deg)',
+            }}
+            animate={{ rotate: -360 }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          />
+          <div className="absolute inset-1 bg-[#0a0f1a]" />
+        </div>
         
-        {/* Corner accents */}
-        <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-vault-gold/50 rounded-tl-2xl pointer-events-none z-10" />
-        <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-vault-gold/50 rounded-tr-2xl pointer-events-none z-10" />
-        <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-vault-gold/50 rounded-bl-2xl pointer-events-none z-10" />
-        <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-vault-gold/50 rounded-br-2xl pointer-events-none z-10" />
+        {/* Scanning line effect */}
+        <motion.div
+          className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-vault-gold/60 to-transparent z-20 pointer-events-none"
+          animate={{ top: ['0%', '100%', '0%'] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+        />
         
-        {/* Map label */}
-        <div className="absolute -top-3 left-4 bg-[#0a0f1a] px-3 py-0.5 z-20">
-          <span className="text-vault-gold/70 text-xs font-medium uppercase tracking-wider">Doctrine Map</span>
+        {/* Inner double border frame */}
+        <div className="absolute inset-0 rounded-2xl border border-vault-gold/40 pointer-events-none z-10" />
+        <div className="absolute inset-[3px] rounded-xl border border-vault-gold/20 pointer-events-none z-10" />
+        
+        {/* Decorative corner brackets */}
+        <svg className="absolute top-0 left-0 w-12 h-12 text-vault-gold/50 pointer-events-none z-10" viewBox="0 0 48 48">
+          <path d="M4 20 L4 4 L20 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="4" cy="4" r="2" fill="currentColor" />
+        </svg>
+        <svg className="absolute top-0 right-0 w-12 h-12 text-vault-gold/50 pointer-events-none z-10" viewBox="0 0 48 48">
+          <path d="M44 20 L44 4 L28 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="44" cy="4" r="2" fill="currentColor" />
+        </svg>
+        <svg className="absolute bottom-0 left-0 w-12 h-12 text-vault-gold/50 pointer-events-none z-10" viewBox="0 0 48 48">
+          <path d="M4 28 L4 44 L20 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="4" cy="44" r="2" fill="currentColor" />
+        </svg>
+        <svg className="absolute bottom-0 right-0 w-12 h-12 text-vault-gold/50 pointer-events-none z-10" viewBox="0 0 48 48">
+          <path d="M44 28 L44 44 L28 44" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="44" cy="44" r="2" fill="currentColor" />
+        </svg>
+        
+        {/* Top center ornament */}
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+          <div className="w-8 h-px bg-gradient-to-r from-transparent to-vault-gold/50" />
+          <div className="bg-[#0a0f1a] px-3 py-1 border border-vault-gold/30 rounded-full flex items-center gap-2">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+            >
+              <MapTrifold className="w-3 h-3 text-vault-gold" weight="fill" />
+            </motion.div>
+            <span className="text-vault-gold/80 text-[10px] font-medium uppercase tracking-widest">Doctrine Map</span>
+          </div>
+          <div className="w-8 h-px bg-gradient-to-l from-transparent to-vault-gold/50" />
         </div>
         
         {/* React Flow Map */}
-        <div className="h-[420px] sm:h-[500px] lg:h-[550px] bg-[#050810] rounded-2xl overflow-hidden relative">
+        <div className="h-[420px] sm:h-[500px] lg:h-[550px] bg-gradient-to-b from-[#050810] to-[#080d18] rounded-2xl overflow-hidden relative">
+          {/* Inner vignette effect */}
+          <div className="absolute inset-0 pointer-events-none z-10" style={{
+            background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)'
+          }} />
+          
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -1756,7 +1845,6 @@ function ArchiveMapTab() {
             proOptions={{ hideAttribution: true }}
           >
             <Background color="#1a1a2e" gap={20} />
-            {/* Desktop: Controls bottom-left, Mobile: top-right */}
             <Controls 
               position="bottom-left"
               className="archive-map-controls !bg-black/80 !border-vault-gold/30 !rounded-lg !shadow-xl [&>button]:!bg-white/10 [&>button]:!border-vault-gold/20 [&>button]:!text-white/70 [&>button:hover]:!bg-vault-gold/20 [&>button:hover]:!text-vault-gold"
@@ -1784,6 +1872,16 @@ function ArchiveMapTab() {
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 sm:hidden text-white/40 text-[10px] bg-black/60 px-3 py-1 rounded-full border border-white/10">
             Pinch to zoom • Drag to pan
           </div>
+        </div>
+        
+        {/* Bottom center status indicator */}
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-[#0a0f1a] px-2 py-0.5 border border-vault-gold/20 rounded-full">
+          <motion.div 
+            className="w-1.5 h-1.5 rounded-full bg-emerald-500"
+            animate={{ opacity: [1, 0.5, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          <span className="text-white/40 text-[9px] uppercase tracking-wider">Live</span>
         </div>
       </div>
       
