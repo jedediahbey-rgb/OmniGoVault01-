@@ -644,3 +644,38 @@ Testing the refactored Black Archive page after major component breakdown from 2
 - **Test Portfolio**: test-portfolio (used for schedule creation validation)
 - **Test Profile**: test-profile (used for schedule creation validation)
 
+
+## Real-time Collaboration V2 (WebSockets) - December 31, 2025
+
+### Enhanced Service: `/app/backend/services/realtime_service.py`
+
+**V2 Features Added:**
+- **Channel Subscriptions**: Subscribe to specific event channels
+- **Activity History**: Track and replay recent room events (last 100)
+- **Conflict Resolution**: Operational transformation for concurrent edits
+- **Session Recovery**: Store/restore session state for reconnection
+- **Rate Limiting**: Prevent spam (default 30 actions/minute)
+- **Detailed Statistics**: Comprehensive system metrics
+
+### New WebSocket Actions:
+- `subscribe` - Subscribe to a channel
+- `unsubscribe` - Unsubscribe from a channel
+- `get_history` - Get room activity history
+- `sync_changes` - Sync document changes with conflict resolution
+- `store_session` - Store session state for reconnection
+- `restore_session` - Restore session after reconnect
+
+### New REST Endpoints:
+- `GET /api/realtime/stats/detailed` - Detailed system stats
+- `GET /api/realtime/history/{room_id}` - Room activity history
+- `GET /api/realtime/document/{id}/version` - Document version info
+- `GET /api/realtime/channels` - List active channels
+- `POST /api/realtime/channel/{id}/broadcast` - Broadcast to channel
+- `GET /api/realtime/capabilities` - List supported features
+
+### Test Cases:
+1. [ ] Get capabilities
+2. [ ] Get stats
+3. [ ] Get detailed stats
+4. [ ] Get channels list
+
