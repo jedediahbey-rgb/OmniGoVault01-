@@ -278,7 +278,7 @@ export default function WorkspaceDetailPage({ user }) {
       if (selectedDocument) {
         handleViewDocument({ document_id: docId });
       }
-      fetchVault();
+      await fetchVault();
     } catch (error) {
       toast.error(
             typeof error.response?.data?.detail === 'string' 
