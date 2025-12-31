@@ -211,6 +211,7 @@ class VaultService:
             "documents": documents,
             "user_permissions": permissions,
             "user_role": participant["role"],
+            "current_user_id": user_id,
             "recent_activity": recent_events
         }
     
