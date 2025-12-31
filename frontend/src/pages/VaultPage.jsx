@@ -714,28 +714,226 @@ export default function VaultPage({ user, initialView }) {
   // ============================================================================
   
   return (
-    <div className="absolute inset-0 flex flex-col lg:flex-row">
-      {/* Mobile Overlay */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-          />
-        )}
-      </AnimatePresence>
-      
-      {/* ================================================================== */}
-      {/* GLASSY SIDEBAR - Desktop only, mobile uses drawer */}
-      {/* ================================================================== */}
-      <GlassSidebar className={`
-        fixed lg:relative inset-y-0 left-0 w-72 z-50
-        transform transition-transform duration-300 ease-out
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
+    <>
+      {/* ============ MOBILE LAYOUT ============ */}
+      <div className="lg:hidden">
+        {/* Mobile Header Bar - Stacked vertically */}
+        <div className="bg-[#0a0f1a]">
+          {/* Portfolio Row */}
+          <div className="flex items-center gap-2 px-4 py-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-lg shrink-0"
+            >
+              <ShieldCheck className="w-5 h-5 text-vault-gold" weight="fill" />
+            </button>
+            
+            <div className="flex-1 min-w-0">
+              <PortfolioSelector
+                portfolios={portfolios}
+                activePortfolio={activePortfolio}
+                onSelect={switchPortfolio}
+                onCreateNew={() => setShowNewPortfolio(true)}
+                compact={true}
+              />
+            </div>
+            
+            <Button 
+              onClick={() => navigate('/templates')}
+              className="btn-primary h-10 w-10 p-0 shrink-0"
+            >
+              <Plus className="w-5 h-5" weight="bold" />
+            </Button>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="px-4 pb-3">
+            <div className="relative">
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" weight="duotone" />
+              <Input
+                placeholder="Search documents..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 py-2.5 bg-white/5 border-white/10 focus:border-vault-gold text-white text-sm rounded-lg"
+              />
+            </div>
+          </div>
+          
+          {/* Tabs */}
+          <div className="flex border-b border-white/10">
+            <button
+              onClick={() => setShowTrash(false)}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium border-b-2 transition-colors ${
+                !showTrash 
+                  ? 'text-vault-gold border-vault-gold bg-vault-gold/5' 
+                  : 'text-white/40 border-transparent'
+              }`}
+            >
+              <FileText className="w-4 h-4" weight="duotone" />
+              <span>Documents</span>
+              <span className="text-xs opacity-70">({documents.length})</span>
+            </button>
+            <button
+              onClick={() => setShowTrash(true)}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium border-b-2 transition-colors ${
+                showTrash 
+                  ? 'text-red-400 border-red-400 bg-red-500/5' 
+                  : 'text-white/40 border-transparent'
+              }`}
+            >
+              <Trash className="w-4 h-4" weight="duotone" />
+              <span>Trash</span>
+              {trashedDocuments.length > 0 && (
+                <span className="text-xs opacity-70">({trashedDocuments.length})</span>
+              )}
+            </button>
+          </div>
+        </div>
+        
+        {/* Mobile Document List */}
+        <div className="p-4">
+          {displayedDocuments.length > 0 ? (
+            <div className="space-y-3">
+              <AnimatePresence mode="popLayout">
+                {displayedDocuments.map((doc) => (
+                  showTrash ? (
+                    <motion.div
+                      key={doc.document_id}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -100 }}
+                      className="p-4 bg-white/5 border border-white/10 rounded-xl"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+                          <FileText className="w-5 h-5 text-red-400" weight="duotone" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-white font-medium text-sm truncate">{doc.title}</h3>
+                          <p className="text-white/40 text-xs mt-0.5">
+                            Deleted {new Date(doc.deleted_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          onClick={() => restoreDocument(doc.document_id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-green-400 border-green-500/30 hover:bg-green-500/10 text-xs"
+                        >
+                          <ArrowCounterClockwise className="w-3.5 h-3.5 mr-1" />
+                          Restore
+                        </Button>
+                        <Button
+                          onClick={() => permanentlyDelete(doc.document_id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-red-400 border-red-500/30 hover:bg-red-500/10 text-xs"
+                        >
+                          <Trash className="w-3.5 h-3.5 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key={doc.document_id}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -100 }}
+                      onClick={() => navigate(`/vault/document/${doc.document_id}`)}
+                      className="p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-xl active:scale-[0.98] transition-transform"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0">
+                          <FileText className="w-6 h-6 text-vault-gold" weight="duotone" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="text-white font-medium text-sm line-clamp-2 leading-snug">{doc.title}</h3>
+                            <div className="flex items-center gap-1 shrink-0">
+                              {pinnedDocs.some(d => d.document_id === doc.document_id) && (
+                                <Star className="w-4 h-4 text-vault-gold" weight="fill" />
+                              )}
+                              {doc.is_locked && (
+                                <Lock className="w-4 h-4 text-green-400" weight="fill" />
+                              )}
+                            </div>
+                          </div>
+                          <p className="text-vault-gold/60 text-xs font-medium uppercase tracking-wide mt-1">
+                            {humanizeSlug(doc.document_type)}
+                          </p>
+                          <div className="flex items-center justify-between mt-2">
+                            <span className="text-white/40 text-xs flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {new Date(doc.updated_at).toLocaleDateString()}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase ${
+                              doc.is_locked ? 'bg-green-500/20 text-green-400' :
+                              doc.status === 'completed' ? 'bg-vault-gold/20 text-vault-gold' :
+                              'bg-white/10 text-white/50'
+                            }`}>
+                              {doc.is_locked ? 'Finalized' : doc.status || 'Draft'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )
+                ))}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+                {showTrash ? (
+                  <Trash className="w-8 h-8 text-white/20" weight="duotone" />
+                ) : (
+                  <FileText className="w-8 h-8 text-white/20" weight="duotone" />
+                )}
+              </div>
+              <h3 className="text-lg font-heading text-white mb-2">
+                {showTrash ? 'Trash is Empty' : searchTerm ? 'No Results' : 'No Documents Yet'}
+              </h3>
+              <p className="text-white/50 text-sm mb-4">
+                {showTrash 
+                  ? 'Deleted documents will appear here'
+                  : searchTerm 
+                    ? 'Try adjusting your search'
+                    : 'Create your first document'
+                }
+              </p>
+              {!showTrash && !searchTerm && (
+                <Button onClick={() => navigate('/templates')} className="btn-primary">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Document
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ============ DESKTOP LAYOUT ============ */}
+      <div className="hidden lg:flex lg:h-[calc(100vh-3.5rem)]">
+        {/* Mobile Overlay */}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSidebarOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            />
+          )}
+        </AnimatePresence>
+        
+        {/* Glassy Sidebar */}
+        <GlassSidebar className="w-72 shrink-0">
         {/* Mobile close button */}
         <button
           onClick={() => setSidebarOpen(false)}
