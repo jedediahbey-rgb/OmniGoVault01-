@@ -1284,6 +1284,34 @@ export default function BinderPage() {
 
                           {courtModeConfig.bates_enabled && (
                             <div className="pl-6 space-y-3">
+                              {/* Quick Presets */}
+                              <div>
+                                <label className="text-vault-muted text-xs mb-1.5 block">Quick Preset</label>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {[
+                                    { label: 'Portfolio', prefix: portfolioInfo?.abbreviation || 'DOC' },
+                                    { label: 'Exhibit', prefix: 'EXHIBIT' },
+                                    { label: 'Discovery', prefix: 'DISC' },
+                                    { label: 'Bates', prefix: 'BATES' }
+                                  ].map(preset => (
+                                    <button
+                                      key={preset.label}
+                                      onClick={() => setCourtModeConfig(prev => ({ 
+                                        ...prev, 
+                                        bates_prefix: preset.prefix + '-'
+                                      }))}
+                                      className={`px-2 py-1 text-xs rounded border transition-colors ${
+                                        courtModeConfig.bates_prefix === preset.prefix + '-'
+                                          ? 'bg-vault-gold/20 border-vault-gold/50 text-vault-gold'
+                                          : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                                      }`}
+                                    >
+                                      {preset.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                              
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
                                   <label className="text-vault-muted text-xs mb-1 block">Prefix</label>
@@ -1320,6 +1348,7 @@ export default function BinderPage() {
                                       <SelectItem value="5" className="text-white">5 digits</SelectItem>
                                       <SelectItem value="6" className="text-white">6 digits</SelectItem>
                                       <SelectItem value="7" className="text-white">7 digits</SelectItem>
+                                      <SelectItem value="8" className="text-white">8 digits</SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
@@ -1336,6 +1365,9 @@ export default function BinderPage() {
                                       <SelectItem value="bottom-right" className="text-white">Bottom Right</SelectItem>
                                       <SelectItem value="bottom-left" className="text-white">Bottom Left</SelectItem>
                                       <SelectItem value="bottom-center" className="text-white">Bottom Center</SelectItem>
+                                      <SelectItem value="top-right" className="text-white">Top Right</SelectItem>
+                                      <SelectItem value="top-left" className="text-white">Top Left</SelectItem>
+                                      <SelectItem value="top-center" className="text-white">Top Center</SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
