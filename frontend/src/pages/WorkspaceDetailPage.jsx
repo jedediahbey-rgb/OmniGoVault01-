@@ -504,7 +504,7 @@ export default function WorkspaceDetailPage({ user }) {
           <TabsContent value="participants">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-white">Participants</h2>
-              {vault.user_permissions?.includes('invite_participants') && (
+              {vault.user_permissions?.includes('MANAGE_PARTICIPANTS') && (
                 <Button
                   onClick={() => setShowInviteParticipant(true)}
                   className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
