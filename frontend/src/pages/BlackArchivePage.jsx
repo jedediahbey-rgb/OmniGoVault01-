@@ -916,13 +916,8 @@ function IndexTab() {
               Clear filters
             </motion.button>
           )}
-            >
-              <X className="w-4 h-4" />
-              Clear filters
-            </button>
-          )}
         </div>
-      )}}
+      )}
       
       {/* Source Detail Modal */}
       <AnimatePresence>
