@@ -4784,6 +4784,12 @@ from routes.archive import router as archive_router, init_archive_routes
 init_archive_routes(db, get_current_user)
 app.include_router(archive_router, prefix="/api")
 
+# Bates Configuration Routes
+from routes.bates import router as bates_router
+from services.bates_config_service import init_bates_service
+init_bates_service(db)
+app.include_router(bates_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
