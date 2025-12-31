@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+
+const api = axios.create({ withCredentials: true });
+
 import { Certificate, Stack, Warning, X, Scales, Lightning } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { API, STATUS_BADGES } from './constants';
@@ -20,7 +23,7 @@ export function ClaimsTab() {
     try {
       const params = new URLSearchParams();
       if (statusFilter) params.append('status', statusFilter);
-      const res = await axios.get(`${API}/archive/claims?${params}`);
+      const res = await api.get(`${API}/archive/claims?${params}`);
       setClaims(res.data.claims || []);
     } catch (err) {
       console.error('Failed to fetch claims:', err);
@@ -31,7 +34,7 @@ export function ClaimsTab() {
   
   const openClaim = async (claim) => {
     try {
-      const res = await axios.get(`${API}/archive/claims/${claim.claim_id}`);
+      const res = await api.get(`${API}/archive/claims/${claim.claim_id}`);
       setSelectedClaim(res.data);
     } catch (err) {
       toast.error('Failed to load dossier');
