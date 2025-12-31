@@ -159,500 +159,279 @@ class BinderTester:
             self.log_test("Authentication Check", False, f"Error: {str(e)}")
             return False
 
-    # ============ OMNIBINDER V2 TESTS ============
+    # ============ BINDER FUNCTIONALITY TESTS ============
 
-    def test_create_test_portfolio(self):
-        """Create a test portfolio for OmniBinder testing"""
+    def test_get_portfolios(self):
+        """Get portfolios to find a valid portfolio_id"""
         try:
-            portfolio_data = {
-                "name": "OmniBinder V2 Test Portfolio",
-                "description": "Test portfolio for OmniBinder V2 API testing"
-            }
-            
-            response = self.session.post(f"{self.base_url}/portfolios", json=portfolio_data, timeout=10)
+            response = self.session.get(f"{self.base_url}/portfolios", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
-                self.test_portfolio_id = data.get("portfolio_id")
-                details += f", Portfolio ID: {self.test_portfolio_id}"
+                portfolios = data if isinstance(data, list) else []
+                
+                if portfolios:
+                    # Use the first portfolio
+                    self.test_portfolio_id = portfolios[0].get("portfolio_id")
+                    details += f", Found {len(portfolios)} portfolios, Using: {self.test_portfolio_id}"
+                else:
+                    # Create a test portfolio if none exist
+                    portfolio_data = {
+                        "name": "Binder Test Portfolio",
+                        "description": "Test portfolio for binder functionality testing"
+                    }
+                    create_response = self.session.post(f"{self.base_url}/portfolios", json=portfolio_data, timeout=10)
+                    if create_response.status_code == 200:
+                        created_portfolio = create_response.json()
+                        self.test_portfolio_id = created_portfolio.get("portfolio_id")
+                        details += f", Created test portfolio: {self.test_portfolio_id}"
+                    else:
+                        success = False
+                        details += f", Failed to create test portfolio: {create_response.status_code}"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("Create Test Portfolio", success, details)
+            self.log_test("Get Portfolios", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Create Test Portfolio", False, f"Error: {str(e)}")
+            self.log_test("Get Portfolios", False, f"Error: {str(e)}")
             return False
 
-    def test_scheduled_binders_create(self):
-        """Test POST /api/binder/schedule - Create a scheduled binder"""
+    def test_get_binder_profiles(self):
+        """Test GET /api/binder/profiles - Get binder profiles for a portfolio"""
         if not self.test_portfolio_id:
-            self.log_test("POST /api/binder/schedule", False, "No test portfolio available")
+            self.log_test("GET /api/binder/profiles", False, "No test portfolio available")
             return False
             
         try:
-            schedule_data = {
-                "portfolio_id": self.test_portfolio_id,
-                "profile_id": "default_profile",  # Assuming default profile exists
-                "schedule_type": "weekly",
-                "schedule_time": "09:00",
-                "notify_emails": ["test@example.com"],
-                "enabled": True
-            }
-            
-            response = self.session.post(f"{self.base_url}/binder/schedule", json=schedule_data, timeout=10)
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/binder/profiles", params=params, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 if data.get("ok"):
-                    schedule = data.get("data", {}).get("schedule", {})
-                    self.test_schedule_id = schedule.get("id")
-                    details += f", Schedule ID: {self.test_schedule_id}"
-                    details += f", Type: {schedule.get('schedule_type')}"
-                    details += f", Time: {schedule.get('schedule_time')}"
-                else:
-                    success = False
-                    details += ", Missing 'ok' field"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("POST /api/binder/schedule", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/binder/schedule", False, f"Error: {str(e)}")
-            return False
-
-    def test_scheduled_binders_get(self):
-        """Test GET /api/binder/schedules - Get all user's scheduled binders"""
-        try:
-            response = self.session.get(f"{self.base_url}/binder/schedules", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get("ok"):
-                    schedules_data = data.get("data", {})
-                    schedules = schedules_data.get("schedules", [])
-                    total = schedules_data.get("total", 0)
-                    details += f", Found {total} schedules"
+                    profiles_data = data.get("data", {})
+                    profiles = profiles_data.get("profiles", [])
+                    total = profiles_data.get("total", 0)
+                    details += f", Found {total} profiles"
                     
-                    if self.test_schedule_id:
-                        # Check if our created schedule is in the list
-                        found_schedule = any(s.get("id") == self.test_schedule_id for s in schedules)
-                        if found_schedule:
-                            details += ", Created schedule found in list"
-                        else:
-                            success = False
-                            details += ", Created schedule not found in list"
-                else:
-                    success = False
-                    details += ", Missing 'ok' field"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/binder/schedules", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/binder/schedules", False, f"Error: {str(e)}")
-            return False
-
-    def test_scheduled_binders_update(self):
-        """Test PUT /api/binder/schedule/{schedule_id} - Update a schedule"""
-        if not self.test_schedule_id:
-            self.log_test("PUT /api/binder/schedule/{schedule_id}", False, "No test schedule available")
-            return False
-            
-        try:
-            update_data = {
-                "schedule_type": "daily",
-                "schedule_time": "10:00",
-                "enabled": False
-            }
-            
-            response = self.session.put(f"{self.base_url}/binder/schedule/{self.test_schedule_id}", json=update_data, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get("ok"):
-                    schedule = data.get("data", {}).get("schedule", {})
-                    details += f", Updated type: {schedule.get('schedule_type')}"
-                    details += f", Updated time: {schedule.get('schedule_time')}"
-                    details += f", Enabled: {schedule.get('enabled')}"
-                    
-                    # Verify updates were applied
-                    if (schedule.get('schedule_type') == 'daily' and 
-                        schedule.get('schedule_time') == '10:00' and 
-                        schedule.get('enabled') == False):
-                        details += ", All updates applied correctly"
+                    if profiles:
+                        # Store the first profile for later tests
+                        self.test_profile_id = profiles[0].get("id")
+                        profile_type = profiles[0].get("profile_type")
+                        profile_name = profiles[0].get("name")
+                        details += f", Using profile: {profile_name} ({profile_type})"
                     else:
                         success = False
-                        details += ", Updates not applied correctly"
+                        details += ", No profiles found"
                 else:
                     success = False
                     details += ", Missing 'ok' field"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("PUT /api/binder/schedule/{schedule_id}", success, details)
+            self.log_test("GET /api/binder/profiles", success, details)
             return success
             
         except Exception as e:
-            self.log_test("PUT /api/binder/schedule/{schedule_id}", False, f"Error: {str(e)}")
+            self.log_test("GET /api/binder/profiles", False, f"Error: {str(e)}")
             return False
 
-    def test_binder_templates_create(self):
-        """Test POST /api/binder/templates - Save binder configuration as template"""
+    def test_generate_binder(self):
+        """Test POST /api/binder/generate - Generate a binder"""
+        if not self.test_portfolio_id or not self.test_profile_id:
+            self.log_test("POST /api/binder/generate", False, "No test portfolio or profile available")
+            return False
+            
         try:
-            template_data = {
-                "name": "Test Court Template",
-                "description": "Template for court-grade evidence packets",
-                "profile_type": "court",
-                "rules": {
-                    "include_drafts": False,
-                    "include_bates": True,
-                    "bates_prefix": "COURT-",
-                    "redaction_mode": "standard"
-                },
-                "is_public": False
+            generate_data = {
+                "portfolio_id": self.test_portfolio_id,
+                "profile_id": self.test_profile_id
             }
             
-            response = self.session.post(f"{self.base_url}/binder/templates", json=template_data, timeout=10)
+            response = self.session.post(f"{self.base_url}/binder/generate", json=generate_data, timeout=30)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 if data.get("ok"):
-                    template = data.get("data", {}).get("template", {})
-                    self.test_template_id = template.get("id")
-                    details += f", Template ID: {self.test_template_id}"
-                    details += f", Name: {template.get('name')}"
-                    details += f", Type: {template.get('profile_type')}"
-                    details += f", Public: {template.get('is_public')}"
+                    result_data = data.get("data", {})
+                    if result_data.get("success"):
+                        self.test_run_id = result_data.get("run_id")
+                        details += f", Generation successful, Run ID: {self.test_run_id}"
+                    else:
+                        success = False
+                        details += f", Generation failed: {result_data.get('error', 'Unknown error')}"
                 else:
                     success = False
                     details += ", Missing 'ok' field"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("POST /api/binder/templates", success, details)
+            self.log_test("POST /api/binder/generate", success, details)
             return success
             
         except Exception as e:
-            self.log_test("POST /api/binder/templates", False, f"Error: {str(e)}")
+            self.log_test("POST /api/binder/generate", False, f"Error: {str(e)}")
             return False
 
-    def test_binder_templates_get(self):
-        """Test GET /api/binder/templates - Get all templates (user's + public)"""
-        try:
-            response = self.session.get(f"{self.base_url}/binder/templates", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get("ok"):
-                    templates_data = data.get("data", {})
-                    templates = templates_data.get("templates", [])
-                    total = templates_data.get("total", 0)
-                    details += f", Found {total} templates"
-                    
-                    if self.test_template_id:
-                        # Check if our created template is in the list
-                        found_template = any(t.get("id") == self.test_template_id for t in templates)
-                        if found_template:
-                            details += ", Created template found in list"
-                        else:
-                            success = False
-                            details += ", Created template not found in list"
-                    
-                    # Check for public templates
-                    public_templates = [t for t in templates if t.get("is_public")]
-                    details += f", {len(public_templates)} public templates"
-                else:
-                    success = False
-                    details += ", Missing 'ok' field"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/binder/templates", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/binder/templates", False, f"Error: {str(e)}")
-            return False
-
-    def test_court_packet_generate(self):
-        """Test POST /api/binder/generate/court-packet - Generate court-grade evidence packet"""
+    def test_get_binder_runs(self):
+        """Test GET /api/binder/runs - Get binder run history"""
         if not self.test_portfolio_id:
-            self.log_test("POST /api/binder/generate/court-packet", False, "No test portfolio available")
+            self.log_test("GET /api/binder/runs", False, "No test portfolio available")
             return False
             
         try:
-            court_packet_data = {
-                "portfolio_id": self.test_portfolio_id,
-                "case_number": "CV-2024-001234",
-                "court_name": "Superior Court of California",
-                "case_title": "Test Trust v. Example Party",
-                "exhibit_prefix": "EX"
-            }
-            
-            response = self.session.post(f"{self.base_url}/binder/generate/court-packet", json=court_packet_data, timeout=10)
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/binder/runs", params=params, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 if data.get("ok"):
-                    run = data.get("data", {}).get("run", {})
-                    details += f", Run ID: {run.get('id')}"
-                    details += f", Status: {run.get('status')}"
-                    details += f", Case: {run.get('case_info', {}).get('case_number')}"
-                    details += f", Court: {run.get('case_info', {}).get('court_name')}"
+                    runs_data = data.get("data", {})
+                    runs = runs_data.get("runs", [])
+                    total = runs_data.get("total", 0)
+                    details += f", Found {total} runs"
+                    
+                    if self.test_run_id:
+                        # Check if our generated run is in the list
+                        found_run = any(r.get("id") == self.test_run_id for r in runs)
+                        if found_run:
+                            details += ", Generated run found in list"
+                        else:
+                            details += ", Generated run not found in list (may still be processing)"
                 else:
                     success = False
                     details += ", Missing 'ok' field"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("POST /api/binder/generate/court-packet", success, details)
+            self.log_test("GET /api/binder/runs", success, details)
             return success
             
         except Exception as e:
-            self.log_test("POST /api/binder/generate/court-packet", False, f"Error: {str(e)}")
+            self.log_test("GET /api/binder/runs", False, f"Error: {str(e)}")
             return False
 
-    # ============ REAL-TIME COLLABORATION V2 TESTS ============
-
-    def test_realtime_presence(self):
-        """Test GET /api/realtime/presence/{room_id} - Get users in a room"""
+    def test_get_latest_binder(self):
+        """Test GET /api/binder/latest - Get latest completed binder"""
+        if not self.test_portfolio_id:
+            self.log_test("GET /api/binder/latest", False, "No test portfolio available")
+            return False
+            
         try:
-            room_id = "workspace_test_room"
-            response = self.session.get(f"{self.base_url}/realtime/presence/{room_id}", timeout=10)
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/binder/latest", params=params, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 if data.get("ok"):
-                    presence_data = data.get("data", {})
-                    users = presence_data.get("users", [])
-                    count = presence_data.get("count", 0)
-                    room_id_returned = presence_data.get("room_id")
+                    result_data = data.get("data", {})
+                    run = result_data.get("run")
                     
-                    details += f", Room: {room_id_returned}"
-                    details += f", Users: {count}"
-                    
-                    if room_id_returned == room_id:
-                        details += ", Correct room ID returned"
+                    if run:
+                        run_id = run.get("id")
+                        status = run.get("status")
+                        profile_name = run.get("profile_name")
+                        finished_at = run.get("finished_at")
+                        details += f", Latest run: {run_id}, Status: {status}, Profile: {profile_name}"
+                        if finished_at:
+                            details += f", Finished: {finished_at[:10]}"
                     else:
-                        success = False
-                        details += f", Expected room {room_id}, got {room_id_returned}"
+                        details += ", No completed binders found"
+                        # This is still a successful response
                 else:
                     success = False
                     details += ", Missing 'ok' field"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("GET /api/realtime/presence/{room_id}", success, details)
+            self.log_test("GET /api/binder/latest", success, details)
             return success
             
         except Exception as e:
-            self.log_test("GET /api/realtime/presence/{room_id}", False, f"Error: {str(e)}")
+            self.log_test("GET /api/binder/latest", False, f"Error: {str(e)}")
             return False
 
-    def test_realtime_document_lock(self):
-        """Test GET /api/realtime/document/{document_id}/lock - Check document lock status"""
-        try:
-            document_id = "doc_test_document"
-            response = self.session.get(f"{self.base_url}/realtime/document/{document_id}/lock", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get("ok"):
-                    lock_data = data.get("data", {})
-                    document_id_returned = lock_data.get("document_id")
-                    is_locked = lock_data.get("is_locked")
-                    locked_by = lock_data.get("locked_by")
-                    
-                    details += f", Document: {document_id_returned}"
-                    details += f", Locked: {is_locked}"
-                    if locked_by:
-                        details += f", Locked by: {locked_by}"
-                    
-                    if document_id_returned == document_id:
-                        details += ", Correct document ID returned"
-                    else:
-                        success = False
-                        details += f", Expected document {document_id}, got {document_id_returned}"
-                else:
-                    success = False
-                    details += ", Missing 'ok' field"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/realtime/document/{document_id}/lock", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/realtime/document/{document_id}/lock", False, f"Error: {str(e)}")
-            return False
-
-    def test_realtime_broadcast(self):
-        """Test POST /api/realtime/broadcast - Broadcast an event"""
-        try:
-            broadcast_data = {
-                "event_type": "document_updated",
-                "payload": {
-                    "document_id": "doc_test_document",
-                    "changes": ["title", "content"],
-                    "version": 2
-                },
-                "room_id": "workspace_test_room"
-            }
-            
-            response = self.session.post(f"{self.base_url}/realtime/broadcast", json=broadcast_data, timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get("ok"):
-                    broadcast_result = data.get("data", {})
-                    event_type = broadcast_result.get("event_type")
-                    room_id = broadcast_result.get("room_id")
-                    
-                    details += f", Event: {event_type}"
-                    details += f", Room: {room_id}"
-                    details += ", Broadcast successful"
-                else:
-                    success = False
-                    details += ", Missing 'ok' field"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("POST /api/realtime/broadcast", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("POST /api/realtime/broadcast", False, f"Error: {str(e)}")
-            return False
-
-    def test_realtime_stats(self):
-        """Test GET /api/realtime/stats - Get real-time system stats"""
-        try:
-            response = self.session.get(f"{self.base_url}/realtime/stats", timeout=10)
-            success = response.status_code == 200
-            details = f"Status: {response.status_code}"
-            
-            if success:
-                data = response.json()
-                if data.get("ok"):
-                    stats = data.get("data", {})
-                    total_connections = stats.get("total_connections", 0)
-                    total_users = stats.get("total_users", 0)
-                    total_rooms = stats.get("total_rooms", 0)
-                    active_locks = stats.get("active_document_locks", 0)
-                    rooms = stats.get("rooms", {})
-                    
-                    details += f", Connections: {total_connections}"
-                    details += f", Users: {total_users}"
-                    details += f", Rooms: {total_rooms}"
-                    details += f", Locks: {active_locks}"
-                    details += f", Room details: {len(rooms)} rooms"
-                    
-                    # Verify stats structure
-                    required_fields = ["total_connections", "total_users", "total_rooms", "active_document_locks", "rooms"]
-                    missing_fields = [field for field in required_fields if field not in stats]
-                    
-                    if missing_fields:
-                        success = False
-                        details += f", Missing fields: {missing_fields}"
-                    else:
-                        details += ", All required fields present"
-                else:
-                    success = False
-                    details += ", Missing 'ok' field"
-            else:
-                details += f", Response: {response.text[:200]}"
-            
-            self.log_test("GET /api/realtime/stats", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("GET /api/realtime/stats", False, f"Error: {str(e)}")
-            return False
-
-    def test_scheduled_binders_delete(self):
-        """Test DELETE /api/binder/schedule/{schedule_id} - Delete a schedule (cleanup)"""
-        if not self.test_schedule_id:
-            self.log_test("DELETE /api/binder/schedule/{schedule_id}", True, "No test schedule to delete")
+    def test_get_specific_run(self):
+        """Test GET /api/binder/runs/{run_id} - Get a specific binder run"""
+        if not self.test_run_id:
+            self.log_test("GET /api/binder/runs/{run_id}", True, "No test run to check (skipped)")
             return True
             
         try:
-            response = self.session.delete(f"{self.base_url}/binder/schedule/{self.test_schedule_id}", timeout=10)
+            response = self.session.get(f"{self.base_url}/binder/runs/{self.test_run_id}", timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 if data.get("ok"):
-                    message = data.get("data", {}).get("message", "")
-                    details += f", Message: {message}"
-                    details += ", Schedule deleted successfully"
+                    run_data = data.get("data", {}).get("run", {})
+                    status = run_data.get("status")
+                    profile_name = run_data.get("profile_name")
+                    total_items = run_data.get("total_items", 0)
+                    total_pages = run_data.get("total_pages", 0)
+                    
+                    details += f", Status: {status}, Profile: {profile_name}"
+                    details += f", Items: {total_items}, Pages: {total_pages}"
                 else:
                     success = False
                     details += ", Missing 'ok' field"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("DELETE /api/binder/schedule/{schedule_id}", success, details)
+            self.log_test("GET /api/binder/runs/{run_id}", success, details)
             return success
             
         except Exception as e:
-            self.log_test("DELETE /api/binder/schedule/{schedule_id}", False, f"Error: {str(e)}")
+            self.log_test("GET /api/binder/runs/{run_id}", False, f"Error: {str(e)}")
             return False
 
-    def test_binder_templates_delete(self):
-        """Test DELETE /api/binder/templates/{template_id} - Delete a template (cleanup)"""
-        if not self.test_template_id:
-            self.log_test("DELETE /api/binder/templates/{template_id}", True, "No test template to delete")
-            return True
+    def test_binder_stale_check(self):
+        """Test GET /api/binder/stale-check - Check if binder is stale"""
+        if not self.test_portfolio_id:
+            self.log_test("GET /api/binder/stale-check", False, "No test portfolio available")
+            return False
             
         try:
-            response = self.session.delete(f"{self.base_url}/binder/templates/{self.test_template_id}", timeout=10)
+            params = {"portfolio_id": self.test_portfolio_id}
+            response = self.session.get(f"{self.base_url}/binder/stale-check", params=params, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
             if success:
                 data = response.json()
                 if data.get("ok"):
-                    message = data.get("data", {}).get("message", "")
-                    details += f", Message: {message}"
-                    details += ", Template deleted successfully"
+                    result_data = data.get("data", {})
+                    is_stale = result_data.get("is_stale")
+                    reason = result_data.get("reason")
+                    message = result_data.get("message")
+                    
+                    details += f", Is stale: {is_stale}, Reason: {reason}"
+                    if message:
+                        details += f", Message: {message}"
                 else:
                     success = False
                     details += ", Missing 'ok' field"
             else:
                 details += f", Response: {response.text[:200]}"
             
-            self.log_test("DELETE /api/binder/templates/{template_id}", success, details)
+            self.log_test("GET /api/binder/stale-check", success, details)
             return success
             
         except Exception as e:
-            self.log_test("DELETE /api/binder/templates/{template_id}", False, f"Error: {str(e)}")
+            self.log_test("GET /api/binder/stale-check", False, f"Error: {str(e)}")
             return False
 
     # ============ TEST RUNNER ============
