@@ -6,7 +6,7 @@ Simple test to debug the redaction mode generation issue
 import requests
 import json
 
-BASE_URL = "https://vaultdoc-repair.preview.emergentagent.com/api"
+BASE_URL = "https://legaldoctrine.preview.emergentagent.com/api"
 PORTFOLIO_ID = "port_0e9a783c1a71"
 
 def test_simple_generation():

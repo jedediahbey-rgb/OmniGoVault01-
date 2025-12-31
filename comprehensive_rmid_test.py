@@ -15,7 +15,7 @@ from collections import defaultdict
 import re
 
 class ComprehensiveRMIDTester:
-    def __init__(self, base_url="https://vaultdoc-repair.preview.emergentagent.com"):
+    def __init__(self, base_url="https://legaldoctrine.preview.emergentagent.com"):
         self.base_url = base_url
         self.session_token = None
         self.user_id = None
