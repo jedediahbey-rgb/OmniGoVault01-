@@ -185,15 +185,18 @@ export default function VaultPage({ user, initialView }) {
   const [showNewPortfolio, setShowNewPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
   
-  // REF: avoids timing/batching issues (state can be stale at render time)
-  const skipNextAnimRef = useRef(false);
+  // Skip animation state - controls whether cards animate on render
+  const [skipAnimation, setSkipAnimation] = useState(false);
+  // Track the portfolio ID that triggered skip, to reset after that portfolio's render
+  const [skipForPortfolioId, setSkipForPortfolioId] = useState(null);
 
   // Switch portfolio - use SWITCHING state to avoid skeleton flash
   const switchPortfolio = useCallback(async (portfolio, showToast = true) => {
     if (!portfolio) return;
     
     // Mark: next render should have ZERO entry/layout animations
-    skipNextAnimRef.current = true;
+    setSkipAnimation(true);
+    setSkipForPortfolioId(portfolio.portfolio_id);
     
     // Use SWITCHING state instead of LOADING to keep current content visible
     setVaultState(prev => prev === VAULT_STATES.LOADING ? VAULT_STATES.LOADING : VAULT_STATES.SWITCHING);
