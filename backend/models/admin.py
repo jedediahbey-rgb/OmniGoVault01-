@@ -24,6 +24,66 @@ GLOBAL_ROLE_DESCRIPTIONS = {
 }
 
 
+# ============ SUPPORT_ADMIN PERMISSION MATRIX ============
+# Defines exactly what SUPPORT_ADMIN can and cannot do
+
+class SupportAdminPermission(str, Enum):
+    """Granular permissions for SUPPORT_ADMIN role"""
+    # READ permissions (allowed)
+    VIEW_ACCOUNTS = "view_accounts"  # List and view account details
+    VIEW_USERS = "view_users"  # List and view user details
+    VIEW_SUBSCRIPTIONS = "view_subscriptions"  # View subscription status
+    VIEW_ENTITLEMENTS = "view_entitlements"  # View entitlement values
+    VIEW_DOCUMENTS = "view_documents"  # View document metadata (not content)
+    VIEW_WORKSPACES = "view_workspaces"  # View workspace info
+    VIEW_AUDIT_LOGS_SELF = "view_audit_logs_self"  # View own audit logs only
+    
+    # ACTION permissions (allowed with restrictions)
+    IMPERSONATE_USER = "impersonate_user"  # Can impersonate non-admin users
+    RESET_USER_2FA = "reset_user_2fa"  # Can reset 2FA for users
+    UNLOCK_USER_ACCOUNT = "unlock_user_account"  # Can unlock locked accounts
+    EXTEND_TRIAL = "extend_trial"  # Can extend trial periods
+    ADD_SUPPORT_NOTE = "add_support_note"  # Can add notes to accounts
+    
+    # WRITE permissions (DENIED - requires escalation)
+    # MODIFY_ENTITLEMENTS - requires OMNICOMPETENT
+    # CHANGE_PLAN - requires BILLING_ADMIN or OMNICOMPETENT
+    # SUSPEND_ACCOUNT - requires OMNICOMPETENT
+    # DELETE_ACCOUNT - requires OMNICOMPETENT_OWNER
+    # GRANT_ROLES - requires OMNICOMPETENT_OWNER
+    # MODIFY_USER_DATA - requires OMNICOMPETENT
+
+
+SUPPORT_ADMIN_ALLOWED_ACTIONS = [
+    SupportAdminPermission.VIEW_ACCOUNTS,
+    SupportAdminPermission.VIEW_USERS,
+    SupportAdminPermission.VIEW_SUBSCRIPTIONS,
+    SupportAdminPermission.VIEW_ENTITLEMENTS,
+    SupportAdminPermission.VIEW_DOCUMENTS,
+    SupportAdminPermission.VIEW_WORKSPACES,
+    SupportAdminPermission.VIEW_AUDIT_LOGS_SELF,
+    SupportAdminPermission.IMPERSONATE_USER,
+    SupportAdminPermission.RESET_USER_2FA,
+    SupportAdminPermission.UNLOCK_USER_ACCOUNT,
+    SupportAdminPermission.EXTEND_TRIAL,
+    SupportAdminPermission.ADD_SUPPORT_NOTE,
+]
+
+
+SUPPORT_ADMIN_DENIED_ACTIONS = [
+    "modify_entitlements",
+    "change_plan",
+    "suspend_account",
+    "delete_account",
+    "grant_roles",
+    "revoke_roles",
+    "modify_user_data",
+    "view_all_audit_logs",
+    "access_system_settings",
+    "impersonate_admin_users",
+]
+
+
 class UserGlobalRole(BaseModel):
     """Links users to global platform roles"""
     id: str = Field(default_factory=lambda: f"ugr_{uuid.uuid4().hex[:12]}")
