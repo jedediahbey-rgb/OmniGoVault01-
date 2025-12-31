@@ -643,7 +643,7 @@ export default function VaultPage({ user, initialView }) {
   // Error state
   if (vaultState === VAULT_STATES.ERROR) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="flex flex-col items-center justify-center pt-20 lg:pt-0 lg:min-h-screen px-4">
         <EmptyState
           icon={ShieldCheck}
           title="Unable to Access Vault"
