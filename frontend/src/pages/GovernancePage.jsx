@@ -548,7 +548,7 @@ export default function GovernancePage({ user }) {
     setInsuranceLoading(true);
     try {
       // Use V2 API for insurance policies
-      const res = await axios.get(`${API_V2}/records`, {
+      const res = await api.get(`${API_V2}/records`, {
         params: { 
           portfolio_id: selectedPortfolio, 
           module_type: MODULE_TYPES.insurance
