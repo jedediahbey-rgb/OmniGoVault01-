@@ -2405,7 +2405,7 @@ export default function BinderPage() {
               </div>
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="flex flex-row gap-2 justify-end">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -2413,15 +2413,15 @@ export default function BinderPage() {
                   setEditingSchedule(null);
                   resetScheduleForm();
                 }}
-                className="border-vault-gold/30 text-white"
+                className="border-vault-gold/30 text-white flex-1 sm:flex-none"
               >
                 Cancel
               </Button>
               <Button
                 onClick={editingSchedule ? handleUpdateSchedule : handleCreateSchedule}
-                className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark"
+                className="bg-vault-gold hover:bg-vault-gold/90 text-vault-dark flex-1 sm:flex-none"
               >
-                {editingSchedule ? 'Update Schedule' : 'Create Schedule'}
+                {editingSchedule ? 'Update' : 'Create'}
               </Button>
             </DialogFooter>
           </DialogContent>
