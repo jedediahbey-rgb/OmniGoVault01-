@@ -7,6 +7,7 @@ from typing import Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
 from pydantic import BaseModel
+from ..models import User
 
 router = APIRouter(prefix="/archive", tags=["Black Archive"])
 
