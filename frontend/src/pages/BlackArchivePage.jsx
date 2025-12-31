@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import axios from 'axios';
 import {
   Archive,
@@ -10,6 +10,7 @@ import {
   CaretRight,
   Certificate,
   Clock,
+  Eye,
   File,
   FileText,
   Folders,
@@ -33,6 +34,220 @@ import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// ============================================================================
+// ANIMATED BLACK ARCHIVE ICON - Exclusive Dynamic Symbol
+// ============================================================================
+const BlackArchiveIcon = ({ size = 'lg', animate = true }) => {
+  const sizeClasses = {
+    sm: 'w-8 h-8',
+    md: 'w-12 h-12',
+    lg: 'w-16 h-16',
+    xl: 'w-20 h-20'
+  };
+  
+  const innerSizes = {
+    sm: { outer: 32, inner: 16, ring: 24 },
+    md: { outer: 48, inner: 24, ring: 36 },
+    lg: { outer: 64, inner: 32, ring: 48 },
+    xl: { outer: 80, inner: 40, ring: 60 }
+  };
+  
+  const dims = innerSizes[size];
+  
+  return (
+    <div className={`${sizeClasses[size]} relative`}>
+      {/* Outer rotating ring */}
+      <motion.div
+        className="absolute inset-0 rounded-xl"
+        style={{
+          background: 'conic-gradient(from 0deg, transparent, rgba(198, 168, 124, 0.3), transparent, rgba(198, 168, 124, 0.1), transparent)',
+        }}
+        animate={animate ? { rotate: 360 } : {}}
+        transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+      />
+      
+      {/* Inner counter-rotating ring */}
+      <motion.div
+        className="absolute inset-1 rounded-lg"
+        style={{
+          background: 'conic-gradient(from 180deg, transparent, rgba(139, 92, 246, 0.2), transparent, rgba(198, 168, 124, 0.2), transparent)',
+        }}
+        animate={animate ? { rotate: -360 } : {}}
+        transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+      />
+      
+      {/* Core background */}
+      <div className="absolute inset-2 rounded-lg bg-black/90 backdrop-blur-sm border border-vault-gold/30" />
+      
+      {/* Mystical eye symbol */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <motion.div
+          className="relative"
+          animate={animate ? { scale: [1, 1.05, 1] } : {}}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          {/* Eye outer */}
+          <svg viewBox="0 0 40 40" className="w-8 h-8" style={{ filter: 'drop-shadow(0 0 8px rgba(198, 168, 124, 0.5))' }}>
+            {/* Decorative outer triangles */}
+            <motion.path
+              d="M20 4 L24 12 L16 12 Z"
+              fill="none"
+              stroke="rgba(198, 168, 124, 0.6)"
+              strokeWidth="0.5"
+              animate={animate ? { opacity: [0.4, 1, 0.4] } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <motion.path
+              d="M20 36 L24 28 L16 28 Z"
+              fill="none"
+              stroke="rgba(198, 168, 124, 0.6)"
+              strokeWidth="0.5"
+              animate={animate ? { opacity: [0.4, 1, 0.4] } : {}}
+              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            />
+            
+            {/* Eye shape */}
+            <motion.path
+              d="M6 20 Q20 8 34 20 Q20 32 6 20"
+              fill="none"
+              stroke="rgba(198, 168, 124, 0.8)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+            
+            {/* Pupil */}
+            <motion.circle
+              cx="20"
+              cy="20"
+              r="5"
+              fill="rgba(198, 168, 124, 0.3)"
+              stroke="rgba(198, 168, 124, 1)"
+              strokeWidth="1"
+              animate={animate ? { r: [5, 6, 5] } : {}}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            
+            {/* Inner dot */}
+            <motion.circle
+              cx="20"
+              cy="20"
+              r="2"
+              fill="rgba(198, 168, 124, 1)"
+              animate={animate ? { opacity: [0.6, 1, 0.6] } : {}}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </svg>
+        </motion.div>
+      </div>
+      
+      {/* Corner accents */}
+      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-vault-gold/50 rounded-tl" />
+      <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-vault-gold/50 rounded-tr" />
+      <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-vault-gold/50 rounded-bl" />
+      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-vault-gold/50 rounded-br" />
+    </div>
+  );
+};
+
+// ============================================================================
+// FLOATING PARTICLES BACKGROUND
+// ============================================================================
+const FloatingParticles = () => {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 rounded-full bg-vault-gold/30"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0.2, 0.6, 0.2],
+            scale: [1, 1.5, 1],
+          }}
+          transition={{
+            duration: 3 + Math.random() * 4,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// ============================================================================
+// PREMIUM TAB BUTTON WITH EFFECTS
+// ============================================================================
+const PremiumTab = ({ tab, isActive, onClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <motion.button
+      onClick={onClick}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className={`relative flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-medium whitespace-nowrap transition-colors overflow-hidden ${
+        isActive
+          ? 'text-black'
+          : 'text-white/60 hover:text-white'
+      }`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      {/* Active background with shimmer */}
+      {isActive && (
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-vault-gold via-amber-400 to-vault-gold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          layoutId="activeTab"
+        >
+          {/* Shimmer overlay */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+            animate={{ x: ['-100%', '100%'] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          />
+        </motion.div>
+      )}
+      
+      {/* Hover glow effect */}
+      {!isActive && isHovered && (
+        <motion.div
+          className="absolute inset-0 bg-white/5 rounded-xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      )}
+      
+      {/* Icon with pulse on active */}
+      <motion.div
+        animate={isActive ? { scale: [1, 1.1, 1] } : {}}
+        transition={{ duration: 0.5 }}
+        className="relative z-10"
+      >
+        <tab.icon className="w-4 h-4" weight={isActive ? 'fill' : 'duotone'} />
+      </motion.div>
+      
+      <span className="relative z-10">{tab.label}</span>
+      
+      {/* Subtle border glow on hover */}
+      {!isActive && (
+        <motion.div
+          className="absolute inset-0 rounded-xl border border-vault-gold/0"
+          animate={{ borderColor: isHovered ? 'rgba(198, 168, 124, 0.3)' : 'rgba(198, 168, 124, 0)' }}
+        />
+      )}
+    </motion.button>
+  );
+};
 
 // Tab configurations
 const TABS = [
