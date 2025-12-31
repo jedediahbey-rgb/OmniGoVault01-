@@ -1867,13 +1867,14 @@ function ArchiveMapTab() {
         </div>
         
         {/* React Flow Map */}
-        <div className="h-[420px] sm:h-[500px] lg:h-[550px] bg-gradient-to-b from-[#050810] to-[#080d18] rounded-2xl overflow-hidden relative">
+        <div className="h-[480px] sm:h-[500px] lg:h-[550px] bg-gradient-to-b from-[#050810] to-[#080d18] rounded-2xl overflow-hidden relative">
           {/* Inner vignette effect */}
           <div className="absolute inset-0 pointer-events-none z-10" style={{
             background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)'
           }} />
           
           <ReactFlow
+            key={isMobile ? 'mobile' : 'desktop'}
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
@@ -1882,7 +1883,7 @@ function ArchiveMapTab() {
             nodeTypes={nodeTypes}
             fitView
             fitViewOptions={{ 
-              padding: isMobile ? 0.15 : 0.25, 
+              padding: isMobile ? 0.08 : 0.2, 
               minZoom: 0.3, 
               maxZoom: 1.5,
               includeHiddenNodes: true
