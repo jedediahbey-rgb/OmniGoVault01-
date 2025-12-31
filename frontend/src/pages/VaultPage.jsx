@@ -175,9 +175,18 @@ export default function VaultPage({ user, initialView }) {
   const [portfolios, setPortfolios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  // Get default portfolio from localStorage - will be resolved to full object after fetch
-  const defaultPortfolioId = localStorage.getItem('defaultPortfolioId') || null;
-  const [selectedPortfolio, setSelectedPortfolio] = useState(null);  // Start with null, set after portfolios load
+  
+  // FIX #2: Store selection as ID, not object. Initialize once from localStorage.
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState(() => 
+    localStorage.getItem("defaultPortfolioId") || null
+  );
+  
+  // FIX #2: Derive selectedPortfolio from portfolios array
+  const selectedPortfolio = useMemo(() => 
+    portfolios.find(p => normalizeId(p.portfolio_id) === normalizeId(selectedPortfolioId)) || null,
+    [portfolios, selectedPortfolioId]
+  );
+  
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [showTrash, setShowTrash] = useState(initialView === 'trash');
