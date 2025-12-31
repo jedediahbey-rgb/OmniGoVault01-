@@ -555,6 +555,53 @@
    BLACK ARCHIVE - Mobile-First Responsive Styles
    ============================================================================ */
 
+/* GPU acceleration for animated elements */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .archive-particle,
+  .animate-archive-glow,
+  .archive-scan-line {
+    animation: none !important;
+  }
+  
+  [class*="motion"] {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Mobile performance optimizations */
+@media (max-width: 639px) {
+  /* Disable backdrop blur on mobile - expensive */
+  .archive-header-glass,
+  .archive-mobile-tabs {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  /* Simplify shadows on mobile */
+  .archive-glass-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .archive-glass-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Reduce animation complexity on React Flow nodes */
+  .archive-map-flow .react-flow__node {
+    transition: none !important;
+  }
+}
+
 /* Ensure no horizontal overflow */
 .archive-page-root {
   width: 100%;
