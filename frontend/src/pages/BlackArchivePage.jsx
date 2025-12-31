@@ -1581,19 +1581,19 @@ function ReadingRoomTab() {
 // ARCHIVE MAP TAB - Interactive React Flow Implementation
 // ============================================================================
 
-// Custom Node Types - Responsive sizing
+// Custom Node Types - Responsive sizing (smaller on mobile to prevent overlap)
 const DoctrineNode = ({ data }) => (
   <motion.div 
-    className="px-2 py-2 sm:px-4 sm:py-3 bg-gradient-to-br from-vault-gold/20 to-vault-gold/5 border-2 border-vault-gold/50 rounded-lg sm:rounded-xl shadow-lg shadow-vault-gold/10 min-w-[120px] sm:min-w-[160px]"
+    className="px-2 py-1.5 sm:px-4 sm:py-3 bg-gradient-to-br from-vault-gold/20 to-vault-gold/5 border-2 border-vault-gold/50 rounded-lg sm:rounded-xl shadow-lg shadow-vault-gold/10 w-[110px] sm:min-w-[160px]"
     whileHover={{ scale: 1.05, borderColor: 'rgba(198, 168, 124, 0.8)' }}
   >
-    <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+    <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
       <Scales className="w-3 h-3 sm:w-4 sm:h-4 text-vault-gold" weight="fill" />
-      <span className="text-[8px] sm:text-[10px] text-vault-gold/70 uppercase tracking-wider">Doctrine</span>
+      <span className="text-[7px] sm:text-[10px] text-vault-gold/70 uppercase tracking-wider">Doctrine</span>
     </div>
-    <p className="text-white font-medium text-xs sm:text-sm leading-tight">{data.label}</p>
+    <p className="text-white font-medium text-[10px] sm:text-sm leading-tight">{data.label}</p>
     {data.status && (
-      <span className={`inline-block mt-1.5 sm:mt-2 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-medium ${
+      <span className={`inline-block mt-1 sm:mt-2 px-1 sm:px-2 py-0.5 rounded text-[7px] sm:text-[10px] font-medium ${
         data.status === 'VERIFIED' ? 'bg-green-500/20 text-green-400' :
         data.status === 'DISPUTED' ? 'bg-orange-500/20 text-orange-400' :
         'bg-white/10 text-white/50'
@@ -1606,46 +1606,46 @@ const DoctrineNode = ({ data }) => (
 
 const CaseNode = ({ data }) => (
   <motion.div 
-    className="px-2 py-2 sm:px-4 sm:py-3 bg-gradient-to-br from-blue-500/20 to-blue-600/5 border-2 border-blue-500/50 rounded-lg sm:rounded-xl shadow-lg shadow-blue-500/10 min-w-[120px] sm:min-w-[160px]"
+    className="px-2 py-1.5 sm:px-4 sm:py-3 bg-gradient-to-br from-blue-500/20 to-blue-600/5 border-2 border-blue-500/50 rounded-lg sm:rounded-xl shadow-lg shadow-blue-500/10 w-[110px] sm:min-w-[160px]"
     whileHover={{ scale: 1.05, borderColor: 'rgba(59, 130, 246, 0.8)' }}
   >
-    <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+    <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
       <Seal className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" weight="fill" />
-      <span className="text-[8px] sm:text-[10px] text-blue-400/70 uppercase tracking-wider">Case</span>
+      <span className="text-[7px] sm:text-[10px] text-blue-400/70 uppercase tracking-wider">Case</span>
     </div>
-    <p className="text-white font-medium text-xs sm:text-sm leading-tight">{data.label}</p>
+    <p className="text-white font-medium text-[10px] sm:text-sm leading-tight">{data.label}</p>
     {data.citation && (
-      <p className="text-blue-400/60 text-[8px] sm:text-[10px] font-mono mt-0.5 sm:mt-1">{data.citation}</p>
+      <p className="text-blue-400/60 text-[7px] sm:text-[10px] font-mono mt-0.5 sm:mt-1">{data.citation}</p>
     )}
   </motion.div>
 );
 
 const StatuteNode = ({ data }) => (
   <motion.div 
-    className="px-2 py-2 sm:px-4 sm:py-3 bg-gradient-to-br from-purple-500/20 to-purple-600/5 border-2 border-purple-500/50 rounded-lg sm:rounded-xl shadow-lg shadow-purple-500/10 min-w-[120px] sm:min-w-[160px]"
+    className="px-2 py-1.5 sm:px-4 sm:py-3 bg-gradient-to-br from-purple-500/20 to-purple-600/5 border-2 border-purple-500/50 rounded-lg sm:rounded-xl shadow-lg shadow-purple-500/10 w-[110px] sm:min-w-[160px]"
     whileHover={{ scale: 1.05, borderColor: 'rgba(139, 92, 246, 0.8)' }}
   >
-    <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+    <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
       <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-purple-400" weight="fill" />
-      <span className="text-[8px] sm:text-[10px] text-purple-400/70 uppercase tracking-wider">Statute</span>
+      <span className="text-[7px] sm:text-[10px] text-purple-400/70 uppercase tracking-wider">Statute</span>
     </div>
-    <p className="text-white font-medium text-xs sm:text-sm leading-tight">{data.label}</p>
+    <p className="text-white font-medium text-[10px] sm:text-sm leading-tight">{data.label}</p>
     {data.citation && (
-      <p className="text-purple-400/60 text-[8px] sm:text-[10px] font-mono mt-0.5 sm:mt-1">{data.citation}</p>
+      <p className="text-purple-400/60 text-[7px] sm:text-[10px] font-mono mt-0.5 sm:mt-1">{data.citation}</p>
     )}
   </motion.div>
 );
 
 const ConceptNode = ({ data }) => (
   <motion.div 
-    className="px-2 py-2 sm:px-4 sm:py-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border-2 border-emerald-500/50 rounded-lg sm:rounded-xl shadow-lg shadow-emerald-500/10 min-w-[100px] sm:min-w-[140px]"
+    className="px-2 py-1.5 sm:px-4 sm:py-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border-2 border-emerald-500/50 rounded-lg sm:rounded-xl shadow-lg shadow-emerald-500/10 w-[100px] sm:min-w-[140px]"
     whileHover={{ scale: 1.05, borderColor: 'rgba(16, 185, 129, 0.8)' }}
   >
-    <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+    <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
       <Brain className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" weight="fill" />
-      <span className="text-[8px] sm:text-[10px] text-emerald-400/70 uppercase tracking-wider">Concept</span>
+      <span className="text-[7px] sm:text-[10px] text-emerald-400/70 uppercase tracking-wider">Concept</span>
     </div>
-    <p className="text-white font-medium text-xs sm:text-sm leading-tight">{data.label}</p>
+    <p className="text-white font-medium text-[10px] sm:text-sm leading-tight">{data.label}</p>
   </motion.div>
 );
 
