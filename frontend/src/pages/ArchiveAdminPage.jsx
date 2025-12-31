@@ -1028,27 +1028,34 @@ function SourceDialog({ open, onClose, source, onSave }) {
 
 // Claim Dialog Component
 function ClaimDialog({ open, onClose, claim, sources, onSave }) {
-  const getInitialFormData = () => ({
-    title: claim?.title || '',
-    status: claim?.status || 'UNVERIFIED',
-    body: claim?.body || '',
-    evidence_source_ids: claim?.evidence_source_ids || [],
-    counter_source_ids: claim?.counter_source_ids || [],
-    topic_tags: claim?.topic_tags || [],
-    reality_check: claim?.reality_check || '',
-    practical_takeaway: claim?.practical_takeaway || '',
+  const [formData, setFormData] = useState({
+    title: '',
+    status: 'UNVERIFIED',
+    body: '',
+    evidence_source_ids: [],
+    counter_source_ids: [],
+    topic_tags: [],
+    reality_check: '',
+    practical_takeaway: '',
   });
-  
-  const [formData, setFormData] = useState(getInitialFormData);
   const [saving, setSaving] = useState(false);
 
-  // Reset form when dialog opens/claim changes
-  const dialogKey = open ? (claim?.claim_id || 'new') : 'closed';
-  const prevKeyRef = React.useRef(dialogKey);
-  if (prevKeyRef.current !== dialogKey && open) {
-    prevKeyRef.current = dialogKey;
-    setFormData(getInitialFormData());
-  }
+  // Reset form when claim changes or dialog opens
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        title: claim?.title || '',
+        status: claim?.status || 'UNVERIFIED',
+        body: claim?.body || '',
+        evidence_source_ids: claim?.evidence_source_ids || [],
+        counter_source_ids: claim?.counter_source_ids || [],
+        topic_tags: claim?.topic_tags || [],
+        reality_check: claim?.reality_check || '',
+        practical_takeaway: claim?.practical_takeaway || '',
+      });
+    }
+  }, [open, claim?.claim_id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
