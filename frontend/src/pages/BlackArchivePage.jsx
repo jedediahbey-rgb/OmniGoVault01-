@@ -1219,21 +1219,113 @@ function ReadingRoomTab() {
 }
 
 // ============================================================================
-// ARCHIVE MAP TAB (Placeholder - Phase B)
+// ARCHIVE MAP TAB (Premium Placeholder - Phase B)
 // ============================================================================
 
 function ArchiveMapTab() {
+  const [isHovered, setIsHovered] = useState(false);
+  
   return (
-    <div className="text-center py-16">
-      <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
-        <MapTrifold className="w-10 h-10 text-white/20" weight="duotone" />
-      </div>
-      <h3 className="text-white font-heading text-xl mb-2">Archive Map</h3>
-      <p className="text-white/50 mb-4">Interactive doctrine relationship visualization</p>
-      <span className="px-4 py-2 bg-vault-gold/10 border border-vault-gold/20 rounded-lg text-vault-gold text-sm">
+    <motion.div 
+      className="text-center py-16 relative"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+    >
+      {/* Decorative connection lines */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 400 300">
+        <motion.path
+          d="M50,150 Q100,50 200,150 T350,150"
+          stroke="rgba(198, 168, 124, 0.5)"
+          strokeWidth="1"
+          fill="none"
+          strokeDasharray="5,5"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
+        <motion.path
+          d="M50,100 Q150,200 250,100 T350,200"
+          stroke="rgba(139, 92, 246, 0.3)"
+          strokeWidth="1"
+          fill="none"
+          strokeDasharray="5,5"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 4, delay: 1, repeat: Infinity }}
+        />
+        
+        {/* Node dots */}
+        {[
+          { cx: 50, cy: 150 },
+          { cx: 200, cy: 150 },
+          { cx: 350, cy: 150 },
+          { cx: 100, cy: 100 },
+          { cx: 300, cy: 200 },
+        ].map((pos, i) => (
+          <motion.circle
+            key={i}
+            cx={pos.cx}
+            cy={pos.cy}
+            r="4"
+            fill="rgba(198, 168, 124, 0.5)"
+            animate={{ 
+              scale: [1, 1.5, 1],
+              opacity: [0.5, 1, 0.5]
+            }}
+            transition={{ 
+              duration: 2, 
+              delay: i * 0.3, 
+              repeat: Infinity 
+            }}
+          />
+        ))}
+      </svg>
+      
+      <motion.div 
+        className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 flex items-center justify-center mx-auto mb-6 overflow-hidden"
+        animate={{ borderColor: isHovered ? 'rgba(198, 168, 124, 0.3)' : 'rgba(255, 255, 255, 0.1)' }}
+      >
+        {/* Animated rings */}
+        <motion.div
+          className="absolute inset-0 rounded-2xl border border-vault-gold/20"
+          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute inset-0 rounded-2xl border border-vault-gold/20"
+          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ duration: 3, delay: 1, repeat: Infinity }}
+        />
+        
+        <MapTrifold className="w-12 h-12 text-white/30" weight="duotone" />
+      </motion.div>
+      
+      <motion.h3 
+        className="text-white font-heading text-2xl mb-3"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        Interactive Archive Map
+      </motion.h3>
+      
+      <motion.p 
+        className="text-white/50 mb-6 max-w-md mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        Explore doctrine relationships through an interactive visualization of connections between sources, claims, and trails.
+      </motion.p>
+      
+      <motion.span 
+        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-vault-gold/10 to-purple-500/10 border border-vault-gold/20 rounded-xl text-vault-gold text-sm font-medium"
+        whileHover={{ scale: 1.05, borderColor: 'rgba(198, 168, 124, 0.4)' }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <Sparkle className="w-4 h-4" weight="fill" />
         Coming in Phase B
-      </span>
-    </div>
+      </motion.span>
+    </motion.div>
   );
 }
 
