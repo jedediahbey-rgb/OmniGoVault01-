@@ -1513,34 +1513,242 @@ function ReadingRoomTab() {
 }
 
 // ============================================================================
-// ARCHIVE MAP TAB (Premium Placeholder - Phase B)
+// ARCHIVE MAP TAB - Interactive React Flow Implementation
 // ============================================================================
 
-function ArchiveMapTab() {
-  const [isHovered, setIsHovered] = useState(false);
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
+  useNodesState,
+  useEdgesState,
+  MarkerType,
+} from 'reactflow';
+import 'reactflow/dist/style.css';
+
+// Custom Node Types
+const DoctrineNode = ({ data }) => (
+  <motion.div 
+    className="px-4 py-3 bg-gradient-to-br from-vault-gold/20 to-vault-gold/5 border-2 border-vault-gold/50 rounded-xl shadow-lg shadow-vault-gold/10 min-w-[160px]"
+    whileHover={{ scale: 1.05, borderColor: 'rgba(198, 168, 124, 0.8)' }}
+  >
+    <div className="flex items-center gap-2 mb-1">
+      <Scales className="w-4 h-4 text-vault-gold" weight="fill" />
+      <span className="text-[10px] text-vault-gold/70 uppercase tracking-wider">Doctrine</span>
+    </div>
+    <p className="text-white font-medium text-sm">{data.label}</p>
+    {data.status && (
+      <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-medium ${
+        data.status === 'VERIFIED' ? 'bg-green-500/20 text-green-400' :
+        data.status === 'DISPUTED' ? 'bg-orange-500/20 text-orange-400' :
+        'bg-white/10 text-white/50'
+      }`}>
+        {data.status}
+      </span>
+    )}
+  </motion.div>
+);
+
+const CaseNode = ({ data }) => (
+  <motion.div 
+    className="px-4 py-3 bg-gradient-to-br from-blue-500/20 to-blue-600/5 border-2 border-blue-500/50 rounded-xl shadow-lg shadow-blue-500/10 min-w-[160px]"
+    whileHover={{ scale: 1.05, borderColor: 'rgba(59, 130, 246, 0.8)' }}
+  >
+    <div className="flex items-center gap-2 mb-1">
+      <Seal className="w-4 h-4 text-blue-400" weight="fill" />
+      <span className="text-[10px] text-blue-400/70 uppercase tracking-wider">Case</span>
+    </div>
+    <p className="text-white font-medium text-sm">{data.label}</p>
+    {data.citation && (
+      <p className="text-blue-400/60 text-[10px] font-mono mt-1">{data.citation}</p>
+    )}
+  </motion.div>
+);
+
+const StatuteNode = ({ data }) => (
+  <motion.div 
+    className="px-4 py-3 bg-gradient-to-br from-purple-500/20 to-purple-600/5 border-2 border-purple-500/50 rounded-xl shadow-lg shadow-purple-500/10 min-w-[160px]"
+    whileHover={{ scale: 1.05, borderColor: 'rgba(139, 92, 246, 0.8)' }}
+  >
+    <div className="flex items-center gap-2 mb-1">
+      <FileText className="w-4 h-4 text-purple-400" weight="fill" />
+      <span className="text-[10px] text-purple-400/70 uppercase tracking-wider">Statute</span>
+    </div>
+    <p className="text-white font-medium text-sm">{data.label}</p>
+    {data.citation && (
+      <p className="text-purple-400/60 text-[10px] font-mono mt-1">{data.citation}</p>
+    )}
+  </motion.div>
+);
+
+const ConceptNode = ({ data }) => (
+  <motion.div 
+    className="px-4 py-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border-2 border-emerald-500/50 rounded-xl shadow-lg shadow-emerald-500/10 min-w-[140px]"
+    whileHover={{ scale: 1.05, borderColor: 'rgba(16, 185, 129, 0.8)' }}
+  >
+    <div className="flex items-center gap-2 mb-1">
+      <Brain className="w-4 h-4 text-emerald-400" weight="fill" />
+      <span className="text-[10px] text-emerald-400/70 uppercase tracking-wider">Concept</span>
+    </div>
+    <p className="text-white font-medium text-sm">{data.label}</p>
+  </motion.div>
+);
+
+const nodeTypes = {
+  doctrine: DoctrineNode,
+  case: CaseNode,
+  statute: StatuteNode,
+  concept: ConceptNode,
+};
+
+// Sample nodes for the map
+const initialNodes = [
+  // Central Doctrine
+  { id: '1', type: 'doctrine', position: { x: 400, y: 200 }, data: { label: 'Equity Follows the Law', status: 'VERIFIED' } },
   
+  // Cases
+  { id: '2', type: 'case', position: { x: 100, y: 100 }, data: { label: "Earl of Oxford's Case", citation: '1 Rep Ch 1 (1615)' } },
+  { id: '3', type: 'case', position: { x: 100, y: 300 }, data: { label: 'Keech v Sandford', citation: '25 ER 223 (1726)' } },
+  
+  // Related Doctrines
+  { id: '4', type: 'doctrine', position: { x: 700, y: 100 }, data: { label: 'Fiduciary Duty', status: 'VERIFIED' } },
+  { id: '5', type: 'doctrine', position: { x: 700, y: 300 }, data: { label: 'Constructive Trust', status: 'VERIFIED' } },
+  
+  // Statutes
+  { id: '6', type: 'statute', position: { x: 400, y: 400 }, data: { label: 'Restatement (Third) of Trusts', citation: '2003' } },
+  
+  // Concepts
+  { id: '7', type: 'concept', position: { x: 250, y: 200 }, data: { label: 'Chancellor\'s Conscience' } },
+  { id: '8', type: 'concept', position: { x: 550, y: 200 }, data: { label: 'No-Profit Rule' } },
+];
+
+const initialEdges = [
+  { id: 'e1-2', source: '2', target: '1', type: 'smoothstep', animated: true, style: { stroke: '#C6A87C' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#C6A87C' }, label: 'establishes' },
+  { id: 'e1-3', source: '3', target: '1', type: 'smoothstep', style: { stroke: '#C6A87C' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#C6A87C' }, label: 'develops' },
+  { id: 'e1-4', source: '1', target: '4', type: 'smoothstep', style: { stroke: '#8B5CF6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#8B5CF6' }, label: 'leads to' },
+  { id: 'e1-5', source: '1', target: '5', type: 'smoothstep', style: { stroke: '#8B5CF6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#8B5CF6' }, label: 'creates' },
+  { id: 'e3-4', source: '3', target: '4', type: 'smoothstep', style: { stroke: '#3B82F6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3B82F6' }, label: 'defines' },
+  { id: 'e6-1', source: '6', target: '1', type: 'smoothstep', style: { stroke: '#10B981', strokeDasharray: '5,5' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' }, label: 'codifies' },
+  { id: 'e7-1', source: '7', target: '1', type: 'smoothstep', style: { stroke: '#10B981' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' } },
+  { id: 'e8-4', source: '8', target: '4', type: 'smoothstep', style: { stroke: '#10B981' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#10B981' } },
+];
+
+function ArchiveMapTab() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [selectedNode, setSelectedNode] = useState(null);
+
+  const onNodeClick = (event, node) => {
+    setSelectedNode(node);
+  };
+
   return (
-    <div className="text-center py-16 relative">
-      {/* Decorative connection lines */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 400 300">
-        <motion.path
-          d="M50,150 Q100,50 200,150 T350,150"
-          stroke="rgba(198, 168, 124, 0.5)"
-          strokeWidth="1"
-          fill="none"
-          strokeDasharray="5,5"
-          animate={{ strokeDashoffset: [0, -20] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-        />
-        <motion.path
-          d="M50,100 Q150,200 250,100 T350,200"
-          stroke="rgba(139, 92, 246, 0.3)"
-          strokeWidth="1"
-          fill="none"
-          strokeDasharray="5,5"
-          animate={{ strokeDashoffset: [0, 20] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-        />
+    <div className="relative">
+      {/* Map Header */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-white font-heading text-xl sm:text-2xl mb-1">Interactive Archive Map</h2>
+          <p className="text-white/50 text-sm">Explore doctrine relationships and connections</p>
+        </div>
+        
+        {/* Legend */}
+        <div className="flex flex-wrap gap-3 text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded bg-vault-gold/30 border border-vault-gold/50" />
+            <span className="text-white/60">Doctrine</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded bg-blue-500/30 border border-blue-500/50" />
+            <span className="text-white/60">Case</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded bg-purple-500/30 border border-purple-500/50" />
+            <span className="text-white/60">Statute</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded bg-emerald-500/30 border border-emerald-500/50" />
+            <span className="text-white/60">Concept</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* React Flow Map */}
+      <div className="h-[500px] sm:h-[600px] bg-[#050810] border border-white/10 rounded-2xl overflow-hidden">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onNodeClick={onNodeClick}
+          nodeTypes={nodeTypes}
+          fitView
+          attributionPosition="bottom-left"
+          className="archive-map-flow"
+        >
+          <Background color="#1a1a2e" gap={20} />
+          <Controls 
+            className="!bg-white/5 !border-white/10 !rounded-lg [&>button]:!bg-white/5 [&>button]:!border-white/10 [&>button]:!text-white/60 [&>button:hover]:!bg-white/10"
+          />
+          <MiniMap 
+            nodeColor={(node) => {
+              switch (node.type) {
+                case 'doctrine': return '#C6A87C';
+                case 'case': return '#3B82F6';
+                case 'statute': return '#8B5CF6';
+                case 'concept': return '#10B981';
+                default: return '#666';
+              }
+            }}
+            maskColor="rgba(0, 0, 0, 0.8)"
+            className="!bg-black/50 !border-white/10 !rounded-lg"
+          />
+        </ReactFlow>
+      </div>
+      
+      {/* Selected Node Details */}
+      <AnimatePresence>
+        {selectedNode && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="mt-4 p-4 bg-white/[0.03] border border-white/10 rounded-xl"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-xs text-white/40 uppercase tracking-wider">{selectedNode.type}</span>
+                <h3 className="text-white font-heading text-lg">{selectedNode.data.label}</h3>
+                {selectedNode.data.citation && (
+                  <p className="text-vault-gold/60 text-sm font-mono">{selectedNode.data.citation}</p>
+                )}
+                {selectedNode.data.status && (
+                  <span className={`inline-block mt-2 px-2 py-0.5 rounded text-xs font-medium ${
+                    selectedNode.data.status === 'VERIFIED' ? 'bg-green-500/20 text-green-400' :
+                    selectedNode.data.status === 'DISPUTED' ? 'bg-orange-500/20 text-orange-400' :
+                    'bg-white/10 text-white/50'
+                  }`}>
+                    {selectedNode.data.status}
+                  </span>
+                )}
+              </div>
+              <button 
+                onClick={() => setSelectedNode(null)}
+                className="text-white/40 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {/* Instructions */}
+      <p className="text-white/30 text-xs text-center mt-4">
+        Click and drag to pan • Scroll to zoom • Click nodes to view details
+      </p>
+    </div>
+  );
+}
         
         {/* Node dots */}
         {[
