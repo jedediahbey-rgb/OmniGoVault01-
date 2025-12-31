@@ -308,15 +308,16 @@ export default function VaultPage({ user, initialView }) {
 
   // After the switch render has happened, re-enable animations for normal adds/removes
   useEffect(() => {
-    if (!skipNextAnimRef.current) return;
-    const id = requestAnimationFrame(() => {
-      skipNextAnimRef.current = false;
-    });
-    return () => cancelAnimationFrame(id);
-  }, [activePortfolio?.portfolio_id]);
-
-  // Get current skip animation state from ref
-  const skipAnimation = skipNextAnimRef.current;
+    if (!skipAnimation) return;
+    // Only reset if this is the portfolio we're waiting for
+    if (skipForPortfolioId && activePortfolio?.portfolio_id === skipForPortfolioId) {
+      const id = requestAnimationFrame(() => {
+        setSkipAnimation(false);
+        setSkipForPortfolioId(null);
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [skipAnimation, skipForPortfolioId, activePortfolio?.portfolio_id]);
 
   // Loading state - only show skeleton on initial load, not when switching portfolios
   if (vaultState === VAULT_STATES.LOADING) {
