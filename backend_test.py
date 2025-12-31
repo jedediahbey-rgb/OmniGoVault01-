@@ -715,71 +715,98 @@ class BinderTester:
                 self.log(f"  • {failure['test']}: {failure['details']}")
         
         self.log("\n🎯 KEY FINDINGS:")
-        if success_rate >= 90:
-            self.log("✅ Binder Generation API endpoints are properly implemented")
-            self.log("✅ All core binder endpoints are available and properly secured")
-            self.log("✅ Authentication is properly enforced")
-            self.log("✅ Input validation is working correctly")
-        elif success_rate >= 75:
-            self.log("⚠️ Most Binder endpoints are working with minor issues")
+        
+        # Check authentication status
+        auth_tests = [t for t in self.test_results if 'auth' in t['test'].lower() or 'Auth' in t['test']]
+        auth_working = any(t['success'] for t in auth_tests if 'me' in t['test'].lower())
+        
+        if auth_working:
+            self.log("✅ Authentication is working - full functionality testing completed")
         else:
-            self.log("❌ Significant Binder implementation issues detected")
+            self.log("⚠️ Authentication issues detected - limited testing performed")
+        
+        # Check dependency status
+        weasyprint_tests = [t for t in self.test_results if 'weasyprint' in t['test'].lower()]
+        weasyprint_working = any(t['success'] for t in weasyprint_tests)
+        
+        pangoft2_tests = [t for t in self.test_results if 'pangoft2' in t['test'].lower()]
+        pangoft2_working = any(t['success'] for t in pangoft2_tests)
+        
+        if weasyprint_working and pangoft2_working:
+            self.log("✅ PDF generation dependencies are properly installed")
+        elif weasyprint_working:
+            self.log("⚠️ WeasyPrint available but libpangoft2 dependency may be missing")
+        else:
+            self.log("❌ PDF generation dependencies need to be installed")
+        
+        # Check binder functionality
+        binder_tests = [t for t in self.test_results if 'binder' in t['test'].lower() and 'auth' in t['test'].lower()]
+        binder_working = any(t['success'] for t in binder_tests)
+        
+        if binder_working:
+            self.log("✅ Binder generation endpoints are working correctly")
+        else:
+            self.log("⚠️ Binder generation functionality needs verification")
         
         # Specific feature status
-        self.log("\n📋 ENDPOINT STATUS:")
+        self.log("\n📋 FEATURE STATUS:")
         
-        # Authentication
-        auth_tests = [t for t in self.test_results if 'auth' in t['test'].lower()]
-        auth_success = sum(1 for t in auth_tests if t['success'])
-        self.log(f"  Authentication: {auth_success}/{len(auth_tests)} ({'✅' if auth_success == len(auth_tests) else '❌'})")
-        
-        # Service Availability
-        service_tests = [t for t in self.test_results if 'availability' in t['test'].lower()]
-        service_success = sum(1 for t in service_tests if t['success'])
-        self.log(f"  Service Availability: {service_success}/{len(service_tests)} ({'✅' if service_success == len(service_tests) else '❌'})")
-        
-        # Endpoint Structure
-        endpoint_tests = [t for t in self.test_results if 'endpoint' in t['test'].lower()]
-        endpoint_success = sum(1 for t in endpoint_tests if t['success'])
-        self.log(f"  Endpoint Structure: {endpoint_success}/{len(endpoint_tests)} ({'✅' if endpoint_success == len(endpoint_tests) else '❌'})")
-        
-        self.log("\n🔍 BINDER ENDPOINTS TESTED:")
-        binder_endpoints = [
-            "GET /api/binder/profiles",
-            "POST /api/binder/generate", 
-            "GET /api/binder/runs",
-            "GET /api/binder/runs/{run_id}",
-            "GET /api/binder/latest",
-            "GET /api/binder/stale-check"
+        feature_categories = [
+            ("Dependencies", ["weasyprint", "pangoft2"]),
+            ("Authentication", ["auth"]),
+            ("Portfolio Management", ["portfolio"]),
+            ("Binder Profiles", ["profiles"]),
+            ("Binder Generation", ["generation"]),
+            ("Binder History", ["runs", "download"]),
+            ("Service Availability", ["availability", "endpoint"])
         ]
         
-        for endpoint in binder_endpoints:
-            endpoint_key = endpoint.split()[-1].replace('/', '_').replace('{', '').replace('}', '')
-            endpoint_tests = [t for t in self.test_results if endpoint_key in t['test'].lower()]
-            endpoint_success = all(t['success'] for t in endpoint_tests) if endpoint_tests else False
-            self.log(f"  • {endpoint}: {'✅' if endpoint_success else '❌'}")
+        for category, keywords in feature_categories:
+            category_tests = [
+                t for t in self.test_results 
+                if any(keyword in t['test'].lower() for keyword in keywords)
+            ]
+            if category_tests:
+                category_success = sum(1 for t in category_tests if t['success'])
+                total_tests = len(category_tests)
+                status = "✅" if category_success == total_tests else "⚠️" if category_success > 0 else "❌"
+                self.log(f"  {category}: {category_success}/{total_tests} {status}")
         
-        self.log("\n📝 BINDER FEATURES VERIFIED:")
-        binder_features = [
-            ("Endpoint Routing", any('availability' in t['test'].lower() and t['success'] for t in self.test_results)),
-            ("Authentication Security", any('auth' in t['test'].lower() and t['success'] for t in self.test_results)),
-            ("Input Validation", any('endpoint' in t['test'].lower() and t['success'] for t in self.test_results)),
-            ("Error Handling", success_rate > 75)
+        self.log("\n📝 BINDER GENERATION FLOW:")
+        flow_steps = [
+            ("1. User Authentication", auth_working),
+            ("2. Portfolio Access", any('portfolio' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("3. Profile Configuration", any('profiles' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("4. PDF Generation", any('generation' in t['test'].lower() and t['success'] for t in self.test_results)),
+            ("5. Download/View", any('download' in t['test'].lower() and t['success'] for t in self.test_results))
         ]
         
-        for feature_name, feature_working in binder_features:
-            self.log(f"  • {feature_name}: {'✅' if feature_working else '❌'}")
+        for step, working in flow_steps:
+            status = "✅" if working else "❌"
+            self.log(f"  {step}: {status}")
         
         self.log("\n📋 IMPLEMENTATION STATUS:")
-        self.log("✅ Binder service routes are properly configured")
-        self.log("✅ Authentication is enforced on all endpoints")
-        self.log("✅ Input validation is implemented")
-        self.log("✅ Error responses are properly formatted")
+        if success_rate >= 90:
+            self.log("✅ Binder Generation feature is fully functional")
+            self.log("✅ All core endpoints are working correctly")
+            self.log("✅ PDF generation dependencies are properly configured")
+            self.log("✅ Authentication and authorization are working")
+        elif success_rate >= 75:
+            self.log("⚠️ Binder Generation feature is mostly working with minor issues")
+            self.log("✅ Core functionality is operational")
+            if not weasyprint_working or not pangoft2_working:
+                self.log("⚠️ PDF generation dependencies may need attention")
+        else:
+            self.log("❌ Binder Generation feature has significant issues")
+            if not auth_working:
+                self.log("❌ Authentication issues preventing full testing")
+            if not weasyprint_working:
+                self.log("❌ PDF generation dependencies not properly installed")
         
-        self.log("\n⚠️ TESTING LIMITATIONS:")
-        self.log("• Full functionality testing requires valid authentication")
-        self.log("• PDF generation testing requires authenticated user with portfolio data")
-        self.log("• This test validates endpoint structure and security only")
+        # Test data cleanup
+        if self.session_token and self.test_portfolio_id:
+            self.log("\n🧹 CLEANUP:")
+            self.log("• Test portfolio and session will be cleaned up automatically")
         
         return success_rate >= 75
 
