@@ -2725,14 +2725,19 @@ if __name__ == "__main__":
             tester = BinderTester()
             success = tester.run_binder_tests()
             sys.exit(0 if success else 1)
+        elif sys.argv[1] == "bates":
+            # Run Bates Numbering tests only
+            tester = BatesNumberingTester()
+            success = tester.run_bates_tests()
+            sys.exit(0 if success else 1)
     
-    # Run Support Admin tests (default for this testing session)
-    support_tester = SupportAdminTester()
-    support_success = support_tester.run_support_admin_tests()
+    # Run Bates Numbering tests (default for this testing session)
+    bates_tester = BatesNumberingTester()
+    bates_success = bates_tester.run_bates_tests()
     
     print("\n" + "="*80)
-    print("🏆 SUPPORT_ADMIN PERMISSIONS TEST RESULTS")
+    print("🏆 BATES NUMBERING CONFIGURATION TEST RESULTS")
     print("="*80)
-    print(f"Support Admin Tests: {'✅ PASSED' if support_success else '❌ FAILED'}")
+    print(f"Bates Numbering Tests: {'✅ PASSED' if bates_success else '❌ FAILED'}")
     
-    sys.exit(0 if support_success else 1)
+    sys.exit(0 if bates_success else 1)
