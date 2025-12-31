@@ -463,6 +463,11 @@ export default function VaultPage({ user, initialView }) {
         
       } catch (err) {
         console.error('[Vault] Initialization error:', err);
+        console.error('[Vault] Error details:', {
+          message: err.message,
+          status: err.response?.status,
+          data: err.response?.data
+        });
         
         // Check if it's an auth error (401) - don't show error state, user needs to login
         if (err.response?.status === 401) {
@@ -472,7 +477,12 @@ export default function VaultPage({ user, initialView }) {
           return;
         }
         
-        setError('Failed to load vault. Please try again.');
+        // Network error
+        if (err.code === 'ERR_NETWORK' || !err.response) {
+          setError('Network error. Please check your connection.');
+        } else {
+          setError('Failed to load vault. Please try again.');
+        }
         setVaultState(VAULT_STATES.ERROR);
       }
     };
