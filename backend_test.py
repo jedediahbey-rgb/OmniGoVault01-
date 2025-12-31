@@ -13,7 +13,7 @@ import uuid
 import hashlib
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://legaldoctrine.preview.emergentagent.com/api"
+BASE_URL = "https://premium-archive-1.preview.emergentagent.com/api"
 
 class OmniBinderV2Tester:
     def __init__(self):
