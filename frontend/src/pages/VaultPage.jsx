@@ -664,7 +664,7 @@ export default function VaultPage({ user, initialView }) {
   // ============================================================================
   
   return (
-    <div className="min-h-screen lg:h-[calc(100vh-2rem)] flex flex-col lg:flex-row">
+    <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-2rem)]">
       {/* Mobile Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -679,7 +679,7 @@ export default function VaultPage({ user, initialView }) {
       </AnimatePresence>
       
       {/* ================================================================== */}
-      {/* GLASSY SIDEBAR */}
+      {/* GLASSY SIDEBAR - Desktop only, mobile uses drawer */}
       {/* ================================================================== */}
       <GlassSidebar className={`
         fixed lg:relative inset-y-0 left-0 w-72 z-50
