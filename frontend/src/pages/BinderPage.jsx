@@ -1039,8 +1039,8 @@ export default function BinderPage() {
   const currentProfile = getProfile(selectedProfile);
   const currentPortfolio = portfolios.find(p => p.portfolio_id === portfolioId);
 
-  // Show loading spinner while fetching data
-  if (loading) {
+  // Show loading spinner while fetching data - wait for initial portfolios load
+  if (!initialLoadDone || loading) {
     return (
       <div className="min-h-screen bg-vault-dark flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -1051,7 +1051,7 @@ export default function BinderPage() {
     );
   }
 
-  // Only show "No Portfolios" after loading is complete
+  // Only show "No Portfolios" after initial load is complete
   if (portfolios.length === 0) {
     return (
       <div className="min-h-screen bg-vault-dark p-6">
