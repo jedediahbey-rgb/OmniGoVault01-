@@ -1711,6 +1711,7 @@ function ArchiveMapTab() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodesForDevice);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
+  const reactFlowRef = useRef(null);
 
   // Detect mobile and update nodes accordingly
   useEffect(() => {
@@ -1729,9 +1730,21 @@ function ArchiveMapTab() {
     setNodes(newNodes);
   }, [isMobile, setNodes]);
 
-  const onNodeClick = (event, node) => {
+  const onNodeClick = useCallback((event, node) => {
     setSelectedNode(node);
-  };
+  }, []);
+
+  const onInit = useCallback((reactFlowInstance) => {
+    reactFlowRef.current = reactFlowInstance;
+    // Fit view after a small delay to ensure nodes are rendered
+    setTimeout(() => {
+      reactFlowInstance.fitView({
+        padding: isMobile ? 0.05 : 0.15,
+        includeHiddenNodes: true,
+        duration: 200,
+      });
+    }, 100);
+  }, [isMobile]);
 
   return (
     <div className="relative">
