@@ -1184,30 +1184,19 @@ function ClaimsTab() {
       ) : (
         /* Premium Empty State - Dossiers */
         <div className="text-center py-16">
-          <motion.div 
-            className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5"
-            whileHover={{ scale: 1.05 }}
-          >
-            {/* Seal stamp effect */}
-            <motion.div
-              className="absolute inset-0 rounded-full border-2 border-dashed border-amber-500/30"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            />
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5">
+            {/* Seal stamp effect - CSS animation */}
+            <div className="absolute inset-0 rounded-full border-2 border-dashed border-amber-500/30 animate-spin-slow"
+                 style={{ animationDuration: '20s' }} />
             {/* Main container */}
-            <div className="absolute inset-2 rounded-xl bg-gradient-to-br from-amber-500/15 to-amber-600/5 border border-amber-500/30 backdrop-blur-sm" />
-            {/* Inner glow */}
-            <motion.div
-              className="absolute inset-2 rounded-xl"
-              style={{ background: 'radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%)' }}
-              animate={{ opacity: [0.5, 0.8, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
+            <div className="absolute inset-2 rounded-xl bg-gradient-to-br from-amber-500/15 to-amber-600/5 border border-amber-500/30" />
+            {/* Inner glow - CSS */}
+            <div className="absolute inset-2 rounded-xl bg-amber-500/10 animate-pulse-slow" />
             {/* Icon */}
             <div className="absolute inset-0 flex items-center justify-center">
               <Certificate className="w-10 h-10 sm:w-12 sm:h-12 text-amber-500" weight="duotone" />
             </div>
-          </motion.div>
+          </div>
           
           <h3 className="text-white font-heading text-lg sm:text-xl mb-2">No Dossiers Found</h3>
           <p className="text-white/40 text-sm">Try adjusting your filters</p>
