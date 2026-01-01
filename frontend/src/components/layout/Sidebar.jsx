@@ -224,8 +224,8 @@ function SidebarContent({ user, groupedItems, handleLogout, onNavClick }) {
             <Key className="w-5 h-5 text-[#C6A87C]" weight="duotone" />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold text-white leading-tight">Private Equity</span>
-            <span className="text-xs text-vault-gold/80 leading-tight">& Trusts</span>
+            <span className="text-sm font-semibold text-white leading-tight">Private Trust</span>
+            <span className="text-xs text-vault-gold/80 leading-tight">& Equity</span>
           </div>
         </div>
       </Link>
