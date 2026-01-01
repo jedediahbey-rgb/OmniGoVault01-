@@ -636,16 +636,31 @@ export default function VaultPage({ user, initialView }) {
       </div>
       
       {/* Document List */}
-      <div className="p-4">
+      <div className="p-4 pb-24">
         {displayedDocuments.length > 0 ? (
           <div className="space-y-3">
             {displayedDocuments.map((doc) => (
               showTrash ? (
                 <div
                   key={doc.document_id}
-                  className="p-4 bg-white/5 border border-white/10 rounded-xl"
+                  className={`p-4 bg-white/5 border rounded-xl transition-colors ${
+                    selectedDocIds.has(doc.document_id) 
+                      ? 'border-vault-gold/50 bg-vault-gold/5' 
+                      : 'border-white/10'
+                  }`}
                 >
                   <div className="flex items-start gap-3">
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => toggleDocSelection(doc.document_id)}
+                      className={`w-6 h-6 rounded flex items-center justify-center shrink-0 transition-all ${
+                        selectedDocIds.has(doc.document_id) 
+                          ? 'bg-vault-gold text-vault-dark' 
+                          : 'bg-white/5 border border-white/20 hover:border-vault-gold/50'
+                      }`}
+                    >
+                      {selectedDocIds.has(doc.document_id) && <Check className="w-4 h-4" weight="bold" />}
+                    </button>
                     <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
                       <FileText className="w-5 h-5 text-red-400" weight="duotone" />
                     </div>
@@ -656,7 +671,7 @@ export default function VaultPage({ user, initialView }) {
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2 mt-3">
+                  <div className="flex gap-2 mt-3 ml-9">
                     <Button
                       onClick={() => restoreDocument(doc.document_id)}
                       variant="outline"
@@ -684,6 +699,9 @@ export default function VaultPage({ user, initialView }) {
                   isPinned={pinnedDocs.some(d => d.document_id === doc.document_id)}
                   onNavigate={() => navigate(`/vault/document/${doc.document_id}`)}
                   onDelete={handleDeleteRequest}
+                  isSelected={selectedDocIds.has(doc.document_id)}
+                  onToggleSelect={toggleDocSelection}
+                  selectionMode={selectedDocIds.size > 0}
                 />
               )
             ))}
@@ -707,6 +725,46 @@ export default function VaultPage({ user, initialView }) {
           </div>
         )}
       </div>
+      
+      {/* Bulk Action Bar */}
+      <BulkActionBar
+        selectedCount={selectedDocIds.size}
+        totalCount={displayedDocuments.length}
+        onSelectAll={selectAllDocs}
+        onDeselectAll={deselectAllDocs}
+        onDelete={() => setShowBulkDeleteConfirm(true)}
+        isAllSelected={selectedDocIds.size === displayedDocuments.length && displayedDocuments.length > 0}
+        actions={['delete']}
+      />
+      
+      {/* Bulk Delete Confirmation Dialog */}
+      <Dialog open={showBulkDeleteConfirm} onOpenChange={setShowBulkDeleteConfirm}>
+        <DialogContent className="bg-[#0B1221] border-vault-gold/30 text-white max-w-[380px]">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-heading text-red-400 flex items-center gap-2">
+              <Trash className="w-5 h-5" />
+              Delete {selectedDocIds.size} Document{selectedDocIds.size !== 1 ? 's' : ''}?
+            </DialogTitle>
+            <DialogDescription className="text-vault-muted text-sm">
+              {showTrash 
+                ? 'These documents will be permanently deleted. This action cannot be undone.'
+                : 'These documents will be moved to trash and can be restored later.'}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-row gap-2 justify-end mt-4">
+            <Button variant="outline" onClick={() => setShowBulkDeleteConfirm(false)} className="border-vault-gold/30 text-white flex-1">
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleBulkDelete} 
+              className="bg-red-500 hover:bg-red-600 text-white flex-1"
+            >
+              <Trash className="w-4 h-4 mr-1" />
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       {/* New Portfolio Dialog */}
       <Dialog open={showNewPortfolio} onOpenChange={setShowNewPortfolio}>
