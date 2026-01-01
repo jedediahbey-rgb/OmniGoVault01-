@@ -110,6 +110,12 @@ export default function WorkspaceDetailPage({ user }) {
   const [showDocumentViewer, setShowDocumentViewer] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [showSignDialog, setShowSignDialog] = useState(false);
+  const [showImportDocument, setShowImportDocument] = useState(false);
+  
+  // Import document state
+  const [importableDocs, setImportableDocs] = useState([]);
+  const [importLoading, setImportLoading] = useState(false);
+  const [selectedImportDoc, setSelectedImportDoc] = useState(null);
   
   // Form states
   const [newDocument, setNewDocument] = useState({
