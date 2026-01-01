@@ -4802,6 +4802,10 @@ from services.scheduled_binder_service import init_scheduled_binder_service
 init_scheduled_binder_service(db)
 app.include_router(omnibinder_router, prefix="/api")
 
+# QA Review Report Routes (Static HTML report for external audit)
+from routes.qa_report import router as qa_report_router
+app.include_router(qa_report_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
