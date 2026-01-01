@@ -1290,7 +1290,7 @@ export default function WorkspaceDetailPage({ user }) {
                   <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   {importSearchTerm ? (
                     <>
-                      <p>No documents match "{importSearchTerm}"</p>
+                      <p>No documents match &ldquo;{importSearchTerm}&rdquo;</p>
                       <Button
                         variant="link"
                         onClick={() => setImportSearchTerm('')}
