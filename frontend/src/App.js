@@ -7,6 +7,7 @@ import MainLayout from './components/layout/MainLayout';
 // Disclaimer component available but not used globally
 import CommandPalette from './components/shared/CommandPalette';
 import AssistantDrawer from './components/shared/AssistantDrawer';
+import ReviewModeBanner from './components/shared/ReviewModeBanner';
 import { BillingProvider } from './contexts/BillingContext';
 import AppLoader from './components/AppLoader';
 import { useAppLoader } from './hooks/useAppLoader';
