@@ -64,6 +64,7 @@ import {
   Plus,
   X,
 } from '@phosphor-icons/react';
+import PortfolioGate from '../components/shared/PortfolioGate';
 import GlassCard from '../components/shared/GlassCard';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
