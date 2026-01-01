@@ -495,9 +495,18 @@ async def get_importable_documents(request: Request, vault_id: str):
         if not participant:
             raise HTTPException(status_code=403, detail="Not a participant in this vault")
         
+        # Get all user_ids associated with this email (handles multiple accounts)
+        user_ids = [user.user_id]
+        if user.email:
+            same_email_users = await _db.users.find(
+                {"email": user.email},
+                {"_id": 0, "user_id": 1}
+            ).to_list(10)
+            user_ids = list(set([u["user_id"] for u in same_email_users]))
+        
         # Get user's portfolio documents (exclude deleted ones)
         portfolio_docs = await _db.documents.find(
-            {"user_id": user.user_id, "is_deleted": {"$ne": True}},
+            {"user_id": {"$in": user_ids}, "is_deleted": {"$ne": True}},
             {"_id": 0, "document_id": 1, "title": 1, "document_type": 1, "description": 1, "created_at": 1, "portfolio_id": 1}
         ).sort("created_at", -1).to_list(100)
         
