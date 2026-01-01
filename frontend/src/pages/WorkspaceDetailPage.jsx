@@ -1195,6 +1195,104 @@ export default function WorkspaceDetailPage({ user }) {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        
+        {/* Settings Dialog */}
+        <Dialog open={showSettings} onOpenChange={setShowSettings}>
+          <DialogContent className="bg-vault-dark border-vault-gold/20 max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <Gear className="w-5 h-5 text-vault-gold" />
+                Workspace Settings
+              </DialogTitle>
+              <DialogDescription className="text-vault-muted">
+                Configure your workspace settings and portfolio association.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              <div>
+                <label className="text-sm text-vault-muted block mb-2">Workspace Name *</label>
+                <Input
+                  placeholder="e.g., Smith Family Trust"
+                  value={vaultSettings.name}
+                  onChange={(e) => setVaultSettings({ ...vaultSettings, name: e.target.value })}
+                  className="bg-vault-navy border-vault-gold/20"
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm text-vault-muted block mb-2">Description</label>
+                <Textarea
+                  placeholder="Brief description of this workspace..."
+                  value={vaultSettings.description}
+                  onChange={(e) => setVaultSettings({ ...vaultSettings, description: e.target.value })}
+                  className="bg-vault-navy border-vault-gold/20 min-h-[80px]"
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm text-vault-muted block mb-2">Associated Portfolio</label>
+                <Select
+                  value={vaultSettings.portfolio_id || "none"}
+                  onValueChange={(value) => setVaultSettings({ ...vaultSettings, portfolio_id: value === "none" ? "" : value })}
+                >
+                  <SelectTrigger className="bg-vault-navy border-vault-gold/20">
+                    <SelectValue placeholder="Select a portfolio..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">
+                      <span className="text-vault-muted">No specific portfolio (show all documents)</span>
+                    </SelectItem>
+                    {portfolios.map(portfolio => (
+                      <SelectItem key={portfolio.portfolio_id} value={portfolio.portfolio_id}>
+                        {portfolio.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-vault-muted mt-1">
+                  When set, "Import from Vault" will only show documents from this portfolio.
+                </p>
+              </div>
+              
+              {vault?.portfolio_id && (
+                <div className="p-3 bg-vault-gold/10 rounded-lg border border-vault-gold/20">
+                  <p className="text-sm text-vault-gold flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4" />
+                    Currently linked to: {portfolios.find(p => p.portfolio_id === vault.portfolio_id)?.name || vault.portfolio_id}
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowSettings(false)}
+                className="border-vault-gold/30"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveSettings}
+                disabled={savingSettings || !vaultSettings.name.trim()}
+                className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
+              >
+                {savingSettings ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Save Settings
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
