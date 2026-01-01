@@ -228,6 +228,12 @@ export default function VaultPage({ user, initialView }) {
     setActivePortfolio(portfolio);
     localStorage.setItem('activePortfolioId', portfolio.portfolio_id);
     
+    // DEBUG: Verify localStorage is being set correctly
+    console.log('=== VaultPage Portfolio Switch ===');
+    console.log('VaultPage set activePortfolioId:', portfolio.portfolio_id);
+    console.log('VaultPage read-back activePortfolioId:', localStorage.getItem('activePortfolioId'));
+    console.log('VaultPage origin:', window.location.origin);
+    
     try {
       const [docsRes, trashRes, pinnedRes] = await Promise.all([
         axios.get(`${API}/documents?portfolio_id=${portfolio.portfolio_id}`),
