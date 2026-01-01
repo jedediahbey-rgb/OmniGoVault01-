@@ -324,10 +324,13 @@ async def delete_claim(claim_id: str, request: Request):
 
 @router.get("/trails")
 async def get_trails(
+    request: Request,
     topic: Optional[str] = None,
-    user = Depends(get_current_user)
 ):
     """Get all doctrine trails"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     query = {}
     if topic:
         query["topic_tags"] = topic
@@ -336,8 +339,11 @@ async def get_trails(
     return {"trails": trails}
 
 @router.get("/trails/{trail_id}")
-async def get_trail(trail_id: str, user = Depends(get_current_user)):
+async def get_trail(trail_id: str, request: Request):
     """Get a single trail with full step details"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     trail = await db.archive_trails.find_one({"trail_id": trail_id}, {"_id": 0})
     if not trail:
         raise HTTPException(status_code=404, detail="Trail not found")
