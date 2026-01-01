@@ -106,7 +106,8 @@ class VaultService:
         user_id: str,
         name: str,
         description: str = "",
-        vault_type: VaultType = VaultType.TRUST
+        vault_type: VaultType = VaultType.TRUST,
+        portfolio_id: str = None
     ) -> Dict:
         """Create a new vault workspace"""
         # Check entitlement
@@ -122,6 +123,7 @@ class VaultService:
         vault = {
             "vault_id": f"vault_{uuid.uuid4().hex[:12]}",
             "account_id": account_id,
+            "portfolio_id": portfolio_id,  # Link to specific portfolio
             "name": name,
             "description": description,
             "vault_type": vault_type.value,
