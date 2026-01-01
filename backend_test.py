@@ -113,6 +113,8 @@ class P0PortfolioScopingTester:
                         vault_id: '{self.vault_no_portfolio}',
                         user_id: userId,
                         name: 'Test Vault No Portfolio',
+                        created_by: userId,
+                        status: 'ACTIVE',
                         created_at: new Date()
                     }}}},
                     {{upsert: true}}
@@ -125,7 +127,38 @@ class P0PortfolioScopingTester:
                         user_id: userId,
                         name: 'Test Vault With Portfolio',
                         portfolio_id: '{self.test_portfolio_id}',
+                        created_by: userId,
+                        status: 'ACTIVE',
                         created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                // Setup vault participants (user must be participant to access)
+                db.vault_participants.updateOne(
+                    {{vault_id: '{self.vault_no_portfolio}', user_id: userId}},
+                    {{$setOnInsert: {{
+                        participant_id: 'part_' + Date.now() + '_1',
+                        vault_id: '{self.vault_no_portfolio}',
+                        user_id: userId,
+                        email: '{self.test_user_email}',
+                        role: 'OWNER',
+                        status: 'active',
+                        joined_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                db.vault_participants.updateOne(
+                    {{vault_id: '{self.vault_with_portfolio}', user_id: userId}},
+                    {{$setOnInsert: {{
+                        participant_id: 'part_' + Date.now() + '_2',
+                        vault_id: '{self.vault_with_portfolio}',
+                        user_id: userId,
+                        email: '{self.test_user_email}',
+                        role: 'OWNER',
+                        status: 'active',
+                        joined_at: new Date()
                     }}}},
                     {{upsert: true}}
                 );
@@ -138,6 +171,39 @@ class P0PortfolioScopingTester:
                         user_id: userId,
                         name: 'Test Portfolio P0',
                         description: 'Test portfolio for P0 scoping tests',
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                // Add some test documents to the portfolio for testing
+                db.documents.updateOne(
+                    {{document_id: 'doc_test_p0_1'}},
+                    {{$setOnInsert: {{
+                        document_id: 'doc_test_p0_1',
+                        user_id: userId,
+                        portfolio_id: '{self.test_portfolio_id}',
+                        title: 'Test Document 1 - P0 Portfolio',
+                        document_type: 'declaration_of_trust',
+                        content: 'Test content for P0 portfolio scoping',
+                        status: 'final',
+                        is_deleted: false,
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                db.documents.updateOne(
+                    {{document_id: 'doc_test_p0_2'}},
+                    {{$setOnInsert: {{
+                        document_id: 'doc_test_p0_2',
+                        user_id: userId,
+                        portfolio_id: '{self.test_portfolio_id}',
+                        title: 'Test Document 2 - P0 Portfolio',
+                        document_type: 'trust_transfer_grant_deed',
+                        content: 'Another test document for P0 portfolio scoping',
+                        status: 'final',
+                        is_deleted: false,
                         created_at: new Date()
                     }}}},
                     {{upsert: true}}
