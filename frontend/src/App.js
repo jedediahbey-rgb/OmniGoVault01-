@@ -362,69 +362,70 @@ const AppRouter = ({ auth }) => {
           <ScenariosPage />
         </AuthLayout>
       } />
+      {/* Ledger - requires auth */}
       <Route path="/ledger" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <LedgerTimelinePage />
         </AuthLayout>
       } />
       <Route path="/assistant" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <AssistantPage user={user} />
         </AuthLayout>
       } />
       
       {/* Diagnostics Page - Admin Tools */}
       <Route path="/diagnostics" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <DiagnosticsPage />
         </AuthLayout>
       } />
       
       {/* Trust Health Dashboard */}
       <Route path="/health" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <TrustHealthDashboard />
         </AuthLayout>
       } />
       
       {/* Settings Page */}
       <Route path="/settings" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <SettingsPage />
         </AuthLayout>
       } />
       
       {/* Ledger Threads Manager */}
       <Route path="/ledger-threads" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <LedgerThreadsPage />
         </AuthLayout>
       } />
       
       {/* Portfolio Binder */}
       <Route path="/binder" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <BinderPage />
         </AuthLayout>
       } />
       
       {/* Audit Log */}
       <Route path="/vault/audit-log" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <AuditLogPage />
         </AuthLayout>
       } />
       
       {/* Billing & Subscription */}
       <Route path="/billing" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <BillingPage />
         </AuthLayout>
       } />
       
       {/* Admin Console (Omnicompetent) */}
       <Route path="/admin" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <AdminConsolePage />
         </AuthLayout>
       } />
