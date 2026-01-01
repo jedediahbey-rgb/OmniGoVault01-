@@ -183,173 +183,12 @@ class P0PortfolioScopingTester:
             "timestamp": datetime.now().isoformat()
         })
 
-    # ============ AUTH GUARD VERIFICATION TESTS ============
+    # ============ P0 SERVER-SIDE PORTFOLIO ENFORCEMENT TESTS ============
 
-    def test_auth_me_without_cookie(self):
-        """Test GET /api/auth/me without cookie - Should return 401"""
-        try:
-            # Create a session without authentication headers
-            unauth_session = requests.Session()
-            unauth_session.headers.update({
-                'Content-Type': 'application/json',
-                'User-Agent': 'AuthConsistencyTester/1.0'
-            })
-            
-            response = unauth_session.get(f"{self.base_url}/auth/me", timeout=10)
-            success = response.status_code == 401
-            
-            if success:
-                details = f"Correctly returned 401 Unauthorized"
-            else:
-                details = f"Expected 401, got {response.status_code}: {response.text[:200]}"
-            
-            self.log_test("Auth Guard - /api/auth/me without cookie", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Auth Guard - /api/auth/me without cookie", False, f"Error: {str(e)}")
-            return False
-
-    def test_vault_redirect_without_auth(self):
-        """Test direct navigation to /vault should redirect to landing page"""
-        try:
-            # Test frontend vault route without authentication
-            unauth_session = requests.Session()
-            unauth_session.headers.update({
-                'User-Agent': 'AuthConsistencyTester/1.0'
-            })
-            
-            response = unauth_session.get(f"{self.frontend_url}/vault", timeout=10, allow_redirects=False)
-            
-            # Check if it redirects (3xx status) or serves landing page content
-            if response.status_code in [301, 302, 303, 307, 308]:
-                # Check redirect location
-                location = response.headers.get('Location', '')
-                if '/' in location or 'login' in location.lower() or 'auth' in location.lower():
-                    success = True
-                    details = f"Redirected to: {location}"
-                else:
-                    success = False
-                    details = f"Unexpected redirect to: {location}"
-            elif response.status_code == 200:
-                # Check if it serves landing page content instead of vault
-                content = response.text.lower()
-                if 'vault' in content and ('login' in content or 'sign in' in content or 'create account' in content):
-                    success = True
-                    details = "Serves landing page with auth prompts"
-                elif 'vault' not in content:
-                    success = True
-                    details = "Serves landing page without vault content"
-                else:
-                    success = False
-                    details = "Serves vault content without authentication"
-            else:
-                success = False
-                details = f"Unexpected status: {response.status_code}"
-            
-            self.log_test("Auth Guard - /vault redirect", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Auth Guard - /vault redirect", False, f"Error: {str(e)}")
-            return False
-
-    # ============ QA REPORT ENDPOINTS TESTS ============
-
-    def test_qa_report_lite_endpoint(self):
-        """Test GET /api/qa/report-lite - Should return HTML report"""
-        try:
-            response = self.session.get(f"{self.base_url}/qa/report-lite", timeout=15)
-            success = response.status_code == 200
-            
-            if success:
-                content = response.text
-                content_type = response.headers.get('content-type', '')
-                
-                # Check if it's HTML content
-                if 'text/html' in content_type and '<html' in content.lower():
-                    # Check for expected content
-                    expected_content = [
-                        'route inventory',
-                        'user flows',
-                        'permission matrix',
-                        'qa report'
-                    ]
-                    
-                    found_content = [item for item in expected_content if item.lower() in content.lower()]
-                    
-                    if len(found_content) >= 2:  # At least 2 out of 4 expected items
-                        details = f"HTML report ({len(content)} chars), Contains: {', '.join(found_content)}"
-                    else:
-                        details = f"HTML page but missing expected content. Found: {', '.join(found_content)}"
-                        success = False
-                else:
-                    details = f"Content-Type: {content_type}, Length: {len(content)} chars"
-                    if len(content) > 1000:  # Substantial content
-                        details += " (substantial content)"
-                    else:
-                        success = False
-                        details += " (insufficient content)"
-            else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
-            
-            self.log_test("QA Report Lite Endpoint", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("QA Report Lite Endpoint", False, f"Error: {str(e)}")
-            return False
-
-    def test_qa_access_md_endpoint(self):
-        """Test GET /api/qa/access.md - Should return markdown"""
-        try:
-            response = self.session.get(f"{self.base_url}/qa/access.md", timeout=10)
-            success = response.status_code == 200
-            
-            if success:
-                content = response.text
-                content_type = response.headers.get('content-type', '')
-                
-                # Check for markdown content
-                if 'text/markdown' in content_type or 'text/plain' in content_type:
-                    # Check for expected markdown content
-                    expected_content = [
-                        'qa reviewer',
-                        'instructions',
-                        '#',  # Markdown headers
-                        'test'
-                    ]
-                    
-                    found_content = [item for item in expected_content if item.lower() in content.lower()]
-                    
-                    if len(found_content) >= 3:  # At least 3 out of 4 expected items
-                        details = f"Markdown content ({len(content)} chars), Contains: {', '.join(found_content)}"
-                    else:
-                        details = f"Content but missing expected markdown. Found: {', '.join(found_content)}"
-                        success = False
-                else:
-                    details = f"Content-Type: {content_type}, Length: {len(content)} chars"
-                    if len(content) > 100:  # Some content
-                        details += " (has content)"
-                    else:
-                        success = False
-                        details += " (insufficient content)"
-            else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
-            
-            self.log_test("QA Access.md Endpoint", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("QA Access.md Endpoint", False, f"Error: {str(e)}")
-            return False
-
-    # ============ PORTFOLIO-SCOPED ENDPOINTS TESTS ============
-
-    def test_vaults_with_auth(self):
-        """Test GET /api/vaults - Should work with valid auth"""
+    def test_importable_documents_no_portfolio_vault_no_portfolio(self):
+        """Test importable-documents without portfolio_id and vault has no portfolio_id - Should return 400"""
         if not self.session_token:
-            self.log_test("Vaults with Auth", False, "No session token available")
+            self.log_test("Importable Docs - No Portfolio, Vault No Portfolio", False, "No session token available")
             return False
             
         try:
@@ -358,198 +197,265 @@ class P0PortfolioScopingTester:
             auth_session.headers.update({
                 'Content-Type': 'application/json',
                 'Authorization': f'Bearer {self.session_token}',
-                'User-Agent': 'AuthConsistencyTester/1.0'
+                'User-Agent': 'P0PortfolioScopingTester/1.0'
             })
             
-            response = auth_session.get(f"{self.base_url}/vaults", timeout=10)
-            success = response.status_code == 200
+            # Test importable-documents endpoint without portfolio_id for vault with no portfolio
+            response = auth_session.get(
+                f"{self.base_url}/vaults/{self.vault_no_portfolio}/importable-documents",
+                timeout=10
+            )
+            
+            success = response.status_code == 400
             
             if success:
-                data = response.json()
-                
-                # Handle different response formats
-                if isinstance(data, list):
-                    vaults = data
-                elif isinstance(data, dict) and "vaults" in data:
-                    vaults = data["vaults"]
-                elif isinstance(data, dict) and "data" in data:
-                    vaults = data["data"]
-                else:
-                    vaults = []
-                
-                vault_count = len(vaults)
-                details = f"Successfully retrieved {vault_count} vaults"
-                
-                if vault_count > 0:
-                    # Store first vault for further testing
-                    self.test_vault_id = vaults[0].get("vault_id") or vaults[0].get("id")
-                    vault_name = vaults[0].get("name", "Unknown")
-                    details += f", First vault: {vault_name}"
+                try:
+                    data = response.json()
+                    message = data.get("detail", "")
+                    if "portfolio_id is required" in message.lower():
+                        details = f"Correctly returned 400 with message: {message}"
+                    else:
+                        details = f"Returned 400 but unexpected message: {message}"
+                        success = False
+                except:
+                    details = f"Returned 400 but could not parse JSON: {response.text[:200]}"
+                    success = False
             else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+                details = f"Expected 400, got {response.status_code}: {response.text[:200]}"
             
-            self.log_test("Vaults with Auth", success, details)
+            self.log_test("Importable Docs - No Portfolio, Vault No Portfolio", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Vaults with Auth", False, f"Error: {str(e)}")
+            self.log_test("Importable Docs - No Portfolio, Vault No Portfolio", False, f"Error: {str(e)}")
             return False
 
-    def test_documents_with_portfolio_id(self):
-        """Test GET /api/documents - Should work with portfolio_id param"""
+    def test_importable_documents_no_portfolio_vault_has_portfolio(self):
+        """Test importable-documents without portfolio_id but vault has portfolio_id - Should work"""
         if not self.session_token:
-            self.log_test("Documents with Portfolio ID", False, "No session token available")
+            self.log_test("Importable Docs - No Portfolio, Vault Has Portfolio", False, "No session token available")
             return False
             
         try:
-            # First get portfolios to find a valid portfolio_id
+            # Set up authenticated session
             auth_session = requests.Session()
             auth_session.headers.update({
                 'Content-Type': 'application/json',
                 'Authorization': f'Bearer {self.session_token}',
-                'User-Agent': 'AuthConsistencyTester/1.0'
+                'User-Agent': 'P0PortfolioScopingTester/1.0'
             })
             
-            # Get portfolios
-            portfolios_resp = auth_session.get(f"{self.base_url}/portfolios", timeout=10)
-            if portfolios_resp.status_code != 200:
-                self.log_test("Documents with Portfolio ID", False, "Could not retrieve portfolios")
-                return False
-            
-            portfolios = portfolios_resp.json()
-            if not portfolios:
-                self.log_test("Documents with Portfolio ID", False, "No portfolios found")
-                return False
-            
-            # Use first portfolio
-            portfolio_id = portfolios[0].get("portfolio_id")
-            portfolio_name = portfolios[0].get("name", "Unknown")
-            
-            # Test documents endpoint with portfolio_id
+            # Test importable-documents endpoint without portfolio_id for vault with portfolio
             response = auth_session.get(
-                f"{self.base_url}/documents",
-                params={"portfolio_id": portfolio_id},
+                f"{self.base_url}/vaults/{self.vault_with_portfolio}/importable-documents",
                 timeout=10
             )
+            
             success = response.status_code == 200
             
             if success:
-                data = response.json()
-                
-                # Handle different response formats
-                if isinstance(data, list):
-                    documents = data
-                elif isinstance(data, dict) and "documents" in data:
-                    documents = data["documents"]
-                elif isinstance(data, dict) and "data" in data:
-                    documents = data["data"]
-                else:
-                    documents = []
-                
-                doc_count = len(documents)
-                details = f"Portfolio '{portfolio_name}': {doc_count} documents"
-                
-                if doc_count > 0:
-                    # Show sample document info
-                    first_doc = documents[0]
-                    doc_title = first_doc.get("title", "Unknown")
-                    doc_type = first_doc.get("document_type", "Unknown")
-                    details += f", Sample: {doc_title} ({doc_type})"
-            else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
-            
-            self.log_test("Documents with Portfolio ID", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Documents with Portfolio ID", False, f"Error: {str(e)}")
-            return False
-
-    # ============ PUBLIC ROUTES TESTS ============
-
-    def test_landing_page_without_auth(self):
-        """Test GET / (landing page) - Should load without auth"""
-        try:
-            # Test frontend landing page without authentication
-            unauth_session = requests.Session()
-            unauth_session.headers.update({
-                'User-Agent': 'AuthConsistencyTester/1.0'
-            })
-            
-            response = unauth_session.get(f"{self.frontend_url}/", timeout=10)
-            success = response.status_code == 200
-            
-            if success:
-                content = response.text.lower()
-                
-                # Check for expected landing page content
-                expected_content = [
-                    'omnigovault',
-                    'vault',
-                    'trust',
-                    'login',
-                    'sign in',
-                    'create account'
-                ]
-                
-                found_content = [item for item in expected_content if item in content]
-                
-                if len(found_content) >= 3:  # At least 3 expected items
-                    details = f"Landing page loaded ({len(content)} chars), Contains: {', '.join(found_content)}"
-                else:
-                    details = f"Page loaded but missing expected content. Found: {', '.join(found_content)}"
+                try:
+                    data = response.json()
+                    documents = data.get("documents", [])
+                    details = f"Successfully returned {len(documents)} documents (fallback to vault's portfolio)"
+                except:
+                    details = f"Returned 200 but could not parse JSON: {response.text[:200]}"
                     success = False
             else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+                details = f"Expected 200, got {response.status_code}: {response.text[:200]}"
             
-            self.log_test("Landing Page without Auth", success, details)
+            self.log_test("Importable Docs - No Portfolio, Vault Has Portfolio", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Landing Page without Auth", False, f"Error: {str(e)}")
+            self.log_test("Importable Docs - No Portfolio, Vault Has Portfolio", False, f"Error: {str(e)}")
             return False
 
-    def test_learn_page_without_auth(self):
-        """Test GET /learn - Should show educational content even without auth"""
+    def test_importable_documents_with_portfolio_id(self):
+        """Test importable-documents with portfolio_id in query param - Should return only docs from that portfolio"""
+        if not self.session_token:
+            self.log_test("Importable Docs - With Portfolio ID", False, "No session token available")
+            return False
+            
         try:
-            # Test frontend learn page without authentication
-            unauth_session = requests.Session()
-            unauth_session.headers.update({
-                'User-Agent': 'AuthConsistencyTester/1.0'
+            # Set up authenticated session
+            auth_session = requests.Session()
+            auth_session.headers.update({
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {self.session_token}',
+                'User-Agent': 'P0PortfolioScopingTester/1.0'
             })
             
-            response = unauth_session.get(f"{self.frontend_url}/learn", timeout=10)
+            # Test importable-documents endpoint with portfolio_id query param
+            response = auth_session.get(
+                f"{self.base_url}/vaults/{self.vault_with_portfolio}/importable-documents",
+                params={"portfolio_id": self.test_portfolio_id},
+                timeout=10
+            )
+            
             success = response.status_code == 200
             
             if success:
-                content = response.text.lower()
-                
-                # Check for expected educational content
-                expected_content = [
-                    'learn',
-                    'education',
-                    'trust',
-                    'legal',
-                    'course',
-                    'lesson',
-                    'module'
-                ]
-                
-                found_content = [item for item in expected_content if item in content]
-                
-                if len(found_content) >= 3:  # At least 3 expected items
-                    details = f"Learn page loaded ({len(content)} chars), Contains: {', '.join(found_content)}"
-                else:
-                    details = f"Page loaded but missing expected content. Found: {', '.join(found_content)}"
+                try:
+                    data = response.json()
+                    documents = data.get("documents", [])
+                    
+                    # Verify all documents belong to the specified portfolio
+                    portfolio_mismatch = False
+                    for doc in documents:
+                        doc_portfolio = doc.get("portfolio_id") or doc.get("portfolio_name")
+                        if doc_portfolio and self.test_portfolio_id not in str(doc_portfolio):
+                            portfolio_mismatch = True
+                            break
+                    
+                    if portfolio_mismatch:
+                        details = f"Returned {len(documents)} documents but some don't belong to specified portfolio"
+                        success = False
+                    else:
+                        details = f"Successfully returned {len(documents)} documents from portfolio {self.test_portfolio_id}"
+                        
+                except:
+                    details = f"Returned 200 but could not parse JSON: {response.text[:200]}"
                     success = False
             else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
+                details = f"Expected 200, got {response.status_code}: {response.text[:200]}"
             
-            self.log_test("Learn Page without Auth", success, details)
+            self.log_test("Importable Docs - With Portfolio ID", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Learn Page without Auth", False, f"Error: {str(e)}")
+            self.log_test("Importable Docs - With Portfolio ID", False, f"Error: {str(e)}")
+            return False
+
+    # ============ VAULTS LIST ENDPOINT TESTS ============
+
+    def test_vaults_with_portfolio_filter(self):
+        """Test GET /api/vaults?portfolio_id=xxx - Should only return vaults linked to that portfolio"""
+        if not self.session_token:
+            self.log_test("Vaults with Portfolio Filter", False, "No session token available")
+            return False
+            
+        try:
+            # Set up authenticated session
+            auth_session = requests.Session()
+            auth_session.headers.update({
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {self.session_token}',
+                'User-Agent': 'P0PortfolioScopingTester/1.0'
+            })
+            
+            # Test vaults endpoint with portfolio_id filter
+            response = auth_session.get(
+                f"{self.base_url}/vaults",
+                params={"portfolio_id": self.test_portfolio_id},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            
+            if success:
+                try:
+                    data = response.json()
+                    
+                    # Handle different response formats
+                    if isinstance(data, list):
+                        vaults = data
+                    elif isinstance(data, dict) and "vaults" in data:
+                        vaults = data["vaults"]
+                    elif isinstance(data, dict) and "data" in data:
+                        vaults = data["data"]
+                    else:
+                        vaults = []
+                    
+                    # Verify all vaults belong to the specified portfolio
+                    portfolio_mismatch = False
+                    for vault in vaults:
+                        vault_portfolio = vault.get("portfolio_id")
+                        if vault_portfolio != self.test_portfolio_id:
+                            portfolio_mismatch = True
+                            break
+                    
+                    if portfolio_mismatch:
+                        details = f"Returned {len(vaults)} vaults but some don't belong to specified portfolio"
+                        success = False
+                    else:
+                        details = f"Successfully returned {len(vaults)} vaults filtered by portfolio {self.test_portfolio_id}"
+                        
+                except:
+                    details = f"Returned 200 but could not parse JSON: {response.text[:200]}"
+                    success = False
+            else:
+                details = f"Expected 200, got {response.status_code}: {response.text[:200]}"
+            
+            self.log_test("Vaults with Portfolio Filter", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Vaults with Portfolio Filter", False, f"Error: {str(e)}")
+            return False
+
+    def test_vaults_without_portfolio_filter(self):
+        """Test GET /api/vaults (no portfolio) - Should return all user vaults with portfolio_id in response"""
+        if not self.session_token:
+            self.log_test("Vaults without Portfolio Filter", False, "No session token available")
+            return False
+            
+        try:
+            # Set up authenticated session
+            auth_session = requests.Session()
+            auth_session.headers.update({
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {self.session_token}',
+                'User-Agent': 'P0PortfolioScopingTester/1.0'
+            })
+            
+            # Test vaults endpoint without portfolio_id filter
+            response = auth_session.get(f"{self.base_url}/vaults", timeout=10)
+            
+            success = response.status_code == 200
+            
+            if success:
+                try:
+                    data = response.json()
+                    
+                    # Handle different response formats
+                    if isinstance(data, list):
+                        vaults = data
+                    elif isinstance(data, dict) and "vaults" in data:
+                        vaults = data["vaults"]
+                    elif isinstance(data, dict) and "data" in data:
+                        vaults = data["data"]
+                    else:
+                        vaults = []
+                    
+                    # Verify portfolio_id is included in response for vaults that have it
+                    portfolio_info_present = True
+                    vaults_with_portfolio = 0
+                    
+                    for vault in vaults:
+                        if vault.get("vault_id") == self.vault_with_portfolio:
+                            if "portfolio_id" not in vault:
+                                portfolio_info_present = False
+                            else:
+                                vaults_with_portfolio += 1
+                    
+                    if not portfolio_info_present:
+                        details = f"Returned {len(vaults)} vaults but portfolio_id missing from response"
+                        success = False
+                    else:
+                        details = f"Successfully returned {len(vaults)} vaults, {vaults_with_portfolio} with portfolio_id"
+                        
+                except:
+                    details = f"Returned 200 but could not parse JSON: {response.text[:200]}"
+                    success = False
+            else:
+                details = f"Expected 200, got {response.status_code}: {response.text[:200]}"
+            
+            self.log_test("Vaults without Portfolio Filter", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Vaults without Portfolio Filter", False, f"Error: {str(e)}")
             return False
 
     # ============ TEST RUNNER ============
