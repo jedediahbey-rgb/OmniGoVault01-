@@ -669,8 +669,11 @@ class BulkSourceCreate(BaseModel):
     sources: List[ArchiveSource]
 
 @router.post("/admin/bulk/sources")
-async def bulk_create_sources(data: BulkSourceCreate, user = Depends(get_current_user)):
+async def bulk_create_sources(data: BulkSourceCreate, request: Request):
     """Create multiple sources at once"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     created = []
     for source in data.sources:
         source_data = {
@@ -688,8 +691,11 @@ class BulkClaimCreate(BaseModel):
     claims: List[ArchiveClaim]
 
 @router.post("/admin/bulk/claims")
-async def bulk_create_claims(data: BulkClaimCreate, user = Depends(get_current_user)):
+async def bulk_create_claims(data: BulkClaimCreate, request: Request):
     """Create multiple claims at once with automatic conflict detection"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     created = []
     for claim in data.claims:
         claim_dict = claim.dict()
@@ -714,8 +720,11 @@ class BulkTrailCreate(BaseModel):
     trails: List[ArchiveTrail]
 
 @router.post("/admin/bulk/trails")
-async def bulk_create_trails(data: BulkTrailCreate, user = Depends(get_current_user)):
+async def bulk_create_trails(data: BulkTrailCreate, request: Request):
     """Create multiple trails at once"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     created = []
     for trail in data.trails:
         trail_data = {
@@ -730,8 +739,11 @@ async def bulk_create_trails(data: BulkTrailCreate, user = Depends(get_current_u
     return {"message": f"Created {len(created)} trails", "trail_ids": created}
 
 @router.delete("/admin/reset")
-async def reset_archive_data(user = Depends(get_current_user)):
+async def reset_archive_data(request: Request):
     """Reset all archive data (use with caution)"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     sources_deleted = await db.archive_sources.delete_many({})
     claims_deleted = await db.archive_claims.delete_many({})
     trails_deleted = await db.archive_trails.delete_many({})
@@ -754,8 +766,10 @@ async def reset_archive_data(user = Depends(get_current_user)):
 # ============================================================================
 
 @router.post("/seed")
-async def seed_archive_data(user = Depends(get_current_user)):
+async def seed_archive_data(request: Request):
     """Seed initial archive data with expanded content"""
+    from server import get_current_user
+    user = await get_current_user(request)
     
     # Check if already seeded
     existing = await db.archive_sources.count_documents({})
