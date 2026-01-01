@@ -284,6 +284,25 @@ export default function WorkspaceDetailPage({ user }) {
     }
   };
 
+  // Delete document (only draft documents without signatures)
+  const handleDeleteDocument = async (documentId, documentTitle) => {
+    if (!window.confirm(`Are you sure you want to delete "${documentTitle}"? This action cannot be undone.`)) {
+      return;
+    }
+    try {
+      await axios.delete(`${API}/vaults/documents/${documentId}`, { withCredentials: true });
+      toast.success('Document deleted');
+      await fetchVault();
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      toast.error(
+        typeof error.response?.data?.detail === 'string' 
+          ? error.response.data.detail 
+          : 'Failed to delete document'
+      );
+    }
+  };
+
   // Delete vault (only draft vaults with no participants/documents)
   const handleDeleteVault = async () => {
     if (!window.confirm('Are you sure you want to delete this vault? This action cannot be undone.')) {
