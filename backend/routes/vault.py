@@ -494,10 +494,10 @@ async def get_importable_documents(request: Request, vault_id: str):
         if not participant:
             raise HTTPException(status_code=403, detail="Not a participant in this vault")
         
-        # Get user's portfolio documents
+        # Get user's portfolio documents (exclude deleted ones)
         portfolio_docs = await _db.documents.find(
-            {"user_id": user.user_id},
-            {"_id": 0, "id": 1, "title": 1, "document_type": 1, "description": 1, "created_at": 1, "portfolio_id": 1}
+            {"user_id": user.user_id, "is_deleted": {"$ne": True}},
+            {"_id": 0, "document_id": 1, "title": 1, "document_type": 1, "description": 1, "created_at": 1, "portfolio_id": 1}
         ).sort("created_at", -1).to_list(100)
         
         # Get portfolio names for display
@@ -510,8 +510,9 @@ async def get_importable_documents(request: Request, vault_id: str):
             ).to_list(100)
             portfolios = {p["portfolio_id"]: p["name"] for p in portfolio_list}
         
-        # Add portfolio names to documents
+        # Add portfolio names to documents and normalize id field
         for doc in portfolio_docs:
+            doc["id"] = doc.get("document_id")  # Add id alias for frontend compatibility
             doc["portfolio_name"] = portfolios.get(doc.get("portfolio_id"), "Unknown Portfolio")
         
         return {"documents": portfolio_docs}
