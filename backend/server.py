@@ -2809,9 +2809,19 @@ async def search_mail_events(q: str, user: User = Depends(get_current_user)):
 
 @api_router.get("/documents")
 async def get_documents(portfolio_id: Optional[str] = None, include_deleted: bool = False, user: User = Depends(get_current_user)):
+    """Get documents, filtered by portfolio.
+    
+    SECURITY: If no portfolio_id is provided, logs a warning but still returns all user docs
+    for backwards compatibility with dashboard views. For strict scoping (documents page),
+    the frontend should always pass portfolio_id.
+    """
     query = {"user_id": user.user_id}
     if portfolio_id:
         query["portfolio_id"] = portfolio_id
+        logger.debug(f"Documents list - user: {user.user_id}, filtered by portfolio: {portfolio_id}")
+    else:
+        # Log when portfolio_id is missing for monitoring
+        logger.info(f"Documents list - user: {user.user_id}, NO portfolio filter (returning all docs)")
     if not include_deleted:
         query["$or"] = [{"is_deleted": False}, {"is_deleted": {"$exists": False}}]
     # Sort ascending by created_at (oldest first, lowest sequence first)
