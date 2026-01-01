@@ -403,11 +403,10 @@ function SchemeDialog({ open, onClose, scheme, onSave, saving }) {
     if (open) {
       setFormData(scheme ? {
         name: scheme.name || '',
-        prefix_template: scheme.prefix_template || '',
-        default_digits: scheme.default_digits || 6,
-        default_position: scheme.default_position || 'bottom-right',
-        include_date: scheme.include_date || false,
-        date_format: scheme.date_format || 'YYYY-MM-DD',
+        prefix_pattern: scheme.prefix_pattern || '',
+        digits: scheme.digits || 6,
+        position: scheme.position || 'bottom-right',
+        include_cover: scheme.include_cover || false,
         is_default: scheme.is_default || false,
       } : DEFAULT_SCHEME);
     }
@@ -415,7 +414,7 @@ function SchemeDialog({ open, onClose, scheme, onSave, saving }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.prefix_template.trim()) {
+    if (!formData.name.trim() || !formData.prefix_pattern.trim()) {
       toast.error('Name and prefix template are required');
       return;
     }
