@@ -259,11 +259,22 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
 
   // Not authenticated - store the requested path for return-to after login
   // Only store if it's a valid internal path (open redirect prevention)
-  if (location.pathname && location.pathname !== '/' && location.pathname.startsWith('/')) {
-    // Additional validation: no external URLs or javascript: schemes
-    const safePath = location.pathname.replace(/[^a-zA-Z0-9/_-]/g, '');
-    if (safePath === location.pathname) {
-      sessionStorage.setItem('post_auth_redirect', location.pathname);
+  if (location.pathname && location.pathname !== '/') {
+    try {
+      // Use URL parsing for safe redirect validation
+      const redirectUrl = new URL(location.pathname + location.search + location.hash, window.location.origin);
+      
+      // Verify it's same-origin and starts with /
+      if (redirectUrl.origin === window.location.origin && redirectUrl.pathname.startsWith('/')) {
+        // Block protocol-relative URLs and backslash tricks
+        const fullPath = location.pathname + location.search + location.hash;
+        if (!fullPath.startsWith('//') && !fullPath.includes('\\')) {
+          sessionStorage.setItem('post_auth_redirect', fullPath);
+        }
+      }
+    } catch (e) {
+      // Invalid URL - don't store
+      console.warn('Invalid redirect path blocked:', location.pathname);
     }
   }
   
