@@ -272,8 +272,7 @@ export default function WorkspaceDetailPage({ user }) {
       setSavingSettings(true);
       await axios.put(`${API}/vaults/${vaultId}`, {
         name: vaultSettings.name,
-        description: vaultSettings.description,
-        portfolio_id: vaultSettings.portfolio_id || null
+        description: vaultSettings.description
       }, { withCredentials: true });
       toast.success('Settings saved');
       setShowSettings(false);
