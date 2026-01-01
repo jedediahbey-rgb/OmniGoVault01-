@@ -447,8 +447,8 @@ function SchemeDialog({ open, onClose, scheme, onSave, saving }) {
           <div className="space-y-2">
             <Label className="text-vault-muted">Prefix Template</Label>
             <Input
-              value={formData.prefix_template}
-              onChange={(e) => setFormData({ ...formData, prefix_template: e.target.value.toUpperCase() })}
+              value={formData.prefix_pattern}
+              onChange={(e) => setFormData({ ...formData, prefix_pattern: e.target.value.toUpperCase() })}
               placeholder="e.g., DOE-DISC-"
               className="bg-vault-navy border-vault-gold/20 font-mono"
             />
