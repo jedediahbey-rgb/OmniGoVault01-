@@ -503,8 +503,8 @@ function SchemeDialog({ open, onClose, scheme, onSave, saving }) {
           <div className="p-3 rounded-lg bg-vault-gold/10 border border-vault-gold/20">
             <p className="text-xs text-vault-muted mb-1">Preview:</p>
             <span className="text-vault-gold font-mono text-sm">
-              {formData.prefix_template || 'DOC-'}
-              {String(1).padStart(formData.default_digits, '0')}
+              {formData.prefix_pattern || 'DOC-'}
+              {String(1).padStart(formData.digits, '0')}
             </span>
           </div>
 
