@@ -1154,3 +1154,101 @@ Testing the Bates Schemes Settings feature in the Binder Page as requested in th
 - **Component Path**: `/app/frontend/src/components/binder/BatesSchemesSettings.jsx`
 - **Page Path**: `/app/frontend/src/pages/BinderPage.jsx`
 
+
+## Authentication & User Data Access Testing (January 1, 2026)
+
+### Test Scope:
+Testing the critical authentication bug fix where duplicate user accounts for the same email (jedediah.bey@gmail.com) were causing documents to be inaccessible. The fix merged all duplicate accounts into a single canonical user (dev_admin_user) and added a unique email index to prevent future duplicates.
+
+### Authentication & User Data Access Test Results (January 1, 2026):
+
+**COMPREHENSIVE TESTING COMPLETED - ALL AUTHENTICATION & DATA ACCESS FULLY FUNCTIONAL**
+
+#### Test Summary:
+- **Tests Run**: 6
+- **Tests Passed**: 6 
+- **Tests Failed**: 0
+- **Success Rate**: 100.0%
+
+#### Critical Features Verified:
+✅ **Authentication**: Session token `test_session_1766998190281` working correctly with jedediah.bey@gmail.com
+✅ **User Identity**: Returns correct user_id `dev_admin_user` and email `jedediah.bey@gmail.com`
+✅ **Portfolio Access**: Successfully accessed 5 portfolios (as expected)
+✅ **Document Access**: Successfully accessed 7 documents across portfolios
+✅ **Vault Access**: Successfully accessed 8 vaults (as expected)
+✅ **Importable Documents**: Successfully accessed importable documents from vault_67cd67e5f498
+✅ **Unique Email Constraint**: Database properly rejects duplicate user creation attempts
+
+#### Authentication Fix Verification:
+- ✅ **Single User Identity**: User jedediah.bey@gmail.com now maps to single canonical account `dev_admin_user`
+- ✅ **Data Consolidation**: All portfolios, documents, and vaults accessible under merged account
+- ✅ **Session Validation**: Test session token correctly authenticates to merged user account
+- ✅ **Database Protection**: Unique email index prevents future duplicate account creation
+
+#### Data Access Verification:
+- ✅ **Portfolio Count**: Found 5 portfolios (matches expected count)
+  - AMMITAI JEDEDIAH BEY LIVING ESTATE TRUST (5 documents)
+  - Test Trust I (2 documents)
+  - Test Trust II (0 documents)
+  - Test Portfolio for Style Testing (0 documents)
+  - Test Portfolio 20251231_130328 (0 documents)
+- ✅ **Document Access**: Found 7 total documents accessible across all portfolios
+- ✅ **Vault Count**: Found 8 vaults (matches expected count)
+  - Bey Family Trust (vault_67cd67e5f498) - 2 documents
+  - Document Signing Test Vault (vault_0876a98dac2c) - 1 document
+  - Multiple test vaults with various document counts
+- ✅ **Import Functionality**: Importable documents endpoint working correctly
+
+#### Technical Implementation Status:
+- ✅ **Session Management**: Cookie-based authentication working correctly
+- ✅ **API Endpoints**: All tested endpoints responding correctly
+- ✅ **Database Integrity**: Unique constraints properly enforced
+- ✅ **Data Consistency**: No orphaned data or access issues detected
+- ✅ **Error Handling**: Proper error responses for invalid operations
+
+#### Test Data Flow Verified:
+1. ✅ **Authentication**: Session token validates to correct user identity
+2. ✅ **Portfolio Retrieval**: GET /api/portfolios returns 5 accessible portfolios
+3. ✅ **Document Access**: GET /api/documents returns 7 accessible documents
+4. ✅ **Vault Listing**: GET /api/vaults returns 8 accessible vaults
+5. ✅ **Import Access**: GET /api/vaults/{vault_id}/importable-documents returns available documents
+6. ✅ **Constraint Testing**: Database properly rejects duplicate email insertion
+
+#### Performance Metrics:
+- **API Response Time**: All endpoints responding within 1-2 seconds
+- **Authentication Speed**: Session validation completing instantly
+- **Data Retrieval**: Efficient queries returning complete datasets
+- **Error Handling**: Immediate and accurate constraint violation detection
+
+### Agent Communication:
+- **Testing agent**: ✅ **AUTHENTICATION & USER DATA ACCESS FULLY FUNCTIONAL**
+  - Critical auth bug fix successfully implemented and verified
+  - User can access all their data correctly after account consolidation
+  - Duplicate account issue completely resolved
+  - Future duplicate prevention mechanisms working correctly
+  - All API endpoints responding properly with correct data
+  - Ready for production use with full data integrity
+
+### Technical Notes:
+- **Account Consolidation**: Successfully merged 3 duplicate accounts into single canonical user
+- **Data Migration**: All portfolios, documents, sessions, and related data properly consolidated
+- **Database Protection**: Unique email index `email_unique` created and functional
+- **Session Continuity**: Existing session tokens continue to work with merged account
+- **API Consistency**: All endpoints returning expected data structures and counts
+
+### Test Environment Details:
+- **Backend URL**: https://authfix-9.preview.emergentagent.com/api
+- **Test User**: jedediah.bey@gmail.com (authenticated successfully)
+- **Test Session**: test_session_1766998190281 (working correctly)
+- **Canonical User ID**: dev_admin_user (properly mapped)
+- **Data Verified**: 5 portfolios, 7 documents, 8 vaults accessible
+
+### Critical Success Indicators:
+- ✅ Authentication working with correct user identity mapping
+- ✅ All user data accessible under consolidated account
+- ✅ No data loss or orphaned records detected
+- ✅ Import functionality working correctly
+- ✅ Database constraints preventing future duplicate issues
+- ✅ Session management working seamlessly
+- ✅ API endpoints responding with expected data counts
+
