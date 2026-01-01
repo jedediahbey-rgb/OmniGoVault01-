@@ -13,6 +13,9 @@ from datetime import datetime
 
 router = APIRouter(prefix="/api/qa", tags=["QA Review"])
 
+# Base URL for screenshots
+BASE_URL = "https://docs-audit-tool.preview.emergentagent.com"
+
 # Screenshots directory
 SCREENSHOTS_DIR = Path("/app/public/qa_screens")
 
