@@ -315,7 +315,7 @@ class AuthDataTester:
             
             # 2. User Data Access Tests
             self.test_get_portfolios,
-            self.test_get_portfolio_documents,
+            self.test_get_documents,
             
             # 3. Import from Vault Tests
             self.test_get_vaults,
