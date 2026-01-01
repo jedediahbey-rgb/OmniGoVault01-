@@ -345,39 +345,39 @@ const AppRouter = ({ auth }) => {
         <Route path="/" element={<CyberHomePage />} />
         <Route path="/login" element={<Navigate to="/vault" replace />} />
       
-      {/* Public Educational Routes - No auth required for learning */}
+      {/* Educational Routes - Require authentication */}
       <Route path="/learn" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <LearnPage user={user} />
         </AuthLayout>
       } />
       <Route path="/maxims" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <MaximsPage user={user} />
         </AuthLayout>
       } />
       <Route path="/glossary" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <GlossaryPage user={user} />
         </AuthLayout>
       } />
       <Route path="/diagrams" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <DiagramsPage />
         </AuthLayout>
       } />
       <Route path="/node-map" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <NodeMapPage />
         </AuthLayout>
       } />
       <Route path="/node-map/:portfolioId" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <NodeMapPage />
         </AuthLayout>
       } />
       <Route path="/scenarios" element={
-        <AuthLayout auth={auth}>
+        <AuthLayout auth={auth} requireAuth={true}>
           <ScenariosPage />
         </AuthLayout>
       } />
