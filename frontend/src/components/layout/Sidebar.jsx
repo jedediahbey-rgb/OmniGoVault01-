@@ -68,6 +68,7 @@ const navItems = [
   // admin section - Settings for all, Admin Console for admins only
   { name: 'Settings', href: '/settings', icon: Gear, section: 'admin' },
   { name: 'Archive Admin', href: '/archive/admin', icon: Archive, section: 'admin', adminOnly: true },
+  { name: 'Support Admin', href: '/support-admin', icon: Headset, section: 'admin', adminOnly: true },
   { name: 'Admin Console', href: '/admin', icon: GearSix, section: 'admin', adminOnly: true },
 ];
 
