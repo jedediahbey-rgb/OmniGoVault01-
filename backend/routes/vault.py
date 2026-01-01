@@ -533,11 +533,11 @@ async def get_importable_documents(request: Request, vault_id: str, portfolio_id
         
         logger.info(f"Import docs - searching user_ids: {user_ids}")
         
-        # Build query - filter by portfolio if vault has one
+        # Build query - filter by portfolio if one is specified
         query = {"user_id": {"$in": user_ids}, "is_deleted": {"$ne": True}}
-        if vault_portfolio_id:
-            query["portfolio_id"] = vault_portfolio_id
-            logger.info(f"Import docs - filtering by portfolio_id: {vault_portfolio_id}")
+        if filter_portfolio_id:
+            query["portfolio_id"] = filter_portfolio_id
+            logger.info(f"Import docs - filtering by portfolio_id: {filter_portfolio_id}")
         
         # Get user's portfolio documents (exclude deleted ones)
         portfolio_docs = await _db.documents.find(
