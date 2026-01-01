@@ -370,28 +370,9 @@ export default function WorkspacesPage({ user }) {
                 </Select>
               </div>
               
-              <div>
-                <label className="text-sm text-vault-muted block mb-2">Associated Portfolio (Optional)</label>
-                <Select
-                  value={newVault.portfolio_id || "none"}
-                  onValueChange={(value) => setNewVault({ ...newVault, portfolio_id: value === "none" ? "" : value })}
-                >
-                  <SelectTrigger className="bg-vault-navy border-vault-gold/20">
-                    <SelectValue placeholder="Select a portfolio..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">
-                      <span className="text-vault-muted">No specific portfolio (show all documents)</span>
-                    </SelectItem>
-                    {portfolios.map(portfolio => (
-                      <SelectItem key={portfolio.portfolio_id} value={portfolio.portfolio_id}>
-                        {portfolio.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-vault-muted mt-1">
-                  When set, "Import from Vault" will only show documents from this portfolio.
+              <div className="p-3 bg-vault-navy/50 rounded-lg border border-vault-gold/10">
+                <p className="text-xs text-vault-muted">
+                  Documents will automatically filter based on your current portfolio when importing.
                 </p>
               </div>
             </div>
