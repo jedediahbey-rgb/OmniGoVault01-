@@ -45,14 +45,14 @@ import subprocess
 BASE_URL = "https://docs-audit-tool.preview.emergentagent.com/api"
 FRONTEND_URL = "https://docs-audit-tool.preview.emergentagent.com"
 
-class AuthConsistencyTester:
+class P0PortfolioScopingTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.frontend_url = FRONTEND_URL
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'AuthConsistencyTester/1.0'
+            'User-Agent': 'P0PortfolioScopingTester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
@@ -63,12 +63,16 @@ class AuthConsistencyTester:
         self.test_user_email = "jedediah.bey@gmail.com"
         self.test_user_id = "dev_admin_user"  # Using canonical user ID
         
-        # Test data for authenticated endpoints
-        self.test_portfolio_id = None
-        self.test_vault_id = None
+        # Test session token from review request
+        self.session_token = "test_session_p0_1767274420"
         
-        # Try to get a valid session token
-        self.session_token = self.get_valid_session_token()
+        # Test data from review request
+        self.vault_no_portfolio = "vault_no_portfolio_test"
+        self.vault_with_portfolio = "vault_dd6662703369"
+        self.test_portfolio_id = "port_97d34c5737f4"
+        
+        # Setup test session token
+        self.setup_test_session()
 
     def get_valid_session_token(self):
         """Get a valid session token for testing"""
