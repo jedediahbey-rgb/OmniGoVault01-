@@ -896,6 +896,22 @@ Testing the refactored Black Archive page after major component breakdown from 2
 - **Test Rooms**: test-room (used for presence testing)
 - **Test Documents**: test-doc (used for lock and version testing)
 
+---
+
+## ChatGPT QoL Improvements Testing (January 1, 2026)
+
+### Test Scope:
+Testing the ChatGPT QoL improvements implementation for OmniGoVault application:
+
+1. **Desktop Header - Active Portfolio Chip** (1920x800 viewport)
+2. **Mobile Header - Active Portfolio Chip** (390x844 viewport)  
+3. **Command Palette (Ctrl+K)**
+4. **Bulk Actions in Vault Page**
+
+### Test URLs:
+- Frontend: https://portal-overhaul-1.preview.emergentagent.com
+- Login with: jedediah.bey@gmail.com
+
 ## Binder Generation User Report Testing (December 31, 2025)
 
 ### Test Scope:
