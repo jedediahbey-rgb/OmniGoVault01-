@@ -525,11 +525,58 @@ export default function TrustProfilePage({ user }) {
 
               <div>
                 <Label className="text-white/60 text-xs sm:text-sm">Evidence Files</Label>
-                <div className="mt-2 border-2 border-dashed border-white/10 rounded-lg p-4 sm:p-6 text-center hover:border-vault-gold/30 transition-colors cursor-pointer">
-                  <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-white/30 mx-auto mb-2" weight="duotone" />
-                  <p className="text-white/40 text-xs sm:text-sm">Upload sticker photo or receipt</p>
-                  <p className="text-white/20 text-[10px] sm:text-xs">Click or drag files here</p>
-                </div>
+                
+                {/* Uploaded Files List */}
+                {rmIdFiles.length > 0 && (
+                  <div className="mt-2 space-y-2 mb-3">
+                    {rmIdFiles.map((file) => (
+                      <div 
+                        key={file.file_id} 
+                        className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/10"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          {file.file_type?.includes('pdf') ? (
+                            <FilePdf className="w-5 h-5 text-red-400 flex-shrink-0" weight="duotone" />
+                          ) : (
+                            <ImageIcon className="w-5 h-5 text-blue-400 flex-shrink-0" weight="duotone" />
+                          )}
+                          <span className="text-white/70 text-sm truncate">{file.filename}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteRmIdFile(file.file_id)}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 w-8 p-0"
+                        >
+                          <Trash className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Upload Area */}
+                <label className="mt-2 border-2 border-dashed border-white/10 rounded-lg p-4 sm:p-6 text-center hover:border-vault-gold/30 transition-colors cursor-pointer block">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,application/pdf"
+                    onChange={handleRmIdFileUpload}
+                    className="hidden"
+                    disabled={uploadingFile}
+                  />
+                  {uploadingFile ? (
+                    <>
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                      <p className="text-vault-gold text-xs sm:text-sm">Uploading...</p>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-white/30 mx-auto mb-2" weight="duotone" />
+                      <p className="text-white/40 text-xs sm:text-sm">Upload sticker photo or receipt</p>
+                      <p className="text-white/20 text-[10px] sm:text-xs">Click or drag files here (JPG, PNG, PDF - max 5MB)</p>
+                    </>
+                  )}
+                </label>
               </div>
             </div>
           </GlassCard>
