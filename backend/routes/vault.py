@@ -426,8 +426,9 @@ async def import_document_to_workspace(request: Request, vault_id: str, body: di
         
         # Find the source document in user's portfolio documents
         source_doc = await _db.documents.find_one({
-            "id": source_document_id,
-            "user_id": user.user_id
+            "document_id": source_document_id,
+            "user_id": user.user_id,
+            "is_deleted": {"$ne": True}
         }, {"_id": 0})
         
         if not source_doc:
