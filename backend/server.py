@@ -647,12 +647,18 @@ async def get_current_user(request: Request) -> User:
     DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
     """
     
+    # Debug logging for auth issues
+    logger.debug(f"Auth Debug - Cookies received: {dict(request.cookies)}")
+    logger.debug(f"Auth Debug - Headers: Origin={request.headers.get('Origin')}, Referer={request.headers.get('Referer')}")
+    
     # Try to get session token from cookie first, then Authorization header
     session_token = request.cookies.get("session_token")
     if not session_token:
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             session_token = auth_header.split(" ")[1]
+    
+    logger.debug(f"Auth Debug - Session token found: {bool(session_token)}")
     
     # If no session token and dev bypass enabled, return owner
     if not session_token:
