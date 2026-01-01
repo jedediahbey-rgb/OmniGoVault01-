@@ -131,7 +131,8 @@ export default function WorkspaceDetailPage({ user }) {
       console.log('=== useEffect triggered for Import Dialog ===');
       console.log('showImportDocument:', showImportDocument);
       console.log('vaultId:', vaultId);
-      // fetchImportableDocs will be called by onOpenChange, but this ensures it runs
+      // Actually call fetchImportableDocs here
+      fetchImportableDocs();
     }
   }, [showImportDocument, vaultId]);
   
