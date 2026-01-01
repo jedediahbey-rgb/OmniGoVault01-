@@ -633,6 +633,19 @@ export default function WorkspaceDetailPage({ user }) {
                 {vault.user_role?.replace('_', ' ')}
               </Badge>
             </div>
+            
+            {/* Real-time Presence */}
+            {presence.length > 0 && (
+              <div className="mt-3">
+                <PresenceBar users={presence} maxVisible={5} size="sm" />
+              </div>
+            )}
+            {isConnected && presence.length === 0 && (
+              <div className="mt-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-xs text-vault-muted">Live</span>
+              </div>
+            )}
           </div>
           
           {/* Actions */}
