@@ -159,6 +159,70 @@ export default function TrustProfilePage({ user }) {
     }
   };
 
+  // Handle RM-ID file upload
+  const handleRmIdFileUpload = async (event) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload an image (JPG, PNG, WebP) or PDF file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    setUploadingFile(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'rm_id_evidence');
+      formData.append('portfolio_id', portfolioId);
+      
+      const response = await axios.post(`${API}/files/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true
+      });
+      
+      // Add to local state
+      setRmIdFiles(prev => [...prev, {
+        file_id: response.data.file_id,
+        filename: response.data.filename || file.name,
+        file_type: file.type,
+        uploaded_at: new Date().toISOString()
+      }]);
+      
+      toast.success('File uploaded successfully');
+    } catch (error) {
+      console.error('File upload error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to upload file');
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
+  // Handle file deletion
+  const handleDeleteRmIdFile = async (fileId) => {
+    try {
+      await axios.delete(`${API}/files/${fileId}`, { withCredentials: true });
+      setRmIdFiles(prev => prev.filter(f => f.file_id !== fileId));
+      toast.success('File deleted');
+    } catch (error) {
+      console.error('File delete error:', error);
+      toast.error('Failed to delete file');
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
