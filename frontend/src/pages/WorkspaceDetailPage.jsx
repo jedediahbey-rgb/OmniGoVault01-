@@ -229,6 +229,54 @@ export default function WorkspaceDetailPage({ user }) {
       console.error('Error fetching options:', error);
     }
   }, []);
+  
+  // Fetch portfolios for settings
+  const fetchPortfolios = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API}/portfolios`, { withCredentials: true });
+      setPortfolios(response.data || []);
+    } catch (error) {
+      console.error('Error fetching portfolios:', error);
+    }
+  }, []);
+  
+  // Open settings modal
+  const openSettings = useCallback(() => {
+    if (vault) {
+      setVaultSettings({
+        name: vault.name || '',
+        description: vault.description || '',
+        portfolio_id: vault.portfolio_id || ''
+      });
+      fetchPortfolios();
+      setShowSettings(true);
+    }
+  }, [vault, fetchPortfolios]);
+  
+  // Save vault settings
+  const handleSaveSettings = async () => {
+    if (!vaultSettings.name.trim()) {
+      toast.error('Please enter a vault name');
+      return;
+    }
+    
+    try {
+      setSavingSettings(true);
+      await axios.put(`${API}/vaults/${vaultId}`, {
+        name: vaultSettings.name,
+        description: vaultSettings.description,
+        portfolio_id: vaultSettings.portfolio_id || null
+      }, { withCredentials: true });
+      toast.success('Settings saved');
+      setShowSettings(false);
+      await fetchVault();
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error(error.response?.data?.detail || 'Failed to save settings');
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   useEffect(() => {
     fetchVault();
