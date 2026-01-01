@@ -496,7 +496,11 @@ async def import_document_to_workspace(request: Request, vault_id: str, body: di
 
 @router.get("/{vault_id}/importable-documents")
 async def get_importable_documents(request: Request, vault_id: str):
-    """Get list of user's portfolio documents that can be imported into this workspace"""
+    """Get list of user's portfolio documents that can be imported into this workspace.
+    
+    If the vault has a portfolio_id, only documents from that portfolio are shown.
+    Otherwise, all user documents are shown (backwards compatibility).
+    """
     user = await _get_current_user(request)
     vault_service = get_vault_service()
     
@@ -506,8 +510,12 @@ async def get_importable_documents(request: Request, vault_id: str):
         if not participant:
             raise HTTPException(status_code=403, detail="Not a participant in this vault")
         
+        # Get the vault to check for portfolio_id
+        vault = await _db.vaults.find_one({"vault_id": vault_id}, {"_id": 0, "portfolio_id": 1})
+        vault_portfolio_id = vault.get("portfolio_id") if vault else None
+        
         # Debug logging
-        logger.info(f"Import docs - user_id: {user.user_id}, email: {user.email}")
+        logger.info(f"Import docs - user_id: {user.user_id}, email: {user.email}, vault_portfolio_id: {vault_portfolio_id}")
         
         # Get all user_ids associated with this email (handles multiple accounts)
         user_ids = [user.user_id]
@@ -520,9 +528,15 @@ async def get_importable_documents(request: Request, vault_id: str):
         
         logger.info(f"Import docs - searching user_ids: {user_ids}")
         
+        # Build query - filter by portfolio if vault has one
+        query = {"user_id": {"$in": user_ids}, "is_deleted": {"$ne": True}}
+        if vault_portfolio_id:
+            query["portfolio_id"] = vault_portfolio_id
+            logger.info(f"Import docs - filtering by portfolio_id: {vault_portfolio_id}")
+        
         # Get user's portfolio documents (exclude deleted ones)
         portfolio_docs = await _db.documents.find(
-            {"user_id": {"$in": user_ids}, "is_deleted": {"$ne": True}},
+            query,
             {"_id": 0, "document_id": 1, "title": 1, "document_type": 1, "description": 1, "created_at": 1, "portfolio_id": 1}
         ).sort("created_at", -1).to_list(100)
         
