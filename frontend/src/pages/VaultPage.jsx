@@ -247,6 +247,86 @@ export default function VaultPage({ user, initialView }) {
   const [showNewPortfolio, setShowNewPortfolio] = useState(false);
   const [newPortfolioName, setNewPortfolioName] = useState('');
   const [deleteConfirmDoc, setDeleteConfirmDoc] = useState(null); // Document pending delete confirmation
+  
+  // Bulk selection state
+  const [selectedDocIds, setSelectedDocIds] = useState(new Set());
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  
+  // Selection handlers
+  const toggleDocSelection = useCallback((docId) => {
+    setSelectedDocIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(docId)) {
+        newSet.delete(docId);
+      } else {
+        newSet.add(docId);
+      }
+      return newSet;
+    });
+  }, []);
+  
+  const selectAllDocs = useCallback(() => {
+    const displayedDocs = showTrash ? trashedDocuments : documents;
+    setSelectedDocIds(new Set(displayedDocs.map(d => d.document_id)));
+  }, [documents, trashedDocuments, showTrash]);
+  
+  const deselectAllDocs = useCallback(() => {
+    setSelectedDocIds(new Set());
+  }, []);
+  
+  // Bulk delete handler
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedDocIds.size === 0) return;
+    
+    const idsToDelete = Array.from(selectedDocIds);
+    let successCount = 0;
+    let failCount = 0;
+    
+    for (const docId of idsToDelete) {
+      try {
+        if (showTrash) {
+          // Permanently delete
+          await axios.delete(`${API}/documents/${docId}/permanent`);
+        } else {
+          // Move to trash
+          await axios.delete(`${API}/documents/${docId}`);
+        }
+        successCount++;
+      } catch (err) {
+        console.error(`Failed to delete document ${docId}:`, err);
+        failCount++;
+      }
+    }
+    
+    // Refresh documents
+    if (activePortfolio) {
+      try {
+        const [docsRes, trashRes] = await Promise.all([
+          axios.get(`${API}/documents?portfolio_id=${activePortfolio.portfolio_id}`),
+          axios.get(`${API}/documents/trash`).catch(() => ({ data: [] }))
+        ]);
+        setDocuments(docsRes.data || []);
+        setTrashedDocuments((trashRes.data || []).filter(d => d.portfolio_id === activePortfolio.portfolio_id));
+      } catch (err) {
+        console.error('Failed to refresh documents:', err);
+      }
+    }
+    
+    setSelectedDocIds(new Set());
+    setShowBulkDeleteConfirm(false);
+    
+    if (failCount > 0) {
+      toast.warning(`Deleted ${successCount} documents, ${failCount} failed`);
+    } else {
+      toast.success(`Deleted ${successCount} document${successCount !== 1 ? 's' : ''}`);
+    }
+  }, [selectedDocIds, showTrash, activePortfolio]);
+  
+  // Clear selection when switching tabs
+  useEffect(() => {
+    setSelectedDocIds(new Set());
+  }, [showTrash]);
+  
   // Switch portfolio - use SWITCHING state to avoid skeleton flash
   const switchPortfolio = useCallback(async (portfolio, showToast = true) => {
     if (!portfolio) return;
