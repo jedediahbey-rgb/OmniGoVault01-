@@ -11,7 +11,7 @@ import json
 from datetime import datetime
 
 class CompensationTester:
-    def __init__(self, base_url="https://apifix-portal.preview.emergentagent.com"):
+    def __init__(self, base_url="https://authfix-9.preview.emergentagent.com"):
         self.base_url = base_url
         self.session_token = None
         self.user_id = None
