@@ -48,6 +48,7 @@ import WorkspacesPage from './pages/WorkspacesPage';
 import WorkspaceDetailPage from './pages/WorkspaceDetailPage';
 import BlackArchivePage from './pages/BlackArchivePage';
 import ArchiveAdminPage from './pages/ArchiveAdminPage';
+import SupportAdminPage from './pages/SupportAdminPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
