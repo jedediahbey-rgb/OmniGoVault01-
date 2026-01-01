@@ -291,7 +291,7 @@ This invitation was sent by {inviter_name} via Private Equity & Trusts.
     
     # Build email params
     params = {
-        "from": SENDER_EMAIL,
+        "from": get_formatted_sender(),
         "to": [recipient_email],
         "subject": f"You've been invited to join {vault_name}",
         "html": html_content,
@@ -397,7 +397,7 @@ async def send_document_shared_notification(
         return {"status": "simulated", "email_id": None}
     
     params = {
-        "from": SENDER_EMAIL,
+        "from": get_formatted_sender(),
         "to": [recipient_email],
         "subject": f"Document shared: {document_title}",
         "html": html_content
@@ -479,7 +479,7 @@ async def send_signature_request_email(
         return {"status": "simulated", "email_id": None}
     
     params = {
-        "from": SENDER_EMAIL,
+        "from": get_formatted_sender(),
         "to": [recipient_email],
         "subject": f"Signature requested: {document_title}",
         "html": html_content
@@ -598,7 +598,7 @@ async def send_role_change_notification(
         return {"status": "simulated", "email_id": None}
     
     params = {
-        "from": SENDER_EMAIL,
+        "from": get_formatted_sender(),
         "to": [recipient_email],
         "subject": f"Your role in {vault_name} has been updated",
         "html": html_content
@@ -726,7 +726,7 @@ async def send_critical_health_alert(
         return {"status": "simulated", "email_id": None}
     
     params = {
-        "from": SENDER_EMAIL,
+        "from": get_formatted_sender(),
         "to": [recipient_email],
         "subject": f"🚨 Critical: {portfolio_name} health score is {health_score}",
         "html": html_content
@@ -843,7 +843,7 @@ async def send_binder_ready_notification(
         return {"status": "simulated", "email_id": None}
     
     params = {
-        "from": SENDER_EMAIL,
+        "from": get_formatted_sender(),
         "to": [recipient_email],
         "subject": f"Your binder is ready: {binder_name}",
         "html": html_content
