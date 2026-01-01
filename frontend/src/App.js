@@ -202,10 +202,9 @@ const AuthCallback = ({ setUser, setLoading, onFirstLogin }) => {
   );
 };
 
-// Protected Route Component - allows dev bypass mode for maintenance
+// Protected Route Component - requires authentication
 const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
@@ -216,7 +215,7 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
         return;
       }
 
-      // If we already have a user (including dev bypass), we're good
+      // If we already have a user, we're good
       if (user) {
         setIsChecking(false);
         return;
@@ -244,14 +243,13 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
     );
   }
 
-  // Dev bypass mode OR authenticated user - allow access
-  // The backend will return a dev bypass user if no valid session exists
+  // Authenticated user - allow access
   if (user) {
     return children;
   }
 
-  // Fallback - shouldn't normally reach here due to dev bypass
-  return children;
+  // Not authenticated - redirect to login with return path
+  return <Navigate to="/" state={{ from: location.pathname }} replace />;
 };
 
 // AppLoader wrapper - DISABLED since vault transition handles loading animation
