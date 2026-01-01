@@ -914,7 +914,7 @@ export default function WorkspaceDetailPage({ user }) {
 }
 
 // Document Row Component
-function DocumentRow({ document, onView, onSubmitForReview, canEdit }) {
+function DocumentRow({ document, onView, onSubmitForReview, onDelete, canEdit, canDelete }) {
   const status = docStatusConfig[document.status] || docStatusConfig.DRAFT;
   
   return (
@@ -932,6 +932,11 @@ function DocumentRow({ document, onView, onSubmitForReview, canEdit }) {
                 <span className="text-xs text-vault-muted">
                   {document.category?.replace('_', ' ')}
                 </span>
+                {document.signatures?.length > 0 && (
+                  <Badge className="bg-emerald-500/20 text-emerald-400 text-xs">
+                    {document.signatures.length} signature{document.signatures.length > 1 ? 's' : ''}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -955,6 +960,18 @@ function DocumentRow({ document, onView, onSubmitForReview, canEdit }) {
             >
               <Eye className="w-4 h-4" />
             </Button>
+            {/* Delete button - only for draft documents without signatures */}
+            {canDelete && onDelete && (
+              <Button
+                onClick={onDelete}
+                variant="ghost"
+                size="icon"
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                title="Delete document"
+              >
+                <Trash className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>
