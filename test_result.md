@@ -1025,6 +1025,112 @@ Based on the authentication flow testing, the user reporting "generate binder is
 
 ---
 
+## Import from Vault Feature Testing (January 1, 2026)
+
+### Test Scope:
+Testing the user-reported issue: "Import from Vault feature not showing documents in workspace dialog"
+
+### Import from Vault Feature Test Results (January 1, 2026):
+
+**BACKEND API FULLY FUNCTIONAL - FRONTEND AUTHENTICATION ISSUE IDENTIFIED**
+
+#### Test Summary:
+- **Backend API Tests**: 5/5 passed
+- **Frontend UI Tests**: Limited by authentication barriers
+- **Root Cause**: Frontend authentication mechanism discrepancy
+
+#### Critical Findings:
+
+✅ **BACKEND API WORKING CORRECTLY**:
+- API endpoint `/api/vaults/{vault_id}/importable-documents` returns exactly 7 documents as expected
+- Documents include: "Declaration of Trust", "Trust Transfer Grant Deed", "Amendment to Declaration of Trust", "Acknowledgement/Receipt/Acceptance"
+- All document metadata (titles, types, portfolio names) correctly populated
+- Authentication working with Bearer tokens and session_token cookies
+
+❌ **FRONTEND AUTHENTICATION BARRIER**:
+- Google OAuth authentication blocks automated testing
+- Manual authentication required for complete end-to-end testing
+- Session cookie mechanism requires `session_token` cookie name (not `session`)
+
+#### Backend API Verification:
+- ✅ **Health Check**: Backend healthy at https://authfix-9.preview.emergentagent.com/api/health
+- ✅ **Authentication**: Session token authentication working correctly
+- ✅ **Vaults Endpoint**: Returns 8 vaults for user jedediah.bey@gmail.com
+- ✅ **Import Endpoint**: `/api/vaults/vault_67cd67e5f498/importable-documents` returns 7 documents
+- ✅ **Document Data**: All expected documents present with correct metadata
+
+#### Sample API Response:
+```json
+{
+  "documents": [
+    {
+      "title": "Amendment to Declaration of Trust - 12/30/2025",
+      "document_type": "declaration_of_trust",
+      "portfolio_name": "AMMITAI JEDEDIAH BEY LIVING ESTATE TRUST"
+    },
+    {
+      "title": "Trust Transfer Grant Deed (TTGD) - 12/30/2025", 
+      "document_type": "trust_transfer_grant_deed",
+      "portfolio_name": "Test Trust I"
+    }
+    // ... 5 more documents
+  ]
+}
+```
+
+#### Authentication Mechanism Analysis:
+- ✅ **Backend Auth Function**: `get_current_user()` checks for `session_token` cookie or Authorization Bearer header
+- ✅ **Cookie Authentication**: Works with `session_token=test_session_import_1767258238926`
+- ✅ **Bearer Authentication**: Works with `Authorization: Bearer test_session_import_1767258238926`
+- ❌ **Frontend Cookie Name**: May be using incorrect cookie name (`session` vs `session_token`)
+
+#### User Experience Analysis:
+The user reporting "no documents showing up" would experience:
+1. ✅ **Successful Login**: Google OAuth authentication completes
+2. ✅ **Workspace Access**: Can navigate to /vault/workspaces
+3. ✅ **Workspace Selection**: Can click on workspace (e.g., "Bey Family Trust")
+4. ✅ **Import Button**: "Import from Vault" button visible and clickable
+5. ✅ **Dialog Opens**: Import dialog opens successfully
+6. ❌ **Documents Missing**: Dialog shows empty or loading state despite API returning 7 documents
+
+#### Potential Root Causes:
+1. **Cookie Name Mismatch**: Frontend may be setting `session` cookie instead of `session_token`
+2. **API Call Failure**: Frontend may not be making the API call correctly
+3. **Response Parsing**: Frontend may not be parsing the API response correctly
+4. **Authentication Headers**: Frontend may not be sending proper authentication
+5. **Error Handling**: Frontend may be silently failing on API errors
+
+### Agent Communication:
+- **Testing agent**: ⚠️ **IMPORT FROM VAULT BACKEND WORKING - FRONTEND AUTHENTICATION ISSUE**
+  - Backend API confirmed working correctly with 7 documents returned
+  - Authentication mechanism identified (requires `session_token` cookie)
+  - Frontend testing blocked by Google OAuth security restrictions
+  - **RECOMMENDATION**: Main agent should verify frontend cookie naming and API call implementation
+  - **USER ISSUE**: Likely related to frontend authentication or API integration, not backend data
+
+### Technical Notes:
+- **Backend API**: All endpoints responding correctly with proper authentication
+- **Authentication**: Requires `session_token` cookie (not `session`)
+- **Data Integrity**: All 7 expected documents present in API response
+- **Frontend Integration**: Needs verification of cookie naming and API call implementation
+
+### Test Environment Details:
+- **Frontend URL**: https://authfix-9.preview.emergentagent.com
+- **Backend API**: https://authfix-9.preview.emergentagent.com/api
+- **Test User**: jedediah.bey@gmail.com (dev_admin_user)
+- **Test Vault**: vault_67cd67e5f498 (Bey Family Trust)
+- **Expected Documents**: 7 documents from user's portfolios
+- **API Endpoint**: `/api/vaults/{vault_id}/importable-documents`
+
+### Recommendations for Main Agent:
+1. **Verify Cookie Naming**: Ensure frontend sets `session_token` cookie (not `session`)
+2. **Check API Integration**: Verify frontend makes correct API call to importable-documents endpoint
+3. **Debug Response Handling**: Check if frontend properly parses API response
+4. **Test Authentication**: Verify session token is properly sent with API requests
+5. **Error Logging**: Add console logging to identify where the frontend flow fails
+
+---
+
 ## Bates Schemes Settings Testing (January 1, 2025)
 
 ### Test Scope:
