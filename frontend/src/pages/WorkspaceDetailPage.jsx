@@ -983,6 +983,92 @@ export default function WorkspaceDetailPage({ user }) {
             }));
           }}
         />
+
+        {/* Import Document Dialog */}
+        <Dialog open={showImportDocument} onOpenChange={(open) => {
+          setShowImportDocument(open);
+          if (open) fetchImportableDocs();
+          else setSelectedImportDoc(null);
+        }}>
+          <DialogContent className="bg-vault-dark border-vault-gold/20 max-w-lg max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <Download className="w-5 h-5 text-vault-gold" />
+                Import Document from Vault
+              </DialogTitle>
+              <DialogDescription className="text-vault-muted">
+                Select a document from your portfolio to import into this workspace.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="py-4">
+              {importLoading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-vault-gold" />
+                </div>
+              ) : importableDocs.length === 0 ? (
+                <div className="text-center py-8 text-vault-muted">
+                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No documents found in your vault.</p>
+                  <p className="text-sm mt-2">Create documents in your portfolio first.</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-2">
+                  {importableDocs.map((doc) => (
+                    <div
+                      key={doc.id}
+                      onClick={() => setSelectedImportDoc(doc)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                        selectedImportDoc?.id === doc.id
+                          ? 'bg-vault-gold/20 border-vault-gold'
+                          : 'bg-vault-navy/50 border-vault-gold/10 hover:border-vault-gold/30'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-white truncate">{doc.title}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className="bg-vault-gold/10 text-vault-gold border-vault-gold/30 text-xs">
+                              {doc.document_type?.replace('_', ' ') || 'Document'}
+                            </Badge>
+                            <span className="text-xs text-vault-muted truncate">
+                              {doc.portfolio_name}
+                            </span>
+                          </div>
+                        </div>
+                        {selectedImportDoc?.id === doc.id && (
+                          <Check className="w-5 h-5 text-vault-gold flex-shrink-0" />
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowImportDocument(false)}
+                className="border-vault-gold/30"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleImportDocument}
+                disabled={!selectedImportDoc || creating}
+                className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
+              >
+                {creating ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
+                Import Document
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
