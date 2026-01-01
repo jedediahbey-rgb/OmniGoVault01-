@@ -1287,6 +1287,23 @@ export default function BinderPage() {
 
                           {courtModeConfig.bates_enabled && (
                             <div className="pl-6 space-y-3">
+                              {/* Saved Schemes */}
+                              <BatesSchemesSettings
+                                workspaceId={portfolioInfo?.account_id || 'default'}
+                                portfolioId={selectedPortfolio}
+                                onApplyScheme={(schemeConfig) => {
+                                  setCourtModeConfig(prev => ({
+                                    ...prev,
+                                    bates_prefix: schemeConfig.bates_prefix,
+                                    bates_digits: schemeConfig.bates_digits,
+                                    bates_position: schemeConfig.bates_position,
+                                    bates_start_number: schemeConfig.bates_start_number,
+                                    bates_include_cover: schemeConfig.bates_include_cover,
+                                  }));
+                                }}
+                                compact={true}
+                              />
+                              
                               {/* Quick Presets */}
                               <div>
                                 <label className="text-vault-muted text-xs mb-1.5 block">Quick Preset</label>
