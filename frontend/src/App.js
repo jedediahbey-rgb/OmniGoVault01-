@@ -251,7 +251,13 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
     return children;
   }
 
-  // Not authenticated - redirect to login with return path
+  // Not authenticated - store the requested path for return-to after login
+  // Only store if it's not the root path
+  if (location.pathname && location.pathname !== '/') {
+    sessionStorage.setItem('post_auth_redirect', location.pathname);
+  }
+  
+  // Redirect to landing page
   return <Navigate to="/" state={{ from: location.pathname }} replace />;
 };
 
