@@ -299,12 +299,16 @@ export default function MainLayout({ children, user, onLogout }) {
             {/* Can add breadcrumbs here if needed */}
           </div>
           
-          {/* Right side - Notification bell and user avatar */}
+          {/* Right side - Portfolio chip, notification bell and user avatar */}
           <div className="flex items-center gap-3">
-            <span className="text-xs text-white/30 hidden xl:inline">Ctrl+K for commands</span>
-            
             {user && (
               <>
+                {/* Active Portfolio Chip - Global Context */}
+                <ActivePortfolioChip user={user} />
+                
+                {/* Command Palette Hint */}
+                <span className="text-xs text-white/30 hidden xl:inline">Ctrl+K for commands</span>
+                
                 {/* Notification Bell */}
                 <NotificationBell />
                 
