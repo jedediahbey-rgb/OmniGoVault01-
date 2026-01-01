@@ -125,15 +125,38 @@ export default function WorkspaceDetailPage({ user }) {
     console.log('importableDocs:', importableDocs);
   }, [importableDocs]);
   
-  // More reliable fetching via useEffect - ChatGPT patch
+  // More reliable fetching via useEffect - Triggers when dialog opens
   useEffect(() => {
-    if (showImportDocument && vaultId) {
-      console.log('=== useEffect triggered for Import Dialog ===');
-      console.log('showImportDocument:', showImportDocument);
-      console.log('vaultId:', vaultId);
-      // Actually call fetchImportableDocs here
-      fetchImportableDocs();
-    }
+    const loadImportableDocs = async () => {
+      if (!showImportDocument || !vaultId) return;
+      
+      console.log('=== useEffect: Loading importable docs ===');
+      setImportLoading(true);
+      try {
+        console.log('vaultId:', vaultId);
+        console.log('API base:', API);
+        console.log('Full URL:', `${API}/vaults/${vaultId}/importable-documents`);
+
+        const response = await axios.get(`${API}/vaults/${vaultId}/importable-documents`, { withCredentials: true });
+
+        console.log('Response status:', response.status);
+        console.log('Response data:', response.data);
+
+        const docs = Array.isArray(response.data)
+          ? response.data
+          : response.data?.documents ?? [];
+
+        console.log('Parsed docs length:', docs.length);
+        setImportableDocs(docs);
+      } catch (error) {
+        console.error('Error loading importable docs:', error);
+        toast.error(error.response?.data?.detail || 'Failed to load your documents');
+      } finally {
+        setImportLoading(false);
+      }
+    };
+    
+    loadImportableDocs();
   }, [showImportDocument, vaultId]);
   
   // Form states
