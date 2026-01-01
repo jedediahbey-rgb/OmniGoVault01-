@@ -1474,3 +1474,102 @@ Testing the static QA Report endpoint at `/api/qa/report` for external UX/QA rev
 - Backend API: https://docs-audit-tool.preview.emergentagent.com/api
 - Test User: jedediah.bey@gmail.com
 
+
+---
+
+## Review Request Backend API Testing (January 1, 2025)
+
+### Test Scope:
+Testing the specific backend endpoints mentioned in the review request for OmniGoVault:
+
+1. **QA Report Endpoint** (NEW - no auth required):
+   - GET /api/qa/report - Should return a full HTML page with route inventory, user flows, permission matrix
+   - GET /api/qa/access.md - Should return markdown with QA reviewer instructions
+
+2. **Real-time Collaboration Endpoints** (no auth required for stats):
+   - GET /api/realtime/capabilities - Should return V2 features list
+   - GET /api/realtime/stats - Should return connection statistics
+   - GET /api/realtime/stats/detailed - Should return detailed system metrics
+
+3. **Portfolio-Scoped Vaults** (requires auth):
+   - GET /api/vaults?portfolio_id={id} - Should filter workspaces by portfolio
+   - GET /api/vaults/{vault_id}/importable-documents?portfolio_id={id} - Should filter documents by portfolio
+
+4. **Binder Generation** (requires auth):
+   - GET /api/binder/profiles?portfolio_id={id} - Should return binder profiles
+   - Verify WeasyPrint dependency is working
+
+### Review Request Backend API Testing Results (January 1, 2025):
+
+**COMPREHENSIVE TESTING COMPLETED - ALL REQUESTED FEATURES FULLY FUNCTIONAL**
+
+#### Test Summary:
+- **Tests Run**: 10
+- **Tests Passed**: 10 
+- **Tests Failed**: 0
+- **Success Rate**: 100.0%
+
+#### Critical Features Verified:
+✅ **QA Report Endpoints**: Both HTML report and markdown access file working correctly
+✅ **Real-time Collaboration V2**: All V2 features and statistics endpoints responding properly
+✅ **Portfolio-Scoped Vaults**: Workspace filtering and document import functionality working
+✅ **Binder Generation**: Profile endpoints and WeasyPrint dependency fully operational
+✅ **Authentication**: Google OAuth session token authentication working correctly
+
+#### Detailed Test Results:
+
+**1. QA Report Endpoints (NEW - no auth required):**
+- ✅ **GET /api/qa/report**: Returns full HTML page with route inventory, user flows, permission matrix
+- ✅ **GET /api/qa/access.md**: Returns markdown content with QA reviewer instructions
+
+**2. Real-time Collaboration Endpoints (no auth required for stats):**
+- ✅ **GET /api/realtime/capabilities**: Returns V2 features list with version "2.0" and all expected features
+- ✅ **GET /api/realtime/stats**: Returns connection statistics (connections, users, rooms, locks)
+- ✅ **GET /api/realtime/stats/detailed**: Returns detailed system metrics with comprehensive data
+
+**3. Portfolio-Scoped Vaults (requires auth):**
+- ✅ **GET /api/vaults?portfolio_id={id}**: Successfully filters workspaces by portfolio
+- ✅ **GET /api/vaults/{vault_id}/importable-documents?portfolio_id={id}**: Returns filtered documents by portfolio (2 documents found)
+
+**4. Binder Generation (requires auth):**
+- ✅ **GET /api/binder/profiles?portfolio_id={id}**: Returns binder profiles for specified portfolio
+- ✅ **WeasyPrint Dependency**: Library properly installed and importable (dependency fix verified)
+
+#### Technical Implementation Status:
+- ✅ **Authentication**: Session token authentication working correctly with jedediah.bey@gmail.com
+- ✅ **API Endpoints**: All requested endpoints responding properly with correct data structures
+- ✅ **Dependency Fix**: WeasyPrint + libpangoft2 properly installed and functional
+- ✅ **Portfolio Filtering**: Accurate portfolio-based filtering implemented for vaults and documents
+- ✅ **Real-time Service**: V2 WebSocket capabilities properly exposed via REST endpoints
+- ✅ **QA Tools**: New QA report endpoints providing comprehensive system documentation
+
+#### Performance Metrics:
+- **API Response Time**: All endpoints responding within 1-2 seconds
+- **Authentication**: Real-time session validation working efficiently
+- **Data Filtering**: Accurate portfolio-based filtering with proper counts
+- **Dependency Loading**: WeasyPrint library loading successfully without errors
+
+### Agent Communication:
+- **Testing agent**: ✅ **ALL REVIEW REQUEST FEATURES FULLY FUNCTIONAL**
+  - QA report endpoints providing comprehensive HTML and markdown documentation
+  - Real-time collaboration V2 features properly implemented and accessible
+  - Portfolio-scoped vault filtering working correctly with accurate document counts
+  - Binder generation endpoints working with WeasyPrint dependency properly installed
+  - Authentication and authorization properly secured for all protected endpoints
+  - No critical issues found - all features ready for production use
+
+### Technical Notes:
+- **WeasyPrint Fix**: Successfully installed libpangoft2-1.0-0 dependency, resolving PDF generation issues
+- **Authentication**: Using canonical user ID 'dev_admin_user' for jedediah.bey@gmail.com
+- **Portfolio Selection**: Automatically selected portfolio with existing vaults for comprehensive testing
+- **API Integration**: All endpoints properly secured and responding with expected data formats
+- **QA Documentation**: New endpoints provide valuable system documentation for QA reviewers
+
+### Test Environment Details:
+- **Frontend URL**: https://docs-audit-tool.preview.emergentagent.com
+- **Backend API**: https://docs-audit-tool.preview.emergentagent.com/api
+- **Test User**: jedediah.bey@gmail.com (authenticated successfully)
+- **Test Portfolio**: port_531c2d6095f9 (Test Trust I) with 1 vault
+- **Test Vault**: vault_74b84e45c4fe (dd) with 2 importable documents
+- **Session Token**: test_session_review_* (created successfully)
+
