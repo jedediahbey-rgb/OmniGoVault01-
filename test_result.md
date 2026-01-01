@@ -1436,3 +1436,41 @@ Testing the critical authentication bug fix where duplicate user accounts for th
 - ✅ Session management working seamlessly
 - ✅ API endpoints responding with expected data counts
 
+
+---
+
+# QA Report Endpoint Testing (January 1, 2026)
+
+## Test Scope
+Testing the static QA Report endpoint at `/api/qa/report` for external UX/QA review
+
+## Test Scenarios
+
+### 1. QA Report Endpoint
+- [ ] GET /api/qa/report returns HTML content
+- [ ] Report contains route inventory table
+- [ ] Report contains role/permission matrix
+- [ ] Report contains key user flows
+- [ ] Report contains API endpoint documentation
+- [ ] Report contains known issues section
+
+### 2. QA Access Documentation
+- [ ] GET /api/qa/access.md returns markdown content
+- [ ] Contains QA reviewer login instructions
+- [ ] Contains complete route list
+
+### 3. Real-time Collaboration V2
+- [ ] WebSocket endpoint accessible at /api/realtime/ws
+- [ ] GET /api/realtime/capabilities returns V2 features
+- [ ] Presence indicator component renders correctly in workspace detail
+
+### 4. Portfolio-Scoped Filtering
+- [ ] Workspaces page filters by active portfolio
+- [ ] Import from Vault dialog shows correct portfolio's documents
+- [ ] Portfolio switching persists across page navigation
+
+## Testing Notes
+- Frontend URL: https://docs-audit-tool.preview.emergentagent.com
+- Backend API: https://docs-audit-tool.preview.emergentagent.com/api
+- Test User: jedediah.bey@gmail.com
+
