@@ -950,5 +950,6 @@ function NodeMapContent() {
         </div>
       )}
     </div>
+    </PortfolioGate>
   );
 }
