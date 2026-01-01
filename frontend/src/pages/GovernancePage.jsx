@@ -2838,5 +2838,6 @@ export default function GovernancePage({ user }) {
         </DialogContent>
       </Dialog>
     </motion.div>
+    </PortfolioGate>
   );
 }
