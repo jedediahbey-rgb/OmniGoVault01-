@@ -6,6 +6,7 @@ import {
   ArrowCounterClockwise,
   CaretDown,
   Check,
+  CheckSquare,
   Clock,
   DotsThreeVertical,
   Download,
@@ -15,6 +16,7 @@ import {
   MagnifyingGlass,
   Plus,
   ShieldCheck,
+  Square,
   Star,
   Trash,
   X,
@@ -23,6 +25,7 @@ import {
 } from '@phosphor-icons/react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import BulkActionBar from '../components/shared/BulkActionBar';
 import {
   DropdownMenu,
   DropdownMenuContent,
