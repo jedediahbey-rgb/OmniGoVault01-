@@ -162,7 +162,14 @@ class AuthDataTester:
             
             if success:
                 data = response.json()
-                vaults = data if isinstance(data, list) else []
+                # The response might be wrapped in a data object
+                if isinstance(data, dict) and 'data' in data:
+                    vaults = data['data']
+                elif isinstance(data, dict) and 'vaults' in data:
+                    vaults = data['vaults']
+                else:
+                    vaults = data if isinstance(data, list) else []
+                    
                 vault_count = len(vaults)
                 
                 if vault_count == 8:
@@ -202,7 +209,14 @@ class AuthDataTester:
             
             if success:
                 data = response.json()
-                documents = data if isinstance(data, list) else []
+                # The response might be wrapped in a data object
+                if isinstance(data, dict) and 'data' in data:
+                    documents = data['data']
+                elif isinstance(data, dict) and 'documents' in data:
+                    documents = data['documents']
+                else:
+                    documents = data if isinstance(data, list) else []
+                    
                 doc_count = len(documents)
                 
                 if doc_count >= 7:
@@ -215,7 +229,7 @@ class AuthDataTester:
                     # Show some document details
                     sample_doc = documents[0]
                     doc_title = sample_doc.get("title", "Unknown")
-                    doc_id = sample_doc.get("document_id", "Unknown")
+                    doc_id = sample_doc.get("document_id", sample_doc.get("id", "Unknown"))
                     details += f", Sample: '{doc_title}' (ID: {doc_id})"
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
