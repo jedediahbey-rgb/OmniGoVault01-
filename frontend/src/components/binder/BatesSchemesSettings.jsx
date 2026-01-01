@@ -459,8 +459,8 @@ function SchemeDialog({ open, onClose, scheme, onSave, saving }) {
             <div className="space-y-2">
               <Label className="text-vault-muted">Digits</Label>
               <Select
-                value={String(formData.default_digits)}
-                onValueChange={(v) => setFormData({ ...formData, default_digits: parseInt(v) })}
+                value={String(formData.digits)}
+                onValueChange={(v) => setFormData({ ...formData, digits: parseInt(v) })}
               >
                 <SelectTrigger className="bg-vault-navy border-vault-gold/20">
                   <SelectValue />
