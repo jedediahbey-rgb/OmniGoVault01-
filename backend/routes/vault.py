@@ -402,6 +402,86 @@ async def list_documents(request: Request, vault_id: str):
     return {"documents": documents}
 
 
+@router.post("/{vault_id}/import-document")
+async def import_document_to_workspace(request: Request, vault_id: str, body: dict):
+    """Import an existing document from user's portfolio into the shared workspace"""
+    user = await _get_current_user(request)
+    vault_service = get_vault_service()
+    
+    try:
+        # Check if user is a participant with upload permission
+        participant = await vault_service.get_participant(vault_id, user.user_id)
+        if not participant:
+            raise HTTPException(status_code=403, detail="Not a participant in this vault")
+        
+        # Check permission
+        allowed_roles = ["OWNER", "ADMIN", "EDITOR"]
+        if participant.get("role") not in allowed_roles:
+            raise HTTPException(status_code=403, detail="Insufficient permissions to import documents")
+        
+        # Get source document ID from request body
+        source_document_id = body.get("document_id")
+        if not source_document_id:
+            raise HTTPException(status_code=400, detail="document_id is required")
+        
+        # Find the source document in user's portfolio documents
+        source_doc = await _db.documents.find_one({
+            "id": source_document_id,
+            "user_id": user.user_id
+        }, {"_id": 0})
+        
+        if not source_doc:
+            raise HTTPException(status_code=404, detail="Source document not found or not owned by user")
+        
+        # Create a new document in the workspace based on the source
+        new_doc_id = str(uuid4())
+        new_document = {
+            "document_id": new_doc_id,
+            "vault_id": vault_id,
+            "title": body.get("title") or source_doc.get("title", "Imported Document"),
+            "description": body.get("description") or source_doc.get("description", ""),
+            "category": body.get("category") or source_doc.get("document_type", "OTHER"),
+            "content": source_doc.get("content", ""),
+            "status": "DRAFT",
+            "created_by": user.user_id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "version": 1,
+            "signatures": [],
+            "comments": [],
+            "source_document_id": source_document_id,  # Track where it came from
+            "imported_from_portfolio": True
+        }
+        
+        await _db.vault_documents.insert_one(new_document)
+        
+        # Log the import event
+        await _db.document_events.insert_one({
+            "event_id": str(uuid4()),
+            "document_id": new_doc_id,
+            "vault_id": vault_id,
+            "user_id": user.user_id,
+            "event_type": "DOCUMENT_IMPORTED",
+            "details": {
+                "source_document_id": source_document_id,
+                "source_title": source_doc.get("title", "Unknown"),
+                "imported_title": new_document["title"]
+            },
+            "ip_address": get_client_ip(request),
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+        
+        # Return without _id
+        new_document.pop("_id", None)
+        return new_document
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error importing document: {e}")
+        raise HTTPException(status_code=500, detail="Failed to import document")
+
+
 @router.get("/documents/{document_id}")
 async def get_document(request: Request, document_id: str):
     """Get document details including versions, comments, signatures"""
