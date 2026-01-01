@@ -196,13 +196,13 @@ export default function BatesSchemesSettings({
     if (onApplyScheme) {
       // Find continuation for this prefix
       const continuation = continuations.find(c => 
-        c.prefix.toUpperCase() === scheme.prefix_template.toUpperCase()
+        c.prefix.toUpperCase() === scheme.prefix_pattern.toUpperCase()
       );
       
       onApplyScheme({
-        bates_prefix: scheme.prefix_template,
-        bates_digits: scheme.default_digits,
-        bates_position: scheme.default_position,
+        bates_prefix: scheme.prefix_pattern,
+        bates_digits: scheme.digits,
+        bates_position: scheme.position,
         bates_start_number: continuation ? continuation.last_number + 1 : 1,
         bates_include_cover: scheme.include_cover || false,
       });
