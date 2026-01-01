@@ -278,7 +278,7 @@ export default function WorkspaceDetailPage({ user }) {
     setCreating(true);
     try {
       await axios.post(`${API}/vaults/${vaultId}/import-document`, {
-        document_id: selectedImportDoc.id,
+        document_id: selectedImportDoc.document_id || selectedImportDoc.id,
         title: selectedImportDoc.title,
         category: selectedImportDoc.document_type || 'OTHER'
       }, { withCredentials: true });
