@@ -4799,11 +4799,7 @@ app.include_router(omnibinder_router, prefix="/api")
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=[
-        "https://apifix-portal.preview.emergentagent.com",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000"
-    ],
+    allow_origins=os.environ.get("CORS_ORIGINS", "*").split(",") if os.environ.get("CORS_ORIGINS") != "*" else ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"]
