@@ -156,6 +156,7 @@ function DocumentCard({ doc, isPinned, onNavigate, onDelete }) {
         dragConstraints={{ left: -100, right: 0 }}
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
+        animate={controls}
         style={{ x }}
         className="p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-xl cursor-grab active:cursor-grabbing relative"
       >
