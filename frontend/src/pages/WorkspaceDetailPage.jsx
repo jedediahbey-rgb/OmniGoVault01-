@@ -142,7 +142,8 @@ export default function WorkspaceDetailPage({ user }) {
       if (!showImportDocument || !vaultId) return;
       
       // Get current portfolio context from localStorage
-      const currentPortfolioId = localStorage.getItem('defaultPortfolioId') || '';
+      // Try activePortfolioId first (used by VaultPage), then defaultPortfolioId as fallback
+      const currentPortfolioId = localStorage.getItem('activePortfolioId') || localStorage.getItem('defaultPortfolioId') || '';
       
       console.log('=== useEffect: Loading importable docs ===');
       console.log('Current portfolio context:', currentPortfolioId);
