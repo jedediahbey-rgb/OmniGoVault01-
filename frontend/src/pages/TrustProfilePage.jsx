@@ -35,6 +35,10 @@ export default function TrustProfilePage({ user }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
+  
+  // File upload state for RM-ID evidence
+  const [rmIdFiles, setRmIdFiles] = useState([]);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   // Form state
   const [form, setForm] = useState({
