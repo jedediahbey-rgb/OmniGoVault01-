@@ -225,7 +225,4 @@ export const usePortfolioContext = () => {
   };
 };
 
-// Need to import useState and useEffect for the hook
-import { useState, useEffect } from 'react';
-
 export default portfolioApi;
