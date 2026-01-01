@@ -1,6 +1,7 @@
 """Vault API Routes - Shared Trust Workspace System"""
 from fastapi import APIRouter, HTTPException, Request
 from datetime import datetime, timezone
+from uuid import uuid4
 import logging
 
 from models.vault import (
