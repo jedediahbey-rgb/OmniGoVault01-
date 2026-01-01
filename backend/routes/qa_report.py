@@ -42,6 +42,317 @@ async def get_access_doc():
         return md_path.read_text()
     return "QA_REVIEW_ACCESS.md not found"
 
+@router.get("/report-lite", response_class=HTMLResponse)
+async def get_qa_report_lite():
+    """
+    Lightweight QA report - NO embedded images (links instead)
+    Much smaller file size for ChatGPT's web viewer
+    """
+    generated_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+    
+    html = f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniGoVault - QA Review Report (Lite)</title>
+    <style>
+        body {{ font-family: -apple-system, sans-serif; background: #0a0f1a; color: #e5e7eb; padding: 20px; max-width: 1200px; margin: 0 auto; line-height: 1.6; }}
+        .banner {{ background: #ca8a04; color: #000; padding: 12px; text-align: center; font-weight: bold; margin-bottom: 20px; border-radius: 8px; }}
+        h1 {{ color: #d4af37; }} h2 {{ color: #d4af37; border-bottom: 1px solid #d4af37; padding-bottom: 8px; margin-top: 30px; }}
+        h3 {{ color: #fbbf24; }} table {{ width: 100%; border-collapse: collapse; margin: 15px 0; background: #111827; }}
+        th, td {{ padding: 10px; text-align: left; border-bottom: 1px solid #1f2937; }}
+        th {{ background: #1f2937; color: #d4af37; }}
+        code {{ background: #1f2937; padding: 2px 6px; border-radius: 4px; color: #60a5fa; }}
+        .section {{ background: #111827; padding: 20px; border-radius: 8px; margin: 20px 0; }}
+        ul {{ margin: 10px 0 10px 25px; }} li {{ margin: 5px 0; }}
+        pre {{ background: #1f2937; padding: 15px; border-radius: 8px; overflow-x: auto; }}
+        .badge {{ display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 500; }}
+        .badge-green {{ background: #065f46; color: #6ee7b7; }}
+        .badge-yellow {{ background: #78350f; color: #fcd34d; }}
+        .badge-red {{ background: #7f1d1d; color: #fca5a5; }}
+        .badge-blue {{ background: #1e3a8a; color: #93c5fd; }}
+        a {{ color: #60a5fa; }}
+        .check {{ color: #6ee7b7; }} .cross {{ color: #fca5a5; }}
+    </style>
+</head>
+<body>
+    <div class="banner">⚠️ STAGING QA REVIEW MODE — Lite Version (No Embedded Images)</div>
+    
+    <h1>🏛️ OmniGoVault — QA Review Report</h1>
+    <p><strong>Generated:</strong> {generated_at} | <strong>Base URL:</strong> <a href="{BASE_URL}">{BASE_URL}</a></p>
+    <p><strong>Full Report with Screenshots:</strong> <a href="{BASE_URL}/api/qa/report">{BASE_URL}/api/qa/report</a></p>
+    
+    <h2>📍 Route Inventory (40+ Routes)</h2>
+    
+    <div class="section">
+        <h3>🌐 Public Routes</h3>
+        <table>
+            <tr><th>Route</th><th>Page</th><th>Description</th></tr>
+            <tr><td><code>/</code></td><td>Landing Page</td><td>Hero, login, feature showcase</td></tr>
+            <tr><td><code>/login</code></td><td>Login</td><td>Redirects to /vault</td></tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h3>🏠 Dashboard & Portfolio</h3>
+        <table>
+            <tr><th>Route</th><th>Page</th><th>Access</th></tr>
+            <tr><td><code>/vault</code></td><td>Dashboard</td><td>All authenticated</td></tr>
+            <tr><td><code>/vault/portfolio/:id</code></td><td>Portfolio Documents</td><td>Owner/members</td></tr>
+            <tr><td><code>/vault/portfolio/:id/trust-profile</code></td><td>Trust Profile</td><td>Owner/members</td></tr>
+            <tr><td><code>/vault/documents</code></td><td>Documents</td><td>All authenticated</td></tr>
+            <tr><td><code>/vault/document/:id</code></td><td>Document Editor</td><td>Owner/editors</td></tr>
+            <tr><td><code>/vault/trash</code></td><td>Trash</td><td>All authenticated</td></tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h3>👥 Workspaces</h3>
+        <table>
+            <tr><th>Route</th><th>Page</th><th>Access</th></tr>
+            <tr><td><code>/vault/workspaces</code></td><td>Workspaces List</td><td>Filtered by active portfolio</td></tr>
+            <tr><td><code>/vault/workspaces/:id</code></td><td>Workspace Detail</td><td>Participants only</td></tr>
+        </table>
+        <p><strong>Note:</strong> Workspaces are filtered by active portfolio (recently fixed bug).</p>
+    </div>
+    
+    <div class="section">
+        <h3>⚖️ Governance</h3>
+        <table>
+            <tr><th>Route</th><th>Page</th></tr>
+            <tr><td><code>/vault/governance</code></td><td>Governance Dashboard</td></tr>
+            <tr><td><code>/vault/governance/meetings/:id</code></td><td>Meeting Minutes</td></tr>
+            <tr><td><code>/vault/governance/distributions/:id</code></td><td>Distribution Record</td></tr>
+            <tr><td><code>/vault/governance/disputes/:id</code></td><td>Dispute Case</td></tr>
+            <tr><td><code>/vault/governance/insurance/:id</code></td><td>Insurance Policy</td></tr>
+            <tr><td><code>/vault/governance/compensation/:id</code></td><td>Compensation Entry</td></tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h3>📚 Tools</h3>
+        <table>
+            <tr><th>Route</th><th>Page</th><th>Description</th></tr>
+            <tr><td><code>/binder</code></td><td>Binder Generator</td><td>PDF evidence binders with Bates numbering</td></tr>
+            <tr><td><code>/ledger</code></td><td>Trust Ledger</td><td>Transaction ledger</td></tr>
+            <tr><td><code>/ledger-threads</code></td><td>Ledger Threads</td><td>Threaded view</td></tr>
+            <tr><td><code>/templates</code></td><td>Document Templates</td><td>9 trust document templates</td></tr>
+            <tr><td><code>/archive</code></td><td>Black Archive</td><td>Historical legal records</td></tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h3>📖 Learning</h3>
+        <table>
+            <tr><th>Route</th><th>Page</th></tr>
+            <tr><td><code>/learn</code></td><td>Learning Center</td></tr>
+            <tr><td><code>/maxims</code></td><td>53 Legal Maxims (spaced repetition)</td></tr>
+            <tr><td><code>/glossary</code></td><td>Legal Glossary</td></tr>
+            <tr><td><code>/diagrams</code></td><td>Trust Diagrams</td></tr>
+            <tr><td><code>/assistant</code></td><td>AI Legal Assistant</td></tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h3>⚙️ Settings & Admin</h3>
+        <table>
+            <tr><th>Route</th><th>Page</th><th>Access</th></tr>
+            <tr><td><code>/settings</code></td><td>User Settings</td><td>All users</td></tr>
+            <tr><td><code>/billing</code></td><td>Billing</td><td>Account owners</td></tr>
+            <tr><td><code>/admin</code></td><td>Admin Console</td><td><span class="badge badge-red">Admin only</span></td></tr>
+            <tr><td><code>/support-admin</code></td><td>Support Tools</td><td><span class="badge badge-yellow">Support Admin</span></td></tr>
+        </table>
+    </div>
+    
+    <h2>👤 Role & Permission Matrix</h2>
+    
+    <div class="section">
+        <table>
+            <tr><th>Role</th><th>View</th><th>Edit</th><th>Sign</th><th>Invite</th><th>Manage</th><th>Delete</th></tr>
+            <tr><td><span class="badge badge-green">OWNER</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+            <tr><td><span class="badge badge-blue">TRUSTEE</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+            <tr><td><span class="badge badge-blue">BENEFICIARY</span></td><td class="check">✓</td><td class="cross">✗</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+            <tr><td><span class="badge badge-yellow">ADVISOR</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+            <tr><td><span class="badge badge-yellow">VIEWER</span></td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+        </table>
+    </div>
+    
+    <h2>🔲 Key Dialogs & Modals</h2>
+    
+    <div class="section">
+        <table>
+            <tr><th>Dialog</th><th>Location</th><th>Purpose</th></tr>
+            <tr><td>Import from Vault</td><td>Workspace Detail</td><td>Import docs from active portfolio</td></tr>
+            <tr><td>Invite Participant</td><td>Workspace Detail</td><td>Email invite with role</td></tr>
+            <tr><td>Sign Document</td><td>Workspace Detail</td><td>Digital signature</td></tr>
+            <tr><td>Create Workspace</td><td>Workspaces Page</td><td>New workspace (links to active portfolio)</td></tr>
+            <tr><td>Binder Config</td><td>Binder Page</td><td>Profile, date range, Bates numbering</td></tr>
+            <tr><td>Portfolio Selector</td><td>Header</td><td>Switch portfolios</td></tr>
+        </table>
+    </div>
+    
+    <h2>🔄 Key User Flows</h2>
+    
+    <div class="section">
+        <h3>Flow 1: New User Onboarding</h3>
+        <ol>
+            <li><code>/</code> → Click "Create Account" → Google OAuth</li>
+            <li>Redirected to <code>/vault</code></li>
+            <li>Create portfolio via "+" button</li>
+            <li>Create first document</li>
+        </ol>
+        <p><strong>Expected:</strong> User has portfolio + document, can access other features.</p>
+    </div>
+    
+    <div class="section">
+        <h3>Flow 2: Portfolio Switching (RECENTLY FIXED)</h3>
+        <ol>
+            <li>Click portfolio dropdown in header</li>
+            <li>Select different portfolio</li>
+            <li>Go to <code>/vault/workspaces</code></li>
+            <li><strong>Verify:</strong> Only workspaces for selected portfolio shown</li>
+            <li>Open workspace → "Import from Vault"</li>
+            <li><strong>Verify:</strong> Only docs from selected portfolio in import dialog</li>
+        </ol>
+        <p><strong>Expected:</strong> All content filters by active portfolio.</p>
+    </div>
+    
+    <div class="section">
+        <h3>Flow 3: Workspace Collaboration</h3>
+        <ol>
+            <li><code>/vault/workspaces</code> → "New Vault"</li>
+            <li>Workspace auto-links to active portfolio</li>
+            <li>"Invite" → Enter email → Select role → Send</li>
+            <li>"Import from Vault" → Select doc → Import</li>
+            <li>View doc → "Sign" → Enter signature</li>
+        </ol>
+        <p><strong>Expected:</strong> Document in workspace with signature, invite email sent.</p>
+    </div>
+    
+    <div class="section">
+        <h3>Flow 4: Binder Generation</h3>
+        <ol>
+            <li><code>/binder</code> → Select portfolio</li>
+            <li>Choose profile (Audit/Court/Omni)</li>
+            <li>Configure Bates numbering (Court Mode)</li>
+            <li>"Generate Binder" → Download PDF</li>
+        </ol>
+        <p><strong>Expected:</strong> PDF with documents, Bates numbers if configured.</p>
+    </div>
+    
+    <h2>🔌 API Endpoints</h2>
+    
+    <div class="section">
+        <pre>
+# Auth
+GET  /api/auth/me          → Current user
+POST /api/auth/session     → OAuth session exchange
+
+# Portfolios  
+GET  /api/portfolios       → List portfolios
+POST /api/portfolios       → Create portfolio
+
+# Documents
+GET  /api/documents?portfolio_id=xxx → List (filtered)
+POST /api/documents        → Create
+GET  /api/documents/:id    → Get with content
+PUT  /api/documents/:id    → Update
+
+# Workspaces (Vaults)
+GET  /api/vaults?portfolio_id=xxx → List (filtered by portfolio)
+POST /api/vaults           → Create
+GET  /api/vaults/:id       → Get with participants
+GET  /api/vaults/:id/importable-documents?portfolio_id=xxx → Importable docs
+POST /api/vaults/:id/documents    → Import doc
+POST /api/vaults/:id/participants → Invite
+POST /api/vaults/:id/documents/:docId/sign → Sign
+
+# Binder
+GET  /api/binder/profiles?portfolio_id=xxx → Profiles
+POST /api/binder/generate  → Generate PDF
+
+# Real-time
+WS   /api/realtime/ws      → WebSocket presence
+GET  /api/realtime/capabilities → V2 features
+        </pre>
+    </div>
+    
+    <h2>📊 Seed Data</h2>
+    
+    <div class="section">
+        <ul>
+            <li><strong>User:</strong> jedediah.bey@gmail.com (OMNICOMPETENT_OWNER)</li>
+            <li><strong>Portfolios:</strong> 5 (primary: AMMITAI JEDEDIAH BEY LIVING ESTATE TRUST)</li>
+            <li><strong>Documents:</strong> ~8 (Declaration of Trust, TTGD, Amendments, Certificates)</li>
+            <li><strong>Workspaces:</strong> 14</li>
+            <li><strong>Binder Profiles:</strong> 3 (Audit, Court, Omni)</li>
+        </ul>
+    </div>
+    
+    <h2>🐛 Known Issues</h2>
+    
+    <div class="section">
+        <table>
+            <tr><th>Issue</th><th>Severity</th><th>Status</th></tr>
+            <tr><td>Binder PDF generation (WeasyPrint)</td><td><span class="badge badge-yellow">Medium</span></td><td><span class="badge badge-green">Fixed</span> - needs verification</td></tr>
+            <tr><td>Portfolio switching persistence</td><td><span class="badge badge-yellow">Medium</span></td><td><span class="badge badge-green">Fixed</span></td></tr>
+            <tr><td>Import from Vault wrong portfolio</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-green">Fixed</span></td></tr>
+            <tr><td>Duplicate user accounts</td><td><span class="badge badge-red">Critical</span></td><td><span class="badge badge-green">Fixed</span> - unique index added</td></tr>
+            <tr><td>WebSocket console errors</td><td><span class="badge badge-blue">Low</span></td><td>Known (non-blocking)</td></tr>
+        </table>
+    </div>
+    
+    <h2>📸 Screenshot Links</h2>
+    
+    <div class="section">
+        <p>Screenshots available at these URLs (18 desktop + 18 mobile):</p>
+        <h4>Desktop (1440×900)</h4>
+        <ul>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/landing_page.png">Landing Page</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/dashboard.png">Dashboard</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/documents.png">Documents</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/workspaces_list.png">Workspaces</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/binder_generator.png">Binder Generator</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/governance_dashboard.png">Governance</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/learning_center.png">Learning Center</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/legal_maxims.png">Legal Maxims</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/templates.png">Templates</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/desktop/user_settings.png">Settings</a></li>
+        </ul>
+        <h4>Mobile (390×844)</h4>
+        <ul>
+            <li><a href="{BASE_URL}/api/qa/screens/mobile/landing_page.png">Landing Page (Mobile)</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/mobile/dashboard.png">Dashboard (Mobile)</a></li>
+            <li><a href="{BASE_URL}/api/qa/screens/mobile/binder_generator.png">Binder (Mobile)</a></li>
+        </ul>
+    </div>
+    
+    <h2>✅ QA Checklist</h2>
+    
+    <div class="section">
+        <ul>
+            <li>☐ Landing page loads</li>
+            <li>☐ Google OAuth works</li>
+            <li>☐ Dashboard shows portfolios</li>
+            <li>☐ Portfolio switching persists</li>
+            <li>☐ Documents filter by portfolio</li>
+            <li>☐ Workspaces filter by portfolio</li>
+            <li>☐ Import from Vault shows correct docs</li>
+            <li>☐ Invite participant works</li>
+            <li>☐ Document signing works</li>
+            <li>☐ Binder generates PDF</li>
+            <li>☐ Mobile responsive</li>
+        </ul>
+    </div>
+    
+    <hr>
+    <p style="text-align:center;color:#6b7280;">OmniGoVault QA Report (Lite) | {generated_at}</p>
+</body>
+</html>'''
+    
+    return HTMLResponse(content=html)
+
 @router.get("/report", response_class=HTMLResponse)
 async def get_qa_report():
     """
