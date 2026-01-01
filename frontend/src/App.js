@@ -260,7 +260,28 @@ const AppLoaderWrapper = ({ isLoading, entitlements, planName, planTier }) => {
 };
 
 // Layout wrapper for authenticated routes - clean transitions without shimmer
-const AuthLayout = ({ children, auth }) => {
+// For routes that require auth, user must exist
+// For semi-public routes (educational), user may be null but shell still renders
+const AuthLayout = ({ children, auth, requireAuth = false }) => {
+  const location = useLocation();
+  
+  // If route requires auth and user is not present, redirect to login
+  if (requireAuth && !auth.user && !auth.loading) {
+    return <Navigate to="/" state={{ from: location.pathname }} replace />;
+  }
+  
+  // If still loading auth, show loading state
+  if (auth.loading) {
+    return (
+      <div className="min-h-screen bg-vault-navy flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-2 border-vault-gold border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-vault-muted text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <MainLayout user={auth.user} onLogout={auth.logout}>
       <ReviewModeBanner user={auth.user} />
