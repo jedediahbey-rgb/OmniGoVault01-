@@ -254,6 +254,49 @@ export default function WorkspaceDetailPage({ user }) {
     }
   };
 
+  // Fetch importable documents from user's vault
+  const fetchImportableDocs = async () => {
+    setImportLoading(true);
+    try {
+      const response = await axios.get(`${API}/vaults/${vaultId}/importable-documents`, { withCredentials: true });
+      setImportableDocs(response.data.documents || []);
+    } catch (error) {
+      console.error('Error fetching importable documents:', error);
+      toast.error('Failed to load your documents');
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
+  // Import document from vault
+  const handleImportDocument = async () => {
+    if (!selectedImportDoc) {
+      toast.error('Please select a document to import');
+      return;
+    }
+    setCreating(true);
+    try {
+      await axios.post(`${API}/vaults/${vaultId}/import-document`, {
+        document_id: selectedImportDoc.id,
+        title: selectedImportDoc.title,
+        category: selectedImportDoc.document_type || 'OTHER'
+      }, { withCredentials: true });
+      toast.success('Document imported successfully');
+      setShowImportDocument(false);
+      setSelectedImportDoc(null);
+      await fetchVault();
+    } catch (error) {
+      console.error('Error importing document:', error);
+      toast.error(
+        typeof error.response?.data?.detail === 'string' 
+          ? error.response.data.detail 
+          : 'Failed to import document'
+      );
+    } finally {
+      setCreating(false);
+    }
+  };
+
   // Activate vault
   const handleActivateVault = async () => {
     try {
