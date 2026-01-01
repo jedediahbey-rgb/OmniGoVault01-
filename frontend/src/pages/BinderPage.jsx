@@ -125,6 +125,7 @@ function SwipeableHistoryCard({ run, StatusIcon, statusColor, onDelete }) {
         dragConstraints={{ left: -100, right: 0 }}
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
+        animate={controls}
         style={{ x }}
         className="p-3 rounded-lg bg-vault-dark/50 border border-vault-gold/10 hover:border-vault-gold/30 transition-colors cursor-grab active:cursor-grabbing relative"
       >
