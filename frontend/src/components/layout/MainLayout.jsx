@@ -8,13 +8,15 @@ import {
   SignOut,
   User,
   Gear,
-  PaintBrush
+  PaintBrush,
+  Command
 } from '@phosphor-icons/react';
 import Sidebar from './Sidebar';
 import { useBilling } from '../../contexts/BillingContext';
 import NotificationBell from '../notifications/NotificationBell';
 import PortraitStyleSelector from '../portrait/PortraitStyleSelector';
 import StyledPortrait from '../portrait/StyledPortrait';
+import ActivePortfolioChip from '../shared/ActivePortfolioChip';
 import axios from 'axios';
 
 const API = process.env.REACT_APP_BACKEND_URL;
