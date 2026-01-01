@@ -312,17 +312,34 @@ export default function WorkspacesPage({ user }) {
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center">
               <UsersThree className="w-10 h-10 text-vault-gold" weight="duotone" />
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">No vaults yet</h3>
-            <p className="text-vault-muted mb-6 max-w-md mx-auto">
-              Create your first shared vault to start collaborating on trust documents with your team.
-            </p>
-            <Button
-              onClick={() => setShowCreateModal(true)}
-              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy font-semibold"
-            >
-              <Plus className="w-4 h-4 mr-2" weight="bold" />
-              Create Your First Vault
-            </Button>
+            {activePortfolioId ? (
+              <>
+                <h3 className="text-xl font-semibold text-white mb-2">No vaults in this portfolio</h3>
+                <p className="text-vault-muted mb-6 max-w-md mx-auto">
+                  Create your first shared vault for <span className="text-vault-gold">{activePortfolioName || 'this portfolio'}</span> to start collaborating on trust documents.
+                </p>
+                <Button
+                  onClick={() => setShowCreateModal(true)}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy font-semibold"
+                >
+                  <Plus className="w-4 h-4 mr-2" weight="bold" />
+                  Create Your First Vault
+                </Button>
+              </>
+            ) : (
+              <>
+                <h3 className="text-xl font-semibold text-white mb-2">Select a portfolio first</h3>
+                <p className="text-vault-muted mb-6 max-w-md mx-auto">
+                  To view or create workspaces, please select a portfolio from your Vault dashboard.
+                </p>
+                <Button
+                  onClick={() => navigate('/vault')}
+                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy font-semibold"
+                >
+                  Go to Vault
+                </Button>
+              </>
+            )}
           </motion.div>
         )}
 
