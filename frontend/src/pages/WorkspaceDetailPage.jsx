@@ -117,6 +117,7 @@ export default function WorkspaceDetailPage({ user }) {
   const [importableDocs, setImportableDocs] = useState([]);
   const [importLoading, setImportLoading] = useState(false);
   const [selectedImportDoc, setSelectedImportDoc] = useState(null);
+  const [importPortfolioId, setImportPortfolioId] = useState(''); // Selected portfolio for import
   
   // Settings modal state
   const [showSettings, setShowSettings] = useState(false);
