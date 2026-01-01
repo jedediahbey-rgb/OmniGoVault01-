@@ -4832,6 +4832,11 @@ app.include_router(omnibinder_router, prefix="/api")
 from routes.qa_report import router as qa_report_router
 app.include_router(qa_report_router)
 
+# File Upload Routes
+from routes.files import router as files_router, init_files_routes
+init_files_routes(db)
+app.include_router(files_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
