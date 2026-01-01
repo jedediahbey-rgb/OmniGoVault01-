@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse, PlainTextResponse, FileResponse
 from pathlib import Path
 import os
 
-router = APIRouter(prefix="/qa", tags=["QA Review"])
+router = APIRouter(prefix="/api/qa", tags=["QA Review"])
 
 # Screenshots directory
 SCREENSHOTS_DIR = Path("/app/public/qa_screens")
