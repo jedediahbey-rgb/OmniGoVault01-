@@ -72,7 +72,7 @@ class AuthConsistencyTester:
                 'mongosh', '--eval', f"""
                 use('test_database');
                 var userId = '{self.test_user_id}';
-                var sessionToken = 'test_session_review_' + Date.now();
+                var sessionToken = 'test_session_auth_' + Date.now();
                 
                 // Ensure user exists
                 db.users.updateOne(
@@ -101,9 +101,8 @@ class AuthConsistencyTester:
             
             if result.returncode == 0:
                 session_token = result.stdout.strip().split('\n')[-1]
-                if session_token and session_token.startswith('test_session_review_'):
+                if session_token and session_token.startswith('test_session_auth_'):
                     self.log(f"✅ Created test session: {session_token[:25]}...")
-                    self.session.headers['Authorization'] = f'Bearer {session_token}'
                     return session_token
             
             self.log("⚠️ Could not create test session - testing without authentication")
