@@ -940,8 +940,9 @@ function DocumentRow({ document, onView, onSubmitForReview, canEdit }) {
 }
 
 // Participant Row Component
-function ParticipantRow({ participant }) {
+function ParticipantRow({ participant, isCreator, canRemove, onRemove }) {
   const roleColor = roleColors[participant.role] || roleColors.VIEWER;
+  const isOwner = participant.role === 'OWNER';
   
   return (
     <Card className="bg-vault-navy/30 border-vault-gold/10">
@@ -969,6 +970,18 @@ function ParticipantRow({ participant }) {
               <Badge variant="outline" className="border-yellow-500/30 text-yellow-400 text-xs">
                 Pending
               </Badge>
+            )}
+            {/* Remove button - not shown for owners */}
+            {canRemove && !isOwner && onRemove && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onRemove}
+                className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                title="Remove participant"
+              >
+                <Trash className="w-4 h-4" />
+              </Button>
             )}
           </div>
         </div>
