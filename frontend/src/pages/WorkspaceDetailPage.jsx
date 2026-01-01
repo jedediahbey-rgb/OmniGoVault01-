@@ -58,6 +58,7 @@ import {
 } from '../components/ui/dropdown-menu';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 import { staggerContainer, fadeInUp } from '../lib/motion';
 import SignDocumentDialog from '../components/workspace/SignDocumentDialog';
 import ActivityTimeline from '../components/workspace/ActivityTimeline';
