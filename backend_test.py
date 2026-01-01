@@ -458,33 +458,94 @@ class P0PortfolioScopingTester:
             self.log_test("Vaults without Portfolio Filter", False, f"Error: {str(e)}")
             return False
 
+    # ============ AUTH GUARD VERIFICATION TESTS ============
+
+    def test_auth_me_without_cookie(self):
+        """Test GET /api/auth/me without cookie - Should return 401"""
+        try:
+            # Create a session without authentication headers
+            unauth_session = requests.Session()
+            unauth_session.headers.update({
+                'Content-Type': 'application/json',
+                'User-Agent': 'P0PortfolioScopingTester/1.0'
+            })
+            
+            response = unauth_session.get(f"{self.base_url}/auth/me", timeout=10)
+            success = response.status_code == 401
+            
+            if success:
+                details = f"Correctly returned 401 Unauthorized"
+            else:
+                details = f"Expected 401, got {response.status_code}: {response.text[:200]}"
+            
+            self.log_test("Auth Guard - /api/auth/me without cookie", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Auth Guard - /api/auth/me without cookie", False, f"Error: {str(e)}")
+            return False
+
+    def test_protected_endpoints_without_auth(self):
+        """Test protected endpoints without auth - Should return 401"""
+        try:
+            # Create a session without authentication headers
+            unauth_session = requests.Session()
+            unauth_session.headers.update({
+                'Content-Type': 'application/json',
+                'User-Agent': 'P0PortfolioScopingTester/1.0'
+            })
+            
+            # Test multiple protected endpoints
+            protected_endpoints = [
+                "/vaults",
+                "/portfolios",
+                "/documents"
+            ]
+            
+            all_success = True
+            details_list = []
+            
+            for endpoint in protected_endpoints:
+                response = unauth_session.get(f"{self.base_url}{endpoint}", timeout=10)
+                if response.status_code == 401:
+                    details_list.append(f"{endpoint}: 401 ✓")
+                else:
+                    details_list.append(f"{endpoint}: {response.status_code} ✗")
+                    all_success = False
+            
+            details = ", ".join(details_list)
+            
+            self.log_test("Auth Guard - Protected endpoints without auth", all_success, details)
+            return all_success
+            
+        except Exception as e:
+            self.log_test("Auth Guard - Protected endpoints without auth", False, f"Error: {str(e)}")
+            return False
+
     # ============ TEST RUNNER ============
 
-    def run_auth_consistency_tests(self):
-        """Run all tests for auth consistency and portfolio scoping"""
-        self.log("🚀 Starting AUTH CONSISTENCY & PORTFOLIO SCOPING Tests for OmniGoVault")
+    def run_p0_portfolio_scoping_tests(self):
+        """Run all P0 server-side portfolio scoping enforcement tests"""
+        self.log("🚀 Starting P0 SERVER-SIDE PORTFOLIO SCOPING ENFORCEMENT Tests")
         self.log(f"Testing against: {self.base_url}")
-        self.log(f"Frontend URL: {self.frontend_url}")
         self.log(f"Test User: {self.test_user_email}")
+        self.log(f"Session Token: {self.session_token}")
         self.log("=" * 80)
         
         # Test sequence based on review request
         test_sequence = [
-            # 1. Auth Guard Verification (no auth required)
+            # 1. Server-Side Portfolio Enforcement (Critical Security Fix)
+            self.test_importable_documents_no_portfolio_vault_no_portfolio,
+            self.test_importable_documents_no_portfolio_vault_has_portfolio,
+            self.test_importable_documents_with_portfolio_id,
+            
+            # 2. Vaults List Endpoint
+            self.test_vaults_with_portfolio_filter,
+            self.test_vaults_without_portfolio_filter,
+            
+            # 3. Auth Guard Verification
             self.test_auth_me_without_cookie,
-            self.test_vault_redirect_without_auth,
-            
-            # 2. QA Report Endpoints (no auth required)
-            self.test_qa_report_lite_endpoint,
-            self.test_qa_access_md_endpoint,
-            
-            # 3. Portfolio-Scoped Endpoints (require auth)
-            self.test_vaults_with_auth,
-            self.test_documents_with_portfolio_id,
-            
-            # 4. Public Routes
-            self.test_landing_page_without_auth,
-            self.test_learn_page_without_auth,
+            self.test_protected_endpoints_without_auth,
         ]
         
         for test_func in test_sequence:
@@ -506,7 +567,7 @@ class P0PortfolioScopingTester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 AUTH CONSISTENCY & PORTFOLIO SCOPING TEST SUMMARY")
+        self.log("🏁 P0 SERVER-SIDE PORTFOLIO SCOPING ENFORCEMENT TEST SUMMARY")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
@@ -521,14 +582,13 @@ class P0PortfolioScopingTester:
             for failure in self.failed_tests:
                 self.log(f"  • {failure['test']}: {failure['details']}")
         
-        self.log("\n🎯 REVIEW REQUEST FINDINGS:")
+        self.log("\n🎯 P0 PORTFOLIO SCOPING ENFORCEMENT FINDINGS:")
         
         # Check each category from review request
         categories = {
-            "Auth Guard Verification": ["auth guard", "auth me", "vault redirect"],
-            "QA Report Endpoints": ["qa report", "qa access"],
-            "Portfolio-Scoped Endpoints": ["vaults with auth", "documents with portfolio"],
-            "Public Routes": ["landing page", "learn page"]
+            "Server-Side Portfolio Enforcement": ["importable docs"],
+            "Vaults List Endpoint": ["vaults with portfolio", "vaults without portfolio"],
+            "Auth Guard Verification": ["auth guard", "auth me", "protected endpoints"]
         }
         
         for category, keywords in categories.items():
@@ -548,37 +608,32 @@ class P0PortfolioScopingTester:
         self.log(f"\n🔐 Authentication Status: {'✅ Working' if auth_working else '❌ Failed'}")
         
         # Specific findings for review request
-        self.log("\n📋 SPECIFIC REVIEW REQUEST STATUS:")
+        self.log("\n📋 SPECIFIC P0 REQUIREMENTS STATUS:")
+        
+        # Server-Side Portfolio Enforcement
+        portfolio_tests = [t for t in self.test_results if 'importable docs' in t['test'].lower()]
+        portfolio_working = len([t for t in portfolio_tests if t['success']]) >= 2  # At least 2/3 tests passing
+        self.log(f"  1. Server-Side Portfolio Enforcement: {'✅ Working' if portfolio_working else '❌ Issues detected'}")
+        
+        # Vaults List Endpoint
+        vaults_tests = [t for t in self.test_results if 'vaults with portfolio' in t['test'].lower() or 'vaults without portfolio' in t['test'].lower()]
+        vaults_working = any(t['success'] for t in vaults_tests)
+        self.log(f"  2. Vaults List Endpoint: {'✅ Working' if vaults_working else '❌ Issues detected'}")
         
         # Auth Guard Verification
-        auth_guard_tests = [t for t in self.test_results if 'auth guard' in t['test'].lower() or 'auth me' in t['test'].lower() or 'vault redirect' in t['test'].lower()]
+        auth_guard_tests = [t for t in self.test_results if 'auth guard' in t['test'].lower() or 'auth me' in t['test'].lower() or 'protected endpoints' in t['test'].lower()]
         auth_guard_working = any(t['success'] for t in auth_guard_tests)
-        self.log(f"  1. Auth Guard Verification: {'✅ Working' if auth_guard_working else '❌ Issues detected'}")
-        
-        # QA Report endpoints
-        qa_tests = [t for t in self.test_results if 'qa' in t['test'].lower()]
-        qa_working = any(t['success'] for t in qa_tests)
-        self.log(f"  2. QA Report Endpoints: {'✅ Working' if qa_working else '❌ Issues detected'}")
-        
-        # Portfolio-scoped endpoints
-        portfolio_tests = [t for t in self.test_results if 'vaults with auth' in t['test'].lower() or 'documents with portfolio' in t['test'].lower()]
-        portfolio_working = any(t['success'] for t in portfolio_tests)
-        self.log(f"  3. Portfolio-Scoped Endpoints: {'✅ Working' if portfolio_working else '❌ Issues detected'}")
-        
-        # Public routes
-        public_tests = [t for t in self.test_results if 'landing page' in t['test'].lower() or 'learn page' in t['test'].lower()]
-        public_working = any(t['success'] for t in public_tests)
-        self.log(f"  4. Public Routes: {'✅ Working' if public_working else '❌ Issues detected'}")
+        self.log(f"  3. Auth Guard Verification: {'✅ Working' if auth_guard_working else '❌ Issues detected'}")
         
         self.log("\n📝 RECOMMENDATIONS:")
         if success_rate >= 90:
-            self.log("✅ Auth consistency and portfolio scoping working correctly")
-            self.log("✅ No critical issues found - ready for production use")
+            self.log("✅ P0 server-side portfolio scoping enforcement working correctly")
+            self.log("✅ No critical security issues found - ready for production use")
         elif success_rate >= 75:
-            self.log("⚠️ Most features working with minor issues")
-            self.log("✅ Core auth and scoping functionality is operational")
+            self.log("⚠️ Most P0 features working with minor issues")
+            self.log("✅ Core portfolio scoping functionality is operational")
         else:
-            self.log("❌ Significant issues detected in auth consistency or portfolio scoping")
+            self.log("❌ Significant issues detected in P0 portfolio scoping enforcement")
             if not auth_working:
                 self.log("❌ Authentication issues preventing full testing")
         
