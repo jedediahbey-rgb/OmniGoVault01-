@@ -507,32 +507,31 @@ class AuthConsistencyTester:
 
     # ============ TEST RUNNER ============
 
-    def run_review_request_tests(self):
-        """Run all tests for the review request"""
-        self.log("🚀 Starting REVIEW REQUEST API Tests for OmniGoVault")
+    def run_auth_consistency_tests(self):
+        """Run all tests for auth consistency and portfolio scoping"""
+        self.log("🚀 Starting AUTH CONSISTENCY & PORTFOLIO SCOPING Tests for OmniGoVault")
         self.log(f"Testing against: {self.base_url}")
+        self.log(f"Frontend URL: {self.frontend_url}")
         self.log(f"Test User: {self.test_user_email}")
         self.log("=" * 80)
         
         # Test sequence based on review request
         test_sequence = [
-            # 1. QA Report Endpoint (NEW - no auth required)
-            self.test_qa_report_endpoint,
+            # 1. Auth Guard Verification (no auth required)
+            self.test_auth_me_without_cookie,
+            self.test_vault_redirect_without_auth,
+            
+            # 2. QA Report Endpoints (no auth required)
+            self.test_qa_report_lite_endpoint,
             self.test_qa_access_md_endpoint,
             
-            # 2. Real-time Collaboration Endpoints (no auth required for stats)
-            self.test_realtime_capabilities_endpoint,
-            self.test_realtime_stats_endpoint,
-            self.test_realtime_detailed_stats_endpoint,
+            # 3. Portfolio-Scoped Endpoints (require auth)
+            self.test_vaults_with_auth,
+            self.test_documents_with_portfolio_id,
             
-            # 3. Portfolio-Scoped Vaults (requires auth)
-            self.test_get_user_portfolios,
-            self.test_portfolio_filtered_vaults,
-            self.test_vault_importable_documents,
-            
-            # 4. Binder Generation (requires auth)
-            self.test_binder_profiles_endpoint,
-            self.test_weasyprint_dependency,
+            # 4. Public Routes
+            self.test_landing_page_without_auth,
+            self.test_learn_page_without_auth,
         ]
         
         for test_func in test_sequence:
@@ -554,7 +553,7 @@ class AuthConsistencyTester:
     def print_summary(self):
         """Print test summary"""
         self.log("=" * 80)
-        self.log("🏁 REVIEW REQUEST TEST SUMMARY")
+        self.log("🏁 AUTH CONSISTENCY & PORTFOLIO SCOPING TEST SUMMARY")
         self.log("=" * 80)
         
         success_rate = (self.tests_passed / self.tests_run * 100) if self.tests_run > 0 else 0
@@ -573,10 +572,10 @@ class AuthConsistencyTester:
         
         # Check each category from review request
         categories = {
-            "QA Report Endpoints": ["qa"],
-            "Real-time Collaboration": ["realtime"],
-            "Portfolio-Scoped Vaults": ["portfolio", "vault"],
-            "Binder Generation": ["binder", "weasyprint"]
+            "Auth Guard Verification": ["auth guard", "auth me", "vault redirect"],
+            "QA Report Endpoints": ["qa report", "qa access"],
+            "Portfolio-Scoped Endpoints": ["vaults with auth", "documents with portfolio"],
+            "Public Routes": ["landing page", "learn page"]
         }
         
         for category, keywords in categories.items():
@@ -598,35 +597,35 @@ class AuthConsistencyTester:
         # Specific findings for review request
         self.log("\n📋 SPECIFIC REVIEW REQUEST STATUS:")
         
+        # Auth Guard Verification
+        auth_guard_tests = [t for t in self.test_results if 'auth guard' in t['test'].lower() or 'auth me' in t['test'].lower() or 'vault redirect' in t['test'].lower()]
+        auth_guard_working = any(t['success'] for t in auth_guard_tests)
+        self.log(f"  1. Auth Guard Verification: {'✅ Working' if auth_guard_working else '❌ Issues detected'}")
+        
         # QA Report endpoints
         qa_tests = [t for t in self.test_results if 'qa' in t['test'].lower()]
         qa_working = any(t['success'] for t in qa_tests)
-        self.log(f"  1. QA Report Endpoints: {'✅ Working' if qa_working else '❌ Issues detected'}")
+        self.log(f"  2. QA Report Endpoints: {'✅ Working' if qa_working else '❌ Issues detected'}")
         
-        # Real-time endpoints
-        realtime_tests = [t for t in self.test_results if 'realtime' in t['test'].lower()]
-        realtime_working = any(t['success'] for t in realtime_tests)
-        self.log(f"  2. Real-time Collaboration: {'✅ Working' if realtime_working else '❌ Issues detected'}")
+        # Portfolio-scoped endpoints
+        portfolio_tests = [t for t in self.test_results if 'vaults with auth' in t['test'].lower() or 'documents with portfolio' in t['test'].lower()]
+        portfolio_working = any(t['success'] for t in portfolio_tests)
+        self.log(f"  3. Portfolio-Scoped Endpoints: {'✅ Working' if portfolio_working else '❌ Issues detected'}")
         
-        # Portfolio-scoped vaults
-        vault_tests = [t for t in self.test_results if 'vault' in t['test'].lower() or 'portfolio' in t['test'].lower()]
-        vault_working = any(t['success'] for t in vault_tests)
-        self.log(f"  3. Portfolio-Scoped Vaults: {'✅ Working' if vault_working else '❌ Issues detected'}")
-        
-        # Binder generation
-        binder_tests = [t for t in self.test_results if 'binder' in t['test'].lower() or 'weasyprint' in t['test'].lower()]
-        binder_working = any(t['success'] for t in binder_tests)
-        self.log(f"  4. Binder Generation: {'✅ Working' if binder_working else '❌ Issues detected'}")
+        # Public routes
+        public_tests = [t for t in self.test_results if 'landing page' in t['test'].lower() or 'learn page' in t['test'].lower()]
+        public_working = any(t['success'] for t in public_tests)
+        self.log(f"  4. Public Routes: {'✅ Working' if public_working else '❌ Issues detected'}")
         
         self.log("\n📝 RECOMMENDATIONS:")
         if success_rate >= 90:
-            self.log("✅ All review request features are working correctly")
+            self.log("✅ Auth consistency and portfolio scoping working correctly")
             self.log("✅ No critical issues found - ready for production use")
         elif success_rate >= 75:
             self.log("⚠️ Most features working with minor issues")
-            self.log("✅ Core functionality is operational")
+            self.log("✅ Core auth and scoping functionality is operational")
         else:
-            self.log("❌ Significant issues detected in review request features")
+            self.log("❌ Significant issues detected in auth consistency or portfolio scoping")
             if not auth_working:
                 self.log("❌ Authentication issues preventing full testing")
         
