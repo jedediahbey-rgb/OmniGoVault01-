@@ -1,11 +1,29 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for OmniGoVault - Review Request Testing
-Testing specific endpoints mentioned in the review request:
-1. QA Report Endpoint (NEW - no auth required)
-2. Real-time Collaboration Endpoints (no auth required for stats)
-3. Portfolio-Scoped Vaults (requires auth)
-4. Binder Generation (requires auth)
+Backend API Testing for OmniGoVault - Auth Consistency & Portfolio Scoping Testing
+Testing specific scenarios mentioned in the review request:
+
+**Test Environment:**
+- Frontend URL: https://docs-audit-tool.preview.emergentagent.com
+- Backend API: https://docs-audit-tool.preview.emergentagent.com/api
+
+**Test Scenarios:**
+
+1. **Auth Guard Verification** (no auth required):
+   - GET /api/auth/me without cookie - Should return 401
+   - Direct navigation to /vault should redirect to landing page
+
+2. **QA Report Endpoints** (no auth required):
+   - GET /api/qa/report-lite - Should return HTML report
+   - GET /api/qa/access.md - Should return markdown
+
+3. **Portfolio-Scoped Endpoints** (require auth):
+   - GET /api/vaults - Should work with valid auth
+   - GET /api/documents - Should work with portfolio_id param
+   
+4. **Public Routes**:
+   - GET / (landing page) - Should load without auth
+   - GET /learn - Should show educational content even without auth
 """
 
 import requests
