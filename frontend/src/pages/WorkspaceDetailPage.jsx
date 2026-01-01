@@ -118,6 +118,23 @@ export default function WorkspaceDetailPage({ user }) {
   const [importLoading, setImportLoading] = useState(false);
   const [selectedImportDoc, setSelectedImportDoc] = useState(null);
   
+  // Debug watcher for importableDocs state - ChatGPT diagnostic
+  useEffect(() => {
+    console.log('=== importableDocs STATE CHANGED ===');
+    console.log('importableDocs length:', importableDocs.length);
+    console.log('importableDocs:', importableDocs);
+  }, [importableDocs]);
+  
+  // More reliable fetching via useEffect - ChatGPT patch
+  useEffect(() => {
+    if (showImportDocument && vaultId) {
+      console.log('=== useEffect triggered for Import Dialog ===');
+      console.log('showImportDocument:', showImportDocument);
+      console.log('vaultId:', vaultId);
+      // fetchImportableDocs will be called by onOpenChange, but this ensures it runs
+    }
+  }, [showImportDocument, vaultId]);
+  
   // Form states
   const [newDocument, setNewDocument] = useState({
     title: '',
