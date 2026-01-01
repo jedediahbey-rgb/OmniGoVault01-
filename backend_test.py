@@ -3617,7 +3617,7 @@ class ReviewRequestTester:
                         details += " (matches expected count)"
                     else:
                         details += f" (expected 8)"
-                elif isinstance(data, dict) and data.get("vaults"):
+                elif isinstance(data, dict) and "vaults" in data:
                     vaults = data.get("vaults", [])
                     vault_count = len(vaults)
                     details = f"Found {vault_count} vaults for portfolio {self.test_portfolio_id}"
