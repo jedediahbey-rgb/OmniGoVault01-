@@ -259,11 +259,14 @@ export default function WorkspaceDetailPage({ user }) {
   const fetchImportableDocs = async () => {
     setImportLoading(true);
     try {
+      console.log('Fetching importable docs from:', `${API}/vaults/${vaultId}/importable-documents`);
       const response = await axios.get(`${API}/vaults/${vaultId}/importable-documents`, { withCredentials: true });
+      console.log('Response:', response.data);
       setImportableDocs(response.data.documents || []);
     } catch (error) {
       console.error('Error fetching importable documents:', error);
-      toast.error('Failed to load your documents');
+      console.error('Error response:', error.response?.data);
+      toast.error(error.response?.data?.detail || 'Failed to load your documents');
     } finally {
       setImportLoading(false);
     }
