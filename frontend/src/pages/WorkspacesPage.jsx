@@ -113,24 +113,25 @@ export default function WorkspacesPage({ user }) {
       const currentPortfolioId = localStorage.getItem('activePortfolioId') || localStorage.getItem('defaultPortfolioId') || '';
       setActivePortfolioId(currentPortfolioId);
       
-      // Fetch vaults filtered by portfolio
-      let url = `${API}/vaults`;
-      if (currentPortfolioId) {
-        url += `?portfolio_id=${currentPortfolioId}`;
+      // Fetch vaults - MUST be filtered by portfolio (server enforces this)
+      // If no portfolio is selected, don't fetch (will show "no portfolio" warning)
+      if (!currentPortfolioId) {
+        setVaults([]);
+        setLoading(false);
+        return;
       }
       
+      const url = `${API}/vaults?portfolio_id=${currentPortfolioId}`;
       const response = await axios.get(url, { withCredentials: true });
       setVaults(response.data.vaults || []);
       
       // Get portfolio name for display
-      if (currentPortfolioId) {
-        try {
-          const portfoliosRes = await axios.get(`${API}/portfolios`, { withCredentials: true });
-          const portfolio = (portfoliosRes.data || []).find(p => p.portfolio_id === currentPortfolioId);
-          setActivePortfolioName(portfolio?.name || '');
-        } catch (e) {
-          console.error('Error fetching portfolio name:', e);
-        }
+      try {
+        const portfoliosRes = await axios.get(`${API}/portfolios`, { withCredentials: true });
+        const portfolio = (portfoliosRes.data || []).find(p => p.portfolio_id === currentPortfolioId);
+        setActivePortfolioName(portfolio?.name || '');
+      } catch (e) {
+        console.error('Error fetching portfolio name:', e);
       }
     } catch (error) {
       console.error('Error fetching vaults:', error);
