@@ -124,8 +124,9 @@ export default function WorkspaceDetailPage({ user }) {
   // Import document state
   const [importableDocs, setImportableDocs] = useState([]);
   const [importLoading, setImportLoading] = useState(false);
-  const [selectedImportDoc, setSelectedImportDoc] = useState(null);
+  const [selectedImportDocs, setSelectedImportDocs] = useState([]); // Changed to array for multi-select
   const [importPortfolioId, setImportPortfolioId] = useState(''); // Selected portfolio for import
+  const [importSearchTerm, setImportSearchTerm] = useState(''); // Search within import dialog
   
   // Settings modal state
   const [showSettings, setShowSettings] = useState(false);
