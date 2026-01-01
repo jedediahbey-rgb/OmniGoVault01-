@@ -2808,20 +2808,36 @@ async def search_mail_events(q: str, user: User = Depends(get_current_user)):
 # ============ DOCUMENT ENDPOINTS ============
 
 @api_router.get("/documents")
-async def get_documents(portfolio_id: Optional[str] = None, include_deleted: bool = False, user: User = Depends(get_current_user)):
+async def get_documents(
+    portfolio_id: Optional[str] = None, 
+    scope: Optional[str] = None,  # "all" to explicitly request cross-portfolio
+    include_deleted: bool = False, 
+    user: User = Depends(get_current_user)
+):
     """Get documents, filtered by portfolio.
     
-    SECURITY: If no portfolio_id is provided, logs a warning but still returns all user docs
-    for backwards compatibility with dashboard views. For strict scoping (documents page),
-    the frontend should always pass portfolio_id.
+    SECURITY: Portfolio scoping is enforced by default.
+    - If portfolio_id is provided: returns only that portfolio's documents
+    - If scope=all is provided: explicitly returns all portfolios (for dashboard)
+    - If neither: returns 400 error (prevents accidental data leakage)
     """
     query = {"user_id": user.user_id}
+    
     if portfolio_id:
+        # Explicit portfolio filter
         query["portfolio_id"] = portfolio_id
-        logger.debug(f"Documents list - user: {user.user_id}, filtered by portfolio: {portfolio_id}")
+        logger.debug(f"Documents list - user: {user.user_id}, portfolio: {portfolio_id}")
+    elif scope == "all":
+        # Explicit cross-portfolio request (dashboard use case)
+        logger.info(f"Documents list - user: {user.user_id}, scope=all (cross-portfolio)")
     else:
-        # Log when portfolio_id is missing for monitoring
-        logger.info(f"Documents list - user: {user.user_id}, NO portfolio filter (returning all docs)")
+        # Neither provided - return error to prevent accidental leakage
+        logger.warning(f"Documents list - BLOCKED: No portfolio_id or scope=all for user {user.user_id}")
+        raise HTTPException(
+            status_code=400,
+            detail="portfolio_id is required. Use scope=all to explicitly request all portfolios."
+        )
+    
     if not include_deleted:
         query["$or"] = [{"is_deleted": False}, {"is_deleted": {"$exists": False}}]
     # Sort ascending by created_at (oldest first, lowest sequence first)
