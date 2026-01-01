@@ -563,13 +563,23 @@ export default function WorkspaceDetailPage({ user }) {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-white">Documents</h2>
               {vault.user_permissions?.includes('UPLOAD_DOC') && (
-                <Button
-                  onClick={() => setShowAddDocument(true)}
-                  className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Document
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => setShowImportDocument(true)}
+                    variant="outline"
+                    className="border-vault-gold/30 text-vault-gold hover:bg-vault-gold/10"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Import from Vault
+                  </Button>
+                  <Button
+                    onClick={() => setShowAddDocument(true)}
+                    className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Document
+                  </Button>
+                </div>
               )}
             </div>
 
@@ -579,14 +589,24 @@ export default function WorkspaceDetailPage({ user }) {
                   <FileText className="w-12 h-12 text-vault-muted mx-auto mb-4" />
                   <p className="text-vault-muted mb-4">No documents yet</p>
                   {vault.user_permissions?.includes('UPLOAD_DOC') && (
-                    <Button
-                      onClick={() => setShowAddDocument(true)}
-                      variant="outline"
-                      className="border-vault-gold/30"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create First Document
-                    </Button>
+                    <div className="flex items-center justify-center gap-2">
+                      <Button
+                        onClick={() => setShowImportDocument(true)}
+                        variant="outline"
+                        className="border-vault-gold/30"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Import from Vault
+                      </Button>
+                      <Button
+                        onClick={() => setShowAddDocument(true)}
+                        variant="outline"
+                        className="border-vault-gold/30"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Document
+                      </Button>
+                    </div>
                   )}
                 </CardContent>
               </Card>
