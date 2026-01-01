@@ -516,11 +516,15 @@ async def get_importable_documents(request: Request, vault_id: str):
             ).to_list(10)
             user_ids = list(set([u["user_id"] for u in same_email_users]))
         
+        logger.info(f"Import docs - searching user_ids: {user_ids}")
+        
         # Get user's portfolio documents (exclude deleted ones)
         portfolio_docs = await _db.documents.find(
             {"user_id": {"$in": user_ids}, "is_deleted": {"$ne": True}},
             {"_id": 0, "document_id": 1, "title": 1, "document_type": 1, "description": 1, "created_at": 1, "portfolio_id": 1}
         ).sort("created_at", -1).to_list(100)
+        
+        logger.info(f"Import docs - found {len(portfolio_docs)} documents")
         
         # Get portfolio names for display
         portfolio_ids = list(set(doc.get("portfolio_id") for doc in portfolio_docs if doc.get("portfolio_id")))
