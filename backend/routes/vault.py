@@ -482,6 +482,47 @@ async def import_document_to_workspace(request: Request, vault_id: str, body: di
         raise HTTPException(status_code=500, detail="Failed to import document")
 
 
+@router.get("/{vault_id}/importable-documents")
+async def get_importable_documents(request: Request, vault_id: str):
+    """Get list of user's portfolio documents that can be imported into this workspace"""
+    user = await _get_current_user(request)
+    vault_service = get_vault_service()
+    
+    try:
+        # Check if user is a participant
+        participant = await vault_service.get_participant(vault_id, user.user_id)
+        if not participant:
+            raise HTTPException(status_code=403, detail="Not a participant in this vault")
+        
+        # Get user's portfolio documents
+        portfolio_docs = await _db.documents.find(
+            {"user_id": user.user_id},
+            {"_id": 0, "id": 1, "title": 1, "document_type": 1, "description": 1, "created_at": 1, "portfolio_id": 1}
+        ).sort("created_at", -1).to_list(100)
+        
+        # Get portfolio names for display
+        portfolio_ids = list(set(doc.get("portfolio_id") for doc in portfolio_docs if doc.get("portfolio_id")))
+        portfolios = {}
+        if portfolio_ids:
+            portfolio_list = await _db.portfolios.find(
+                {"portfolio_id": {"$in": portfolio_ids}},
+                {"_id": 0, "portfolio_id": 1, "name": 1}
+            ).to_list(100)
+            portfolios = {p["portfolio_id"]: p["name"] for p in portfolio_list}
+        
+        # Add portfolio names to documents
+        for doc in portfolio_docs:
+            doc["portfolio_name"] = portfolios.get(doc.get("portfolio_id"), "Unknown Portfolio")
+        
+        return {"documents": portfolio_docs}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching importable documents: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch documents")
+
+
 @router.get("/documents/{document_id}")
 async def get_document(request: Request, document_id: str):
     """Get document details including versions, comments, signatures"""
