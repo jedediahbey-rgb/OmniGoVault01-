@@ -120,10 +120,20 @@ function DocumentCard({ doc, isPinned, onNavigate, onDelete }) {
   const x = useMotionValue(0);
   const background = useTransform(x, [-100, 0], ['rgba(239, 68, 68, 0.3)', 'rgba(0, 0, 0, 0)']);
   const deleteOpacity = useTransform(x, [-100, -50, 0], [1, 0.5, 0]);
+  const controls = useAnimation();
 
-  const handleDragEnd = (event, info) => {
+  const handleDragEnd = async (event, info) => {
     if (info.offset.x < -80 && onDelete && !doc.is_locked) {
-      onDelete(doc);
+      // Confirm delete
+      if (window.confirm(`Delete "${doc.title}"?`)) {
+        onDelete(doc);
+      } else {
+        // Reset position if canceled
+        await controls.start({ x: 0, transition: { type: 'spring', stiffness: 500, damping: 30 } });
+      }
+    } else {
+      // Reset position if not swiped far enough
+      await controls.start({ x: 0, transition: { type: 'spring', stiffness: 500, damping: 30 } });
     }
   };
 
