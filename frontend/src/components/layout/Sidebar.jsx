@@ -14,6 +14,7 @@ import {
   Gear,
   GearSix,
   Graph,
+  Headset,
   Heartbeat,
   House,
   Key,
