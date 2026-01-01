@@ -333,6 +333,7 @@ class CreateVaultRequest(BaseModel):
     name: str
     description: str = ""
     vault_type: VaultType = VaultType.TRUST
+    portfolio_id: Optional[str] = None  # Link to specific portfolio for document isolation
 
 
 class UpdateVaultRequest(BaseModel):
