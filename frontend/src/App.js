@@ -100,6 +100,9 @@ export const useAuth = () => {
     }
     // Clear user state
     setUser(null);
+    // Clear portfolio context from localStorage
+    localStorage.removeItem('activePortfolioId');
+    localStorage.removeItem('defaultPortfolioId');
     // Redirect to homepage with logout=true and tier to trigger "Matrix System Offline" screen
     // The tier is passed so the loading screen can show the user's actual subscription tier
     window.location.href = `/?logout=true&tier=${encodeURIComponent(userTier)}`;
