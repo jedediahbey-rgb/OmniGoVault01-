@@ -341,6 +341,7 @@ class UpdateVaultRequest(BaseModel):
     description: Optional[str] = None
     status: Optional[VaultStatus] = None
     settings: Optional[Dict[str, Any]] = None
+    portfolio_id: Optional[str] = None  # Link to specific portfolio for document isolation
 
 
 class InviteParticipantRequest(BaseModel):
