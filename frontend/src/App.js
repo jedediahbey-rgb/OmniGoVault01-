@@ -523,6 +523,16 @@ const AppRouter = ({ auth }) => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/support-admin"
+        element={
+          <ProtectedRoute user={user} loading={loading} checkAuth={checkAuth}>
+            <AuthLayout auth={auth}>
+              <SupportAdminPage user={user} />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
       
       {/* Governance Routes */}
       <Route
