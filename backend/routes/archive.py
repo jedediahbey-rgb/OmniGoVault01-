@@ -114,8 +114,11 @@ async def get_sources(
     return {"sources": sources, "total": total}
 
 @router.get("/sources/{source_id}")
-async def get_source(source_id: str, user = Depends(get_current_user)):
+async def get_source(source_id: str, request: Request):
     """Get a single source by ID"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     source = await db.archive_sources.find_one({"source_id": source_id}, {"_id": 0})
     if not source:
         raise HTTPException(status_code=404, detail="Source not found")
