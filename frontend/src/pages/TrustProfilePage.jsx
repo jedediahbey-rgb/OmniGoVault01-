@@ -11,7 +11,10 @@ import {
   FloppyDisk,
   Plus,
   Question,
-  Upload
+  Upload,
+  Trash,
+  Image as ImageIcon,
+  FilePdf
 } from '@phosphor-icons/react';
 import PageHeader from '../components/shared/PageHeader';
 import GlassCard from '../components/shared/GlassCard';
