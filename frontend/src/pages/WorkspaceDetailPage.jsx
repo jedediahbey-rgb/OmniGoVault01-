@@ -1056,7 +1056,7 @@ export default function WorkspaceDetailPage({ user }) {
           if (open) fetchImportableDocs();
           else setSelectedImportDoc(null);
         }}>
-          <DialogContent className="bg-vault-dark border-vault-gold/20 max-w-lg max-h-[80vh]">
+          <DialogContent className="bg-vault-dark border-vault-gold/20 max-w-2xl max-h-[80vh]">
             <DialogHeader>
               <DialogTitle className="text-white flex items-center gap-2">
                 <Download className="w-5 h-5 text-vault-gold" />
@@ -1079,31 +1079,33 @@ export default function WorkspaceDetailPage({ user }) {
                   <p className="text-sm mt-2">Create documents in your portfolio first.</p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-2">
+                <div className="space-y-3 max-h-[45vh] overflow-y-auto pr-2">
                   {importableDocs.map((doc) => (
                     <div
                       key={doc.document_id || doc.id}
                       onClick={() => setSelectedImportDoc(doc)}
-                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                      className={`p-4 rounded-lg border cursor-pointer transition-all ${
                         (selectedImportDoc?.document_id || selectedImportDoc?.id) === (doc.document_id || doc.id)
-                          ? 'bg-vault-gold/20 border-vault-gold'
-                          : 'bg-vault-navy/50 border-vault-gold/10 hover:border-vault-gold/30'
+                          ? 'bg-vault-gold/20 border-vault-gold ring-1 ring-vault-gold/50'
+                          : 'bg-vault-navy/50 border-vault-gold/10 hover:border-vault-gold/30 hover:bg-vault-navy/70'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-white truncate">{doc.title}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="bg-vault-gold/10 text-vault-gold border-vault-gold/30 text-xs">
-                              {doc.document_type?.replace('_', ' ') || 'Document'}
+                          <p className="font-medium text-white text-base leading-tight mb-2">
+                            {doc.title}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge variant="outline" className="bg-vault-gold/10 text-vault-gold border-vault-gold/30 text-xs whitespace-nowrap">
+                              {doc.document_type?.replace(/_/g, ' ') || 'Document'}
                             </Badge>
-                            <span className="text-xs text-vault-muted truncate">
+                            <span className="text-xs text-vault-muted">
                               {doc.portfolio_name}
                             </span>
                           </div>
                         </div>
                         {(selectedImportDoc?.document_id || selectedImportDoc?.id) === (doc.document_id || doc.id) && (
-                          <Check className="w-5 h-5 text-vault-gold flex-shrink-0" />
+                          <Check className="w-5 h-5 text-vault-gold flex-shrink-0 mt-1" />
                         )}
                       </div>
                     </div>
