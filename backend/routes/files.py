@@ -171,7 +171,8 @@ async def delete_file(request: Request, file_id: str):
 @router.get("/portfolio/{portfolio_id}")
 async def list_portfolio_files(request: Request, portfolio_id: str, category: Optional[str] = None):
     """List files for a portfolio"""
-    user = await _get_current_user(request)
+    # Verify user is authenticated
+    await _get_current_user(request)
     
     query = {
         "portfolio_id": portfolio_id,
