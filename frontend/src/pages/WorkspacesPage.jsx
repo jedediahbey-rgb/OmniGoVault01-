@@ -92,8 +92,12 @@ export default function WorkspacesPage({ user }) {
   const [newVault, setNewVault] = useState({
     name: '',
     description: '',
-    vault_type: 'TRUST'
+    vault_type: 'TRUST',
+    portfolio_id: ''
   });
+  
+  // Portfolios for selection
+  const [portfolios, setPortfolios] = useState([]);
   
   // Vault types for selection
   const [vaultTypes, setVaultTypes] = useState([]);
@@ -121,11 +125,22 @@ export default function WorkspacesPage({ user }) {
       console.error('Error fetching vault types:', error);
     }
   }, []);
+  
+  // Fetch portfolios for workspace association
+  const fetchPortfolios = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API}/portfolios`, { withCredentials: true });
+      setPortfolios(response.data || []);
+    } catch (error) {
+      console.error('Error fetching portfolios:', error);
+    }
+  }, []);
 
   useEffect(() => {
     fetchVaults();
     fetchVaultTypes();
-  }, [fetchVaults, fetchVaultTypes]);
+    fetchPortfolios();
+  }, [fetchVaults, fetchVaultTypes, fetchPortfolios]);
 
   // Create new vault
   const handleCreateVault = async () => {
