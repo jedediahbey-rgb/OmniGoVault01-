@@ -476,8 +476,8 @@ function SchemeDialog({ open, onClose, scheme, onSave, saving }) {
             <div className="space-y-2">
               <Label className="text-vault-muted">Position</Label>
               <Select
-                value={formData.default_position}
-                onValueChange={(v) => setFormData({ ...formData, default_position: v })}
+                value={formData.position}
+                onValueChange={(v) => setFormData({ ...formData, position: v })}
               >
                 <SelectTrigger className="bg-vault-navy border-vault-gold/20">
                   <SelectValue />
