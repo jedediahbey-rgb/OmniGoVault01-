@@ -139,8 +139,7 @@ export default function WorkspacesPage({ user }) {
   useEffect(() => {
     fetchVaults();
     fetchVaultTypes();
-    fetchPortfolios();
-  }, [fetchVaults, fetchVaultTypes, fetchPortfolios]);
+  }, [fetchVaults, fetchVaultTypes]);
 
   // Create new vault
   const handleCreateVault = async () => {
@@ -151,10 +150,14 @@ export default function WorkspacesPage({ user }) {
 
     try {
       setCreating(true);
-      const response = await axios.post(`${API}/vaults`, newVault, { withCredentials: true });
+      const response = await axios.post(`${API}/vaults`, {
+        name: newVault.name,
+        description: newVault.description,
+        vault_type: newVault.vault_type
+      }, { withCredentials: true });
       toast.success('Vault created successfully');
       setShowCreateModal(false);
-      setNewVault({ name: '', description: '', vault_type: 'TRUST', portfolio_id: '' });
+      setNewVault({ name: '', description: '', vault_type: 'TRUST' });
       // Navigate to the new vault
       navigate(`/vault/workspaces/${response.data.vault_id}`);
     } catch (error) {
