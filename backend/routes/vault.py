@@ -438,6 +438,77 @@ async def update_document(request: Request, document_id: str, body: UpdateDocume
         raise HTTPException(status_code=403, detail=str(e))
 
 
+@router.delete("/documents/{document_id}")
+async def delete_document(request: Request, document_id: str):
+    """Delete a draft document - Only allowed for DRAFT documents without signatures"""
+    user = await _get_current_user(request)
+    vault_service = get_vault_service()
+    
+    try:
+        # Get the document
+        document = await _db.vault_documents.find_one({"document_id": document_id}, {"_id": 0})
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        vault_id = document.get("vault_id")
+        
+        # Check if user has permission (must be participant with edit rights or owner)
+        participant = await vault_service.get_participant(vault_id, user.user_id)
+        if not participant:
+            raise HTTPException(status_code=403, detail="Not a participant in this vault")
+        
+        # Only OWNER, ADMIN, or EDITOR can delete documents
+        allowed_roles = ["OWNER", "ADMIN", "EDITOR"]
+        if participant.get("role") not in allowed_roles:
+            raise HTTPException(status_code=403, detail="Insufficient permissions to delete documents")
+        
+        # Check document status - only DRAFT can be deleted
+        doc_status = document.get("status", "DRAFT")
+        if doc_status not in ["DRAFT", "UNDER_REVIEW"]:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete {doc_status} documents. Only draft documents can be deleted."
+            )
+        
+        # Check for signatures
+        signatures = document.get("signatures", [])
+        if signatures:
+            raise HTTPException(
+                status_code=400, 
+                detail="Cannot delete document with signatures. Document integrity must be preserved."
+            )
+        
+        # Delete the document
+        await _db.vault_documents.delete_one({"document_id": document_id})
+        
+        # Delete associated events
+        await _db.document_events.delete_many({"document_id": document_id})
+        
+        # Log the deletion event
+        await _db.document_events.insert_one({
+            "event_id": str(uuid4()),
+            "document_id": None,
+            "vault_id": vault_id,
+            "user_id": user.user_id,
+            "event_type": "DOCUMENT_DELETED",
+            "details": {
+                "deleted_document_id": document_id,
+                "deleted_document_title": document.get("title", "Unknown"),
+                "reason": "User requested deletion"
+            },
+            "ip_address": get_client_ip(request),
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return {"message": "Document deleted successfully", "document_id": document_id}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting document: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete document")
+
+
 @router.post("/documents/{document_id}/submit-for-review")
 async def submit_for_review(request: Request, document_id: str):
     """Submit a draft document for review"""
