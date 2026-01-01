@@ -610,7 +610,7 @@ export default function WorkspaceDetailPage({ user }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => toast.info('Workspace settings coming soon')}>
+                <DropdownMenuItem onClick={openSettings}>
                   <Gear className="w-4 h-4 mr-2" />
                   Settings
                 </DropdownMenuItem>
