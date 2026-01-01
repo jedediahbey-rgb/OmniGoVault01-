@@ -504,6 +504,9 @@ async def get_importable_documents(request: Request, vault_id: str):
         if not participant:
             raise HTTPException(status_code=403, detail="Not a participant in this vault")
         
+        # Debug logging
+        logger.info(f"Import docs - user_id: {user.user_id}, email: {user.email}")
+        
         # Get all user_ids associated with this email (handles multiple accounts)
         user_ids = [user.user_id]
         if user.email:
