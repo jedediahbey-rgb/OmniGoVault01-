@@ -123,39 +123,33 @@ class AuthDataTester:
             self.log_test("Portfolio Access Test", False, f"Error: {str(e)}")
             return False
 
-    def test_get_portfolio_documents(self):
-        """Test GET /api/portfolios/{portfolio_id}/documents"""
-        if not hasattr(self, 'test_portfolio_id') or not self.test_portfolio_id:
-            self.log_test("Portfolio Documents Test", False, "No portfolio ID available")
-            return False
-            
+    def test_get_documents(self):
+        """Test GET /api/documents - check user can access documents"""
         try:
-            response = self.session.get(
-                f"{self.base_url}/portfolios/{self.test_portfolio_id}/documents", 
-                timeout=10
-            )
+            response = self.session.get(f"{self.base_url}/documents", timeout=10)
             success = response.status_code == 200
             
             if success:
                 data = response.json()
                 documents = data if isinstance(data, list) else []
                 doc_count = len(documents)
-                details = f"Found {doc_count} documents in portfolio {self.test_portfolio_id}"
+                details = f"Found {doc_count} documents accessible to user"
                 
                 if doc_count > 0:
                     # Show some document details
                     sample_doc = documents[0]
                     doc_title = sample_doc.get("title", "Unknown")
                     doc_type = sample_doc.get("document_type", "Unknown")
-                    details += f", Sample: '{doc_title}' ({doc_type})"
+                    portfolio_id = sample_doc.get("portfolio_id", "Unknown")
+                    details += f", Sample: '{doc_title}' ({doc_type}) in portfolio {portfolio_id}"
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("Portfolio Documents Test", success, details)
+            self.log_test("Documents Access Test", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Portfolio Documents Test", False, f"Error: {str(e)}")
+            self.log_test("Documents Access Test", False, f"Error: {str(e)}")
             return False
 
     # ============ IMPORT FROM VAULT TESTS ============
