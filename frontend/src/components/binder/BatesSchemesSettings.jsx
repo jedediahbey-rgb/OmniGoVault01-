@@ -291,8 +291,8 @@ export default function BatesSchemesSettings({
                     </div>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="text-vault-gold font-mono text-xs">
-                        {scheme.prefix_template}
-                        {String(continuation?.last_number + 1 || 1).padStart(scheme.default_digits, '0')}
+                        {scheme.prefix_pattern}
+                        {String(continuation?.last_number + 1 || 1).padStart(scheme.digits, '0')}
                       </span>
                       {continuation && (
                         <span className="text-vault-muted text-xs flex items-center gap-1">
