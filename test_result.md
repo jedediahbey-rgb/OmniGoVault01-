@@ -992,6 +992,39 @@ Based on the authentication flow testing, the user reporting "generate binder is
 4. **Check Network**: Verify stable internet connection to auth services
 5. **Try Different Browser**: Test with different browser if issues persist
 
+## Critical Auth & Data Integrity Fix (January 1, 2026)
+
+### Issue Resolution Summary:
+**CRITICAL BUG FIXED: Multiple User Accounts for Same Email**
+
+#### Root Cause Identified:
+- User `jedediah.bey@gmail.com` had **3 duplicate accounts** in the database:
+  1. `dev_admin_user` - Canonical user with 8 documents, 3 portfolios
+  2. `test-omni-owner-1766998190281` - Duplicate with 0 documents
+  3. `user_jedediah_bey` - Duplicate with 0 documents
+
+- When logging in via Google OAuth, the system could assign any of these user IDs, causing documents to appear "lost"
+
+#### Fix Applied:
+1. ✅ **Merged duplicate accounts** - All portfolios, documents, sessions, and related data consolidated under `dev_admin_user`
+2. ✅ **Deleted duplicate user records** - Removed 2 duplicate user entries
+3. ✅ **Added unique email index** - Prevents future duplicate accounts via MongoDB unique constraint
+4. ✅ **Auth flow verified** - The `/api/auth/session` endpoint correctly finds existing users by email
+
+#### Post-Fix Verification:
+- ✅ User `jedediah.bey@gmail.com` now has single canonical account (`dev_admin_user`)
+- ✅ 5 portfolios accessible (merged from all accounts)
+- ✅ 8 documents accessible
+- ✅ 9 binder profiles available
+- ✅ "Import from Vault" endpoint returns 7 importable documents
+- ✅ Vaults endpoint returns 8 vaults
+
+#### Database Protection:
+- Unique index `email_unique` created on `users.email` field
+- Sparse index allows null emails but prevents duplicates for non-null values
+
+---
+
 ## Bates Schemes Settings Testing (January 1, 2025)
 
 ### Test Scope:
