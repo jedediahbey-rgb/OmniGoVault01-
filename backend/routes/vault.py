@@ -69,7 +69,14 @@ async def create_vault(request: Request, body: CreateVaultRequest):
 
 @router.get("")
 async def list_vaults(request: Request, portfolio_id: str = None):
-    """List all vaults the user has access to, optionally filtered by portfolio"""
+    """List all vaults the user has access to, filtered by portfolio.
+    
+    SECURITY: If portfolio_id is provided, only vaults linked to that portfolio are returned.
+    If no portfolio_id is provided, all user vaults are returned (for backwards compatibility
+    with dashboard views that show all workspaces).
+    
+    For strict portfolio scoping (workspaces page), always pass portfolio_id.
+    """
     user = await _get_current_user(request)
     vault_service = get_vault_service()
     
@@ -77,8 +84,14 @@ async def list_vaults(request: Request, portfolio_id: str = None):
     from routes.billing import get_or_create_account_for_user
     account = await get_or_create_account_for_user(user.user_id, _db)
     
+    # Log for debugging portfolio scoping issues
+    if portfolio_id:
+        logger.info(f"List vaults - user: {user.user_id}, filtered by portfolio_id: {portfolio_id}")
+    else:
+        logger.info(f"List vaults - user: {user.user_id}, no portfolio filter (all vaults)")
+    
     vaults = await vault_service.list_user_vaults(user.user_id, account["account_id"], portfolio_id=portfolio_id)
-    return {"vaults": vaults}
+    return {"vaults": vaults, "portfolio_id": portfolio_id}
 
 
 # ============ UTILITY ENDPOINTS (must be before /{vault_id}) ============
