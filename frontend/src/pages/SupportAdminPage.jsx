@@ -598,15 +598,20 @@ function AddNoteDialog({ open, onClose, user, onSave, loading }) {
     tags: []
   });
 
+  // Reset form when dialog opens with user
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (open && user) {
-      setFormData(prev => ({
-        ...prev,
-        user_id: user.user_id || '',
-        account_id: user.account_id || ''
-      }));
+    if (open) {
+      setFormData({
+        account_id: user?.account_id || '',
+        user_id: user?.user_id || '',
+        note_type: 'GENERAL',
+        content: '',
+        is_internal: false,
+        tags: []
+      });
     }
-  }, [open, user]);
+  }, [open, user?.user_id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
