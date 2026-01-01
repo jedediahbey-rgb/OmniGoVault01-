@@ -871,7 +871,13 @@ export default function WorkspaceDetailPage({ user }) {
                   {selectedDocument.status === 'UNDER_REVIEW' && (
                     <Button
                       onClick={() => handleAffirmDocument(selectedDocument.document_id)}
-                      className="bg-green-600 hover:bg-green-700"
+                      className={
+                        selectedDocument.signatures?.length > 0
+                          ? "bg-green-600 hover:bg-green-700"
+                          : "bg-gray-600 cursor-not-allowed opacity-50"
+                      }
+                      disabled={!selectedDocument.signatures?.length}
+                      title={!selectedDocument.signatures?.length ? "Document must be signed before affirming" : "Affirm this document"}
                     >
                       <Check className="w-4 h-4 mr-2" />
                       Affirm
