@@ -154,7 +154,7 @@ export default function WorkspacesPage({ user }) {
       const response = await axios.post(`${API}/vaults`, newVault, { withCredentials: true });
       toast.success('Vault created successfully');
       setShowCreateModal(false);
-      setNewVault({ name: '', description: '', vault_type: 'TRUST' });
+      setNewVault({ name: '', description: '', vault_type: 'TRUST', portfolio_id: '' });
       // Navigate to the new vault
       navigate(`/vault/workspaces/${response.data.vault_id}`);
     } catch (error) {
