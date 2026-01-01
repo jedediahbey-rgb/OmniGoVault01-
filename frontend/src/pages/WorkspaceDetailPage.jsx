@@ -603,7 +603,13 @@ export default function WorkspaceDetailPage({ user }) {
 
             <div className="space-y-3">
               {vault.participants?.map((participant) => (
-                <ParticipantRow key={participant.id} participant={participant} />
+                <ParticipantRow 
+                  key={participant.id} 
+                  participant={participant}
+                  isCreator={vault.creator_id === vault.participants?.find(p => p.user_id === participant.user_id)?.user_id}
+                  canRemove={vault.status === 'DRAFT' || vault.status === 'ACTIVE'}
+                  onRemove={() => handleRemoveParticipant(participant.id, participant.user_email)}
+                />
               ))}
             </div>
           </TabsContent>
