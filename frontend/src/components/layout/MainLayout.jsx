@@ -169,6 +169,19 @@ export default function MainLayout({ children, user, onLogout }) {
             <div className="flex items-center gap-2" ref={userMenuRef}>
               {user && (
                 <>
+                  {/* Active Portfolio Chip - Global Context */}
+                  <ActivePortfolioChip user={user} />
+                  
+                  {/* Command Palette Hint */}
+                  <button
+                    onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}
+                    className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-xs text-white/40"
+                    title="Open Command Palette (Ctrl+K)"
+                  >
+                    <Command className="w-3 h-3" />
+                    <span>Ctrl+K</span>
+                  </button>
+                  
                   {/* Notification Bell */}
                   <NotificationBell />
                   
