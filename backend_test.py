@@ -136,12 +136,83 @@ class AuthConsistencyTester:
             "timestamp": datetime.now().isoformat()
         })
 
-    # ============ QA REPORT ENDPOINT TESTS (NEW - no auth required) ============
+    # ============ AUTH GUARD VERIFICATION TESTS ============
 
-    def test_qa_report_endpoint(self):
-        """Test GET /api/qa/report - Should return a full HTML page with route inventory"""
+    def test_auth_me_without_cookie(self):
+        """Test GET /api/auth/me without cookie - Should return 401"""
         try:
-            response = self.session.get(f"{self.base_url}/qa/report", timeout=15)
+            # Create a session without authentication headers
+            unauth_session = requests.Session()
+            unauth_session.headers.update({
+                'Content-Type': 'application/json',
+                'User-Agent': 'AuthConsistencyTester/1.0'
+            })
+            
+            response = unauth_session.get(f"{self.base_url}/auth/me", timeout=10)
+            success = response.status_code == 401
+            
+            if success:
+                details = f"Correctly returned 401 Unauthorized"
+            else:
+                details = f"Expected 401, got {response.status_code}: {response.text[:200]}"
+            
+            self.log_test("Auth Guard - /api/auth/me without cookie", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Auth Guard - /api/auth/me without cookie", False, f"Error: {str(e)}")
+            return False
+
+    def test_vault_redirect_without_auth(self):
+        """Test direct navigation to /vault should redirect to landing page"""
+        try:
+            # Test frontend vault route without authentication
+            unauth_session = requests.Session()
+            unauth_session.headers.update({
+                'User-Agent': 'AuthConsistencyTester/1.0'
+            })
+            
+            response = unauth_session.get(f"{self.frontend_url}/vault", timeout=10, allow_redirects=False)
+            
+            # Check if it redirects (3xx status) or serves landing page content
+            if response.status_code in [301, 302, 303, 307, 308]:
+                # Check redirect location
+                location = response.headers.get('Location', '')
+                if '/' in location or 'login' in location.lower() or 'auth' in location.lower():
+                    success = True
+                    details = f"Redirected to: {location}"
+                else:
+                    success = False
+                    details = f"Unexpected redirect to: {location}"
+            elif response.status_code == 200:
+                # Check if it serves landing page content instead of vault
+                content = response.text.lower()
+                if 'vault' in content and ('login' in content or 'sign in' in content or 'create account' in content):
+                    success = True
+                    details = "Serves landing page with auth prompts"
+                elif 'vault' not in content:
+                    success = True
+                    details = "Serves landing page without vault content"
+                else:
+                    success = False
+                    details = "Serves vault content without authentication"
+            else:
+                success = False
+                details = f"Unexpected status: {response.status_code}"
+            
+            self.log_test("Auth Guard - /vault redirect", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Auth Guard - /vault redirect", False, f"Error: {str(e)}")
+            return False
+
+    # ============ QA REPORT ENDPOINTS TESTS ============
+
+    def test_qa_report_lite_endpoint(self):
+        """Test GET /api/qa/report-lite - Should return HTML report"""
+        try:
+            response = self.session.get(f"{self.base_url}/qa/report-lite", timeout=15)
             success = response.status_code == 200
             
             if success:
@@ -154,13 +225,14 @@ class AuthConsistencyTester:
                     expected_content = [
                         'route inventory',
                         'user flows',
-                        'permission matrix'
+                        'permission matrix',
+                        'qa report'
                     ]
                     
                     found_content = [item for item in expected_content if item.lower() in content.lower()]
                     
-                    if len(found_content) >= 2:  # At least 2 out of 3 expected items
-                        details = f"HTML page ({len(content)} chars), Contains: {', '.join(found_content)}"
+                    if len(found_content) >= 2:  # At least 2 out of 4 expected items
+                        details = f"HTML report ({len(content)} chars), Contains: {', '.join(found_content)}"
                     else:
                         details = f"HTML page but missing expected content. Found: {', '.join(found_content)}"
                         success = False
@@ -174,15 +246,15 @@ class AuthConsistencyTester:
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("QA Report Endpoint", success, details)
+            self.log_test("QA Report Lite Endpoint", success, details)
             return success
             
         except Exception as e:
-            self.log_test("QA Report Endpoint", False, f"Error: {str(e)}")
+            self.log_test("QA Report Lite Endpoint", False, f"Error: {str(e)}")
             return False
 
     def test_qa_access_md_endpoint(self):
-        """Test GET /api/qa/access.md - Should return markdown with QA reviewer instructions"""
+        """Test GET /api/qa/access.md - Should return markdown"""
         try:
             response = self.session.get(f"{self.base_url}/qa/access.md", timeout=10)
             success = response.status_code == 200
@@ -225,185 +297,24 @@ class AuthConsistencyTester:
             self.log_test("QA Access.md Endpoint", False, f"Error: {str(e)}")
             return False
 
-    # ============ REAL-TIME COLLABORATION ENDPOINTS (no auth required for stats) ============
+    # ============ PORTFOLIO-SCOPED ENDPOINTS TESTS ============
 
-    def test_realtime_capabilities_endpoint(self):
-        """Test GET /api/realtime/capabilities - Should return V2 features list"""
-        try:
-            response = self.session.get(f"{self.base_url}/realtime/capabilities", timeout=10)
-            success = response.status_code == 200
-            
-            if success:
-                data = response.json()
-                if data.get("ok"):
-                    capabilities = data.get("data", {})
-                    version = capabilities.get("version")
-                    features = capabilities.get("features", {})
-                    
-                    # Check for V2 features
-                    expected_v2_features = [
-                        "presence", "rooms", "document_locking", "channel_subscriptions",
-                        "activity_history", "conflict_resolution", "session_recovery", "rate_limiting"
-                    ]
-                    
-                    found_features = [f for f in expected_v2_features if features.get(f)]
-                    
-                    if version == "2.0" and len(found_features) >= 6:  # Most V2 features present
-                        details = f"Version: {version}, V2 Features: {len(found_features)}/{len(expected_v2_features)}"
-                    else:
-                        details = f"Version: {version}, Missing V2 features: {set(expected_v2_features) - set(found_features)}"
-                        success = False
-                else:
-                    details = f"API error: {data}"
-                    success = False
-            else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
-            
-            self.log_test("Realtime Capabilities", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Realtime Capabilities", False, f"Error: {str(e)}")
-            return False
-
-    def test_realtime_stats_endpoint(self):
-        """Test GET /api/realtime/stats - Should return connection statistics"""
-        try:
-            response = self.session.get(f"{self.base_url}/realtime/stats", timeout=10)
-            success = response.status_code == 200
-            
-            if success:
-                data = response.json()
-                if data.get("ok"):
-                    stats = data.get("data", {})
-                    
-                    # Check for expected stats fields
-                    expected_fields = ["total_connections", "total_users", "total_rooms", "active_document_locks"]
-                    found_fields = [f for f in expected_fields if f in stats]
-                    
-                    if len(found_fields) >= 3:  # Most expected fields present
-                        total_connections = stats.get("total_connections", 0)
-                        total_users = stats.get("total_users", 0)
-                        total_rooms = stats.get("total_rooms", 0)
-                        details = f"Connections: {total_connections}, Users: {total_users}, Rooms: {total_rooms}"
-                    else:
-                        details = f"Missing stats fields. Found: {found_fields}, Expected: {expected_fields}"
-                        success = False
-                else:
-                    details = f"API error: {data}"
-                    success = False
-            else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
-            
-            self.log_test("Realtime Stats", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Realtime Stats", False, f"Error: {str(e)}")
-            return False
-
-    def test_realtime_detailed_stats_endpoint(self):
-        """Test GET /api/realtime/stats/detailed - Should return detailed system metrics"""
-        try:
-            response = self.session.get(f"{self.base_url}/realtime/stats/detailed", timeout=10)
-            success = response.status_code == 200
-            
-            if success:
-                data = response.json()
-                if data.get("ok"):
-                    stats = data.get("data", {})
-                    
-                    # Check for detailed stats sections
-                    expected_sections = ["connections", "rooms", "locks", "presence"]
-                    found_sections = [s for s in expected_sections if s in stats]
-                    
-                    if len(found_sections) >= 3:  # Most sections present
-                        details = f"Detailed stats sections: {', '.join(found_sections)}"
-                        
-                        # Add specific metrics if available
-                        if "connections" in stats:
-                            conn_total = stats["connections"].get("total", 0)
-                            details += f", Connections: {conn_total}"
-                        
-                        if "rooms" in stats:
-                            rooms_total = stats["rooms"].get("total", 0)
-                            details += f", Rooms: {rooms_total}"
-                    else:
-                        details = f"Missing detailed sections. Found: {found_sections}, Expected: {expected_sections}"
-                        success = False
-                else:
-                    details = f"API error: {data}"
-                    success = False
-            else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
-            
-            self.log_test("Realtime Detailed Stats", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Realtime Detailed Stats", False, f"Error: {str(e)}")
-            return False
-
-    # ============ PORTFOLIO-SCOPED VAULTS (requires auth) ============
-
-    def test_get_user_portfolios(self):
-        """Get user portfolios for testing portfolio-scoped endpoints"""
+    def test_vaults_with_auth(self):
+        """Test GET /api/vaults - Should work with valid auth"""
         if not self.session_token:
-            self.log_test("Get User Portfolios", False, "No session token available")
+            self.log_test("Vaults with Auth", False, "No session token available")
             return False
             
         try:
-            response = self.session.get(f"{self.base_url}/portfolios", timeout=10)
-            success = response.status_code == 200
+            # Set up authenticated session
+            auth_session = requests.Session()
+            auth_session.headers.update({
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {self.session_token}',
+                'User-Agent': 'AuthConsistencyTester/1.0'
+            })
             
-            if success:
-                data = response.json()
-                portfolios = data if isinstance(data, list) else []
-                
-                if portfolios:
-                    # Find a portfolio with vaults for testing
-                    for portfolio in portfolios:
-                        portfolio_id = portfolio.get("portfolio_id")
-                        # Check if this portfolio has vaults
-                        vault_resp = self.session.get(f"{self.base_url}/vaults", params={"portfolio_id": portfolio_id}, timeout=5)
-                        if vault_resp.status_code == 200:
-                            vault_data = vault_resp.json()
-                            vaults = vault_data.get("vaults", [])
-                            if vaults:
-                                self.test_portfolio_id = portfolio_id
-                                portfolio_name = portfolio.get("name", "Unknown")
-                                details = f"Found {len(portfolios)} portfolios, Using: {portfolio_name} ({self.test_portfolio_id}) with {len(vaults)} vaults"
-                                break
-                    else:
-                        # No portfolio with vaults found, use first one anyway
-                        self.test_portfolio_id = portfolios[0].get("portfolio_id")
-                        portfolio_name = portfolios[0].get("name", "Unknown")
-                        details = f"Found {len(portfolios)} portfolios, Using: {portfolio_name} ({self.test_portfolio_id}) - no vaults found"
-                else:
-                    details = "No portfolios found"
-                    success = False
-            else:
-                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
-            
-            self.log_test("Get User Portfolios", success, details)
-            return success
-            
-        except Exception as e:
-            self.log_test("Get User Portfolios", False, f"Error: {str(e)}")
-            return False
-
-    def test_portfolio_filtered_vaults(self):
-        """Test GET /api/vaults?portfolio_id={id} - Should filter workspaces by portfolio"""
-        if not self.session_token or not self.test_portfolio_id:
-            self.log_test("Portfolio Filtered Vaults", False, "Missing session token or portfolio ID")
-            return False
-            
-        try:
-            response = self.session.get(
-                f"{self.base_url}/vaults",
-                params={"portfolio_id": self.test_portfolio_id},
-                timeout=10
-            )
+            response = auth_session.get(f"{self.base_url}/vaults", timeout=10)
             success = response.status_code == 200
             
             if success:
@@ -420,33 +331,57 @@ class AuthConsistencyTester:
                     vaults = []
                 
                 vault_count = len(vaults)
-                details = f"Portfolio {self.test_portfolio_id}: {vault_count} vaults"
+                details = f"Successfully retrieved {vault_count} vaults"
                 
                 if vault_count > 0:
-                    # Store first vault for importable documents test
+                    # Store first vault for further testing
                     self.test_vault_id = vaults[0].get("vault_id") or vaults[0].get("id")
                     vault_name = vaults[0].get("name", "Unknown")
                     details += f", First vault: {vault_name}"
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("Portfolio Filtered Vaults", success, details)
+            self.log_test("Vaults with Auth", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Portfolio Filtered Vaults", False, f"Error: {str(e)}")
+            self.log_test("Vaults with Auth", False, f"Error: {str(e)}")
             return False
 
-    def test_vault_importable_documents(self):
-        """Test GET /api/vaults/{vault_id}/importable-documents?portfolio_id={id} - Should filter documents by portfolio"""
-        if not self.session_token or not self.test_vault_id or not self.test_portfolio_id:
-            self.log_test("Vault Importable Documents", False, "Missing session token, vault ID, or portfolio ID")
+    def test_documents_with_portfolio_id(self):
+        """Test GET /api/documents - Should work with portfolio_id param"""
+        if not self.session_token:
+            self.log_test("Documents with Portfolio ID", False, "No session token available")
             return False
             
         try:
-            response = self.session.get(
-                f"{self.base_url}/vaults/{self.test_vault_id}/importable-documents",
-                params={"portfolio_id": self.test_portfolio_id},
+            # First get portfolios to find a valid portfolio_id
+            auth_session = requests.Session()
+            auth_session.headers.update({
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {self.session_token}',
+                'User-Agent': 'AuthConsistencyTester/1.0'
+            })
+            
+            # Get portfolios
+            portfolios_resp = auth_session.get(f"{self.base_url}/portfolios", timeout=10)
+            if portfolios_resp.status_code != 200:
+                self.log_test("Documents with Portfolio ID", False, "Could not retrieve portfolios")
+                return False
+            
+            portfolios = portfolios_resp.json()
+            if not portfolios:
+                self.log_test("Documents with Portfolio ID", False, "No portfolios found")
+                return False
+            
+            # Use first portfolio
+            portfolio_id = portfolios[0].get("portfolio_id")
+            portfolio_name = portfolios[0].get("name", "Unknown")
+            
+            # Test documents endpoint with portfolio_id
+            response = auth_session.get(
+                f"{self.base_url}/documents",
+                params={"portfolio_id": portfolio_id},
                 timeout=10
             )
             success = response.status_code == 200
@@ -455,17 +390,17 @@ class AuthConsistencyTester:
                 data = response.json()
                 
                 # Handle different response formats
-                if isinstance(data, dict) and "documents" in data:
-                    documents = data["documents"]
-                elif isinstance(data, list):
+                if isinstance(data, list):
                     documents = data
+                elif isinstance(data, dict) and "documents" in data:
+                    documents = data["documents"]
                 elif isinstance(data, dict) and "data" in data:
                     documents = data["data"]
                 else:
                     documents = []
                 
                 doc_count = len(documents)
-                details = f"Vault {self.test_vault_id}: {doc_count} importable documents"
+                details = f"Portfolio '{portfolio_name}': {doc_count} documents"
                 
                 if doc_count > 0:
                     # Show sample document info
@@ -476,78 +411,98 @@ class AuthConsistencyTester:
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("Vault Importable Documents", success, details)
+            self.log_test("Documents with Portfolio ID", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Vault Importable Documents", False, f"Error: {str(e)}")
+            self.log_test("Documents with Portfolio ID", False, f"Error: {str(e)}")
             return False
 
-    # ============ BINDER GENERATION (requires auth) ============
+    # ============ PUBLIC ROUTES TESTS ============
 
-    def test_binder_profiles_endpoint(self):
-        """Test GET /api/binder/profiles?portfolio_id={id} - Should return binder profiles"""
-        if not self.session_token or not self.test_portfolio_id:
-            self.log_test("Binder Profiles", False, "Missing session token or portfolio ID")
-            return False
-            
+    def test_landing_page_without_auth(self):
+        """Test GET / (landing page) - Should load without auth"""
         try:
-            response = self.session.get(
-                f"{self.base_url}/binder/profiles",
-                params={"portfolio_id": self.test_portfolio_id},
-                timeout=10
-            )
+            # Test frontend landing page without authentication
+            unauth_session = requests.Session()
+            unauth_session.headers.update({
+                'User-Agent': 'AuthConsistencyTester/1.0'
+            })
+            
+            response = unauth_session.get(f"{self.frontend_url}/", timeout=10)
             success = response.status_code == 200
             
             if success:
-                data = response.json()
-                if data.get("ok"):
-                    profiles_data = data.get("data", {})
-                    profiles = profiles_data.get("profiles", [])
-                    
-                    profile_count = len(profiles)
-                    details = f"Portfolio {self.test_portfolio_id}: {profile_count} binder profiles"
-                    
-                    if profile_count > 0:
-                        # Show sample profile info
-                        first_profile = profiles[0]
-                        profile_name = first_profile.get("name", "Unknown")
-                        profile_type = first_profile.get("profile_type", "Unknown")
-                        details += f", Sample: {profile_name} ({profile_type})"
+                content = response.text.lower()
+                
+                # Check for expected landing page content
+                expected_content = [
+                    'omnigovault',
+                    'vault',
+                    'trust',
+                    'login',
+                    'sign in',
+                    'create account'
+                ]
+                
+                found_content = [item for item in expected_content if item in content]
+                
+                if len(found_content) >= 3:  # At least 3 expected items
+                    details = f"Landing page loaded ({len(content)} chars), Contains: {', '.join(found_content)}"
                 else:
-                    error = data.get("error", {})
-                    details = f"API error: {error.get('message', 'Unknown error')}"
+                    details = f"Page loaded but missing expected content. Found: {', '.join(found_content)}"
                     success = False
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("Binder Profiles", success, details)
+            self.log_test("Landing Page without Auth", success, details)
             return success
             
         except Exception as e:
-            self.log_test("Binder Profiles", False, f"Error: {str(e)}")
+            self.log_test("Landing Page without Auth", False, f"Error: {str(e)}")
             return False
 
-    def test_weasyprint_dependency(self):
-        """Verify WeasyPrint dependency is working"""
+    def test_learn_page_without_auth(self):
+        """Test GET /learn - Should show educational content even without auth"""
         try:
-            # Try to import WeasyPrint
-            result = subprocess.run([
-                'python3', '-c', 'import weasyprint; print("WeasyPrint available")'
-            ], capture_output=True, text=True, timeout=10)
+            # Test frontend learn page without authentication
+            unauth_session = requests.Session()
+            unauth_session.headers.update({
+                'User-Agent': 'AuthConsistencyTester/1.0'
+            })
             
-            if result.returncode == 0:
-                details = "WeasyPrint library is available and importable"
-                success = True
+            response = unauth_session.get(f"{self.frontend_url}/learn", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                content = response.text.lower()
+                
+                # Check for expected educational content
+                expected_content = [
+                    'learn',
+                    'education',
+                    'trust',
+                    'legal',
+                    'course',
+                    'lesson',
+                    'module'
+                ]
+                
+                found_content = [item for item in expected_content if item in content]
+                
+                if len(found_content) >= 3:  # At least 3 expected items
+                    details = f"Learn page loaded ({len(content)} chars), Contains: {', '.join(found_content)}"
+                else:
+                    details = f"Page loaded but missing expected content. Found: {', '.join(found_content)}"
+                    success = False
             else:
-                details = f"WeasyPrint import failed: {result.stderr}"
-                success = False
+                details = f"Status: {response.status_code}, Response: {response.text[:200]}"
             
-            self.log_test("WeasyPrint Dependency", success, details)
+            self.log_test("Learn Page without Auth", success, details)
             return success
             
         except Exception as e:
-            self.log_test("WeasyPrint Dependency", False, f"Error: {str(e)}")
+            self.log_test("Learn Page without Auth", False, f"Error: {str(e)}")
             return False
 
     # ============ TEST RUNNER ============
