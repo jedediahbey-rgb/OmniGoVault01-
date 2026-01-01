@@ -8,6 +8,7 @@ const api = axios.create({
   withCredentials: true
 });
 
+import PortfolioGate from '../components/shared/PortfolioGate';
 import MonoChip from '../components/shared/MonoChip';
 import {
   CalendarBlank,
