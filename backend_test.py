@@ -635,16 +635,16 @@ class AuthConsistencyTester:
 # ============ MAIN EXECUTION ============
 
 if __name__ == "__main__":
-    print("🚀 OmniGoVault Backend API Testing - Review Request")
+    print("🚀 OmniGoVault Backend API Testing - Auth Consistency & Portfolio Scoping")
     print("=" * 80)
     
-    tester = ReviewRequestTester()
-    success = tester.run_review_request_tests()
+    tester = AuthConsistencyTester()
+    success = tester.run_auth_consistency_tests()
     
     print("\n" + "=" * 80)
     if success:
-        print("🎉 REVIEW REQUEST TESTING COMPLETED SUCCESSFULLY")
+        print("🎉 AUTH CONSISTENCY & PORTFOLIO SCOPING TESTING COMPLETED SUCCESSFULLY")
         sys.exit(0)
     else:
-        print("⚠️ REVIEW REQUEST TESTING COMPLETED WITH ISSUES")
+        print("⚠️ AUTH CONSISTENCY & PORTFOLIO SCOPING TESTING COMPLETED WITH ISSUES")
         sys.exit(1)
