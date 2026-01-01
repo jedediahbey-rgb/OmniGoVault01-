@@ -190,6 +190,7 @@ class Vault(BaseModel):
     """A shared workspace for trust/transaction governance"""
     vault_id: str = Field(default_factory=lambda: f"vault_{uuid.uuid4().hex[:12]}")
     account_id: str  # Owner account
+    portfolio_id: Optional[str] = None  # Associated portfolio for document isolation
     name: str
     description: str = ""
     vault_type: VaultType = VaultType.TRUST
