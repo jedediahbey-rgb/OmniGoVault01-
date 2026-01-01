@@ -1017,10 +1017,10 @@ export default function WorkspaceDetailPage({ user }) {
                 <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-2">
                   {importableDocs.map((doc) => (
                     <div
-                      key={doc.id}
+                      key={doc.document_id || doc.id}
                       onClick={() => setSelectedImportDoc(doc)}
                       className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        selectedImportDoc?.id === doc.id
+                        (selectedImportDoc?.document_id || selectedImportDoc?.id) === (doc.document_id || doc.id)
                           ? 'bg-vault-gold/20 border-vault-gold'
                           : 'bg-vault-navy/50 border-vault-gold/10 hover:border-vault-gold/30'
                       }`}
@@ -1037,7 +1037,7 @@ export default function WorkspaceDetailPage({ user }) {
                             </span>
                           </div>
                         </div>
-                        {selectedImportDoc?.id === doc.id && (
+                        {(selectedImportDoc?.document_id || selectedImportDoc?.id) === (doc.document_id || doc.id) && (
                           <Check className="w-5 h-5 text-vault-gold flex-shrink-0" />
                         )}
                       </div>
