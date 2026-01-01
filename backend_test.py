@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for OmniGoVault - Auth Consistency & Portfolio Scoping Testing
+Backend API Testing for OmniGoVault - P0 Server-Side Portfolio Scoping Enforcement
 Testing specific scenarios mentioned in the review request:
 
 **Test Environment:**
@@ -9,21 +9,27 @@ Testing specific scenarios mentioned in the review request:
 
 **Test Scenarios:**
 
-1. **Auth Guard Verification** (no auth required):
-   - GET /api/auth/me without cookie - Should return 401
-   - Direct navigation to /vault should redirect to landing page
+### 1. Server-Side Portfolio Enforcement (Critical Security Fix)
+Test the importable-documents endpoint:
 
-2. **QA Report Endpoints** (no auth required):
-   - GET /api/qa/report-lite - Should return HTML report
-   - GET /api/qa/access.md - Should return markdown
+a) **Without portfolio_id and vault has no portfolio_id** - Should return 400 with message "portfolio_id is required"
+   - Vault ID: vault_no_portfolio_test
 
-3. **Portfolio-Scoped Endpoints** (require auth):
-   - GET /api/vaults - Should work with valid auth
-   - GET /api/documents - Should work with portfolio_id param
-   
-4. **Public Routes**:
-   - GET / (landing page) - Should load without auth
-   - GET /learn - Should show educational content even without auth
+b) **Without portfolio_id but vault has portfolio_id** - Should work (fallback to vault's portfolio)
+   - Vault ID: vault_dd6662703369 (has portfolio_id: port_97d34c5737f4)
+
+c) **With portfolio_id in query param** - Should return only docs from that portfolio
+   - Use portfolio_id: port_97d34c5737f4
+
+### 2. Vaults List Endpoint
+- GET /api/vaults?portfolio_id=xxx - Should only return vaults linked to that portfolio
+- GET /api/vaults (no portfolio) - Should return all user vaults with portfolio_id in response
+
+### 3. Auth Guard Verification
+- GET /api/auth/me without cookie - Should return 401
+- Protected endpoints without auth - Should return 401
+
+Note: Use test session token test_session_p0_1767274420 for authenticated requests.
 """
 
 import requests
