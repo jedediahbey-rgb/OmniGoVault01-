@@ -13,7 +13,12 @@ logger = logging.getLogger(__name__)
 # Initialize Resend with API key
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-APP_URL = os.environ.get("APP_URL", "https://apifix-portal.preview.emergentagent.com")
+SENDER_NAME = os.environ.get("SENDER_NAME", "OmniGoVault")
+APP_URL = os.environ.get("APP_URL", "https://omnigovault.online")
+
+# Format sender as "Name <email>" for better deliverability
+def get_formatted_sender():
+    return f"{SENDER_NAME} <{SENDER_EMAIL}>"
 
 # Database reference for audit logging
 _db = None
