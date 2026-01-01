@@ -274,8 +274,33 @@ export default function VaultPage({ user, initialView }) {
         }
         
         const savedId = localStorage.getItem('activePortfolioId');
-        const target = fetchedPortfolios.find(p => p.portfolio_id === savedId) || fetchedPortfolios[0];
-        await switchPortfolio(target, false);
+        const savedPortfolio = fetchedPortfolios.find(p => p.portfolio_id === savedId);
+        
+        // Only switch portfolio if we don't have a valid saved one
+        // This prevents overwriting the user's selection when navigating back to this page
+        if (savedPortfolio) {
+          // Just set the state without calling switchPortfolio to avoid overwriting localStorage
+          setActivePortfolio(savedPortfolio);
+          // Load documents for the saved portfolio
+          try {
+            const [docsRes, trashRes, pinnedRes] = await Promise.all([
+              axios.get(`${API}/documents?portfolio_id=${savedPortfolio.portfolio_id}`),
+              axios.get(`${API}/documents/trash`).catch(() => ({ data: [] })),
+              axios.get(`${API}/documents/pinned/list`).catch(() => ({ data: [] }))
+            ]);
+            setDocuments(docsRes.data || []);
+            setTrashedDocuments((trashRes.data || []).filter(d => d.portfolio_id === savedPortfolio.portfolio_id));
+            setPinnedDocs(pinnedRes.data || []);
+            setVaultState(VAULT_STATES.READY);
+          } catch (err) {
+            console.error('[Vault] Error loading docs for saved portfolio:', err);
+            // Fall back to switchPortfolio
+            await switchPortfolio(savedPortfolio, false);
+          }
+        } else {
+          // No saved portfolio, use first one
+          await switchPortfolio(fetchedPortfolios[0], false);
+        }
       } catch (err) {
         console.error('[Vault] Init error:', err);
         if (err.response?.status === 401) {
