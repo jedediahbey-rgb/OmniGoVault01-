@@ -1679,3 +1679,47 @@ Testing the specific scenarios mentioned in the review request after auth consis
 - **Test Session**: test_session_auth_1767272... (created successfully)
 - **Portfolio Testing**: Successfully tested with user's existing portfolios
 - **Document Filtering**: Verified portfolio-scoped document retrieval
+
+---
+
+# P0 Priority Fixes Testing (January 1, 2026)
+
+## Implemented Changes:
+
+### P0-1: Auth Consistency (COMPLETED)
+- Fixed ProtectedRoute to redirect unauthenticated users to landing page
+- Added `requireAuth` flag to AuthLayout for routes requiring auth
+- Added portfolio context clearing on logout
+- Removed dev bypass fallback that allowed unauthenticated access
+
+### P0-2: Portfolio Scoping (COMPLETED)
+- Created centralized portfolioApi helper (/app/frontend/src/lib/portfolioApi.js)
+- Added "No portfolio selected" warning in WorkspacesPage
+- Improved empty states with portfolio context
+- Updated logout to clear portfolio context from localStorage
+
+### P0-3: Import-from-Vault Dialog Improvements (COMPLETED)
+- Added prominent "Scoped to: Portfolio X" indicator with Switch Portfolio button
+- Added search input for filtering documents
+- Implemented multi-select with checkboxes
+- Added selection count indicator with clear button
+- Added "Select All" option for bulk import
+- Improved document cards with checkbox UI
+
+### P0-4: Binder Verification + Progress + Retry (COMPLETED)
+- Added retry button for failed binder generations
+- Improved progress states (queued/generating/failed)
+- Added progress bar animation during generation
+- Added "Generation in Progress" state that prevents double-submit
+- Enhanced error messages with clear "Retry Generation" CTA
+
+## Test Scenarios:
+- [ ] Auth guard redirects unauthenticated users from /vault
+- [ ] Auth guard redirects unauthenticated users from /vault/workspaces
+- [ ] Portfolio context persists across page navigation
+- [ ] Import dialog shows portfolio scope indicator
+- [ ] Import dialog search filters documents
+- [ ] Import dialog multi-select works correctly
+- [ ] Binder page shows progress states correctly
+- [ ] Binder retry button works after failure
+
