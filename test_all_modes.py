@@ -6,7 +6,7 @@ Test different redaction modes
 import requests
 import json
 
-BASE_URL = "https://docs-audit-tool.preview.emergentagent.com/api"
+BASE_URL = "https://portal-overhaul-1.preview.emergentagent.com/api"
 PORTFOLIO_ID = "port_0e9a783c1a71"
 
 def test_different_modes():

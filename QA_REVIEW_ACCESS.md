@@ -4,13 +4,13 @@
 
 ### Preview URL
 ```
-https://docs-audit-tool.preview.emergentagent.com
+https://portal-overhaul-1.preview.emergentagent.com
 ```
 
 ### QA Reviewer Login
 **Method:** Cookie-based session (paste in browser DevTools)
 
-1. Open https://docs-audit-tool.preview.emergentagent.com
+1. Open https://portal-overhaul-1.preview.emergentagent.com
 2. Open DevTools (F12) → Application tab → Cookies
 3. Add cookie:
    - **Name:** `session_token`

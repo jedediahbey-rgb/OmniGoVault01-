@@ -10,7 +10,7 @@ from pathlib import Path
 from playwright.async_api import async_playwright
 
 # Configuration
-BASE_URL = "https://docs-audit-tool.preview.emergentagent.com"
+BASE_URL = "https://portal-overhaul-1.preview.emergentagent.com"
 OUTPUT_DIR = Path("/app/public/qa_screens")
 DESKTOP_SIZE = {"width": 1440, "height": 900}
 MOBILE_SIZE = {"width": 390, "height": 844}

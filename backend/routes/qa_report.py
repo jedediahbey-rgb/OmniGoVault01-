@@ -14,7 +14,7 @@ from datetime import datetime
 router = APIRouter(prefix="/api/qa", tags=["QA Review"])
 
 # Base URL for screenshots
-BASE_URL = "https://docs-audit-tool.preview.emergentagent.com"
+BASE_URL = "https://portal-overhaul-1.preview.emergentagent.com"
 
 # Screenshots directory
 SCREENSHOTS_DIR = Path("/app/public/qa_screens")
@@ -589,7 +589,7 @@ async def get_qa_report():
         <strong>Platform:</strong> Private Trust & Equity Management<br>
         <strong>Generated:</strong> {generated_at}<br>
         <strong>Environment:</strong> Staging/Preview<br>
-        <strong>Base URL:</strong> <a href="https://docs-audit-tool.preview.emergentagent.com">https://docs-audit-tool.preview.emergentagent.com</a>
+        <strong>Base URL:</strong> <a href="https://portal-overhaul-1.preview.emergentagent.com">https://portal-overhaul-1.preview.emergentagent.com</a>
     </p>
     
     <div class="toc">

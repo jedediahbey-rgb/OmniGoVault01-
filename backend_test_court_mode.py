@@ -17,7 +17,7 @@ import time
 import uuid
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://docs-audit-tool.preview.emergentagent.com/api"
+BASE_URL = "https://portal-overhaul-1.preview.emergentagent.com/api"
 
 class CourtModeAPITester:
     def __init__(self):
