@@ -242,6 +242,19 @@ export default function WorkspacesPage({ user }) {
             </p>
           </div>
         )}
+        
+        {/* No Portfolio Selected Warning */}
+        {!activePortfolioId && !loading && (
+          <div className="mb-4 p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/30 flex items-center gap-3">
+            <Warning className="w-5 h-5 text-yellow-500 flex-shrink-0" weight="duotone" />
+            <div>
+              <p className="text-sm text-yellow-400 font-medium">No portfolio selected</p>
+              <p className="text-xs text-yellow-400/70 mt-0.5">
+                Please select or create a portfolio in the <button onClick={() => navigate('/vault')} className="underline hover:text-yellow-300">Vault</button> to view workspaces.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
