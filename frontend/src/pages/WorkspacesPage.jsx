@@ -164,15 +164,21 @@ export default function WorkspacesPage({ user }) {
     
     // Get active portfolio
     const currentPortfolioId = localStorage.getItem('activePortfolioId') || localStorage.getItem('defaultPortfolioId') || '';
+    
+    if (!currentPortfolioId) {
+      toast.error('Please select a portfolio first');
+      return;
+    }
 
     try {
       setCreating(true);
       const response = await axios.post(`${API}/vaults`, {
         name: newVault.name,
         description: newVault.description,
-        vault_type: newVault.vault_type
+        vault_type: newVault.vault_type,
+        portfolio_id: currentPortfolioId  // Automatically link to active portfolio
       }, { withCredentials: true });
-      toast.success('Vault created successfully');
+      toast.success('Workspace created successfully');
       setShowCreateModal(false);
       setNewVault({ name: '', description: '', vault_type: 'TRUST' });
       // Navigate to the new vault
