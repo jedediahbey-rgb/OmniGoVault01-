@@ -417,15 +417,21 @@ async def delete_trail(trail_id: str, request: Request):
 # ============================================================================
 
 @router.get("/map")
-async def get_archive_map(user = Depends(get_current_user)):
+async def get_archive_map(request: Request):
     """Get all nodes and edges for the archive map"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     nodes = await db.archive_nodes.find({}, {"_id": 0}).to_list(500)
     edges = await db.archive_edges.find({}, {"_id": 0}).to_list(1000)
     return {"nodes": nodes, "edges": edges}
 
 @router.post("/map/nodes")
-async def create_node(node: ArchiveNode, user = Depends(get_current_user)):
+async def create_node(node: ArchiveNode, request: Request):
     """Create a map node"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     node_data = {
         "node_id": str(uuid4()),
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -435,8 +441,11 @@ async def create_node(node: ArchiveNode, user = Depends(get_current_user)):
     return {"node_id": node_data["node_id"]}
 
 @router.post("/map/edges")
-async def create_edge(edge: ArchiveEdge, user = Depends(get_current_user)):
+async def create_edge(edge: ArchiveEdge, request: Request):
     """Create a map edge"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     edge_data = {
         "edge_id": str(uuid4()),
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -450,11 +459,13 @@ async def create_edge(edge: ArchiveEdge, user = Depends(get_current_user)):
 # ============================================================================
 
 @router.post("/reading-room/query")
-async def reading_room_query(query: ReadingRoomQuery, user = Depends(get_current_user)):
+async def reading_room_query(query: ReadingRoomQuery, request: Request):
     """
     AI-powered archive assistant that only responds using archive content.
     Citation-first approach - must cite sources or refuse.
     """
+    from server import get_current_user
+    user = await get_current_user(request)
     # Search for relevant sources
     search_query = {
         "$or": [
