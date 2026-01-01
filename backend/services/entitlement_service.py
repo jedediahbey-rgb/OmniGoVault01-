@@ -117,10 +117,18 @@ class EntitlementService:
         return bool(value)
     
     async def get_limit(self, account_id: str, key: str) -> int:
-        """Get a numeric limit entitlement. Returns 0 if not found."""
+        """Get a numeric limit entitlement. Returns default free tier limit if not found."""
         value = await self.get_entitlement(account_id, key)
         if value is None:
-            return 0
+            # Default to free tier limits if no entitlement found
+            # This prevents "0 of 0" display for new/corrupted accounts
+            defaults = {
+                "vaults.max": 1,
+                "teamMembers.max": 1,
+                "storage.maxMB": 100,
+            }
+            logger.warning(f"Entitlement {key} not found for account {account_id}, using default: {defaults.get(key, 0)}")
+            return defaults.get(key, 0)
         if value == EntitlementKeys.UNLIMITED:
             return float('inf')  # Return infinity for unlimited
         return int(value)
