@@ -74,6 +74,7 @@ class ReadingRoomQuery(BaseModel):
 
 @router.get("/sources")
 async def get_sources(
+    request: Request,
     search: Optional[str] = None,
     source_type: Optional[str] = None,
     topic: Optional[str] = None,
@@ -81,9 +82,11 @@ async def get_sources(
     era: Optional[str] = None,
     skip: int = 0,
     limit: int = 50,
-    user = Depends(get_current_user)
 ):
     """Get archive sources with filtering"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     query = {}
     
     if search:
