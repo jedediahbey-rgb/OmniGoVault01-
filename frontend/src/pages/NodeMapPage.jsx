@@ -746,7 +746,7 @@ function NodeMapContent() {
     return null;
   };
 
-  // Loading state
+  // Loading state - only show while fetching AND no portfolios yet
   if (loading && !portfolios.length) {
     return (
       <div className="flex flex-col" style={{ height: 'calc(100dvh - 64px)' }}>
@@ -766,6 +766,48 @@ function NodeMapContent() {
         {/* Loading state */}
         <div className="flex-1 flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-vault-gold border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // No portfolios exist - show create prompt
+  if (!loading && portfolios.length === 0) {
+    return (
+      <div className="flex flex-col" style={{ height: 'calc(100dvh - 64px)' }}>
+        {/* Page Controls */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 p-3 sm:p-4 lg:p-6 pb-2">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Link
+              to="/vault"
+              className="flex items-center gap-1 sm:gap-2 text-vault-gold hover:underline text-xs sm:text-base"
+            >
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" /> Back
+            </Link>
+            <h1 className="text-base sm:text-xl lg:text-2xl font-heading text-white">Trust Node Map</h1>
+          </div>
+        </div>
+
+        {/* No Portfolio State */}
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center max-w-md">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center">
+              <svg className="w-10 h-10 text-vault-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-semibold text-white mb-3">No Portfolio Found</h2>
+            <p className="text-vault-muted mb-6">
+              The Node Map visualizes your trust structure, parties, assets, and governance. Create your first portfolio to start building your trust network.
+            </p>
+            <Button
+              onClick={() => navigate('/vault')}
+              className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy font-semibold"
+            >
+              <Plus className="w-4 h-4 mr-2" weight="bold" />
+              Create Your First Portfolio
+            </Button>
+          </div>
         </div>
       </div>
     );
