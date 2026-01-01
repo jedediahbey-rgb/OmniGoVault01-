@@ -1289,8 +1289,8 @@ export default function BinderPage() {
                             <div className="pl-6 space-y-3">
                               {/* Saved Schemes */}
                               <BatesSchemesSettings
-                                workspaceId={portfolioInfo?.account_id || 'default'}
-                                portfolioId={selectedPortfolio}
+                                workspaceId={portfolios.find(p => p.portfolio_id === portfolioId)?.account_id || 'default'}
+                                portfolioId={portfolioId}
                                 onApplyScheme={(schemeConfig) => {
                                   setCourtModeConfig(prev => ({
                                     ...prev,
@@ -1309,7 +1309,7 @@ export default function BinderPage() {
                                 <label className="text-vault-muted text-xs mb-1.5 block">Quick Preset</label>
                                 <div className="flex flex-wrap gap-1.5">
                                   {[
-                                    { label: 'Portfolio', prefix: portfolioInfo?.abbreviation || 'DOC' },
+                                    { label: 'Portfolio', prefix: portfolios.find(p => p.portfolio_id === portfolioId)?.abbreviation || 'DOC' },
                                     { label: 'Exhibit', prefix: 'EXHIBIT' },
                                     { label: 'Discovery', prefix: 'DISC' },
                                     { label: 'Bates', prefix: 'BATES' }
