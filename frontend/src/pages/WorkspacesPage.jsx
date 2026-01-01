@@ -121,16 +121,6 @@ export default function WorkspacesPage({ user }) {
       console.error('Error fetching vault types:', error);
     }
   }, []);
-  
-  // Fetch portfolios for workspace association
-  const fetchPortfolios = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API}/portfolios`, { withCredentials: true });
-      setPortfolios(response.data || []);
-    } catch (error) {
-      console.error('Error fetching portfolios:', error);
-    }
-  }, []);
 
   useEffect(() => {
     fetchVaults();
