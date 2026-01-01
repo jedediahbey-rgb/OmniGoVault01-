@@ -242,8 +242,8 @@ class VaultService:
         
         return await self.get_vault(vault_id)
     
-    async def list_user_vaults(self, user_id: str, account_id: str) -> List[Dict]:
-        """List all vaults a user has access to"""
+    async def list_user_vaults(self, user_id: str, account_id: str, portfolio_id: str = None) -> List[Dict]:
+        """List all vaults a user has access to, optionally filtered by portfolio"""
         # Get vault IDs user participates in
         participations = await self.db.vault_participants.find(
             {"user_id": user_id, "status": "active"},
@@ -253,9 +253,14 @@ class VaultService:
         vault_ids = [p["vault_id"] for p in participations]
         role_map = {p["vault_id"]: p["role"] for p in participations}
         
+        # Build query - filter by portfolio if specified
+        query = {"vault_id": {"$in": vault_ids}}
+        if portfolio_id:
+            query["portfolio_id"] = portfolio_id
+        
         # Get vaults
         vaults = await self.db.vaults.find(
-            {"vault_id": {"$in": vault_ids}},
+            query,
             {"_id": 0}
         ).sort("updated_at", -1).to_list(100)
         
