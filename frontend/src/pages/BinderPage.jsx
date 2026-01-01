@@ -1951,17 +1951,44 @@ export default function BinderPage() {
                 </div>
 
                 {latestRun.status === 'failed' && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg mt-4">
-                    <p className="text-red-400 text-sm">
-                      {latestRun.error_json?.user_message || latestRun.error_json?.message || 'Generation failed'}
-                    </p>
+                  <div className="mt-4 space-y-3">
+                    <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                      <p className="text-red-400 text-sm font-medium mb-1">Generation Failed</p>
+                      <p className="text-red-400/80 text-xs">
+                        {latestRun.error_json?.user_message || latestRun.error_json?.message || 'An error occurred during binder generation'}
+                      </p>
+                    </div>
+                    <Button
+                      onClick={handleGenerate}
+                      disabled={generating || !selectedProfile}
+                      className="w-full bg-vault-gold/20 hover:bg-vault-gold/30 text-vault-gold border border-vault-gold/30"
+                    >
+                      <ArrowClockwise className={`w-4 h-4 mr-2 ${generating ? 'animate-spin' : ''}`} />
+                      {generating ? 'Retrying...' : 'Retry Generation'}
+                    </Button>
                   </div>
                 )}
 
                 {latestRun.status === 'generating' && (
-                  <div className="flex items-center justify-center p-3 text-vault-muted text-sm mt-4">
-                    <ArrowClockwise className="w-4 h-4 mr-2 animate-spin" />
-                    Generating...
+                  <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-blue-400 text-sm font-medium">Generating Binder...</p>
+                      <ArrowClockwise className="w-4 h-4 text-blue-400 animate-spin" />
+                    </div>
+                    <div className="w-full h-1.5 bg-blue-500/20 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-500 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+                    </div>
+                    <p className="text-blue-400/70 text-xs mt-2">This may take a few moments depending on the number of documents...</p>
+                  </div>
+                )}
+
+                {latestRun.status === 'queued' && (
+                  <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Clock className="w-4 h-4 text-amber-400" />
+                      <p className="text-amber-400 text-sm font-medium">Queued for Generation</p>
+                    </div>
+                    <p className="text-amber-400/70 text-xs">Your binder is in the queue and will start generating shortly...</p>
                   </div>
                 )}
               </motion.div>
