@@ -168,8 +168,14 @@ const AuthCallback = ({ setUser, setLoading, onFirstLogin }) => {
           if (postAuthRedirect) {
             sessionStorage.removeItem('post_auth_redirect');
             sessionStorage.removeItem('show_vault_loading');
-            navigate(postAuthRedirect, { state: { user: response.data.user }, replace: true });
-            return;
+            // Validate redirect path (open redirect prevention)
+            // Must start with / and contain only safe characters
+            if (postAuthRedirect.startsWith('/') && /^\/[a-zA-Z0-9/_-]*$/.test(postAuthRedirect)) {
+              navigate(postAuthRedirect, { state: { user: response.data.user }, replace: true });
+              return;
+            }
+            // Invalid redirect path - fall through to default behavior
+            console.warn('Invalid post_auth_redirect path blocked:', postAuthRedirect);
           }
           
           // Check if user came from "Enter the Vault" flow (should show loading animation)
