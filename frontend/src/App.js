@@ -168,11 +168,20 @@ const AuthCallback = ({ setUser, setLoading, onFirstLogin }) => {
           if (postAuthRedirect) {
             sessionStorage.removeItem('post_auth_redirect');
             sessionStorage.removeItem('show_vault_loading');
+            
             // Validate redirect path (open redirect prevention)
-            // Must start with / and contain only safe characters
-            if (postAuthRedirect.startsWith('/') && /^\/[a-zA-Z0-9/_-]*$/.test(postAuthRedirect)) {
-              navigate(postAuthRedirect, { state: { user: response.data.user }, replace: true });
-              return;
+            try {
+              const redirectUrl = new URL(postAuthRedirect, window.location.origin);
+              // Must be same-origin and start with /
+              if (redirectUrl.origin === window.location.origin && 
+                  redirectUrl.pathname.startsWith('/') &&
+                  !postAuthRedirect.startsWith('//') &&
+                  !postAuthRedirect.includes('\\')) {
+                navigate(postAuthRedirect, { state: { user: response.data.user }, replace: true });
+                return;
+              }
+            } catch (e) {
+              // Invalid URL - fall through to default
             }
             // Invalid redirect path - fall through to default behavior
             console.warn('Invalid post_auth_redirect path blocked:', postAuthRedirect);
