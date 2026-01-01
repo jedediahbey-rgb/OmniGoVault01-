@@ -1134,46 +1134,9 @@ export default function GovernancePage({ user }) {
 
   const selectedPortfolioData = portfolios.find(p => p.portfolio_id === selectedPortfolio);
 
-  // Use PortfolioGate for consistent empty state handling
   return (
     <PortfolioGate featureName="Governance">
-      <GovernanceContent 
-        portfolios={portfolios}
-        selectedPortfolio={selectedPortfolio}
-        setSelectedPortfolio={setSelectedPortfolio}
-        selectedPortfolioData={selectedPortfolioData}
-        loading={loading}
-        navigate={navigate}
-        // Pass all the other props needed
-        {...{
-          meetings, distributions, disputes, insurance, compensation, parties,
-          viewMode, setViewMode, searchQuery, setSearchQuery, statusFilter, setStatusFilter,
-          editingRecord, setEditingRecord, showNewMeetingDialog, setShowNewMeetingDialog,
-          showNewDistributionDialog, setShowNewDistributionDialog, showNewDisputeDialog, setShowNewDisputeDialog,
-          showNewInsuranceDialog, setShowNewInsuranceDialog, showNewCompensationDialog, setShowNewCompensationDialog,
-          selectedModules, toggleModule, handleCreateMeeting, handleCreateDistribution,
-          handleCreateDispute, handleCreateInsurance, handleCreateCompensation,
-          handleUpdateRecord, handleDeleteRecord, getStatusColor, formatCurrency, formatDate
-        }}
-      />
-    </PortfolioGate>
-  );
-}
-
-// Extracted content component for cleaner code
-function GovernanceContent({
-  portfolios, selectedPortfolio, setSelectedPortfolio, selectedPortfolioData, loading, navigate,
-  meetings, distributions, disputes, insurance, compensation, parties,
-  viewMode, setViewMode, searchQuery, setSearchQuery, statusFilter, setStatusFilter,
-  editingRecord, setEditingRecord, showNewMeetingDialog, setShowNewMeetingDialog,
-  showNewDistributionDialog, setShowNewDistributionDialog, showNewDisputeDialog, setShowNewDisputeDialog,
-  showNewInsuranceDialog, setShowNewInsuranceDialog, showNewCompensationDialog, setShowNewCompensationDialog,
-  selectedModules, toggleModule, handleCreateMeeting, handleCreateDistribution,
-  handleCreateDispute, handleCreateInsurance, handleCreateCompensation,
-  handleUpdateRecord, handleDeleteRecord, getStatusColor, formatCurrency, formatDate
-}) {
-  return (
-    <motion.div 
+      <motion.div 
       className="min-h-screen p-4 md:p-6 lg:p-8 w-full max-w-full overflow-x-hidden"
       variants={staggerContainer}
       initial="hidden"
