@@ -1134,42 +1134,44 @@ export default function GovernancePage({ user }) {
 
   const selectedPortfolioData = portfolios.find(p => p.portfolio_id === selectedPortfolio);
 
-  // Show loading spinner while fetching initial portfolios
-  if (loading && portfolios.length === 0 && !selectedPortfolio) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-vault-gold/30 border-t-vault-gold rounded-full animate-spin" />
-          <span className="text-vault-muted text-sm">Loading governance...</span>
-        </div>
-      </div>
-    );
-  }
+  // Use PortfolioGate for consistent empty state handling
+  return (
+    <PortfolioGate featureName="Governance">
+      <GovernanceContent 
+        portfolios={portfolios}
+        selectedPortfolio={selectedPortfolio}
+        setSelectedPortfolio={setSelectedPortfolio}
+        selectedPortfolioData={selectedPortfolioData}
+        loading={loading}
+        navigate={navigate}
+        // Pass all the other props needed
+        {...{
+          meetings, distributions, disputes, insurance, compensation, parties,
+          viewMode, setViewMode, searchQuery, setSearchQuery, statusFilter, setStatusFilter,
+          editingRecord, setEditingRecord, showNewMeetingDialog, setShowNewMeetingDialog,
+          showNewDistributionDialog, setShowNewDistributionDialog, showNewDisputeDialog, setShowNewDisputeDialog,
+          showNewInsuranceDialog, setShowNewInsuranceDialog, showNewCompensationDialog, setShowNewCompensationDialog,
+          selectedModules, toggleModule, handleCreateMeeting, handleCreateDistribution,
+          handleCreateDispute, handleCreateInsurance, handleCreateCompensation,
+          handleUpdateRecord, handleDeleteRecord, getStatusColor, formatCurrency, formatDate
+        }}
+      />
+    </PortfolioGate>
+  );
+}
 
-  // Show "Create Portfolio" prompt if no portfolios exist
-  if (!loading && portfolios.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center">
-            <Gavel className="w-10 h-10 text-vault-gold" weight="duotone" />
-          </div>
-          <h2 className="text-2xl font-semibold text-white mb-3">No Portfolio Found</h2>
-          <p className="text-vault-muted mb-6">
-            Governance records are organized by portfolio. Create your first portfolio to start tracking meeting minutes, distributions, and compliance records.
-          </p>
-          <Button
-            onClick={() => navigate('/vault')}
-            className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy font-semibold"
-          >
-            <Plus className="w-4 h-4 mr-2" weight="bold" />
-            Create Your First Portfolio
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
+// Extracted content component for cleaner code
+function GovernanceContent({
+  portfolios, selectedPortfolio, setSelectedPortfolio, selectedPortfolioData, loading, navigate,
+  meetings, distributions, disputes, insurance, compensation, parties,
+  viewMode, setViewMode, searchQuery, setSearchQuery, statusFilter, setStatusFilter,
+  editingRecord, setEditingRecord, showNewMeetingDialog, setShowNewMeetingDialog,
+  showNewDistributionDialog, setShowNewDistributionDialog, showNewDisputeDialog, setShowNewDisputeDialog,
+  showNewInsuranceDialog, setShowNewInsuranceDialog, showNewCompensationDialog, setShowNewCompensationDialog,
+  selectedModules, toggleModule, handleCreateMeeting, handleCreateDistribution,
+  handleCreateDispute, handleCreateInsurance, handleCreateCompensation,
+  handleUpdateRecord, handleDeleteRecord, getStatusColor, formatCurrency, formatDate
+}) {
   return (
     <motion.div 
       className="min-h-screen p-4 md:p-6 lg:p-8 w-full max-w-full overflow-x-hidden"
