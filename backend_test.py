@@ -342,9 +342,24 @@ class ReviewRequestTester:
                 portfolios = data if isinstance(data, list) else []
                 
                 if portfolios:
-                    self.test_portfolio_id = portfolios[0].get("portfolio_id")
-                    portfolio_name = portfolios[0].get("name", "Unknown")
-                    details = f"Found {len(portfolios)} portfolios, Using: {portfolio_name} ({self.test_portfolio_id})"
+                    # Find a portfolio with vaults for testing
+                    for portfolio in portfolios:
+                        portfolio_id = portfolio.get("portfolio_id")
+                        # Check if this portfolio has vaults
+                        vault_resp = self.session.get(f"{self.base_url}/vaults", params={"portfolio_id": portfolio_id}, timeout=5)
+                        if vault_resp.status_code == 200:
+                            vault_data = vault_resp.json()
+                            vaults = vault_data.get("vaults", [])
+                            if vaults:
+                                self.test_portfolio_id = portfolio_id
+                                portfolio_name = portfolio.get("name", "Unknown")
+                                details = f"Found {len(portfolios)} portfolios, Using: {portfolio_name} ({self.test_portfolio_id}) with {len(vaults)} vaults"
+                                break
+                    else:
+                        # No portfolio with vaults found, use first one anyway
+                        self.test_portfolio_id = portfolios[0].get("portfolio_id")
+                        portfolio_name = portfolios[0].get("name", "Unknown")
+                        details = f"Found {len(portfolios)} portfolios, Using: {portfolio_name} ({self.test_portfolio_id}) - no vaults found"
                 else:
                     details = "No portfolios found"
                     success = False
