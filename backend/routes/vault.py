@@ -424,10 +424,19 @@ async def import_document_to_workspace(request: Request, vault_id: str, body: di
         if not source_document_id:
             raise HTTPException(status_code=400, detail="document_id is required")
         
+        # Get all user_ids associated with this email (handles multiple accounts)
+        user_ids = [user.user_id]
+        if user.email:
+            same_email_users = await _db.users.find(
+                {"email": user.email},
+                {"_id": 0, "user_id": 1}
+            ).to_list(10)
+            user_ids = list(set([u["user_id"] for u in same_email_users]))
+        
         # Find the source document in user's portfolio documents
         source_doc = await _db.documents.find_one({
             "document_id": source_document_id,
-            "user_id": user.user_id,
+            "user_id": {"$in": user_ids},
             "is_deleted": {"$ne": True}
         }, {"_id": 0})
         
