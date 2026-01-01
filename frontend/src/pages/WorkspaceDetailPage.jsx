@@ -145,8 +145,16 @@ export default function WorkspaceDetailPage({ user }) {
         const fetchedPortfolios = response.data || [];
         setPortfolios(fetchedPortfolios);
         
-        // Auto-select the first portfolio or active one
+        // DEBUG: Log origin and localStorage values
+        console.log('=== WorkspaceDetailPage Import Dialog Opened ===');
+        console.log('Workspace origin:', window.location.origin);
+        console.log('activePortfolioId:', localStorage.getItem('activePortfolioId'));
+        console.log('defaultPortfolioId:', localStorage.getItem('defaultPortfolioId'));
+        
+        // Auto-select the active portfolio
         const activeId = localStorage.getItem('activePortfolioId') || localStorage.getItem('defaultPortfolioId');
+        console.log('Using portfolio ID:', activeId);
+        
         if (activeId && fetchedPortfolios.find(p => p.portfolio_id === activeId)) {
           setImportPortfolioId(activeId);
         } else if (fetchedPortfolios.length > 0) {
@@ -169,19 +177,22 @@ export default function WorkspaceDetailPage({ user }) {
       }
       
       console.log('=== Loading importable docs ===');
-      console.log('Portfolio ID:', importPortfolioId);
+      console.log('Sending portfolio_id:', importPortfolioId);
       setImportLoading(true);
       try {
-        const url = `${API}/vaults/${vaultId}/importable-documents?portfolio_id=${importPortfolioId}`;
-        console.log('Full URL:', url);
-
-        const response = await axios.get(url, { withCredentials: true });
+        // Use axios params for safer query string handling
+        const response = await axios.get(`${API}/vaults/${vaultId}/importable-documents`, {
+          withCredentials: true,
+          params: { portfolio_id: importPortfolioId, _ts: Date.now() } // Cache buster
+        });
+        
+        console.log('Request URL:', `${API}/vaults/${vaultId}/importable-documents?portfolio_id=${importPortfolioId}`);
 
         const docs = Array.isArray(response.data)
           ? response.data
           : response.data?.documents ?? [];
 
-        console.log('Parsed docs length:', docs.length);
+        console.log('Received docs count:', docs.length);
         setImportableDocs(docs);
       } catch (error) {
         console.error('Error loading importable docs:', error);
