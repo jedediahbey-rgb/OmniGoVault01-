@@ -1610,13 +1610,13 @@ export default function BinderPage() {
               {/* Generate Button */}
               <Button
                 onClick={handleGenerate}
-                disabled={generating || !selectedProfile}
-                className="w-full bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold py-6 text-lg touch-manipulation select-none"
+                disabled={generating || !selectedProfile || latestRun?.status === 'generating'}
+                className="w-full bg-vault-gold hover:bg-vault-gold/90 text-vault-dark font-semibold py-6 text-lg touch-manipulation select-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {generating ? (
+                {generating || latestRun?.status === 'generating' ? (
                   <>
                     <ArrowClockwise className="w-5 h-5 mr-2 animate-spin" />
-                    Generating Binder...
+                    {latestRun?.status === 'generating' ? 'Generation in Progress...' : 'Generating Binder...'}
                   </>
                 ) : (
                   <>
