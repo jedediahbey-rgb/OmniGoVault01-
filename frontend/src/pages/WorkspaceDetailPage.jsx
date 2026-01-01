@@ -103,6 +103,12 @@ export default function WorkspaceDetailPage({ user }) {
   const { vaultId } = useParams();
   const navigate = useNavigate();
   
+  // Real-time presence
+  const { isConnected, presence } = useRealtime(vaultId ? `workspace_${vaultId}` : null, user?.user_id, {
+    name: user?.name,
+    picture: user?.picture
+  });
+  
   const [vault, setVault] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('documents');
