@@ -272,7 +272,7 @@ export default function BatesSchemesSettings({
       ) : (
         <div className="space-y-2">
           {schemes.map((scheme) => {
-            const continuation = getContinuation(scheme.prefix_template);
+            const continuation = getContinuation(scheme.prefix_pattern);
             
             return (
               <div
