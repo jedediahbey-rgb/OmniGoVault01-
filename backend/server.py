@@ -56,8 +56,8 @@ rmid_allocator: Optional[RMIDAllocator] = None
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# Configure logging - DEBUG level for auth troubleshooting
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # PDF URLs - the source documents
