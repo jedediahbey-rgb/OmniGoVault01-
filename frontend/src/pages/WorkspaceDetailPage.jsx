@@ -118,6 +118,16 @@ export default function WorkspaceDetailPage({ user }) {
   const [importLoading, setImportLoading] = useState(false);
   const [selectedImportDoc, setSelectedImportDoc] = useState(null);
   
+  // Settings modal state
+  const [showSettings, setShowSettings] = useState(false);
+  const [portfolios, setPortfolios] = useState([]);
+  const [vaultSettings, setVaultSettings] = useState({
+    name: '',
+    description: '',
+    portfolio_id: ''
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
+  
   // Debug watcher for importableDocs state - ChatGPT diagnostic
   useEffect(() => {
     console.log('=== importableDocs STATE CHANGED ===');
