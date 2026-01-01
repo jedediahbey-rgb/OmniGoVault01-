@@ -136,18 +136,26 @@ export default function WorkspaceDetailPage({ user }) {
   }, [importableDocs]);
   
   // More reliable fetching via useEffect - Triggers when dialog opens
+  // Automatically uses current portfolio context from localStorage
   useEffect(() => {
     const loadImportableDocs = async () => {
       if (!showImportDocument || !vaultId) return;
       
+      // Get current portfolio context from localStorage
+      const currentPortfolioId = localStorage.getItem('defaultPortfolioId') || '';
+      
       console.log('=== useEffect: Loading importable docs ===');
+      console.log('Current portfolio context:', currentPortfolioId);
       setImportLoading(true);
       try {
-        console.log('vaultId:', vaultId);
-        console.log('API base:', API);
-        console.log('Full URL:', `${API}/vaults/${vaultId}/importable-documents`);
+        // Build URL with portfolio_id query param if we have a current portfolio
+        let url = `${API}/vaults/${vaultId}/importable-documents`;
+        if (currentPortfolioId) {
+          url += `?portfolio_id=${currentPortfolioId}`;
+        }
+        console.log('Full URL:', url);
 
-        const response = await axios.get(`${API}/vaults/${vaultId}/importable-documents`, { withCredentials: true });
+        const response = await axios.get(url, { withCredentials: true });
 
         console.log('Response status:', response.status);
         console.log('Response data:', response.data);
