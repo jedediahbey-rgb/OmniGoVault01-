@@ -643,16 +643,16 @@ class P0PortfolioScopingTester:
 # ============ MAIN EXECUTION ============
 
 if __name__ == "__main__":
-    print("🚀 OmniGoVault Backend API Testing - Auth Consistency & Portfolio Scoping")
+    print("🚀 OmniGoVault Backend API Testing - P0 Server-Side Portfolio Scoping Enforcement")
     print("=" * 80)
     
-    tester = AuthConsistencyTester()
-    success = tester.run_auth_consistency_tests()
+    tester = P0PortfolioScopingTester()
+    success = tester.run_p0_portfolio_scoping_tests()
     
     print("\n" + "=" * 80)
     if success:
-        print("🎉 AUTH CONSISTENCY & PORTFOLIO SCOPING TESTING COMPLETED SUCCESSFULLY")
+        print("🎉 P0 SERVER-SIDE PORTFOLIO SCOPING ENFORCEMENT TESTING COMPLETED SUCCESSFULLY")
         sys.exit(0)
     else:
-        print("⚠️ AUTH CONSISTENCY & PORTFOLIO SCOPING TESTING COMPLETED WITH ISSUES")
+        print("⚠️ P0 SERVER-SIDE PORTFOLIO SCOPING ENFORCEMENT TESTING COMPLETED WITH ISSUES")
         sys.exit(1)
