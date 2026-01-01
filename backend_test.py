@@ -74,15 +74,15 @@ class P0PortfolioScopingTester:
         # Setup test session token
         self.setup_test_session()
 
-    def get_valid_session_token(self):
-        """Get a valid session token for testing"""
+    def setup_test_session(self):
+        """Setup test session token and test data"""
         try:
             # Create test session using mongosh
             result = subprocess.run([
                 'mongosh', '--eval', f"""
                 use('test_database');
                 var userId = '{self.test_user_id}';
-                var sessionToken = 'test_session_auth_' + Date.now();
+                var sessionToken = '{self.session_token}';
                 
                 // Ensure user exists
                 db.users.updateOne(
@@ -98,6 +98,7 @@ class P0PortfolioScopingTester:
                 );
                 
                 // Create session
+                db.user_sessions.deleteMany({{session_token: sessionToken}});
                 db.user_sessions.insertOne({{
                     user_id: userId,
                     session_token: sessionToken,
@@ -105,22 +106,58 @@ class P0PortfolioScopingTester:
                     created_at: new Date()
                 }});
                 
-                print(sessionToken);
+                // Setup test vaults
+                db.vaults.updateOne(
+                    {{vault_id: '{self.vault_no_portfolio}'}},
+                    {{$setOnInsert: {{
+                        vault_id: '{self.vault_no_portfolio}',
+                        user_id: userId,
+                        name: 'Test Vault No Portfolio',
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                db.vaults.updateOne(
+                    {{vault_id: '{self.vault_with_portfolio}'}},
+                    {{$setOnInsert: {{
+                        vault_id: '{self.vault_with_portfolio}',
+                        user_id: userId,
+                        name: 'Test Vault With Portfolio',
+                        portfolio_id: '{self.test_portfolio_id}',
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                // Setup test portfolio
+                db.portfolios.updateOne(
+                    {{portfolio_id: '{self.test_portfolio_id}'}},
+                    {{$setOnInsert: {{
+                        portfolio_id: '{self.test_portfolio_id}',
+                        user_id: userId,
+                        name: 'Test Portfolio P0',
+                        description: 'Test portfolio for P0 scoping tests',
+                        created_at: new Date()
+                    }}}},
+                    {{upsert: true}}
+                );
+                
+                print('Test data setup complete');
                 """
-            ], capture_output=True, text=True, timeout=10)
+            ], capture_output=True, text=True, timeout=15)
             
             if result.returncode == 0:
-                session_token = result.stdout.strip().split('\n')[-1]
-                if session_token and session_token.startswith('test_session_auth_'):
-                    self.log(f"✅ Created test session: {session_token[:25]}...")
-                    return session_token
-            
-            self.log("⚠️ Could not create test session - testing without authentication")
-            return None
-            
+                self.log(f"✅ Test session and data setup complete")
+            else:
+                self.log(f"⚠️ Test setup warning: {result.stderr}")
+                
         except Exception as e:
-            self.log(f"⚠️ Session creation failed: {str(e)} - testing without authentication")
-            return None
+            self.log(f"⚠️ Test setup failed: {str(e)}")
+
+    def get_valid_session_token(self):
+        """Legacy method - now using predefined session token"""
+        return self.session_token
 
     def log(self, message):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
