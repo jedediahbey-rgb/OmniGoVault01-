@@ -226,8 +226,8 @@ class VaultService:
         """Update vault settings"""
         await self.require_permission(vault_id, user_id, VaultPermission.MANAGE_VAULT)
         
-        allowed_fields = ["name", "description", "status", "settings"]
-        filtered_updates = {k: v for k, v in updates.items() if k in allowed_fields and v is not None}
+        allowed_fields = ["name", "description", "status", "settings", "portfolio_id"]
+        filtered_updates = {k: v for k, v in updates.items() if k in allowed_fields}
         
         if not filtered_updates:
             vault = await self.get_vault(vault_id)
