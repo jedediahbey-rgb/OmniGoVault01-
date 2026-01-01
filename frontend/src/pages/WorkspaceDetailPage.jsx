@@ -259,15 +259,36 @@ export default function WorkspaceDetailPage({ user }) {
   const fetchImportableDocs = async () => {
     setImportLoading(true);
     try {
-      console.log('Fetching importable docs from:', `${API}/vaults/${vaultId}/importable-documents`);
+      // Debug logging - ChatGPT diagnostic patch
+      console.log('=== IMPORT DOCS DEBUG ===');
+      console.log('vaultId:', vaultId);
+      console.log('API base:', API);
+      console.log('Full URL:', `${API}/vaults/${vaultId}/importable-documents`);
+
       const response = await axios.get(`${API}/vaults/${vaultId}/importable-documents`, { withCredentials: true });
-      console.log('Response:', response.data);
-      setImportableDocs(response.data.documents || []);
+
+      console.log('Response status:', response.status);
+      console.log('Response data:', response.data);
+      console.log('Response data type:', typeof response.data);
+      console.log('Response data keys:', Object.keys(response.data || {}));
+
+      // Guard against weird response shapes
+      const docs = Array.isArray(response.data)
+        ? response.data
+        : response.data?.documents ?? [];
+
+      console.log('Parsed docs length:', docs.length);
+      console.log('Setting importableDocs to:', docs);
+      
+      setImportableDocs(docs);
     } catch (error) {
-      console.error('Error fetching importable documents:', error);
-      console.error('Error response:', error.response?.data);
+      console.error('=== IMPORT DOCS ERROR ===');
+      console.error('Error:', error);
+      console.error('Error response:', error?.response);
+      console.error('Error response data:', error?.response?.data);
       toast.error(error.response?.data?.detail || 'Failed to load your documents');
     } finally {
+      console.log('setImportLoading(false)');
       setImportLoading(false);
     }
   };
