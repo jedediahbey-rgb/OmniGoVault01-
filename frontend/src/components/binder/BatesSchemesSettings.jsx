@@ -72,11 +72,10 @@ const POSITION_OPTIONS = [
 // Default scheme template
 const DEFAULT_SCHEME = {
   name: '',
-  prefix_template: '',
-  default_digits: 6,
-  default_position: 'bottom-right',
-  include_date: false,
-  date_format: 'YYYY-MM-DD',
+  prefix_pattern: '',
+  digits: 6,
+  position: 'bottom-right',
+  include_cover: false,
   is_default: false,
 };
 
