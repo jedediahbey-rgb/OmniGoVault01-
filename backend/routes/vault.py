@@ -498,10 +498,12 @@ async def import_document_to_workspace(request: Request, vault_id: str, body: di
 async def get_importable_documents(request: Request, vault_id: str, portfolio_id: str = None):
     """Get list of user's portfolio documents that can be imported into this workspace.
     
+    SECURITY: Portfolio scoping is REQUIRED to prevent cross-portfolio data leakage.
+    
     Priority for portfolio filtering:
-    1. portfolio_id query parameter (from current UI context)
-    2. Vault's portfolio_id (if set)
-    3. No filter - show all user documents
+    1. portfolio_id query parameter (from current UI context) - REQUIRED
+    2. Vault's portfolio_id (if set) - fallback
+    3. If neither - return 400 error (do NOT return all documents)
     """
     user = await _get_current_user(request)
     vault_service = get_vault_service()
@@ -513,11 +515,20 @@ async def get_importable_documents(request: Request, vault_id: str, portfolio_id
             raise HTTPException(status_code=403, detail="Not a participant in this vault")
         
         # Determine which portfolio to filter by
-        # Priority: query param > vault's portfolio_id > none
+        # Priority: query param > vault's portfolio_id
         filter_portfolio_id = portfolio_id
         if not filter_portfolio_id:
+            # Fallback: try to get portfolio from vault
             vault = await _db.vaults.find_one({"vault_id": vault_id}, {"_id": 0, "portfolio_id": 1})
             filter_portfolio_id = vault.get("portfolio_id") if vault else None
+        
+        # SECURITY: Require portfolio context - never return all documents
+        if not filter_portfolio_id:
+            logger.warning(f"Import docs - BLOCKED: No portfolio_id for user {user.user_id}, vault {vault_id}")
+            raise HTTPException(
+                status_code=400, 
+                detail="portfolio_id is required. Please select a portfolio in the Vault first."
+            )
         
         # Debug logging
         logger.info(f"Import docs - user_id: {user.user_id}, email: {user.email}, filter_portfolio_id: {filter_portfolio_id}")
@@ -533,11 +544,13 @@ async def get_importable_documents(request: Request, vault_id: str, portfolio_id
         
         logger.info(f"Import docs - searching user_ids: {user_ids}")
         
-        # Build query - filter by portfolio if one is specified
-        query = {"user_id": {"$in": user_ids}, "is_deleted": {"$ne": True}}
-        if filter_portfolio_id:
-            query["portfolio_id"] = filter_portfolio_id
-            logger.info(f"Import docs - filtering by portfolio_id: {filter_portfolio_id}")
+        # Build query - ALWAYS filter by portfolio (required above)
+        query = {
+            "user_id": {"$in": user_ids}, 
+            "is_deleted": {"$ne": True},
+            "portfolio_id": filter_portfolio_id
+        }
+        logger.info(f"Import docs - filtering by portfolio_id: {filter_portfolio_id}")
         
         # Get user's portfolio documents (exclude deleted ones)
         portfolio_docs = await _db.documents.find(
