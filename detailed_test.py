@@ -7,7 +7,7 @@ import requests
 import json
 from datetime import datetime
 
-BASE_URL = "https://authfix-9.preview.emergentagent.com/api"
+BASE_URL = "https://docs-audit-tool.preview.emergentagent.com/api"
 
 def test_detailed_apis():
     session = requests.Session()

@@ -14,7 +14,7 @@ import hashlib
 import subprocess
 
 # Use the public endpoint from frontend/.env
-BASE_URL = "https://authfix-9.preview.emergentagent.com/api"
+BASE_URL = "https://docs-audit-tool.preview.emergentagent.com/api"
 
 class BinderGenerationTester:
     def __init__(self):

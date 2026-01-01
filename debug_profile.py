@@ -6,7 +6,7 @@ Debug script to check profile data structure
 import requests
 import json
 
-BASE_URL = "https://authfix-9.preview.emergentagent.com/api"
+BASE_URL = "https://docs-audit-tool.preview.emergentagent.com/api"
 PORTFOLIO_ID = "port_0e9a783c1a71"
 
 def debug_profile():

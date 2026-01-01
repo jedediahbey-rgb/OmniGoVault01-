@@ -43,8 +43,8 @@ Testing the new Black Archive Admin Page UI at /archive/admin
 - [ ] "View Archive" link navigates to /archive
 
 ## Testing Notes
-- Frontend URL: https://authfix-9.preview.emergentagent.com
-- Backend API: https://authfix-9.preview.emergentagent.com/api
+- Frontend URL: https://docs-audit-tool.preview.emergentagent.com
+- Backend API: https://docs-audit-tool.preview.emergentagent.com/api
 - Test User: jedediah.bey@gmail.com
 
 ---
@@ -98,8 +98,8 @@ Testing the Binder Generation functionality through the frontend UI at /binder p
 - [x] Evidence binder generation functions
 
 ## Testing Notes
-- Frontend URL: https://authfix-9.preview.emergentagent.com
-- Backend API: https://authfix-9.preview.emergentagent.com/api
+- Frontend URL: https://docs-audit-tool.preview.emergentagent.com
+- Backend API: https://docs-audit-tool.preview.emergentagent.com/api
 - Test with real-looking data, not dummy data
 - Full PDF generation may take time - verify queued/generating status
 
@@ -186,7 +186,7 @@ Testing the Binder Generation functionality through the frontend UI at /binder p
 - ✅ End-to-end binder generation flow working
 
 ### Test Environment Details:
-- **Backend URL**: https://authfix-9.preview.emergentagent.com/api
+- **Backend URL**: https://docs-audit-tool.preview.emergentagent.com/api
 - **Test User**: jedediah.bey@gmail.com (authenticated successfully)
 - **Test Portfolio**: Created and used for binder generation
 - **PDF Library**: WeasyPrint v62.3 working correctly
@@ -273,7 +273,7 @@ Testing the new Black Archive Admin Page UI at /archive/admin with comprehensive
 - **Error Handling**: No error messages displayed during testing
 
 ### Test Environment Details:
-- **Frontend URL**: https://authfix-9.preview.emergentagent.com/archive/admin
+- **Frontend URL**: https://docs-audit-tool.preview.emergentagent.com/archive/admin
 - **Test Viewport**: Desktop (1920x1080)
 - **Browser**: Chromium-based automation
 - **Component Path**: `/app/frontend/src/pages/ArchiveAdminPage.jsx`
@@ -466,7 +466,7 @@ Testing the refactored Black Archive page after major component breakdown from 2
 - ✅ **Styling System**: Tailwind CSS classes and custom styling working
 
 ### Test Environment Details:
-- **Frontend URL**: https://authfix-9.preview.emergentagent.com/archive
+- **Frontend URL**: https://docs-audit-tool.preview.emergentagent.com/archive
 - **Test Viewport**: Desktop (1920x1080) and Mobile (390x844)
 - **Browser**: Chromium-based automation
 - **Component Path**: `/app/frontend/src/components/archive/`
@@ -776,7 +776,7 @@ Testing the refactored Black Archive page after major component breakdown from 2
 - **API Design**: Consistent success/error response format with proper HTTP status codes
 
 ### Test Environment Details:
-- **Backend URL**: https://authfix-9.preview.emergentagent.com/api
+- **Backend URL**: https://docs-audit-tool.preview.emergentagent.com/api
 - **Test User**: jedediah.bey@gmail.com (authenticated successfully)
 - **Test Workspace**: test-workspace (used for workspace isolation testing)
 - **Test Portfolio**: test-portfolio (used for schedule creation validation)
@@ -890,8 +890,8 @@ Testing the refactored Black Archive page after major component breakdown from 2
 - **Channel Management**: Active channel tracking and subscriber management working
 
 ### Test Environment Details:
-- **Frontend URL**: https://authfix-9.preview.emergentagent.com
-- **Backend API**: https://authfix-9.preview.emergentagent.com/api
+- **Frontend URL**: https://docs-audit-tool.preview.emergentagent.com
+- **Backend API**: https://docs-audit-tool.preview.emergentagent.com/api
 - **Test User**: jedediah.bey@gmail.com (authenticated successfully)
 - **Test Rooms**: test-room (used for presence testing)
 - **Test Documents**: test-doc (used for lock and version testing)
@@ -918,7 +918,7 @@ Testing the user-reported issue: "generate binder is not functioning on binder p
 ❌ **API ENDPOINTS SECURED**: All /api/binder/* endpoints return 401 Unauthorized without valid session
 
 #### Authentication Flow Verification:
-- ✅ **Landing Page**: Successfully accessed https://authfix-9.preview.emergentagent.com
+- ✅ **Landing Page**: Successfully accessed https://docs-audit-tool.preview.emergentagent.com
 - ✅ **Auth Trigger**: "Create Account" button successfully redirects to auth.emergentagent.com
 - ✅ **Google OAuth**: Successfully redirected to accounts.google.com with correct client_id
 - ✅ **Email Entry**: Successfully entered jedediah.bey@gmail.com in OAuth flow
@@ -926,7 +926,7 @@ Testing the user-reported issue: "generate binder is not functioning on binder p
 - ❌ **Session Creation**: Cannot obtain valid session token for API testing
 
 #### Backend API Status:
-- ✅ **Health Check**: Backend healthy at https://authfix-9.preview.emergentagent.com/api/health
+- ✅ **Health Check**: Backend healthy at https://docs-audit-tool.preview.emergentagent.com/api/health
 - ❌ **Auth Endpoints**: /api/auth/me returns 401 Unauthorized (expected without session)
 - ❌ **Binder Endpoints**: /api/binder/profiles requires authentication and portfolio_id parameter
 - ✅ **Error Handling**: Proper HTTP status codes and error messages returned
@@ -946,7 +946,7 @@ Testing the user-reported issue: "generate binder is not functioning on binder p
 
 #### User Experience Analysis:
 Based on the authentication flow testing, the user reporting "generate binder is not functioning" would need to:
-1. ✅ **Access Application**: Navigate to https://authfix-9.preview.emergentagent.com
+1. ✅ **Access Application**: Navigate to https://docs-audit-tool.preview.emergentagent.com
 2. ✅ **Trigger Authentication**: Click "Create Account" or "Enter the Vault"
 3. ✅ **Complete Google OAuth**: Enter jedediah.bey@gmail.com and password
 4. ⚠️ **Create Portfolio**: Must have at least one portfolio to generate binders
@@ -979,8 +979,8 @@ Based on the authentication flow testing, the user reporting "generate binder is
 - **Error Handling**: Appropriate HTTP status codes and error messages
 
 ### Test Environment Details:
-- **Frontend URL**: https://authfix-9.preview.emergentagent.com
-- **Backend API**: https://authfix-9.preview.emergentagent.com/api
+- **Frontend URL**: https://docs-audit-tool.preview.emergentagent.com
+- **Backend API**: https://docs-audit-tool.preview.emergentagent.com/api
 - **Auth Service**: auth.emergentagent.com
 - **Google OAuth**: accounts.google.com (properly configured)
 - **Test Email**: jedediah.bey@gmail.com (entered successfully)
@@ -1053,7 +1053,7 @@ Testing the user-reported issue: "Import from Vault feature not showing document
 - Session cookie mechanism requires `session_token` cookie name (not `session`)
 
 #### Backend API Verification:
-- ✅ **Health Check**: Backend healthy at https://authfix-9.preview.emergentagent.com/api/health
+- ✅ **Health Check**: Backend healthy at https://docs-audit-tool.preview.emergentagent.com/api/health
 - ✅ **Authentication**: Session token authentication working correctly
 - ✅ **Vaults Endpoint**: Returns 8 vaults for user jedediah.bey@gmail.com
 - ✅ **Import Endpoint**: `/api/vaults/vault_67cd67e5f498/importable-documents` returns 7 documents
@@ -1115,8 +1115,8 @@ The user reporting "no documents showing up" would experience:
 - **Frontend Integration**: Needs verification of cookie naming and API call implementation
 
 ### Test Environment Details:
-- **Frontend URL**: https://authfix-9.preview.emergentagent.com
-- **Backend API**: https://authfix-9.preview.emergentagent.com/api
+- **Frontend URL**: https://docs-audit-tool.preview.emergentagent.com
+- **Backend API**: https://docs-audit-tool.preview.emergentagent.com/api
 - **Test User**: jedediah.bey@gmail.com (dev_admin_user)
 - **Test Vault**: vault_67cd67e5f498 (Bey Family Trust)
 - **Expected Documents**: 7 documents from user's portfolios
@@ -1201,8 +1201,8 @@ Testing the specific features mentioned in the review request for OmniGoVault:
 - **Real-time Service**: WebSocket capabilities properly exposed via REST endpoints
 
 ### Test Environment Details:
-- **Frontend URL**: https://authfix-9.preview.emergentagent.com
-- **Backend API**: https://authfix-9.preview.emergentagent.com/api
+- **Frontend URL**: https://docs-audit-tool.preview.emergentagent.com
+- **Backend API**: https://docs-audit-tool.preview.emergentagent.com/api
 - **Test User**: jedediah.bey@gmail.com (authenticated via session token)
 - **Test Portfolios**: port_97d34c5737f4 (8 vaults), port_test_1766998199657 (0 vaults)
 - **WebSocket URL**: wss://authfix-9.preview.emergentagent.com/api/realtime/ws
@@ -1232,7 +1232,7 @@ Testing the Bates Schemes Settings feature in the Binder Page as requested in th
 ✅ **UI INTEGRATION**: Court Mode panel and Bates settings properly integrated
 
 #### Authentication Flow Analysis:
-- ✅ **Application Access**: https://authfix-9.preview.emergentagent.com loads correctly
+- ✅ **Application Access**: https://docs-audit-tool.preview.emergentagent.com loads correctly
 - ✅ **Landing Page**: OmniGoVault branding and navigation working
 - ✅ **Auth Initiation**: "Create Account" button redirects to auth.emergentagent.com
 - ✅ **OAuth Redirect**: Proper redirect to Google OAuth (accounts.google.com)
@@ -1297,7 +1297,7 @@ Testing the Bates Schemes Settings feature in the Binder Page as requested in th
 
 #### Manual Testing Instructions:
 **To test Bates Schemes Settings manually:**
-1. Navigate to https://authfix-9.preview.emergentagent.com
+1. Navigate to https://docs-audit-tool.preview.emergentagent.com
 2. Complete Google OAuth authentication with jedediah.bey@gmail.com
 3. Navigate to `/binder` page
 4. Select a portfolio if prompted
@@ -1330,8 +1330,8 @@ Testing the Bates Schemes Settings feature in the Binder Page as requested in th
 - **Code Quality**: Well-structured React components with proper TypeScript usage
 
 ### Test Environment Details:
-- **Frontend URL**: https://authfix-9.preview.emergentagent.com
-- **Backend API**: https://authfix-9.preview.emergentagent.com/api
+- **Frontend URL**: https://docs-audit-tool.preview.emergentagent.com
+- **Backend API**: https://docs-audit-tool.preview.emergentagent.com/api
 - **Auth Service**: auth.emergentagent.com
 - **Google OAuth**: accounts.google.com (security-protected)
 - **Test Email**: jedediah.bey@gmail.com (successfully entered)
@@ -1421,7 +1421,7 @@ Testing the critical authentication bug fix where duplicate user accounts for th
 - **API Consistency**: All endpoints returning expected data structures and counts
 
 ### Test Environment Details:
-- **Backend URL**: https://authfix-9.preview.emergentagent.com/api
+- **Backend URL**: https://docs-audit-tool.preview.emergentagent.com/api
 - **Test User**: jedediah.bey@gmail.com (authenticated successfully)
 - **Test Session**: test_session_1766998190281 (working correctly)
 - **Canonical User ID**: dev_admin_user (properly mapped)
