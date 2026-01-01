@@ -437,34 +437,76 @@ export default function WorkspaceDetailPage({ user }) {
     }
   };
 
-  // Import document from vault
+  // Import document from vault - supports multiple documents
   const handleImportDocument = async () => {
-    if (!selectedImportDoc) {
-      toast.error('Please select a document to import');
+    if (selectedImportDocs.length === 0) {
+      toast.error('Please select at least one document to import');
       return;
     }
     setCreating(true);
+    
+    let successCount = 0;
+    let failCount = 0;
+    
     try {
-      await axios.post(`${API}/vaults/${vaultId}/import-document`, {
-        document_id: selectedImportDoc.document_id || selectedImportDoc.id,
-        title: selectedImportDoc.title,
-        category: selectedImportDoc.document_type || 'OTHER'
-      }, { withCredentials: true });
-      toast.success('Document imported successfully');
+      // Import documents one by one
+      for (const doc of selectedImportDocs) {
+        try {
+          await axios.post(`${API}/vaults/${vaultId}/import-document`, {
+            document_id: doc.document_id || doc.id,
+            title: doc.title,
+            category: doc.document_type || 'OTHER'
+          }, { withCredentials: true });
+          successCount++;
+        } catch (err) {
+          console.error('Error importing document:', doc.title, err);
+          failCount++;
+        }
+      }
+      
+      if (successCount > 0) {
+        toast.success(`${successCount} document${successCount > 1 ? 's' : ''} imported successfully`);
+      }
+      if (failCount > 0) {
+        toast.error(`${failCount} document${failCount > 1 ? 's' : ''} failed to import`);
+      }
+      
       setShowImportDocument(false);
-      setSelectedImportDoc(null);
+      setSelectedImportDocs([]);
+      setImportSearchTerm('');
       await fetchVault();
     } catch (error) {
-      console.error('Error importing document:', error);
-      toast.error(
-        typeof error.response?.data?.detail === 'string' 
-          ? error.response.data.detail 
-          : 'Failed to import document'
-      );
+      console.error('Error during import:', error);
+      toast.error('Failed to import documents');
     } finally {
       setCreating(false);
     }
   };
+  
+  // Toggle document selection for multi-select import
+  const toggleImportDocSelection = (doc) => {
+    const docId = doc.document_id || doc.id;
+    setSelectedImportDocs(prev => {
+      const isSelected = prev.some(d => (d.document_id || d.id) === docId);
+      if (isSelected) {
+        return prev.filter(d => (d.document_id || d.id) !== docId);
+      } else {
+        return [...prev, doc];
+      }
+    });
+  };
+  
+  // Check if a document is selected
+  const isDocSelected = (doc) => {
+    const docId = doc.document_id || doc.id;
+    return selectedImportDocs.some(d => (d.document_id || d.id) === docId);
+  };
+  
+  // Filter importable docs by search term
+  const filteredImportDocs = importableDocs.filter(doc => 
+    doc.title?.toLowerCase().includes(importSearchTerm.toLowerCase()) ||
+    doc.document_type?.toLowerCase().includes(importSearchTerm.toLowerCase())
+  );
 
   // Activate vault
   const handleActivateVault = async () => {
