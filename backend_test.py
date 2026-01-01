@@ -37,14 +37,16 @@ import subprocess
 
 # Use the public endpoint from frontend/.env
 BASE_URL = "https://docs-audit-tool.preview.emergentagent.com/api"
+FRONTEND_URL = "https://docs-audit-tool.preview.emergentagent.com"
 
-class ReviewRequestTester:
+class AuthConsistencyTester:
     def __init__(self):
         self.base_url = BASE_URL
+        self.frontend_url = FRONTEND_URL
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'ReviewRequestTester/1.0'
+            'User-Agent': 'AuthConsistencyTester/1.0'
         })
         self.tests_run = 0
         self.tests_passed = 0
