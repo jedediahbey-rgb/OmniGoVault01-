@@ -2059,3 +2059,57 @@ Testing the P0 server-side portfolio scoping enforcement as specified in the rev
 - ✅ Ready for production deployment
 
 ---
+---
+
+## ChatGPT QoL Improvements Implementation (January 1, 2026)
+
+### Test Scope:
+Testing the ChatGPT audit Quality-of-Life improvements implementation:
+
+1. **Global Active Portfolio Chip** - Desktop and mobile header display
+2. **Command Palette (Ctrl+K)** - Quick navigation and search
+3. **Bulk Actions in Vault** - Multi-select checkboxes and bulk delete
+
+### Test Scenarios:
+
+#### 1. Desktop Header Active Portfolio Chip
+- [ ] Active Portfolio Chip appears in desktop header (right side)
+- [ ] Clicking chip opens dropdown with portfolio list
+- [ ] Can switch portfolios from the dropdown
+- [ ] Shows "Select Portfolio" when no portfolio selected
+- [ ] Shows "Create Portfolio" button when no portfolios exist
+
+#### 2. Mobile Header Active Portfolio Chip
+- [ ] Active Portfolio Chip appears in mobile header
+- [ ] Same functionality as desktop
+
+#### 3. Command Palette (Ctrl+K)
+- [ ] Pressing Ctrl+K opens command palette
+- [ ] Search input filters results
+- [ ] Keyboard navigation (arrow up/down) works
+- [ ] Enter selects item
+- [ ] Escape closes palette
+- [ ] Quick actions show correctly
+- [ ] Navigation items show correctly
+
+#### 4. Bulk Actions in Vault
+- [ ] Document cards have checkboxes
+- [ ] Clicking checkbox toggles selection
+- [ ] Bulk Action Bar appears when items selected
+- [ ] "Select All" button selects all documents
+- [ ] "Deselect All" clears selection
+- [ ] Bulk delete shows confirmation dialog
+- [ ] Bulk delete actually deletes selected documents
+- [ ] Selection clears when switching tabs (Documents/Trash)
+
+### Test Environment Details:
+- **Frontend URL**: https://portal-overhaul-1.preview.emergentagent.com
+- **Backend API**: https://portal-overhaul-1.preview.emergentagent.com/api
+- **Test User**: jedediah.bey@gmail.com
+
+### Implementation Notes:
+- Created `/app/frontend/src/components/shared/BulkActionBar.jsx` - Floating action bar component
+- Modified `/app/frontend/src/pages/VaultPage.jsx` - Added multi-select state and bulk delete functionality
+- Modified `/app/frontend/src/components/layout/MainLayout.jsx` - Added ActivePortfolioChip to desktop header
+- Command Palette already existed at `/app/frontend/src/components/shared/CommandPalette.jsx`
+
