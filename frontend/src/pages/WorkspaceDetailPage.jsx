@@ -1238,39 +1238,12 @@ export default function WorkspaceDetailPage({ user }) {
                 />
               </div>
               
-              <div>
-                <label className="text-sm text-vault-muted block mb-2">Associated Portfolio</label>
-                <Select
-                  value={vaultSettings.portfolio_id || "none"}
-                  onValueChange={(value) => setVaultSettings({ ...vaultSettings, portfolio_id: value === "none" ? "" : value })}
-                >
-                  <SelectTrigger className="bg-vault-navy border-vault-gold/20">
-                    <SelectValue placeholder="Select a portfolio..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">
-                      <span className="text-vault-muted">No specific portfolio (show all documents)</span>
-                    </SelectItem>
-                    {portfolios.map(portfolio => (
-                      <SelectItem key={portfolio.portfolio_id} value={portfolio.portfolio_id}>
-                        {portfolio.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-vault-muted mt-1">
-                  When set, "Import from Vault" will only show documents from this portfolio.
+              <div className="p-3 bg-vault-navy/50 rounded-lg border border-vault-gold/10">
+                <p className="text-sm text-vault-muted flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-vault-gold" />
+                  Documents are automatically filtered based on your current portfolio selection.
                 </p>
               </div>
-              
-              {vault?.portfolio_id && (
-                <div className="p-3 bg-vault-gold/10 rounded-lg border border-vault-gold/20">
-                  <p className="text-sm text-vault-gold flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4" />
-                    Currently linked to: {portfolios.find(p => p.portfolio_id === vault.portfolio_id)?.name || vault.portfolio_id}
-                  </p>
-                </div>
-              )}
             </div>
             
             <DialogFooter>
