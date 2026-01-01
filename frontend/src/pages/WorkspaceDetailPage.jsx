@@ -129,38 +129,53 @@ export default function WorkspaceDetailPage({ user }) {
   });
   const [savingSettings, setSavingSettings] = useState(false);
   
-  // Debug watcher for importableDocs state - ChatGPT diagnostic
+  // Debug watcher for importableDocs state
   useEffect(() => {
     console.log('=== importableDocs STATE CHANGED ===');
     console.log('importableDocs length:', importableDocs.length);
-    console.log('importableDocs:', importableDocs);
   }, [importableDocs]);
   
-  // More reliable fetching via useEffect - Triggers when dialog opens
-  // Automatically uses current portfolio context from localStorage
+  // Fetch portfolios when import dialog opens
+  useEffect(() => {
+    const loadPortfoliosForImport = async () => {
+      if (!showImportDocument) return;
+      
+      try {
+        const response = await axios.get(`${API}/portfolios`, { withCredentials: true });
+        const fetchedPortfolios = response.data || [];
+        setPortfolios(fetchedPortfolios);
+        
+        // Auto-select the first portfolio or active one
+        const activeId = localStorage.getItem('activePortfolioId') || localStorage.getItem('defaultPortfolioId');
+        if (activeId && fetchedPortfolios.find(p => p.portfolio_id === activeId)) {
+          setImportPortfolioId(activeId);
+        } else if (fetchedPortfolios.length > 0) {
+          setImportPortfolioId(fetchedPortfolios[0].portfolio_id);
+        }
+      } catch (error) {
+        console.error('Error fetching portfolios:', error);
+      }
+    };
+    
+    loadPortfoliosForImport();
+  }, [showImportDocument]);
+  
+  // Fetch documents when portfolio is selected
   useEffect(() => {
     const loadImportableDocs = async () => {
-      if (!showImportDocument || !vaultId) return;
+      if (!showImportDocument || !vaultId || !importPortfolioId) {
+        setImportableDocs([]);
+        return;
+      }
       
-      // Get current portfolio context from localStorage
-      // Try activePortfolioId first (used by VaultPage), then defaultPortfolioId as fallback
-      const currentPortfolioId = localStorage.getItem('activePortfolioId') || localStorage.getItem('defaultPortfolioId') || '';
-      
-      console.log('=== useEffect: Loading importable docs ===');
-      console.log('Current portfolio context:', currentPortfolioId);
+      console.log('=== Loading importable docs ===');
+      console.log('Portfolio ID:', importPortfolioId);
       setImportLoading(true);
       try {
-        // Build URL with portfolio_id query param if we have a current portfolio
-        let url = `${API}/vaults/${vaultId}/importable-documents`;
-        if (currentPortfolioId) {
-          url += `?portfolio_id=${currentPortfolioId}`;
-        }
+        const url = `${API}/vaults/${vaultId}/importable-documents?portfolio_id=${importPortfolioId}`;
         console.log('Full URL:', url);
 
         const response = await axios.get(url, { withCredentials: true });
-
-        console.log('Response status:', response.status);
-        console.log('Response data:', response.data);
 
         const docs = Array.isArray(response.data)
           ? response.data
@@ -171,13 +186,14 @@ export default function WorkspaceDetailPage({ user }) {
       } catch (error) {
         console.error('Error loading importable docs:', error);
         toast.error(error.response?.data?.detail || 'Failed to load your documents');
+        setImportableDocs([]);
       } finally {
         setImportLoading(false);
       }
     };
     
     loadImportableDocs();
-  }, [showImportDocument, vaultId]);
+  }, [showImportDocument, vaultId, importPortfolioId]);
   
   // Form states
   const [newDocument, setNewDocument] = useState({
