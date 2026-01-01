@@ -252,9 +252,13 @@ const ProtectedRoute = ({ children, user, loading, checkAuth }) => {
   }
 
   // Not authenticated - store the requested path for return-to after login
-  // Only store if it's not the root path
-  if (location.pathname && location.pathname !== '/') {
-    sessionStorage.setItem('post_auth_redirect', location.pathname);
+  // Only store if it's a valid internal path (open redirect prevention)
+  if (location.pathname && location.pathname !== '/' && location.pathname.startsWith('/')) {
+    // Additional validation: no external URLs or javascript: schemes
+    const safePath = location.pathname.replace(/[^a-zA-Z0-9/_-]/g, '');
+    if (safePath === location.pathname) {
+      sessionStorage.setItem('post_auth_redirect', location.pathname);
+    }
   }
   
   // Redirect to landing page
