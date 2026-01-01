@@ -495,11 +495,13 @@ async def import_document_to_workspace(request: Request, vault_id: str, body: di
 
 
 @router.get("/{vault_id}/importable-documents")
-async def get_importable_documents(request: Request, vault_id: str):
+async def get_importable_documents(request: Request, vault_id: str, portfolio_id: str = None):
     """Get list of user's portfolio documents that can be imported into this workspace.
     
-    If the vault has a portfolio_id, only documents from that portfolio are shown.
-    Otherwise, all user documents are shown (backwards compatibility).
+    Priority for portfolio filtering:
+    1. portfolio_id query parameter (from current UI context)
+    2. Vault's portfolio_id (if set)
+    3. No filter - show all user documents
     """
     user = await _get_current_user(request)
     vault_service = get_vault_service()
@@ -510,12 +512,15 @@ async def get_importable_documents(request: Request, vault_id: str):
         if not participant:
             raise HTTPException(status_code=403, detail="Not a participant in this vault")
         
-        # Get the vault to check for portfolio_id
-        vault = await _db.vaults.find_one({"vault_id": vault_id}, {"_id": 0, "portfolio_id": 1})
-        vault_portfolio_id = vault.get("portfolio_id") if vault else None
+        # Determine which portfolio to filter by
+        # Priority: query param > vault's portfolio_id > none
+        filter_portfolio_id = portfolio_id
+        if not filter_portfolio_id:
+            vault = await _db.vaults.find_one({"vault_id": vault_id}, {"_id": 0, "portfolio_id": 1})
+            filter_portfolio_id = vault.get("portfolio_id") if vault else None
         
         # Debug logging
-        logger.info(f"Import docs - user_id: {user.user_id}, email: {user.email}, vault_portfolio_id: {vault_portfolio_id}")
+        logger.info(f"Import docs - user_id: {user.user_id}, email: {user.email}, filter_portfolio_id: {filter_portfolio_id}")
         
         # Get all user_ids associated with this email (handles multiple accounts)
         user_ids = [user.user_id]
