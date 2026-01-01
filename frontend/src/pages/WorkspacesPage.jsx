@@ -98,12 +98,40 @@ export default function WorkspacesPage({ user }) {
   // Vault types for selection
   const [vaultTypes, setVaultTypes] = useState([]);
 
-  // Fetch vaults
+  // Active portfolio state
+  const [activePortfolioId, setActivePortfolioId] = useState(() => 
+    localStorage.getItem('activePortfolioId') || localStorage.getItem('defaultPortfolioId') || ''
+  );
+  const [activePortfolioName, setActivePortfolioName] = useState('');
+
+  // Fetch vaults filtered by active portfolio
   const fetchVaults = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/vaults`, { withCredentials: true });
+      
+      // Get current active portfolio from localStorage
+      const currentPortfolioId = localStorage.getItem('activePortfolioId') || localStorage.getItem('defaultPortfolioId') || '';
+      setActivePortfolioId(currentPortfolioId);
+      
+      // Fetch vaults filtered by portfolio
+      let url = `${API}/vaults`;
+      if (currentPortfolioId) {
+        url += `?portfolio_id=${currentPortfolioId}`;
+      }
+      
+      const response = await axios.get(url, { withCredentials: true });
       setVaults(response.data.vaults || []);
+      
+      // Get portfolio name for display
+      if (currentPortfolioId) {
+        try {
+          const portfoliosRes = await axios.get(`${API}/portfolios`, { withCredentials: true });
+          const portfolio = (portfoliosRes.data || []).find(p => p.portfolio_id === currentPortfolioId);
+          setActivePortfolioName(portfolio?.name || '');
+        } catch (e) {
+          console.error('Error fetching portfolio name:', e);
+        }
+      }
     } catch (error) {
       console.error('Error fetching vaults:', error);
       toast.error('Failed to load vaults');
@@ -127,12 +155,15 @@ export default function WorkspacesPage({ user }) {
     fetchVaultTypes();
   }, [fetchVaults, fetchVaultTypes]);
 
-  // Create new vault
+  // Create new vault - automatically link to active portfolio
   const handleCreateVault = async () => {
     if (!newVault.name.trim()) {
       toast.error('Please enter a vault name');
       return;
     }
+    
+    // Get active portfolio
+    const currentPortfolioId = localStorage.getItem('activePortfolioId') || localStorage.getItem('defaultPortfolioId') || '';
 
     try {
       setCreating(true);
