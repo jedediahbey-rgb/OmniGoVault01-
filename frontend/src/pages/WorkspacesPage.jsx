@@ -92,12 +92,8 @@ export default function WorkspacesPage({ user }) {
   const [newVault, setNewVault] = useState({
     name: '',
     description: '',
-    vault_type: 'TRUST',
-    portfolio_id: ''
+    vault_type: 'TRUST'
   });
-  
-  // Portfolios for selection
-  const [portfolios, setPortfolios] = useState([]);
   
   // Vault types for selection
   const [vaultTypes, setVaultTypes] = useState([]);
