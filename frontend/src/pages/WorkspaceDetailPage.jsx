@@ -229,6 +229,25 @@ export default function WorkspaceDetailPage({ user }) {
     }
   };
 
+  // Remove participant
+  const handleRemoveParticipant = async (participantId, participantEmail) => {
+    if (!window.confirm(`Are you sure you want to remove ${participantEmail || 'this participant'} from the workspace?`)) {
+      return;
+    }
+    try {
+      await axios.delete(`${API}/vaults/${vaultId}/participants/${participantId}`, { withCredentials: true });
+      toast.success('Participant removed');
+      await fetchVault();
+    } catch (error) {
+      console.error('Error removing participant:', error);
+      toast.error(
+        typeof error.response?.data?.detail === 'string' 
+          ? error.response.data.detail 
+          : 'Failed to remove participant'
+      );
+    }
+  };
+
   // Activate vault
   const handleActivateVault = async () => {
     try {
