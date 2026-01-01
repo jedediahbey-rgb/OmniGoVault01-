@@ -56,7 +56,8 @@ async def create_vault(request: Request, body: CreateVaultRequest):
             user_id=user.user_id,
             name=body.name,
             description=body.description,
-            vault_type=body.vault_type
+            vault_type=body.vault_type,
+            portfolio_id=body.portfolio_id  # Link to specific portfolio
         )
         return vault
     except PermissionError as e:
