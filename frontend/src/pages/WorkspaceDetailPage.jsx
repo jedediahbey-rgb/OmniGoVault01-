@@ -1136,8 +1136,10 @@ export default function WorkspaceDetailPage({ user }) {
         {/* Import Document Dialog */}
         <Dialog open={showImportDocument} onOpenChange={(open) => {
           setShowImportDocument(open);
-          if (open) fetchImportableDocs();
-          else setSelectedImportDoc(null);
+          if (!open) {
+            setSelectedImportDoc(null);
+            setImportableDocs([]);
+          }
         }}>
           <DialogContent className="bg-vault-dark border-vault-gold/20 max-w-2xl max-h-[80vh]">
             <DialogHeader>
@@ -1146,23 +1148,52 @@ export default function WorkspaceDetailPage({ user }) {
                 Import Document from Vault
               </DialogTitle>
               <DialogDescription className="text-vault-muted">
-                Select a document from your portfolio to import into this workspace.
+                Select a portfolio and choose a document to import into this workspace.
               </DialogDescription>
             </DialogHeader>
             
-            <div className="py-4">
-              {importLoading ? (
+            <div className="py-4 space-y-4">
+              {/* Portfolio Selector */}
+              <div>
+                <label className="text-sm text-vault-muted block mb-2">Select Portfolio</label>
+                <Select
+                  value={importPortfolioId}
+                  onValueChange={(value) => {
+                    setImportPortfolioId(value);
+                    setSelectedImportDoc(null);
+                  }}
+                >
+                  <SelectTrigger className="bg-vault-navy border-vault-gold/20">
+                    <SelectValue placeholder="Choose a portfolio..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {portfolios.map(portfolio => (
+                      <SelectItem key={portfolio.portfolio_id} value={portfolio.portfolio_id}>
+                        {portfolio.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Documents List */}
+              {!importPortfolioId ? (
+                <div className="text-center py-8 text-vault-muted">
+                  <Folder className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>Select a portfolio to see documents</p>
+                </div>
+              ) : importLoading ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin text-vault-gold" />
                 </div>
               ) : importableDocs.length === 0 ? (
                 <div className="text-center py-8 text-vault-muted">
                   <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No documents found in your vault.</p>
+                  <p>No documents found in this portfolio.</p>
                   <p className="text-sm mt-2">Create documents in your portfolio first.</p>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-[45vh] overflow-y-auto pr-2">
+                <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
                   {importableDocs.map((doc) => (
                     <div
                       key={doc.document_id || doc.id}
