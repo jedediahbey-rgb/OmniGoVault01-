@@ -15,7 +15,7 @@ https://docs-audit-tool.preview.emergentagent.com
 3. Add cookie:
    - **Name:** `session_token`
    - **Value:** `QA_REVIEW_03289b5ff3ab49599b49b167a71f5ed4`
-   - **Domain:** `authfix-9.preview.emergentagent.com`
+   - **Domain:** `docs-audit-tool.preview.emergentagent.com`
    - **Path:** `/`
 4. Refresh the page
 
