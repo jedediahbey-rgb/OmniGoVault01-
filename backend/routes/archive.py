@@ -193,14 +193,17 @@ async def delete_source(source_id: str, request: Request):
 
 @router.get("/claims")
 async def get_claims(
+    request: Request,
     search: Optional[str] = None,
     status: Optional[str] = None,
     topic: Optional[str] = None,
     skip: int = 0,
     limit: int = 50,
-    user = Depends(get_current_user)
 ):
     """Get archive claims with filtering"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     query = {}
     
     if search:
@@ -221,8 +224,11 @@ async def get_claims(
     return {"claims": claims, "total": total}
 
 @router.get("/claims/{claim_id}")
-async def get_claim(claim_id: str, user = Depends(get_current_user)):
+async def get_claim(claim_id: str, request: Request):
     """Get a single claim with its evidence sources"""
+    from server import get_current_user
+    user = await get_current_user(request)
+    
     claim = await db.archive_claims.find_one({"claim_id": claim_id}, {"_id": 0})
     if not claim:
         raise HTTPException(status_code=404, detail="Claim not found")
