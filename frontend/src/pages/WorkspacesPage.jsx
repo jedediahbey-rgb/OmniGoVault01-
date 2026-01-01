@@ -230,6 +230,18 @@ export default function WorkspacesPage({ user }) {
             New Vault
           </Button>
         </div>
+        
+        {/* Current Portfolio Indicator */}
+        {activePortfolioName && (
+          <div className="mb-4 p-3 bg-vault-navy/50 rounded-lg border border-vault-gold/20 flex items-center justify-between">
+            <p className="text-sm text-vault-muted">
+              Showing workspaces for: <span className="text-vault-gold font-medium">{activePortfolioName}</span>
+            </p>
+            <p className="text-xs text-vault-muted">
+              Switch portfolios in the Vault to see other workspaces
+            </p>
+          </div>
+        )}
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
