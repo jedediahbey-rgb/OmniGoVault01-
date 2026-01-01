@@ -1212,30 +1212,69 @@ export default function WorkspaceDetailPage({ user }) {
         <Dialog open={showImportDocument} onOpenChange={(open) => {
           setShowImportDocument(open);
           if (!open) {
-            setSelectedImportDoc(null);
+            setSelectedImportDocs([]);
             setImportableDocs([]);
+            setImportSearchTerm('');
           }
         }}>
-          <DialogContent className="bg-vault-dark border-vault-gold/20 max-w-2xl max-h-[80vh]">
+          <DialogContent className="bg-vault-dark border-vault-gold/20 max-w-2xl max-h-[85vh]">
             <DialogHeader>
               <DialogTitle className="text-white flex items-center gap-2">
                 <Download className="w-5 h-5 text-vault-gold" />
-                Import Document from Vault
+                Import Documents from Vault
               </DialogTitle>
               <DialogDescription className="text-vault-muted">
-                Showing documents from your currently active portfolio.
+                Select documents to import into this workspace.
               </DialogDescription>
             </DialogHeader>
             
-            <div className="py-4">
-              {/* Show current portfolio name */}
+            <div className="py-4 space-y-4">
+              {/* Prominent Portfolio Scope Indicator */}
               {importPortfolioId && portfolios.length > 0 && (
-                <div className="mb-4 p-3 bg-vault-navy/50 rounded-lg border border-vault-gold/20">
-                  <p className="text-sm text-vault-muted">
-                    Portfolio: <span className="text-vault-gold font-medium">
+                <div className="flex items-center gap-3 p-3 bg-vault-gold/10 rounded-lg border border-vault-gold/30">
+                  <FolderOpen className="w-5 h-5 text-vault-gold flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-vault-gold/70 uppercase tracking-wider font-medium">Scoped to Portfolio</p>
+                    <p className="text-sm text-white font-semibold truncate">
                       {portfolios.find(p => p.portfolio_id === importPortfolioId)?.name || 'Unknown'}
-                    </span>
-                  </p>
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => window.location.href = '/vault'}
+                    className="text-vault-gold hover:text-vault-gold hover:bg-vault-gold/10 text-xs"
+                  >
+                    Switch Portfolio
+                  </Button>
+                </div>
+              )}
+              
+              {/* Search Input */}
+              <div className="relative">
+                <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-vault-muted" />
+                <Input
+                  placeholder="Search documents..."
+                  value={importSearchTerm}
+                  onChange={(e) => setImportSearchTerm(e.target.value)}
+                  className="pl-10 bg-vault-navy border-vault-gold/20 text-white"
+                />
+              </div>
+              
+              {/* Selection Count */}
+              {selectedImportDocs.length > 0 && (
+                <div className="flex items-center justify-between p-2 bg-vault-gold/5 rounded-lg border border-vault-gold/20">
+                  <span className="text-sm text-vault-gold">
+                    {selectedImportDocs.length} document{selectedImportDocs.length > 1 ? 's' : ''} selected
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedImportDocs([])}
+                    className="text-vault-muted hover:text-white h-7 px-2"
+                  >
+                    Clear
+                  </Button>
                 </div>
               )}
               
@@ -1244,41 +1283,78 @@ export default function WorkspaceDetailPage({ user }) {
                 <div className="flex justify-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin text-vault-gold" />
                 </div>
-              ) : importableDocs.length === 0 ? (
+              ) : filteredImportDocs.length === 0 ? (
                 <div className="text-center py-8 text-vault-muted">
                   <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No documents found in this portfolio.</p>
-                  <p className="text-sm mt-2">Create documents in your portfolio first, or switch to a different portfolio in the Vault.</p>
+                  {importSearchTerm ? (
+                    <>
+                      <p>No documents match "{importSearchTerm}"</p>
+                      <Button
+                        variant="link"
+                        onClick={() => setImportSearchTerm('')}
+                        className="text-vault-gold mt-2"
+                      >
+                        Clear search
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <p>No documents found in this portfolio.</p>
+                      <p className="text-sm mt-2">Create documents in your portfolio first, or switch to a different portfolio in the Vault.</p>
+                    </>
+                  )}
                 </div>
               ) : (
-                <div className="space-y-3 max-h-[45vh] overflow-y-auto pr-2">
-                  {importableDocs.map((doc) => (
+                <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-2">
+                  {/* Select All Option */}
+                  {filteredImportDocs.length > 1 && (
+                    <button
+                      onClick={() => {
+                        if (selectedImportDocs.length === filteredImportDocs.length) {
+                          setSelectedImportDocs([]);
+                        } else {
+                          setSelectedImportDocs([...filteredImportDocs]);
+                        }
+                      }}
+                      className="w-full p-2 text-left text-sm text-vault-gold hover:bg-vault-gold/10 rounded border border-vault-gold/20 transition-colors"
+                    >
+                      {selectedImportDocs.length === filteredImportDocs.length ? '☑ Deselect All' : '☐ Select All'} ({filteredImportDocs.length} documents)
+                    </button>
+                  )}
+                  
+                  {filteredImportDocs.map((doc) => (
                     <div
                       key={doc.document_id || doc.id}
-                      onClick={() => setSelectedImportDoc(doc)}
-                      className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                        (selectedImportDoc?.document_id || selectedImportDoc?.id) === (doc.document_id || doc.id)
+                      onClick={() => toggleImportDocSelection(doc)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                        isDocSelected(doc)
                           ? 'bg-vault-gold/20 border-vault-gold ring-1 ring-vault-gold/50'
                           : 'bg-vault-navy/50 border-vault-gold/10 hover:border-vault-gold/30 hover:bg-vault-navy/70'
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3">
+                        {/* Checkbox indicator */}
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                          isDocSelected(doc) 
+                            ? 'bg-vault-gold border-vault-gold' 
+                            : 'border-vault-gold/30'
+                        }`}>
+                          {isDocSelected(doc) && <Check className="w-3.5 h-3.5 text-vault-navy" weight="bold" />}
+                        </div>
+                        
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-white text-base leading-tight mb-2">
+                          <p className="font-medium text-white text-sm leading-tight mb-1">
                             {doc.title}
                           </p>
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant="outline" className="bg-vault-gold/10 text-vault-gold border-vault-gold/30 text-xs whitespace-nowrap">
                               {doc.document_type?.replace(/_/g, ' ') || 'Document'}
                             </Badge>
-                            <span className="text-xs text-vault-muted">
-                              {doc.portfolio_name}
-                            </span>
+                            {doc.status && (
+                              <span className="text-xs text-vault-muted capitalize">{doc.status.toLowerCase()}</span>
+                            )}
                           </div>
                         </div>
-                        {(selectedImportDoc?.document_id || selectedImportDoc?.id) === (doc.document_id || doc.id) && (
-                          <Check className="w-5 h-5 text-vault-gold flex-shrink-0 mt-1" />
-                        )}
                       </div>
                     </div>
                   ))}
@@ -1296,7 +1372,7 @@ export default function WorkspaceDetailPage({ user }) {
               </Button>
               <Button
                 onClick={handleImportDocument}
-                disabled={!selectedImportDoc || creating}
+                disabled={selectedImportDocs.length === 0 || creating}
                 className="bg-vault-gold hover:bg-vault-gold/90 text-vault-navy"
               >
                 {creating ? (
@@ -1304,7 +1380,7 @@ export default function WorkspaceDetailPage({ user }) {
                 ) : (
                   <Download className="w-4 h-4 mr-2" />
                 )}
-                Import Document
+                Import {selectedImportDocs.length > 0 ? `(${selectedImportDocs.length})` : ''}
               </Button>
             </DialogFooter>
           </DialogContent>
