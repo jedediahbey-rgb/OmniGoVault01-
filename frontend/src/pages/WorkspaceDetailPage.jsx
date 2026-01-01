@@ -598,7 +598,11 @@ export default function WorkspaceDetailPage({ user }) {
                     document={doc}
                     onView={() => handleViewDocument(doc)}
                     onSubmitForReview={() => handleSubmitForReview(doc.document_id)}
+                    onDelete={() => handleDeleteDocument(doc.document_id, doc.title)}
                     canEdit={vault.user_permissions?.includes('EDIT_DOC')}
+                    canDelete={vault.user_permissions?.includes('EDIT_DOC') && 
+                      (doc.status === 'DRAFT' || doc.status === 'UNDER_REVIEW') && 
+                      (!doc.signatures || doc.signatures.length === 0)}
                   />
                 ))}
               </div>
