@@ -118,8 +118,8 @@ function PortfolioSelector({ portfolios, activePortfolio, onSelect, onCreateNew 
   );
 }
 
-// Document Card Component - Swipe to delete
-function DocumentCard({ doc, isPinned, onNavigate, onDelete }) {
+// Document Card Component - With selection checkbox and swipe to delete
+function DocumentCard({ doc, isPinned, onNavigate, onDelete, isSelected, onToggleSelect, selectionMode }) {
   const x = useMotionValue(0);
   const background = useTransform(x, [-100, 0], ['rgba(239, 68, 68, 0.3)', 'rgba(0, 0, 0, 0)']);
   const deleteOpacity = useTransform(x, [-100, -50, 0], [1, 0.5, 0]);
@@ -140,6 +140,11 @@ function DocumentCard({ doc, isPinned, onNavigate, onDelete }) {
     }
   };
 
+  const handleCheckboxClick = (e) => {
+    e.stopPropagation();
+    onToggleSelect?.(doc.document_id);
+  };
+
   return (
     <div className="relative overflow-hidden rounded-xl">
       {/* Delete background */}
@@ -155,19 +160,39 @@ function DocumentCard({ doc, isPinned, onNavigate, onDelete }) {
       
       {/* Card content */}
       <motion.div
-        drag={doc.is_locked ? false : "x"}
+        drag={doc.is_locked || selectionMode ? false : "x"}
         dragConstraints={{ left: -100, right: 0 }}
         dragElastic={0.1}
         onDragEnd={handleDragEnd}
         animate={controls}
         style={{ x }}
-        className="p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 rounded-xl cursor-grab active:cursor-grabbing relative"
+        className={`p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.02] border rounded-xl relative transition-colors ${
+          isSelected 
+            ? 'border-vault-gold/50 bg-vault-gold/5' 
+            : 'border-white/10'
+        } ${selectionMode ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing'}`}
+        onClick={selectionMode ? handleCheckboxClick : undefined}
       >
-        <div className="flex items-start gap-3" onClick={onNavigate}>
-          <div className="w-12 h-12 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0">
-            <FileText className="w-6 h-6 text-vault-gold" weight="duotone" />
+        <div className="flex items-start gap-3">
+          {/* Checkbox - always visible but more prominent in selection mode */}
+          <button
+            onClick={handleCheckboxClick}
+            className={`w-6 h-6 rounded flex items-center justify-center shrink-0 transition-all ${
+              isSelected 
+                ? 'bg-vault-gold text-vault-dark' 
+                : 'bg-white/5 border border-white/20 hover:border-vault-gold/50'
+            } ${selectionMode ? '' : 'opacity-60 hover:opacity-100'}`}
+          >
+            {isSelected && <Check className="w-4 h-4" weight="bold" />}
+          </button>
+          
+          <div 
+            className="w-10 h-10 rounded-xl bg-vault-gold/10 border border-vault-gold/20 flex items-center justify-center shrink-0"
+            onClick={(e) => { if (!selectionMode) { e.stopPropagation(); onNavigate(); } }}
+          >
+            <FileText className="w-5 h-5 text-vault-gold" weight="duotone" />
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0" onClick={(e) => { if (!selectionMode) { e.stopPropagation(); onNavigate(); } }}>
             <div className="flex items-start justify-between gap-2">
               <h3 className="text-white font-medium text-sm line-clamp-2 leading-snug">{doc.title}</h3>
               <div className="flex items-center gap-1 shrink-0">
@@ -193,7 +218,7 @@ function DocumentCard({ doc, isPinned, onNavigate, onDelete }) {
             </div>
           </div>
         </div>
-        {!doc.is_locked && (
+        {!doc.is_locked && !selectionMode && (
           <p className="text-white/20 text-[10px] text-center mt-2">← Swipe to delete</p>
         )}
       </motion.div>
