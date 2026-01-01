@@ -265,6 +265,7 @@ const AppLoaderWrapper = ({ isLoading, entitlements, planName, planTier }) => {
 const AuthLayout = ({ children, auth }) => {
   return (
     <MainLayout user={auth.user} onLogout={auth.logout}>
+      <ReviewModeBanner user={auth.user} />
       <div className="min-h-full">
         {children}
       </div>
