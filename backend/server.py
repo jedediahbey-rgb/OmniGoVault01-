@@ -933,9 +933,34 @@ async def create_session(request: Request, response: Response):
             "picture": picture,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat(),
-            "first_login": True  # Track first login for welcome flow
+            "first_login": True,  # Track first login for welcome flow
+            "registration_complete": False  # Requires registration completion
         }
         await db.users.insert_one(user_doc)
+        
+        # Create pending registration record
+        name_parts = (name or "").split()
+        reg_first = name_parts[0] if name_parts else ""
+        reg_last = name_parts[-1] if len(name_parts) > 1 else ""
+        reg_middle = " ".join(name_parts[1:-1]) if len(name_parts) > 2 else ""
+        
+        registration_doc = {
+            "registration_id": f"reg_{user_id}",
+            "user_id": user_id,
+            "email": email,
+            "legal_name": {"first": reg_first, "middle": reg_middle, "last": reg_last},
+            "phone": "",
+            "address": {"street1": "", "street2": "", "city": "", "state": "NY", "postal_code": "", "country": "US"},
+            "agreements": {
+                "terms": {"accepted": False, "version": "2026-01-01"},
+                "privacy": {"accepted": False, "version": "2026-01-01"},
+            },
+            "metadata": {},
+            "status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "completed_at": None,
+        }
+        await db.user_registrations.insert_one(registration_doc)
         
         # Create Account/Organization for new user
         account_id = f"acct_{uuid.uuid4().hex[:12]}"
