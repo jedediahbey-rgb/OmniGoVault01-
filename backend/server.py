@@ -5000,6 +5000,105 @@ async def get_admin_users(
     return {"users": enriched}
 
 
+@api_router.delete("/admin/users/{user_id}")
+async def delete_user_admin(
+    user_id: str,
+    user: User = Depends(get_admin_user)
+):
+    """Delete a user and all their data (OMNICOMPETENT only)"""
+    # Check omnicompetent permission
+    roles_doc = await db.user_global_roles.find({"user_id": user.user_id}, {"_id": 0}).to_list(100)
+    global_roles = [r["role"] for r in roles_doc] if roles_doc else []
+    
+    if ROLE_OMNICOMPETENT not in global_roles and ROLE_OMNICOMPETENT_OWNER not in global_roles:
+        raise HTTPException(status_code=403, detail="Omnicompetent access required to delete users")
+    
+    # Cannot delete yourself
+    if user_id == user.user_id:
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+    
+    # Cannot delete the owner
+    if user_id == OWNER_USER_ID:
+        raise HTTPException(status_code=400, detail="Cannot delete the system owner account")
+    
+    # Check if user exists
+    target_user = await db.users.find_one({"user_id": user_id})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if target is omnicompetent owner
+    target_roles = await db.user_global_roles.find({"user_id": user_id}, {"_id": 0}).to_list(10)
+    target_global_roles = [r["role"] for r in target_roles] if target_roles else []
+    if ROLE_OMNICOMPETENT_OWNER in target_global_roles:
+        raise HTTPException(status_code=400, detail="Cannot delete an Omnicompetent Owner")
+    
+    # Delete user data from all collections
+    deleted_counts = {}
+    
+    # Delete user record
+    result = await db.users.delete_one({"user_id": user_id})
+    deleted_counts["users"] = result.deleted_count
+    
+    # Delete user roles
+    result = await db.user_global_roles.delete_many({"user_id": user_id})
+    deleted_counts["roles"] = result.deleted_count
+    
+    # Delete registration
+    result = await db.user_registrations.delete_many({"user_id": user_id})
+    deleted_counts["registrations"] = result.deleted_count
+    
+    # Delete sessions
+    result = await db.sessions.delete_many({"user_id": user_id})
+    deleted_counts["sessions"] = result.deleted_count
+    
+    # Delete entitlements
+    result = await db.entitlements.delete_many({"user_id": user_id})
+    deleted_counts["entitlements"] = result.deleted_count
+    
+    # Delete portfolios owned by user
+    result = await db.portfolios.delete_many({"owner_user_id": user_id})
+    deleted_counts["portfolios"] = result.deleted_count
+    
+    # Delete documents owned by user
+    result = await db.documents.delete_many({"user_id": user_id})
+    deleted_counts["documents"] = result.deleted_count
+    
+    # Delete vaults owned by user
+    result = await db.vaults.delete_many({"owner_user_id": user_id})
+    deleted_counts["vaults"] = result.deleted_count
+    
+    # Delete workspaces owned by user
+    result = await db.workspaces.delete_many({"owner_user_id": user_id})
+    deleted_counts["workspaces"] = result.deleted_count
+    
+    # Delete binder profiles
+    result = await db.binder_profiles.delete_many({"user_id": user_id})
+    deleted_counts["binder_profiles"] = result.deleted_count
+    
+    # Delete binder runs
+    result = await db.binder_runs.delete_many({"user_id": user_id})
+    deleted_counts["binder_runs"] = result.deleted_count
+    
+    # Log the action
+    await log_admin_action(
+        admin_user_id=user.user_id,
+        action_type="DELETE_USER",
+        target_user_id=user_id,
+        details={
+            "deleted_email": target_user.get("email"),
+            "deleted_name": target_user.get("name"),
+            "deleted_counts": deleted_counts
+        },
+        success=True
+    )
+    
+    return {
+        "success": True,
+        "message": f"User {target_user.get('email')} deleted successfully",
+        "deleted_counts": deleted_counts
+    }
+
+
 @api_router.get("/admin/audit-logs")
 async def get_admin_audit_logs(
     limit: int = 100,
