@@ -3,13 +3,23 @@ Registration Routes - User registration flow with compliance requirements
 Creates pending registration on account creation, requires completion before app access
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
-from typing import Optional, Dict, Any
+from typing import Optional
 from datetime import datetime, timezone
 import re
 
 router = APIRouter(prefix="/api/registration", tags=["registration"])
+
+# Dependencies - will be set during initialization
+_db = None
+_get_current_user = None
+
+def init_registration_routes(db, get_current_user_func):
+    """Initialize registration routes with dependencies"""
+    global _db, _get_current_user
+    _db = db
+    _get_current_user = get_current_user_func
 
 # ---- Utilities ----
 
@@ -62,9 +72,9 @@ class CompleteRegistrationRequest(BaseModel):
 
 # ---- Helper to create pending registration ----
 
-async def ensure_pending_registration(db, user: dict):
+async def ensure_pending_registration(user: dict):
     """Create a pending registration record if one doesn't exist"""
-    existing = await db.user_registrations.find_one({"user_id": user["user_id"]})
+    existing = await _db.user_registrations.find_one({"user_id": user["user_id"]})
     if existing:
         return existing
 
@@ -95,10 +105,10 @@ async def ensure_pending_registration(db, user: dict):
         },
         "metadata": {},
         "status": "pending",
-        "created_at": now_utc(),
+        "created_at": now_utc().isoformat(),
         "completed_at": None,
     }
-    await db.user_registrations.insert_one(reg)
+    await _db.user_registrations.insert_one(reg)
     return reg
 
 # ---- Routes ----
@@ -106,14 +116,10 @@ async def ensure_pending_registration(db, user: dict):
 @router.get("")
 async def get_registration(request: Request):
     """Get current user's registration status and data"""
-    db = request.app.state.db
-    user = getattr(request.state, "user", None)
-    
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+    user = await _get_current_user(request)
     
     # Ensure registration record exists
-    reg = await ensure_pending_registration(db, user)
+    reg = await ensure_pending_registration({"user_id": user.user_id, "name": user.name, "email": user.email})
     
     # Remove Mongo _id
     if reg:
@@ -126,11 +132,7 @@ async def get_registration(request: Request):
 @router.post("/complete")
 async def complete_registration(req: CompleteRegistrationRequest, request: Request):
     """Complete user registration with required information"""
-    db = request.app.state.db
-    user = getattr(request.state, "user", None)
-    
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+    user = await _get_current_user(request)
     
     # Validate agreements explicitly
     if not req.agreements.terms.accepted:
@@ -189,23 +191,23 @@ async def complete_registration(req: CompleteRegistrationRequest, request: Reque
     reg_update["metadata"] = {"ip": ip, "user_agent": ua}
 
     # Upsert registration record
-    await db.user_registrations.update_one(
-        {"user_id": user["user_id"]},
-        {"$set": reg_update, "$setOnInsert": {"created_at": now_utc().isoformat(), "email": user.get("email")}},
+    await _db.user_registrations.update_one(
+        {"user_id": user.user_id},
+        {"$set": reg_update, "$setOnInsert": {"created_at": now_utc().isoformat(), "email": user.email}},
         upsert=True,
     )
 
     # Mark user registration_complete
-    await db.users.update_one(
-        {"user_id": user["user_id"]},
+    await _db.users.update_one(
+        {"user_id": user.user_id},
         {"$set": {"registration_complete": True, "updated_at": now_utc().isoformat()}},
     )
 
     # Audit log
-    await db.audit_log.insert_one({
+    await _db.audit_log.insert_one({
         "event": "REGISTRATION_COMPLETED",
-        "user_id": user["user_id"],
-        "email": user.get("email"),
+        "user_id": user.user_id,
+        "email": user.email,
         "timestamp": now_utc().isoformat(),
         "metadata": {"ip": ip, "user_agent": ua},
     })
