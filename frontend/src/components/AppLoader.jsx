@@ -300,8 +300,8 @@ const AppLoader = ({
               </div>
             </motion.div>
 
-            {/* Status Text - Larger and more prominent */}
-            <div className="flex flex-col items-center gap-3 min-h-[80px] mt-2">
+            {/* Status Text - Larger and more prominent - Fixed height to prevent layout shift */}
+            <div className="flex flex-col items-center gap-3 h-[80px] mt-2 justify-center">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={statusCopy.primary}
