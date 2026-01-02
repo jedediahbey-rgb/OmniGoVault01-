@@ -322,6 +322,12 @@ const AuthLayout = ({ children, auth, requireAuth = false }) => {
     );
   }
   
+  // If user is authenticated but registration is not complete, redirect to /register
+  // Skip this check if we're already on the registration page
+  if (requireAuth && auth.user && auth.user.registration_complete === false && location.pathname !== '/register') {
+    return <Navigate to="/register" replace />;
+  }
+  
   return (
     <MainLayout user={auth.user} onLogout={auth.logout}>
       <ReviewModeBanner user={auth.user} />
