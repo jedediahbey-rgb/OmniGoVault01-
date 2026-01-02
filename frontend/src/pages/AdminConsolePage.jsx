@@ -1307,14 +1307,14 @@ const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, onDeleteUser, is
             </div>
           )}
           
-          {/* Delete User Section */}
-          {canDeleteUser() && !showDeleteConfirm && (
+          {/* Delete User Section - Show for any admin viewing other users */}
+          {user.user_id !== currentUserId && !(user.global_roles || []).includes('OMNICOMPETENT_OWNER') && !showDeleteConfirm && (
             <div className="pt-4 border-t border-red-500/20">
               <Button 
                 onClick={() => setShowDeleteConfirm(true)}
                 className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30"
               >
-                <AlertTriangle className="w-4 h-4 mr-2" />
+                <Trash2 className="w-4 h-4 mr-2" />
                 Delete User Account
               </Button>
             </div>
