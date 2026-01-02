@@ -1148,7 +1148,11 @@ const AccountDetailsDialog = ({ open, onClose, account, onChangePlan }) => {
 };
 
 // User Details Dialog  
-const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, isOmnicompetent, currentUserId }) => {
+const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, onDeleteUser, isOmnicompetent, currentUserId }) => {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  
   if (!user) return null;
   
   // Filter roles - hide OMNICOMPETENT if user has OMNICOMPETENT_OWNER
@@ -1166,6 +1170,15 @@ const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, isOmnicompetent,
     return isOmnicompetent && user.user_id !== currentUserId && role !== 'OMNICOMPETENT_OWNER';
   };
   
+  const canDeleteUser = () => {
+    // Can't delete yourself
+    if (user.user_id === currentUserId) return false;
+    // Can't delete omnicompetent owner
+    if ((user.global_roles || []).includes('OMNICOMPETENT_OWNER')) return false;
+    // Only omnicompetent can delete
+    return isOmnicompetent;
+  };
+  
   const handleRemoveRole = (role) => {
     if (role === 'OMNICOMPETENT_OWNER') {
       toast.error('Cannot revoke OMNICOMPETENT_OWNER role');
@@ -1173,6 +1186,23 @@ const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, isOmnicompetent,
     }
     if (window.confirm(`Remove ${role} role from ${user.email || user.name}?`)) {
       onRevokeRole?.(user.user_id, role);
+    }
+  };
+  
+  const handleDeleteUser = async () => {
+    if (deleteConfirmText !== 'DELETE') {
+      toast.error('Please type DELETE to confirm');
+      return;
+    }
+    setDeleting(true);
+    try {
+      await onDeleteUser?.(user.user_id);
+      setShowDeleteConfirm(false);
+      onClose();
+    } catch (error) {
+      console.error('Delete failed:', error);
+    } finally {
+      setDeleting(false);
     }
   };
   
