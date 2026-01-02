@@ -572,6 +572,7 @@ const AdminConsolePage = () => {
           onClose={() => setShowUserDetails(false)}
           user={selectedUser}
           onRevokeRole={handleRevokeRole}
+          onDeleteUser={handleDeleteUser}
           isOmnicompetent={adminStatus?.is_omnicompetent}
           currentUserId={adminStatus?.user_id}
         />
