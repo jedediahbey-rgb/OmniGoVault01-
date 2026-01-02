@@ -1290,6 +1290,63 @@ const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, onDeleteUser, is
               </p>
             </div>
           )}
+          
+          {/* Delete User Section */}
+          {canDeleteUser() && !showDeleteConfirm && (
+            <div className="pt-4 border-t border-red-500/20">
+              <Button 
+                onClick={() => setShowDeleteConfirm(true)}
+                className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30"
+              >
+                <AlertTriangle className="w-4 h-4 mr-2" />
+                Delete User Account
+              </Button>
+            </div>
+          )}
+          
+          {/* Delete Confirmation */}
+          {showDeleteConfirm && (
+            <div className="pt-4 border-t border-red-500/30 space-y-3">
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-red-400 text-sm font-medium flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" />
+                  Permanent Deletion Warning
+                </p>
+                <p className="text-red-300/70 text-xs mt-1">
+                  This will permanently delete the user and ALL their data including portfolios, documents, vaults, and workspaces. This cannot be undone.
+                </p>
+              </div>
+              <div>
+                <Label className="text-red-400 text-xs">Type DELETE to confirm:</Label>
+                <Input
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  placeholder="DELETE"
+                  className="mt-1 bg-red-500/10 border-red-500/30 text-red-300 placeholder:text-red-400/50"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteConfirmText('');
+                  }}
+                  variant="outline"
+                  className="flex-1 border-vault-gold/30 text-vault-gold"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleDeleteUser}
+                  disabled={deleteConfirmText !== 'DELETE' || deleting}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"
+                >
+                  {deleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                  {deleting ? 'Deleting...' : 'Delete Forever'}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
         
         <DialogFooter>
