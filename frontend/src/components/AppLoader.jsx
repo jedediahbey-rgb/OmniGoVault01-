@@ -246,112 +246,91 @@ const AppLoader = ({
             }}
           />
 
-          {/* Content - Fixed size container to prevent layout shift */}
+          {/* Content - Fixed size container with absolute positioning for stability */}
           <div 
-            className="relative z-10 flex flex-col items-center justify-between px-8 py-8 rounded-2xl bg-vault-navy/60 backdrop-blur-sm border border-vault-gold/10"
-            style={{ width: '300px', height: '320px', minHeight: '320px', maxHeight: '320px' }}
+            className="relative z-10 rounded-2xl bg-vault-navy/60 backdrop-blur-sm border border-vault-gold/10 overflow-hidden"
+            style={{ width: '300px', height: '300px' }}
           >
-            {/* Logo / Wordmark */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="flex flex-col items-center gap-3"
-            >
-              <span className="text-xl font-heading text-vault-gold tracking-[0.3em] font-bold">
-                OMNIGOVAULT
-              </span>
-              {/* Jack In Icon - positioned under OMNIGOVAULT */}
-              <div className="w-12 h-12 rounded-lg bg-vault-gold/10 border border-vault-gold/40 flex items-center justify-center relative">
-                {/* Matrix Jack/Plug Icon */}
-                <svg 
-                  viewBox="0 0 24 24" 
-                  className="w-7 h-7 text-vault-gold"
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  {/* Main connector body */}
-                  <rect x="7" y="2" width="10" height="8" rx="1" />
-                  {/* Prongs */}
-                  <line x1="10" y1="10" x2="10" y2="14" />
-                  <line x1="14" y1="10" x2="14" y2="14" />
-                  {/* Base plate */}
-                  <rect x="6" y="14" width="12" height="3" rx="0.5" />
-                  {/* Connection lines going down */}
-                  <line x1="9" y1="17" x2="9" y2="22" />
-                  <line x1="12" y1="17" x2="12" y2="20" />
-                  <line x1="15" y1="17" x2="15" y2="22" />
-                </svg>
-                {/* Pulse effect when loading */}
-                {phase === 'booting' && (
-                  <motion.div
-                    className="absolute inset-0 rounded-lg border-2 border-vault-gold/50"
-                    animate={{ 
-                      scale: [1, 1.3, 1],
-                      opacity: [0.6, 0, 0.6]
-                    }}
-                    transition={{ 
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                )}
-              </div>
-            </motion.div>
-
-            {/* Status Text - Larger and more prominent - Fixed height to prevent layout shift */}
-            <div className="flex flex-col items-center gap-3 h-[80px] mt-2 justify-center">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={statusCopy.primary}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.4 }}
-                  className="text-center"
-                >
-                  <p className="text-vault-light text-lg font-medium tracking-wider">
-                    {statusCopy.primary}
-                  </p>
-                  {statusCopy.secondary && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.4, delay: 0.2 }}
-                      className="text-vault-muted text-sm mt-2 tracking-wide"
-                    >
-                      {statusCopy.secondary}
-                    </motion.p>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Progress Bar - Wider */}
-            <div className="w-64 h-[3px] bg-vault-gold/10 rounded-full overflow-hidden">
+            {/* Inner content wrapper with fixed layout */}
+            <div className="absolute inset-0 flex flex-col items-center px-6 py-6">
+              {/* Logo / Wordmark - Fixed position at top */}
               <motion.div
-                className="h-full bg-gradient-to-r from-vault-gold/40 via-vault-gold to-vault-gold/40 rounded-full"
-                initial={{ width: '0%' }}
-                animate={{ width: `${progress}%` }}
-                transition={{ 
-                  duration: 0.5, 
-                  ease: 'easeOut'
-                }}
-              />
-            </div>
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="flex flex-col items-center gap-2"
+              >
+                <span className="text-lg font-heading text-vault-gold tracking-[0.25em] font-bold">
+                  OMNIGOVAULT
+                </span>
+                {/* Jack In Icon */}
+                <div className="w-10 h-10 rounded-lg bg-vault-gold/10 border border-vault-gold/40 flex items-center justify-center relative">
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    className="w-6 h-6 text-vault-gold"
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="7" y="2" width="10" height="8" rx="1" />
+                    <line x1="10" y1="10" x2="10" y2="14" />
+                    <line x1="14" y1="10" x2="14" y2="14" />
+                    <rect x="6" y="14" width="12" height="3" rx="0.5" />
+                    <line x1="9" y1="17" x2="9" y2="22" />
+                    <line x1="12" y1="17" x2="12" y2="20" />
+                    <line x1="15" y1="17" x2="15" y2="22" />
+                  </svg>
+                  {phase === 'booting' && (
+                    <motion.div
+                      className="absolute inset-0 rounded-lg border-2 border-vault-gold/50"
+                      animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                  )}
+                </div>
+              </motion.div>
 
-            {/* Plan Badge - Always reserve space to prevent layout shift */}
-            <div className="h-[28px] flex items-center justify-center">
-              <AnimatePresence>
-                {planName && phase !== 'booting' && (
+              {/* Status Text - Fixed height container */}
+              <div className="flex-1 flex flex-col items-center justify-center w-full">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={statusCopy.primary}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.4 }}
+                    className="text-center"
+                  >
+                    <p className="text-vault-light text-base font-medium tracking-wider">
+                      {statusCopy.primary}
+                    </p>
+                    <p className="text-vault-muted text-xs mt-1.5 tracking-wide h-[32px]">
+                      {statusCopy.secondary || '\u00A0'}
+                    </p>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-full px-2 mb-3">
+                <div className="w-full h-[3px] bg-vault-gold/10 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-vault-gold/40 via-vault-gold to-vault-gold/40 rounded-full"
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                  />
+                </div>
+              </div>
+
+              {/* Plan Badge - Fixed height placeholder */}
+              <div className="h-[28px] flex items-center justify-center">
+                {planName && phase !== 'booting' ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.4 }}
                     className={cn(
                       'px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase',
@@ -363,8 +342,10 @@ const AppLoader = ({
                   >
                     {planName}
                   </motion.div>
+                ) : (
+                  <div className="h-[28px]" /> 
                 )}
-              </AnimatePresence>
+              </div>
             </div>
           </div>
         </motion.div>
