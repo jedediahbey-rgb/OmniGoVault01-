@@ -4865,7 +4865,8 @@ init_files_routes(db)
 app.include_router(files_router, prefix="/api")
 
 # Registration routes
-from routes.registration import router as registration_router
+from routes.registration import router as registration_router, init_registration_routes
+init_registration_routes(db, get_current_user)
 app.include_router(registration_router)
 
 app.add_middleware(
