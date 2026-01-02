@@ -1191,8 +1191,8 @@ const UserDetailsDialog = ({ open, onClose, user, onRevokeRole, onDeleteUser, is
     if (user.user_id === currentUserId) return false;
     // Can't delete omnicompetent owner
     if ((user.global_roles || []).includes('OMNICOMPETENT_OWNER')) return false;
-    // Only omnicompetent can delete
-    return isOmnicompetent;
+    // OMNICOMPETENT_OWNER or OMNICOMPETENT can delete
+    return isOmnicompetent === true;
   };
   
   const handleRemoveRole = (role) => {
