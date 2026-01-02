@@ -1255,8 +1255,11 @@ export default function CyberHomePage() {
               }}
             />
 
-            {/* Content */}
-            <div className="relative z-10 flex flex-col items-center gap-6 px-8 py-10 rounded-2xl bg-[#0a1128]/60 backdrop-blur-sm border border-[#C6A87C]/10">
+            {/* Content - Fixed size container */}
+            <div 
+              className="relative z-10 flex flex-col items-center px-8 py-8 rounded-2xl bg-[#0a1128]/60 backdrop-blur-sm border border-[#C6A87C]/10"
+              style={{ width: '300px', height: '320px' }}
+            >
               {/* Logo / Wordmark */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -1309,44 +1312,28 @@ export default function CyberHomePage() {
                 </div>
               </motion.div>
 
-              {/* Status Text */}
-              <div className="flex flex-col items-center gap-3 min-h-[80px] mt-2">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={isLoggingOut ? 'offline' : loadingPhase}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.4 }}
-                    className="text-center"
-                  >
-                    <p className="text-white/90 text-lg font-medium tracking-wider">
-                      {isLoggingOut 
-                        ? 'Matrix System Offline' 
-                        : loadingPhase === 'booting' 
-                          ? 'Jacking into the Network' 
-                          : 'Matrix System Online'}
-                    </p>
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.4, delay: 0.2 }}
-                      className="text-white/50 text-sm mt-2 tracking-wide"
-                    >
-                      {isLoggingOut
-                        ? 'Disconnecting securely...'
-                        : loadingPhase === 'booting' 
-                          ? 'Establishing secure connection...' 
-                          : isLoggedIn 
-                            ? `Tier: ${userTier} Trust` 
-                            : 'Free tier · Create account to unlock'}
-                    </motion.p>
-                  </motion.div>
-                </AnimatePresence>
+              {/* Status Text - Fixed height */}
+              <div className="flex flex-col items-center justify-center mt-4" style={{ height: '70px' }}>
+                <p className="text-white/90 text-lg font-medium tracking-wider text-center">
+                  {isLoggingOut 
+                    ? 'Matrix System Offline' 
+                    : loadingPhase === 'booting' 
+                      ? 'Jacking into the Network' 
+                      : 'Matrix System Online'}
+                </p>
+                <p className="text-white/50 text-sm mt-2 tracking-wide text-center">
+                  {isLoggingOut
+                    ? 'Disconnecting securely...'
+                    : loadingPhase === 'booting' 
+                      ? 'Establishing secure connection...' 
+                      : isLoggedIn 
+                        ? `Tier: ${userTier} Trust` 
+                        : 'Free tier · Create account to unlock'}
+                </p>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-64 h-[3px] bg-[#C6A87C]/10 rounded-full overflow-hidden">
+              <div className="w-56 h-[3px] bg-[#C6A87C]/10 rounded-full overflow-hidden mt-4">
                 <motion.div
                   className="h-full bg-gradient-to-r from-[#C6A87C]/40 via-[#C6A87C] to-[#C6A87C]/40 rounded-full"
                   initial={{ width: '0%' }}
@@ -1355,16 +1342,14 @@ export default function CyberHomePage() {
                 />
               </div>
 
-              {/* Plan Badge - Shows user's actual tier (or logout tier when logging out) */}
-              <AnimatePresence>
+              {/* Plan Badge - Fixed height container */}
+              <div className="mt-4" style={{ height: '32px' }}>
                 {loadingPhase !== 'booting' && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.4 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
                     className={`px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase ${
-                      // Use logoutTier when logging out, otherwise use userTier
                       (() => {
                         const displayTier = isLoggingOut ? logoutTier : userTier;
                         if (displayTier === 'Dynasty') return 'bg-purple-500/20 text-purple-400 border border-purple-500/30';
@@ -1377,7 +1362,7 @@ export default function CyberHomePage() {
                     {(isLoggingOut ? logoutTier : userTier).toUpperCase()}
                   </motion.div>
                 )}
-              </AnimatePresence>
+              </div>
             </div>
           </motion.div>
         )}
