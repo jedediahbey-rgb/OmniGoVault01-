@@ -341,26 +341,28 @@ const AppLoader = ({
               />
             </div>
 
-            {/* Plan Badge (shown after entitlements load) */}
-            <AnimatePresence>
-              {planName && phase !== 'booting' && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4 }}
-                  className={cn(
-                    'px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase',
-                    planTier === 3 && 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
-                    planTier === 2 && 'bg-vault-gold/20 text-vault-gold border border-vault-gold/30',
-                    planTier === 1 && 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
-                    planTier === 0 && 'bg-white/10 text-vault-muted border border-white/20'
-                  )}
-                >
-                  {planName}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Plan Badge - Always reserve space to prevent layout shift */}
+            <div className="h-[28px] flex items-center justify-center">
+              <AnimatePresence>
+                {planName && phase !== 'booting' && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4 }}
+                    className={cn(
+                      'px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase',
+                      planTier === 3 && 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+                      planTier === 2 && 'bg-vault-gold/20 text-vault-gold border border-vault-gold/30',
+                      planTier === 1 && 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+                      planTier === 0 && 'bg-white/10 text-vault-muted border border-white/20'
+                    )}
+                  >
+                    {planName}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </motion.div>
       )}
