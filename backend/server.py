@@ -5417,3 +5417,19 @@ async def seed_dev_test_accounts():
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+# Temporary download endpoint for backup file
+from fastapi.responses import FileResponse
+import os
+
+@app.get("/api/download-backup")
+async def download_backup():
+    file_path = "/app/omnigovault_backup.json"
+    if os.path.exists(file_path):
+        return FileResponse(
+            path=file_path,
+            filename="omnigovault_backup.json",
+            media_type="application/json",
+            headers={"Content-Disposition": "attachment; filename=omnigovault_backup.json"}
+        )
+    return {"error": "File not found"}
