@@ -324,8 +324,9 @@ const AuthLayout = ({ children, auth, requireAuth = false }) => {
   
   // If user is authenticated but registration is not complete, redirect to /register
   // Skip this check if we're already on the registration page
-  // Check for both false and undefined/null (existing users who never registered)
-  if (requireAuth && auth.user && auth.user.registration_complete !== true && location.pathname !== '/register') {
+  // Only redirect if registration_complete is explicitly false (new users)
+  // Existing users without the field will NOT be redirected
+  if (requireAuth && auth.user && auth.user.registration_complete === false && location.pathname !== '/register') {
     return <Navigate to="/register" replace />;
   }
   
