@@ -257,6 +257,20 @@ const AdminConsolePage = () => {
     }
   };
 
+  // Delete user handler
+  const handleDeleteUser = async (userId) => {
+    try {
+      const response = await api.delete(`/api/admin/users/${userId}`);
+      toast.success(response.data.message || 'User deleted successfully');
+      setShowUserDetails(false);
+      setSelectedUser(null);
+      fetchUsers(userSearch);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to delete user');
+      throw error;
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-vault-navy flex items-center justify-center">
