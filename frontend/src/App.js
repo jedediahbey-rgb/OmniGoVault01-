@@ -365,6 +365,11 @@ const AppRouter = ({ auth }) => {
         {/* Public Routes */}
         <Route path="/" element={<CyberHomePage />} />
         <Route path="/login" element={<Navigate to="/vault" replace />} />
+        
+        {/* Registration Route - Requires auth but not registration complete */}
+        <Route path="/register" element={
+          user ? <RegistrationPage /> : <Navigate to="/" replace />
+        } />
       
       {/* Educational Routes - Require authentication */}
       <Route path="/learn" element={
