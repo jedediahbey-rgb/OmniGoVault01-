@@ -1059,12 +1059,13 @@ async def create_session(request: Request, response: Response):
 
 @api_router.get("/auth/me")
 async def get_me(user: User = Depends(get_current_user)):
-    """Get current user info including first_login status"""
+    """Get current user info including first_login status and registration_complete"""
     # Check if this is a first login that needs welcome flow
     user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
     is_first_login = user_doc.get("first_login", False) if user_doc else False
     portrait_style = user_doc.get("portrait_style", "standard") if user_doc else "standard"
     display_name = user_doc.get("display_name") if user_doc else None
+    registration_complete = user_doc.get("registration_complete", False) if user_doc else False
     
     # Check if user is dev admin
     is_dev_admin = user.user_id == OWNER_USER_ID
@@ -1078,7 +1079,8 @@ async def get_me(user: User = Depends(get_current_user)):
         "portrait_style": portrait_style,
         "is_first_login": is_first_login,
         "is_dev_admin": is_dev_admin,
-        "dev_bypass_enabled": DEV_BYPASS_ENABLED
+        "dev_bypass_enabled": DEV_BYPASS_ENABLED,
+        "registration_complete": registration_complete
     }
 
 
