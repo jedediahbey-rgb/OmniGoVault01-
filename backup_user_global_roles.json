@@ -1,0 +1,20 @@
+{
+  "user_global_roles": [
+    {
+      "user_id": "dev_admin_user",
+      "role": "OMNICOMPETENT_OWNER",
+      "granted_by": "system",
+      "granted_at": "2025-12-28T20:18:28.239427+00:00",
+      "reason": "Platform Owner"
+    },
+    {
+      "user_id": "dev_admin_user",
+      "role": "SUPPORT_ADMIN",
+      "expires_at": null,
+      "granted_at": "2025-12-31T21:31:18.513000",
+      "granted_by": "SYSTEM_TEST",
+      "id": "ugr_support_admin_test",
+      "notes": "Test SUPPORT_ADMIN role"
+    }
+  ]
+}

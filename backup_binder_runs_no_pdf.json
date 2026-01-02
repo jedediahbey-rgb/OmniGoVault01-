@@ -1,0 +1,2573 @@
+{
+  "binder_runs": [
+    {
+      "id": "brun_e893f3fca2f6",
+      "portfolio_id": "port_b0ecab361d67",
+      "user_id": "dev_admin_user",
+      "profile_id": "bprof_1e2f844cebdc",
+      "profile_type": "audit",
+      "profile_name": "Audit Binder",
+      "rules_snapshot": {
+        "include_drafts": false,
+        "include_pending_approved_executed": false,
+        "include_voided_trashed": false,
+        "include_attachments": true,
+        "include_ledger_excerpts": true,
+        "include_integrity_summary": true,
+        "date_range": "all",
+        "date_start": null,
+        "date_end": null,
+        "attested_only_minutes": true,
+        "case_thread_ids": [],
+        "dispute_id": null,
+        "bates_enabled": false,
+        "bates_prefix": null,
+        "bates_start_number": 1,
+        "bates_digits": 6,
+        "bates_position": "bottom-right",
+        "bates_include_cover": false,
+        "bates_font_size": 9,
+        "bates_margin_x": 18,
+        "bates_margin_y": 18,
+        "redaction_mode": "standard",
+        "adhoc_redactions": []
+      },
+      "status": "complete",
+      "started_at": "2025-12-31T13:03:29.651565+00:00",
+      "finished_at": "2025-12-31T13:03:31.267232+00:00",
+      "manifest_json": null,
+      "error_json": null,
+      "total_pages": 0,
+      "total_items": 0,
+      "updated_at": "2025-12-31T13:03:31.267215+00:00",
+      "bates_page_map": [],
+      "gap_analysis": {
+        "summary": {
+          "total_items": 16,
+          "complete": 0,
+          "partial": 0,
+          "missing": 16,
+          "not_applicable": 0,
+          "high_risk": 8,
+          "medium_risk": 1,
+          "low_risk": 7
+        },
+        "results": [
+          {
+            "item_id": "trust_agreement",
+            "item_name": "Trust Agreement",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Trust Agreement to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "trust_amendments",
+            "item_name": "Trust Amendments",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Trust Amendments to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "trustee_acceptance",
+            "item_name": "Trustee Acceptance / Certification",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Trustee Acceptance / Certification to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "death_certificate",
+            "item_name": "Death Certificate",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Death Certificate to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "beneficiary_notices",
+            "item_name": "Beneficiary Notices",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Beneficiary Notices to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "asset_inventory",
+            "item_name": "Asset Inventory",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Asset Inventory to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "asset_valuations",
+            "item_name": "Asset Valuations",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Asset Valuations to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "ein_number",
+            "item_name": "EIN for Trust/Estate",
+            "category": "Tax & Reporting",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload EIN for Trust/Estate to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "fiduciary_tax_returns",
+            "item_name": "Fiduciary Tax Returns",
+            "category": "Tax & Reporting",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Fiduciary Tax Returns to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "pour_over_will",
+            "item_name": "Pour-Over Will",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Pour-Over Will to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "letters_testamentary",
+            "item_name": "Letters Testamentary/Administration",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Letters Testamentary/Administration to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "deeds_titles",
+            "item_name": "Deeds & Title Documents",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "medium",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Deeds & Title Documents to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "appraisals",
+            "item_name": "Professional Appraisals",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Professional Appraisals to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "power_of_attorney",
+            "item_name": "Power of Attorney",
+            "category": "Supporting Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Power of Attorney to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "healthcare_directive",
+            "item_name": "Healthcare Directive",
+            "category": "Supporting Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Healthcare Directive to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "creditor_notices",
+            "item_name": "Creditor Notices",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Creditor Notices to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          }
+        ],
+        "by_category": {
+          "Core Trust Documents": [
+            {
+              "item_id": "trust_agreement",
+              "item_name": "Trust Agreement",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Trust Agreement to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "trust_amendments",
+              "item_name": "Trust Amendments",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Trust Amendments to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "trustee_acceptance",
+              "item_name": "Trustee Acceptance / Certification",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Trustee Acceptance / Certification to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "pour_over_will",
+              "item_name": "Pour-Over Will",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Pour-Over Will to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "letters_testamentary",
+              "item_name": "Letters Testamentary/Administration",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Letters Testamentary/Administration to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Death & Notices": [
+            {
+              "item_id": "death_certificate",
+              "item_name": "Death Certificate",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Death Certificate to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "beneficiary_notices",
+              "item_name": "Beneficiary Notices",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Beneficiary Notices to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "creditor_notices",
+              "item_name": "Creditor Notices",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Creditor Notices to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Asset Inventory": [
+            {
+              "item_id": "asset_inventory",
+              "item_name": "Asset Inventory",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Asset Inventory to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "asset_valuations",
+              "item_name": "Asset Valuations",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Asset Valuations to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "deeds_titles",
+              "item_name": "Deeds & Title Documents",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "medium",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Deeds & Title Documents to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "appraisals",
+              "item_name": "Professional Appraisals",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Professional Appraisals to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Tax & Reporting": [
+            {
+              "item_id": "ein_number",
+              "item_name": "EIN for Trust/Estate",
+              "category": "Tax & Reporting",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload EIN for Trust/Estate to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "fiduciary_tax_returns",
+              "item_name": "Fiduciary Tax Returns",
+              "category": "Tax & Reporting",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Fiduciary Tax Returns to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Supporting Documents": [
+            {
+              "item_id": "power_of_attorney",
+              "item_name": "Power of Attorney",
+              "category": "Supporting Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Power of Attorney to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "healthcare_directive",
+              "item_name": "Healthcare Directive",
+              "category": "Supporting Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Healthcare Directive to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ]
+        },
+        "analyzed_at": "2025-12-31T13:03:29.670103+00:00",
+        "checklist_version": "Trust Administration Checklist v1"
+      },
+      "integrity_stamp": {
+        "binder_pdf_sha256": "7eb7b231544d9be7c4fdfad4794ebf0e76a0ce41dea3f4a3254a24c2f2a4b526",
+        "manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "run_id": "brun_e893f3fca2f6",
+        "portfolio_id": "port_b0ecab361d67",
+        "generated_at": "2025-12-31T13:03:31.245811+00:00",
+        "generated_by": "user_jedediah_bey",
+        "generator_version": "Binder Service v5.0",
+        "total_items": 0,
+        "total_pages": 10,
+        "seal_coverage_percent": 0,
+        "verification_url": "/api/binder/verify?hash=7eb7b231544d9be7c4fdfad4794ebf0e76a0ce41dea3f4a3254a24c2f2a4b526&run=brun_e893f3fca2f6"
+      },
+      "metadata_json": {
+        "validation": {
+          "valid": true,
+          "warnings": [],
+          "errors": [],
+          "missing_items": []
+        },
+        "generated_with_warnings": false,
+        "court_mode": {
+          "bates_enabled": false,
+          "bates_page_map": null,
+          "redaction_mode": "standard",
+          "redaction_log": null
+        },
+        "gaps_analysis": {
+          "total_items": 16,
+          "complete": 0,
+          "partial": 0,
+          "missing": 16,
+          "not_applicable": 0,
+          "high_risk": 8,
+          "medium_risk": 1,
+          "low_risk": 7
+        },
+        "integrity_stamp": {
+          "binder_pdf_sha256": "7eb7b231544d9be7c4fdfad4794ebf0e76a0ce41dea3f4a3254a24c2f2a4b526",
+          "manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "run_id": "brun_e893f3fca2f6",
+          "portfolio_id": "port_b0ecab361d67",
+          "generated_at": "2025-12-31T13:03:31.245811+00:00",
+          "generated_by": "user_jedediah_bey",
+          "generator_version": "Binder Service v5.0",
+          "total_items": 0,
+          "total_pages": 10,
+          "seal_coverage_percent": 0,
+          "verification_url": "/api/binder/verify?hash=7eb7b231544d9be7c4fdfad4794ebf0e76a0ce41dea3f4a3254a24c2f2a4b526&run=brun_e893f3fca2f6"
+        }
+      },
+      "missing_items": [],
+      "redaction_log": null
+    },
+    {
+      "id": "brun_0889e82baa2b",
+      "portfolio_id": "port_97d34c5737f4",
+      "user_id": "dev_admin_user",
+      "profile_id": "bprof_77d5f6bc4952",
+      "profile_type": "omni",
+      "profile_name": "Omni Binder",
+      "rules_snapshot": {
+        "include_drafts": false,
+        "include_pending_approved_executed": true,
+        "include_voided_trashed": false,
+        "include_attachments": true,
+        "include_ledger_excerpts": true,
+        "include_integrity_summary": true,
+        "date_range": "all",
+        "date_start": null,
+        "date_end": null,
+        "attested_only_minutes": false,
+        "case_thread_ids": [],
+        "dispute_id": null,
+        "bates_enabled": false,
+        "bates_prefix": null,
+        "bates_start_number": 1,
+        "bates_digits": 6,
+        "bates_position": "bottom-right",
+        "bates_include_cover": false,
+        "bates_font_size": 9,
+        "bates_margin_x": 18,
+        "bates_margin_y": 18,
+        "redaction_mode": "standard",
+        "adhoc_redactions": []
+      },
+      "status": "complete",
+      "started_at": "2026-01-01T11:49:57.414579+00:00",
+      "finished_at": "2026-01-01T11:49:58.793450+00:00",
+      "manifest_json": [
+        {
+          "section": "trust_profile",
+          "item_type": "trust_profile",
+          "title": "Yyyyhhh trust",
+          "db_id": "port_97d34c5737f4",
+          "rm_id_display": null,
+          "status": null,
+          "finalized_at": null,
+          "version": null
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Acknowledgement / Receipt / Acceptance - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "draft",
+          "finalized_at": null,
+          "version": 2
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "draft",
+          "finalized_at": null,
+          "version": 2
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "draft",
+          "finalized_at": null,
+          "version": 2
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "final",
+          "finalized_at": null,
+          "version": 3
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Amendment to Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "final",
+          "finalized_at": null,
+          "version": 2
+        }
+      ],
+      "error_json": null,
+      "total_pages": 0,
+      "total_items": 6,
+      "updated_at": "2026-01-01T11:49:58.793435+00:00",
+      "bates_page_map": [],
+      "gap_analysis": {
+        "summary": {
+          "total_items": 16,
+          "complete": 2,
+          "partial": 1,
+          "missing": 13,
+          "not_applicable": 0,
+          "high_risk": 6,
+          "medium_risk": 1,
+          "low_risk": 9
+        },
+        "results": [
+          {
+            "item_id": "trust_agreement",
+            "item_name": "Trust Agreement",
+            "category": "Core Trust Documents",
+            "status": "complete",
+            "risk_level": "low",
+            "reason": "Document found and validated (5 matching)",
+            "remediation": null,
+            "matched_documents": [
+              "port_97d34c5737f4",
+              null,
+              null,
+              null,
+              null
+            ],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "trust_amendments",
+            "item_name": "Trust Amendments",
+            "category": "Core Trust Documents",
+            "status": "complete",
+            "risk_level": "low",
+            "reason": "Document found and validated (5 matching)",
+            "remediation": null,
+            "matched_documents": [
+              "port_97d34c5737f4",
+              null,
+              null,
+              null,
+              null
+            ],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "trustee_acceptance",
+            "item_name": "Trustee Acceptance / Certification",
+            "category": "Core Trust Documents",
+            "status": "partial",
+            "risk_level": "high",
+            "reason": "Document found but incomplete: missing Signature, Trustee Name",
+            "remediation": "Update document to include: Signature, Trustee Name",
+            "matched_documents": [
+              null
+            ],
+            "missing_requirements": [
+              "has_signature",
+              "has_trustee_name"
+            ]
+          },
+          {
+            "item_id": "death_certificate",
+            "item_name": "Death Certificate",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Death Certificate to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "beneficiary_notices",
+            "item_name": "Beneficiary Notices",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Beneficiary Notices to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "asset_inventory",
+            "item_name": "Asset Inventory",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Asset Inventory to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "asset_valuations",
+            "item_name": "Asset Valuations",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Asset Valuations to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "ein_number",
+            "item_name": "EIN for Trust/Estate",
+            "category": "Tax & Reporting",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload EIN for Trust/Estate to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "fiduciary_tax_returns",
+            "item_name": "Fiduciary Tax Returns",
+            "category": "Tax & Reporting",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Fiduciary Tax Returns to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "pour_over_will",
+            "item_name": "Pour-Over Will",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Pour-Over Will to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "letters_testamentary",
+            "item_name": "Letters Testamentary/Administration",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Letters Testamentary/Administration to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "deeds_titles",
+            "item_name": "Deeds & Title Documents",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "medium",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Deeds & Title Documents to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "appraisals",
+            "item_name": "Professional Appraisals",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Professional Appraisals to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "power_of_attorney",
+            "item_name": "Power of Attorney",
+            "category": "Supporting Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Power of Attorney to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "healthcare_directive",
+            "item_name": "Healthcare Directive",
+            "category": "Supporting Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Healthcare Directive to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "creditor_notices",
+            "item_name": "Creditor Notices",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Creditor Notices to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          }
+        ],
+        "by_category": {
+          "Core Trust Documents": [
+            {
+              "item_id": "trust_agreement",
+              "item_name": "Trust Agreement",
+              "category": "Core Trust Documents",
+              "status": "complete",
+              "risk_level": "low",
+              "reason": "Document found and validated (5 matching)",
+              "remediation": null,
+              "matched_documents": [
+                "port_97d34c5737f4",
+                null,
+                null,
+                null,
+                null
+              ],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "trust_amendments",
+              "item_name": "Trust Amendments",
+              "category": "Core Trust Documents",
+              "status": "complete",
+              "risk_level": "low",
+              "reason": "Document found and validated (5 matching)",
+              "remediation": null,
+              "matched_documents": [
+                "port_97d34c5737f4",
+                null,
+                null,
+                null,
+                null
+              ],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "trustee_acceptance",
+              "item_name": "Trustee Acceptance / Certification",
+              "category": "Core Trust Documents",
+              "status": "partial",
+              "risk_level": "high",
+              "reason": "Document found but incomplete: missing Signature, Trustee Name",
+              "remediation": "Update document to include: Signature, Trustee Name",
+              "matched_documents": [
+                null
+              ],
+              "missing_requirements": [
+                "has_signature",
+                "has_trustee_name"
+              ]
+            },
+            {
+              "item_id": "pour_over_will",
+              "item_name": "Pour-Over Will",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Pour-Over Will to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "letters_testamentary",
+              "item_name": "Letters Testamentary/Administration",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Letters Testamentary/Administration to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Death & Notices": [
+            {
+              "item_id": "death_certificate",
+              "item_name": "Death Certificate",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Death Certificate to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "beneficiary_notices",
+              "item_name": "Beneficiary Notices",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Beneficiary Notices to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "creditor_notices",
+              "item_name": "Creditor Notices",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Creditor Notices to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Asset Inventory": [
+            {
+              "item_id": "asset_inventory",
+              "item_name": "Asset Inventory",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Asset Inventory to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "asset_valuations",
+              "item_name": "Asset Valuations",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Asset Valuations to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "deeds_titles",
+              "item_name": "Deeds & Title Documents",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "medium",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Deeds & Title Documents to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "appraisals",
+              "item_name": "Professional Appraisals",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Professional Appraisals to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Tax & Reporting": [
+            {
+              "item_id": "ein_number",
+              "item_name": "EIN for Trust/Estate",
+              "category": "Tax & Reporting",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload EIN for Trust/Estate to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "fiduciary_tax_returns",
+              "item_name": "Fiduciary Tax Returns",
+              "category": "Tax & Reporting",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Fiduciary Tax Returns to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Supporting Documents": [
+            {
+              "item_id": "power_of_attorney",
+              "item_name": "Power of Attorney",
+              "category": "Supporting Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Power of Attorney to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "healthcare_directive",
+              "item_name": "Healthcare Directive",
+              "category": "Supporting Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Healthcare Directive to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ]
+        },
+        "analyzed_at": "2026-01-01T11:49:57.417835+00:00",
+        "checklist_version": "Trust Administration Checklist v1"
+      },
+      "integrity_stamp": {
+        "binder_pdf_sha256": "c1c4889549e0ebf4c08f4ab552b952fe6bf72d332d08b79b9883949689633559",
+        "manifest_sha256": "6625879d6e68405f18c08c198b0970566734975e87e1592dbb4f43874524e62a",
+        "run_id": "brun_0889e82baa2b",
+        "portfolio_id": "port_97d34c5737f4",
+        "generated_at": "2026-01-01T11:49:58.723265+00:00",
+        "generated_by": "dev_admin_user",
+        "generator_version": "Binder Service v5.0",
+        "total_items": 6,
+        "total_pages": 18,
+        "seal_coverage_percent": 0.0,
+        "verification_url": "/api/binder/verify?hash=c1c4889549e0ebf4c08f4ab552b952fe6bf72d332d08b79b9883949689633559&run=brun_0889e82baa2b"
+      },
+      "metadata_json": {
+        "validation": {
+          "valid": true,
+          "warnings": [],
+          "errors": [],
+          "missing_items": []
+        },
+        "generated_with_warnings": false,
+        "court_mode": {
+          "bates_enabled": false,
+          "bates_page_map": null,
+          "redaction_mode": "standard",
+          "redaction_log": null
+        },
+        "gaps_analysis": {
+          "total_items": 16,
+          "complete": 2,
+          "partial": 1,
+          "missing": 13,
+          "not_applicable": 0,
+          "high_risk": 6,
+          "medium_risk": 1,
+          "low_risk": 9
+        },
+        "integrity_stamp": {
+          "binder_pdf_sha256": "c1c4889549e0ebf4c08f4ab552b952fe6bf72d332d08b79b9883949689633559",
+          "manifest_sha256": "6625879d6e68405f18c08c198b0970566734975e87e1592dbb4f43874524e62a",
+          "run_id": "brun_0889e82baa2b",
+          "portfolio_id": "port_97d34c5737f4",
+          "generated_at": "2026-01-01T11:49:58.723265+00:00",
+          "generated_by": "dev_admin_user",
+          "generator_version": "Binder Service v5.0",
+          "total_items": 6,
+          "total_pages": 18,
+          "seal_coverage_percent": 0.0,
+          "verification_url": "/api/binder/verify?hash=c1c4889549e0ebf4c08f4ab552b952fe6bf72d332d08b79b9883949689633559&run=brun_0889e82baa2b"
+        }
+      },
+      "missing_items": [],
+      "redaction_log": null
+    },
+    {
+      "id": "brun_2c2f406c2316",
+      "portfolio_id": "port_97d34c5737f4",
+      "user_id": "dev_admin_user",
+      "profile_id": "bprof_bb840370029c",
+      "profile_type": "audit",
+      "profile_name": "Audit Binder",
+      "rules_snapshot": {
+        "include_drafts": false,
+        "include_pending_approved_executed": false,
+        "include_voided_trashed": false,
+        "include_attachments": true,
+        "include_ledger_excerpts": true,
+        "include_integrity_summary": true,
+        "date_range": "all",
+        "date_start": null,
+        "date_end": null,
+        "attested_only_minutes": true,
+        "case_thread_ids": [],
+        "dispute_id": null,
+        "bates_enabled": true,
+        "bates_prefix": "AMMI-",
+        "bates_start_number": 1,
+        "bates_digits": 6,
+        "bates_position": "bottom-right",
+        "bates_include_cover": false,
+        "bates_font_size": 9,
+        "bates_margin_x": 18,
+        "bates_margin_y": 18,
+        "redaction_mode": "redacted",
+        "adhoc_redactions": []
+      },
+      "status": "complete",
+      "started_at": "2026-01-01T11:54:48.320503+00:00",
+      "finished_at": "2026-01-01T11:54:49.598138+00:00",
+      "manifest_json": [
+        {
+          "section": "trust_profile",
+          "item_type": "trust_profile",
+          "title": "Yyyyhhh trust",
+          "db_id": "port_97d34c5737f4",
+          "rm_id_display": null,
+          "status": null,
+          "finalized_at": null,
+          "version": null
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Acknowledgement / Receipt / Acceptance - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "draft",
+          "finalized_at": null,
+          "version": 2
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "draft",
+          "finalized_at": null,
+          "version": 2
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "draft",
+          "finalized_at": null,
+          "version": 2
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "final",
+          "finalized_at": null,
+          "version": 3
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Amendment to Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "final",
+          "finalized_at": null,
+          "version": 2
+        }
+      ],
+      "error_json": null,
+      "total_pages": 0,
+      "total_items": 6,
+      "updated_at": "2026-01-01T11:54:49.598126+00:00",
+      "bates_page_map": [
+        {
+          "page_index": 0,
+          "bates_number": null,
+          "is_cover": true
+        },
+        {
+          "page_index": 1,
+          "bates_number": "AMMI-000001",
+          "is_cover": false
+        },
+        {
+          "page_index": 2,
+          "bates_number": "AMMI-000002",
+          "is_cover": false
+        },
+        {
+          "page_index": 3,
+          "bates_number": "AMMI-000003",
+          "is_cover": false
+        },
+        {
+          "page_index": 4,
+          "bates_number": "AMMI-000004",
+          "is_cover": false
+        },
+        {
+          "page_index": 5,
+          "bates_number": "AMMI-000005",
+          "is_cover": false
+        },
+        {
+          "page_index": 6,
+          "bates_number": "AMMI-000006",
+          "is_cover": false
+        },
+        {
+          "page_index": 7,
+          "bates_number": "AMMI-000007",
+          "is_cover": false
+        },
+        {
+          "page_index": 8,
+          "bates_number": "AMMI-000008",
+          "is_cover": false
+        },
+        {
+          "page_index": 9,
+          "bates_number": "AMMI-000009",
+          "is_cover": false
+        },
+        {
+          "page_index": 10,
+          "bates_number": "AMMI-000010",
+          "is_cover": false
+        },
+        {
+          "page_index": 11,
+          "bates_number": "AMMI-000011",
+          "is_cover": false
+        },
+        {
+          "page_index": 12,
+          "bates_number": "AMMI-000012",
+          "is_cover": false
+        },
+        {
+          "page_index": 13,
+          "bates_number": "AMMI-000013",
+          "is_cover": false
+        },
+        {
+          "page_index": 14,
+          "bates_number": "AMMI-000014",
+          "is_cover": false
+        },
+        {
+          "page_index": 15,
+          "bates_number": "AMMI-000015",
+          "is_cover": false
+        },
+        {
+          "page_index": 16,
+          "bates_number": "AMMI-000016",
+          "is_cover": false
+        },
+        {
+          "page_index": 17,
+          "bates_number": "AMMI-000017",
+          "is_cover": false
+        }
+      ],
+      "gap_analysis": {
+        "summary": {
+          "total_items": 16,
+          "complete": 2,
+          "partial": 1,
+          "missing": 13,
+          "not_applicable": 0,
+          "high_risk": 6,
+          "medium_risk": 1,
+          "low_risk": 9
+        },
+        "results": [
+          {
+            "item_id": "trust_agreement",
+            "item_name": "Trust Agreement",
+            "category": "Core Trust Documents",
+            "status": "complete",
+            "risk_level": "low",
+            "reason": "Document found and validated (5 matching)",
+            "remediation": null,
+            "matched_documents": [
+              "port_97d34c5737f4",
+              null,
+              null,
+              null,
+              null
+            ],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "trust_amendments",
+            "item_name": "Trust Amendments",
+            "category": "Core Trust Documents",
+            "status": "complete",
+            "risk_level": "low",
+            "reason": "Document found and validated (5 matching)",
+            "remediation": null,
+            "matched_documents": [
+              "port_97d34c5737f4",
+              null,
+              null,
+              null,
+              null
+            ],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "trustee_acceptance",
+            "item_name": "Trustee Acceptance / Certification",
+            "category": "Core Trust Documents",
+            "status": "partial",
+            "risk_level": "high",
+            "reason": "Document found but incomplete: missing Signature, Trustee Name",
+            "remediation": "Update document to include: Signature, Trustee Name",
+            "matched_documents": [
+              null
+            ],
+            "missing_requirements": [
+              "has_signature",
+              "has_trustee_name"
+            ]
+          },
+          {
+            "item_id": "death_certificate",
+            "item_name": "Death Certificate",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Death Certificate to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "beneficiary_notices",
+            "item_name": "Beneficiary Notices",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Beneficiary Notices to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "asset_inventory",
+            "item_name": "Asset Inventory",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Asset Inventory to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "asset_valuations",
+            "item_name": "Asset Valuations",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Asset Valuations to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "ein_number",
+            "item_name": "EIN for Trust/Estate",
+            "category": "Tax & Reporting",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload EIN for Trust/Estate to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "fiduciary_tax_returns",
+            "item_name": "Fiduciary Tax Returns",
+            "category": "Tax & Reporting",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Fiduciary Tax Returns to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "pour_over_will",
+            "item_name": "Pour-Over Will",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Pour-Over Will to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "letters_testamentary",
+            "item_name": "Letters Testamentary/Administration",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Letters Testamentary/Administration to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "deeds_titles",
+            "item_name": "Deeds & Title Documents",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "medium",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Deeds & Title Documents to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "appraisals",
+            "item_name": "Professional Appraisals",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Professional Appraisals to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "power_of_attorney",
+            "item_name": "Power of Attorney",
+            "category": "Supporting Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Power of Attorney to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "healthcare_directive",
+            "item_name": "Healthcare Directive",
+            "category": "Supporting Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Healthcare Directive to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "creditor_notices",
+            "item_name": "Creditor Notices",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Creditor Notices to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          }
+        ],
+        "by_category": {
+          "Core Trust Documents": [
+            {
+              "item_id": "trust_agreement",
+              "item_name": "Trust Agreement",
+              "category": "Core Trust Documents",
+              "status": "complete",
+              "risk_level": "low",
+              "reason": "Document found and validated (5 matching)",
+              "remediation": null,
+              "matched_documents": [
+                "port_97d34c5737f4",
+                null,
+                null,
+                null,
+                null
+              ],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "trust_amendments",
+              "item_name": "Trust Amendments",
+              "category": "Core Trust Documents",
+              "status": "complete",
+              "risk_level": "low",
+              "reason": "Document found and validated (5 matching)",
+              "remediation": null,
+              "matched_documents": [
+                "port_97d34c5737f4",
+                null,
+                null,
+                null,
+                null
+              ],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "trustee_acceptance",
+              "item_name": "Trustee Acceptance / Certification",
+              "category": "Core Trust Documents",
+              "status": "partial",
+              "risk_level": "high",
+              "reason": "Document found but incomplete: missing Signature, Trustee Name",
+              "remediation": "Update document to include: Signature, Trustee Name",
+              "matched_documents": [
+                null
+              ],
+              "missing_requirements": [
+                "has_signature",
+                "has_trustee_name"
+              ]
+            },
+            {
+              "item_id": "pour_over_will",
+              "item_name": "Pour-Over Will",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Pour-Over Will to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "letters_testamentary",
+              "item_name": "Letters Testamentary/Administration",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Letters Testamentary/Administration to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Death & Notices": [
+            {
+              "item_id": "death_certificate",
+              "item_name": "Death Certificate",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Death Certificate to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "beneficiary_notices",
+              "item_name": "Beneficiary Notices",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Beneficiary Notices to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "creditor_notices",
+              "item_name": "Creditor Notices",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Creditor Notices to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Asset Inventory": [
+            {
+              "item_id": "asset_inventory",
+              "item_name": "Asset Inventory",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Asset Inventory to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "asset_valuations",
+              "item_name": "Asset Valuations",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Asset Valuations to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "deeds_titles",
+              "item_name": "Deeds & Title Documents",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "medium",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Deeds & Title Documents to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "appraisals",
+              "item_name": "Professional Appraisals",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Professional Appraisals to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Tax & Reporting": [
+            {
+              "item_id": "ein_number",
+              "item_name": "EIN for Trust/Estate",
+              "category": "Tax & Reporting",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload EIN for Trust/Estate to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "fiduciary_tax_returns",
+              "item_name": "Fiduciary Tax Returns",
+              "category": "Tax & Reporting",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Fiduciary Tax Returns to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Supporting Documents": [
+            {
+              "item_id": "power_of_attorney",
+              "item_name": "Power of Attorney",
+              "category": "Supporting Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Power of Attorney to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "healthcare_directive",
+              "item_name": "Healthcare Directive",
+              "category": "Supporting Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Healthcare Directive to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ]
+        },
+        "analyzed_at": "2026-01-01T11:54:48.323808+00:00",
+        "checklist_version": "Trust Administration Checklist v1"
+      },
+      "integrity_stamp": {
+        "binder_pdf_sha256": "2686759d286cc52f6e85e72ea87a4248b35a7d739e3a4de66455db6e1d39dfee",
+        "manifest_sha256": "6625879d6e68405f18c08c198b0970566734975e87e1592dbb4f43874524e62a",
+        "run_id": "brun_2c2f406c2316",
+        "portfolio_id": "port_97d34c5737f4",
+        "generated_at": "2026-01-01T11:54:49.592890+00:00",
+        "generated_by": "dev_admin_user",
+        "generator_version": "Binder Service v5.0",
+        "total_items": 6,
+        "total_pages": 18,
+        "seal_coverage_percent": 0.0,
+        "verification_url": "/api/binder/verify?hash=2686759d286cc52f6e85e72ea87a4248b35a7d739e3a4de66455db6e1d39dfee&run=brun_2c2f406c2316"
+      },
+      "metadata_json": {
+        "validation": {
+          "valid": true,
+          "warnings": [],
+          "errors": [],
+          "missing_items": []
+        },
+        "generated_with_warnings": false,
+        "court_mode": {
+          "bates_enabled": true,
+          "bates_page_map": [
+            {
+              "page_index": 0,
+              "bates_number": null,
+              "is_cover": true
+            },
+            {
+              "page_index": 1,
+              "bates_number": "AMMI-000001",
+              "is_cover": false
+            },
+            {
+              "page_index": 2,
+              "bates_number": "AMMI-000002",
+              "is_cover": false
+            },
+            {
+              "page_index": 3,
+              "bates_number": "AMMI-000003",
+              "is_cover": false
+            },
+            {
+              "page_index": 4,
+              "bates_number": "AMMI-000004",
+              "is_cover": false
+            },
+            {
+              "page_index": 5,
+              "bates_number": "AMMI-000005",
+              "is_cover": false
+            },
+            {
+              "page_index": 6,
+              "bates_number": "AMMI-000006",
+              "is_cover": false
+            },
+            {
+              "page_index": 7,
+              "bates_number": "AMMI-000007",
+              "is_cover": false
+            },
+            {
+              "page_index": 8,
+              "bates_number": "AMMI-000008",
+              "is_cover": false
+            },
+            {
+              "page_index": 9,
+              "bates_number": "AMMI-000009",
+              "is_cover": false
+            },
+            {
+              "page_index": 10,
+              "bates_number": "AMMI-000010",
+              "is_cover": false
+            },
+            {
+              "page_index": 11,
+              "bates_number": "AMMI-000011",
+              "is_cover": false
+            },
+            {
+              "page_index": 12,
+              "bates_number": "AMMI-000012",
+              "is_cover": false
+            },
+            {
+              "page_index": 13,
+              "bates_number": "AMMI-000013",
+              "is_cover": false
+            },
+            {
+              "page_index": 14,
+              "bates_number": "AMMI-000014",
+              "is_cover": false
+            },
+            {
+              "page_index": 15,
+              "bates_number": "AMMI-000015",
+              "is_cover": false
+            },
+            {
+              "page_index": 16,
+              "bates_number": "AMMI-000016",
+              "is_cover": false
+            },
+            {
+              "page_index": 17,
+              "bates_number": "AMMI-000017",
+              "is_cover": false
+            }
+          ],
+          "redaction_mode": "redacted",
+          "redaction_log": {
+            "entries": [],
+            "total_persistent": 0,
+            "total_adhoc": 0,
+            "generated_at": "2026-01-01T11:54:48.322875+00:00"
+          }
+        },
+        "gaps_analysis": {
+          "total_items": 16,
+          "complete": 2,
+          "partial": 1,
+          "missing": 13,
+          "not_applicable": 0,
+          "high_risk": 6,
+          "medium_risk": 1,
+          "low_risk": 9
+        },
+        "integrity_stamp": {
+          "binder_pdf_sha256": "2686759d286cc52f6e85e72ea87a4248b35a7d739e3a4de66455db6e1d39dfee",
+          "manifest_sha256": "6625879d6e68405f18c08c198b0970566734975e87e1592dbb4f43874524e62a",
+          "run_id": "brun_2c2f406c2316",
+          "portfolio_id": "port_97d34c5737f4",
+          "generated_at": "2026-01-01T11:54:49.592890+00:00",
+          "generated_by": "dev_admin_user",
+          "generator_version": "Binder Service v5.0",
+          "total_items": 6,
+          "total_pages": 18,
+          "seal_coverage_percent": 0.0,
+          "verification_url": "/api/binder/verify?hash=2686759d286cc52f6e85e72ea87a4248b35a7d739e3a4de66455db6e1d39dfee&run=brun_2c2f406c2316"
+        }
+      },
+      "missing_items": [],
+      "redaction_log": {
+        "entries": [],
+        "total_persistent": 0,
+        "total_adhoc": 0,
+        "generated_at": "2026-01-01T11:54:48.322875+00:00"
+      }
+    },
+    {
+      "id": "brun_93fb7f1803da",
+      "portfolio_id": "port_97d34c5737f4",
+      "user_id": "dev_admin_user",
+      "profile_id": "bprof_bb840370029c",
+      "profile_type": "audit",
+      "profile_name": "Audit Binder",
+      "rules_snapshot": {
+        "include_drafts": false,
+        "include_pending_approved_executed": false,
+        "include_voided_trashed": false,
+        "include_attachments": true,
+        "include_ledger_excerpts": true,
+        "include_integrity_summary": true,
+        "date_range": "all",
+        "date_start": null,
+        "date_end": null,
+        "attested_only_minutes": true,
+        "case_thread_ids": [],
+        "dispute_id": null,
+        "bates_enabled": true,
+        "bates_prefix": "AMMI-",
+        "bates_start_number": 1,
+        "bates_digits": 6,
+        "bates_position": "bottom-right",
+        "bates_include_cover": false,
+        "bates_font_size": 9,
+        "bates_margin_x": 18,
+        "bates_margin_y": 18,
+        "redaction_mode": "redacted",
+        "adhoc_redactions": []
+      },
+      "status": "complete",
+      "started_at": "2026-01-01T11:55:27.665306+00:00",
+      "finished_at": "2026-01-01T11:55:28.934481+00:00",
+      "manifest_json": [
+        {
+          "section": "trust_profile",
+          "item_type": "trust_profile",
+          "title": "Yyyyhhh trust",
+          "db_id": "port_97d34c5737f4",
+          "rm_id_display": null,
+          "status": null,
+          "finalized_at": null,
+          "version": null
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Acknowledgement / Receipt / Acceptance - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "draft",
+          "finalized_at": null,
+          "version": 2
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "draft",
+          "finalized_at": null,
+          "version": 2
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "draft",
+          "finalized_at": null,
+          "version": 2
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "final",
+          "finalized_at": null,
+          "version": 3
+        },
+        {
+          "section": "documents",
+          "item_type": "document",
+          "title": "Amendment to Declaration of Trust - 12/30/2025",
+          "db_id": null,
+          "rm_id_display": null,
+          "status": "final",
+          "finalized_at": null,
+          "version": 2
+        }
+      ],
+      "error_json": null,
+      "total_pages": 0,
+      "total_items": 6,
+      "updated_at": "2026-01-01T11:55:28.934468+00:00",
+      "bates_page_map": [
+        {
+          "page_index": 0,
+          "bates_number": null,
+          "is_cover": true
+        },
+        {
+          "page_index": 1,
+          "bates_number": "AMMI-000001",
+          "is_cover": false
+        },
+        {
+          "page_index": 2,
+          "bates_number": "AMMI-000002",
+          "is_cover": false
+        },
+        {
+          "page_index": 3,
+          "bates_number": "AMMI-000003",
+          "is_cover": false
+        },
+        {
+          "page_index": 4,
+          "bates_number": "AMMI-000004",
+          "is_cover": false
+        },
+        {
+          "page_index": 5,
+          "bates_number": "AMMI-000005",
+          "is_cover": false
+        },
+        {
+          "page_index": 6,
+          "bates_number": "AMMI-000006",
+          "is_cover": false
+        },
+        {
+          "page_index": 7,
+          "bates_number": "AMMI-000007",
+          "is_cover": false
+        },
+        {
+          "page_index": 8,
+          "bates_number": "AMMI-000008",
+          "is_cover": false
+        },
+        {
+          "page_index": 9,
+          "bates_number": "AMMI-000009",
+          "is_cover": false
+        },
+        {
+          "page_index": 10,
+          "bates_number": "AMMI-000010",
+          "is_cover": false
+        },
+        {
+          "page_index": 11,
+          "bates_number": "AMMI-000011",
+          "is_cover": false
+        },
+        {
+          "page_index": 12,
+          "bates_number": "AMMI-000012",
+          "is_cover": false
+        },
+        {
+          "page_index": 13,
+          "bates_number": "AMMI-000013",
+          "is_cover": false
+        },
+        {
+          "page_index": 14,
+          "bates_number": "AMMI-000014",
+          "is_cover": false
+        },
+        {
+          "page_index": 15,
+          "bates_number": "AMMI-000015",
+          "is_cover": false
+        },
+        {
+          "page_index": 16,
+          "bates_number": "AMMI-000016",
+          "is_cover": false
+        },
+        {
+          "page_index": 17,
+          "bates_number": "AMMI-000017",
+          "is_cover": false
+        }
+      ],
+      "gap_analysis": {
+        "summary": {
+          "total_items": 16,
+          "complete": 2,
+          "partial": 1,
+          "missing": 13,
+          "not_applicable": 0,
+          "high_risk": 6,
+          "medium_risk": 1,
+          "low_risk": 9
+        },
+        "results": [
+          {
+            "item_id": "trust_agreement",
+            "item_name": "Trust Agreement",
+            "category": "Core Trust Documents",
+            "status": "complete",
+            "risk_level": "low",
+            "reason": "Document found and validated (5 matching)",
+            "remediation": null,
+            "matched_documents": [
+              "port_97d34c5737f4",
+              null,
+              null,
+              null,
+              null
+            ],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "trust_amendments",
+            "item_name": "Trust Amendments",
+            "category": "Core Trust Documents",
+            "status": "complete",
+            "risk_level": "low",
+            "reason": "Document found and validated (5 matching)",
+            "remediation": null,
+            "matched_documents": [
+              "port_97d34c5737f4",
+              null,
+              null,
+              null,
+              null
+            ],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "trustee_acceptance",
+            "item_name": "Trustee Acceptance / Certification",
+            "category": "Core Trust Documents",
+            "status": "partial",
+            "risk_level": "high",
+            "reason": "Document found but incomplete: missing Signature, Trustee Name",
+            "remediation": "Update document to include: Signature, Trustee Name",
+            "matched_documents": [
+              null
+            ],
+            "missing_requirements": [
+              "has_signature",
+              "has_trustee_name"
+            ]
+          },
+          {
+            "item_id": "death_certificate",
+            "item_name": "Death Certificate",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Death Certificate to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "beneficiary_notices",
+            "item_name": "Beneficiary Notices",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Beneficiary Notices to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "asset_inventory",
+            "item_name": "Asset Inventory",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Asset Inventory to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "asset_valuations",
+            "item_name": "Asset Valuations",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Asset Valuations to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "ein_number",
+            "item_name": "EIN for Trust/Estate",
+            "category": "Tax & Reporting",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload EIN for Trust/Estate to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "fiduciary_tax_returns",
+            "item_name": "Fiduciary Tax Returns",
+            "category": "Tax & Reporting",
+            "status": "missing",
+            "risk_level": "high",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Fiduciary Tax Returns to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "pour_over_will",
+            "item_name": "Pour-Over Will",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Pour-Over Will to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "letters_testamentary",
+            "item_name": "Letters Testamentary/Administration",
+            "category": "Core Trust Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Letters Testamentary/Administration to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "deeds_titles",
+            "item_name": "Deeds & Title Documents",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "medium",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Deeds & Title Documents to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "appraisals",
+            "item_name": "Professional Appraisals",
+            "category": "Asset Inventory",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Professional Appraisals to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "power_of_attorney",
+            "item_name": "Power of Attorney",
+            "category": "Supporting Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Power of Attorney to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "healthcare_directive",
+            "item_name": "Healthcare Directive",
+            "category": "Supporting Documents",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Healthcare Directive to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          },
+          {
+            "item_id": "creditor_notices",
+            "item_name": "Creditor Notices",
+            "category": "Death & Notices",
+            "status": "missing",
+            "risk_level": "low",
+            "reason": "Required document not found in portfolio",
+            "remediation": "Upload Creditor Notices to the portfolio",
+            "matched_documents": [],
+            "missing_requirements": []
+          }
+        ],
+        "by_category": {
+          "Core Trust Documents": [
+            {
+              "item_id": "trust_agreement",
+              "item_name": "Trust Agreement",
+              "category": "Core Trust Documents",
+              "status": "complete",
+              "risk_level": "low",
+              "reason": "Document found and validated (5 matching)",
+              "remediation": null,
+              "matched_documents": [
+                "port_97d34c5737f4",
+                null,
+                null,
+                null,
+                null
+              ],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "trust_amendments",
+              "item_name": "Trust Amendments",
+              "category": "Core Trust Documents",
+              "status": "complete",
+              "risk_level": "low",
+              "reason": "Document found and validated (5 matching)",
+              "remediation": null,
+              "matched_documents": [
+                "port_97d34c5737f4",
+                null,
+                null,
+                null,
+                null
+              ],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "trustee_acceptance",
+              "item_name": "Trustee Acceptance / Certification",
+              "category": "Core Trust Documents",
+              "status": "partial",
+              "risk_level": "high",
+              "reason": "Document found but incomplete: missing Signature, Trustee Name",
+              "remediation": "Update document to include: Signature, Trustee Name",
+              "matched_documents": [
+                null
+              ],
+              "missing_requirements": [
+                "has_signature",
+                "has_trustee_name"
+              ]
+            },
+            {
+              "item_id": "pour_over_will",
+              "item_name": "Pour-Over Will",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Pour-Over Will to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "letters_testamentary",
+              "item_name": "Letters Testamentary/Administration",
+              "category": "Core Trust Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Letters Testamentary/Administration to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Death & Notices": [
+            {
+              "item_id": "death_certificate",
+              "item_name": "Death Certificate",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Death Certificate to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "beneficiary_notices",
+              "item_name": "Beneficiary Notices",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Beneficiary Notices to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "creditor_notices",
+              "item_name": "Creditor Notices",
+              "category": "Death & Notices",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Creditor Notices to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Asset Inventory": [
+            {
+              "item_id": "asset_inventory",
+              "item_name": "Asset Inventory",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Asset Inventory to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "asset_valuations",
+              "item_name": "Asset Valuations",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Asset Valuations to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "deeds_titles",
+              "item_name": "Deeds & Title Documents",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "medium",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Deeds & Title Documents to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "appraisals",
+              "item_name": "Professional Appraisals",
+              "category": "Asset Inventory",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Professional Appraisals to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Tax & Reporting": [
+            {
+              "item_id": "ein_number",
+              "item_name": "EIN for Trust/Estate",
+              "category": "Tax & Reporting",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload EIN for Trust/Estate to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "fiduciary_tax_returns",
+              "item_name": "Fiduciary Tax Returns",
+              "category": "Tax & Reporting",
+              "status": "missing",
+              "risk_level": "high",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Fiduciary Tax Returns to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ],
+          "Supporting Documents": [
+            {
+              "item_id": "power_of_attorney",
+              "item_name": "Power of Attorney",
+              "category": "Supporting Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Power of Attorney to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            },
+            {
+              "item_id": "healthcare_directive",
+              "item_name": "Healthcare Directive",
+              "category": "Supporting Documents",
+              "status": "missing",
+              "risk_level": "low",
+              "reason": "Required document not found in portfolio",
+              "remediation": "Upload Healthcare Directive to the portfolio",
+              "matched_documents": [],
+              "missing_requirements": []
+            }
+          ]
+        },
+        "analyzed_at": "2026-01-01T11:55:27.668676+00:00",
+        "checklist_version": "Trust Administration Checklist v1"
+      },
+      "integrity_stamp": {
+        "binder_pdf_sha256": "acf65f9e214dc8e961cdf036352eeb75632654a22dd6bbe6d62407db2f776176",
+        "manifest_sha256": "6625879d6e68405f18c08c198b0970566734975e87e1592dbb4f43874524e62a",
+        "run_id": "brun_93fb7f1803da",
+        "portfolio_id": "port_97d34c5737f4",
+        "generated_at": "2026-01-01T11:55:28.928927+00:00",
+        "generated_by": "dev_admin_user",
+        "generator_version": "Binder Service v5.0",
+        "total_items": 6,
+        "total_pages": 18,
+        "seal_coverage_percent": 0.0,
+        "verification_url": "/api/binder/verify?hash=acf65f9e214dc8e961cdf036352eeb75632654a22dd6bbe6d62407db2f776176&run=brun_93fb7f1803da"
+      },
+      "metadata_json": {
+        "validation": {
+          "valid": true,
+          "warnings": [],
+          "errors": [],
+          "missing_items": []
+        },
+        "generated_with_warnings": false,
+        "court_mode": {
+          "bates_enabled": true,
+          "bates_page_map": [
+            {
+              "page_index": 0,
+              "bates_number": null,
+              "is_cover": true
+            },
+            {
+              "page_index": 1,
+              "bates_number": "AMMI-000001",
+              "is_cover": false
+            },
+            {
+              "page_index": 2,
+              "bates_number": "AMMI-000002",
+              "is_cover": false
+            },
+            {
+              "page_index": 3,
+              "bates_number": "AMMI-000003",
+              "is_cover": false
+            },
+            {
+              "page_index": 4,
+              "bates_number": "AMMI-000004",
+              "is_cover": false
+            },
+            {
+              "page_index": 5,
+              "bates_number": "AMMI-000005",
+              "is_cover": false
+            },
+            {
+              "page_index": 6,
+              "bates_number": "AMMI-000006",
+              "is_cover": false
+            },
+            {
+              "page_index": 7,
+              "bates_number": "AMMI-000007",
+              "is_cover": false
+            },
+            {
+              "page_index": 8,
+              "bates_number": "AMMI-000008",
+              "is_cover": false
+            },
+            {
+              "page_index": 9,
+              "bates_number": "AMMI-000009",
+              "is_cover": false
+            },
+            {
+              "page_index": 10,
+              "bates_number": "AMMI-000010",
+              "is_cover": false
+            },
+            {
+              "page_index": 11,
+              "bates_number": "AMMI-000011",
+              "is_cover": false
+            },
+            {
+              "page_index": 12,
+              "bates_number": "AMMI-000012",
+              "is_cover": false
+            },
+            {
+              "page_index": 13,
+              "bates_number": "AMMI-000013",
+              "is_cover": false
+            },
+            {
+              "page_index": 14,
+              "bates_number": "AMMI-000014",
+              "is_cover": false
+            },
+            {
+              "page_index": 15,
+              "bates_number": "AMMI-000015",
+              "is_cover": false
+            },
+            {
+              "page_index": 16,
+              "bates_number": "AMMI-000016",
+              "is_cover": false
+            },
+            {
+              "page_index": 17,
+              "bates_number": "AMMI-000017",
+              "is_cover": false
+            }
+          ],
+          "redaction_mode": "redacted",
+          "redaction_log": {
+            "entries": [],
+            "total_persistent": 0,
+            "total_adhoc": 0,
+            "generated_at": "2026-01-01T11:55:27.667882+00:00"
+          }
+        },
+        "gaps_analysis": {
+          "total_items": 16,
+          "complete": 2,
+          "partial": 1,
+          "missing": 13,
+          "not_applicable": 0,
+          "high_risk": 6,
+          "medium_risk": 1,
+          "low_risk": 9
+        },
+        "integrity_stamp": {
+          "binder_pdf_sha256": "acf65f9e214dc8e961cdf036352eeb75632654a22dd6bbe6d62407db2f776176",
+          "manifest_sha256": "6625879d6e68405f18c08c198b0970566734975e87e1592dbb4f43874524e62a",
+          "run_id": "brun_93fb7f1803da",
+          "portfolio_id": "port_97d34c5737f4",
+          "generated_at": "2026-01-01T11:55:28.928927+00:00",
+          "generated_by": "dev_admin_user",
+          "generator_version": "Binder Service v5.0",
+          "total_items": 6,
+          "total_pages": 18,
+          "seal_coverage_percent": 0.0,
+          "verification_url": "/api/binder/verify?hash=acf65f9e214dc8e961cdf036352eeb75632654a22dd6bbe6d62407db2f776176&run=brun_93fb7f1803da"
+        }
+      },
+      "missing_items": [],
+      "redaction_log": {
+        "entries": [],
+        "total_persistent": 0,
+        "total_adhoc": 0,
+        "generated_at": "2026-01-01T11:55:27.667882+00:00"
+      }
+    }
+  ]
+}

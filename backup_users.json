@@ -1,0 +1,15 @@
+{
+  "users": [
+    {
+      "user_id": "dev_admin_user",
+      "email": "jedediah.bey@gmail.com",
+      "name": "Ammitai Jedediah",
+      "picture": "https://lh3.googleusercontent.com/a/ACg8ocI3-9Ix7Aw8aGjuVOcKE2FunJC1qeJQOKaNZZFJJ-tw1G9pl0k=s96-c",
+      "global_roles": [
+        "OMNICOMPETENT_OWNER"
+      ],
+      "created_at": "2026-01-01T15:53:41.035000",
+      "updated_at": "2026-01-01T16:04:21.709153+00:00"
+    }
+  ]
+}

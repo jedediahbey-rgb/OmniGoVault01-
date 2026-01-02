@@ -1,0 +1,48 @@
+{
+  "portfolios": [
+    {
+      "portfolio_id": "port_97d34c5737f4",
+      "user_id": "dev_admin_user",
+      "name": "AMMITAI JEDEDIAH BEY LIVING ESTATE TRUST ",
+      "description": "AJBLET",
+      "created_at": "2025-12-28T20:34:50.626567+00:00",
+      "updated_at": "2025-12-30T05:59:05.493104+00:00",
+      "style_id": "crownEstate"
+    },
+    {
+      "portfolio_id": "port_test_1766998199657",
+      "user_id": "dev_admin_user",
+      "name": "Test Portfolio for Style Testing",
+      "description": "Portfolio for testing style customization",
+      "style_id": "dynasty",
+      "created_at": "2025-12-29T08:49:59.657000",
+      "updated_at": "2025-12-29T08:52:25.236868+00:00"
+    },
+    {
+      "portfolio_id": "port_531c2d6095f9",
+      "user_id": "dev_admin_user",
+      "name": "Test Trust I",
+      "description": "AJBLET",
+      "created_at": "2025-12-30T20:46:40.580215+00:00",
+      "updated_at": "2025-12-30T20:47:48.039574+00:00",
+      "style_id": "dynasty"
+    },
+    {
+      "portfolio_id": "port_a103f9dc2beb",
+      "user_id": "dev_admin_user",
+      "name": "Test Trust II",
+      "description": "AJBLET",
+      "created_at": "2025-12-30T20:48:03.345993+00:00",
+      "updated_at": "2025-12-30T20:52:30.717872+00:00",
+      "style_id": "familyOffice"
+    },
+    {
+      "portfolio_id": "port_b0ecab361d67",
+      "user_id": "dev_admin_user",
+      "name": "Test Portfolio 20251231_130328",
+      "description": "Test portfolio for binder generation testing",
+      "created_at": "2025-12-31T13:03:28.610592+00:00",
+      "updated_at": "2025-12-31T13:03:28.610593+00:00"
+    }
+  ]
+}
