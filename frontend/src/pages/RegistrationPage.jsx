@@ -170,7 +170,9 @@ export default function RegistrationPage() {
   async function onLogout() {
     try {
       await axios.post(`${API}/auth/logout`, {}, { withCredentials: true });
-    } catch {}
+    } catch (e) {
+      // Ignore logout errors
+    }
     window.location.assign("/");
   }
 
