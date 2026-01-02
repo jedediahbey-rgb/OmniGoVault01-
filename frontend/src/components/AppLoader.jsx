@@ -247,7 +247,10 @@ const AppLoader = ({
           />
 
           {/* Content - Fixed size container to prevent layout shift */}
-          <div className="relative z-10 flex flex-col items-center gap-5 px-8 py-8 rounded-2xl bg-vault-navy/60 backdrop-blur-sm border border-vault-gold/10 w-[300px] h-[320px]">
+          <div 
+            className="relative z-10 flex flex-col items-center justify-between px-8 py-8 rounded-2xl bg-vault-navy/60 backdrop-blur-sm border border-vault-gold/10"
+            style={{ width: '300px', height: '320px', minHeight: '320px', maxHeight: '320px' }}
+          >
             {/* Logo / Wordmark */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
