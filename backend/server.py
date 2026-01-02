@@ -4837,6 +4837,10 @@ from routes.files import router as files_router, init_files_routes
 init_files_routes(db)
 app.include_router(files_router, prefix="/api")
 
+# Registration routes
+from routes.registration import router as registration_router
+app.include_router(registration_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
